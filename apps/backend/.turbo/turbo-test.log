@@ -1,0 +1,35 @@
+
+> backend@1.0.0 test C:\Users\User\Documents\CG Tourism\apps\backend
+> jest
+
+PASS src/modules/auth/auth.service.spec.ts (15.063 s)
+PASS src/modules/bookmarks/bookmarks.service.spec.ts (15.232 s)
+PASS src/modules/moderation/moderation.controller.spec.ts (15.697 s)
+PASS src/modules/users/users.service.spec.ts
+PASS src/modules/places/places.service.spec.ts
+  ● Console
+
+    console.warn
+      PostGIS query execution failed. Falling back to local mathematics calculations... Relation "Place" or PostGIS ST_Distance does not exist
+
+    [0m [90m 101 |[39m       [36mreturn[39m places[33m;[39m
+     [90m 102 |[39m     } [36mcatch[39m (error) {
+    [31m[1m>[22m[39m[90m 103 |[39m       console[33m.[39mwarn([32m'PostGIS query execution failed. Falling back to local mathematics calculations...'[39m[33m,[39m error[33m.[39mmessage)[33m;[39m
+     [90m     |[39m               [31m[1m^[22m[39m
+     [90m 104 |[39m       
+     [90m 105 |[39m       [36mconst[39m allPlaces [33m=[39m [36mawait[39m [36mthis[39m[33m.[39mprisma[33m.[39mplace[33m.[39mfindMany({
+     [90m 106 |[39m         where[33m:[39m { verified[33m:[39m [36mtrue[39m }[33m,[39m[0m
+
+      at PlacesService.findNearby (modules/places/places.service.ts:103:15)
+      at Object.<anonymous> (modules/places/places.service.spec.ts:102:22)
+
+PASS src/modules/moderation/moderation.service.spec.ts
+PASS src/modules/emergency/emergency.service.spec.ts
+PASS src/modules/users/users.controller.spec.ts
+PASS src/modules/reviews/reviews.service.spec.ts
+
+Test Suites: 9 passed, 9 total
+Tests:       47 passed, 47 total
+Snapshots:   0 total
+Time:        19.189 s
+Ran all test suites.

@@ -1,0 +1,240 @@
+@import "tailwindcss";
+@import "leaflet/dist/leaflet.css";
+
+/* ── Leaflet popup style overrides ──────────────────────────────────────── */
+.leaflet-popup-content-wrapper {
+  padding: 0 !important;
+  border-radius: 14px !important;
+  box-shadow: 0 8px 32px rgba(10, 54, 34, 0.18) !important;
+  border: 1px solid rgba(255, 255, 255, 0.6) !important;
+  overflow: hidden !important;
+}
+.leaflet-popup-content {
+  margin: 0 !important;
+  width: auto !important;
+}
+.leaflet-popup-tip {
+  background: #fff !important;
+}
+.leaflet-control-layers {
+  border-radius: 12px !important;
+  border: 1px solid rgba(255,255,255,0.6) !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.12) !important;
+  background: rgba(255,255,255,0.85) !important;
+  backdrop-filter: blur(10px) !important;
+  font-family: var(--font-geist-mono, monospace) !important;
+  font-size: 11px !important;
+}
+.leaflet-control-layers-toggle {
+  border-radius: 10px !important;
+}
+.leaflet-bar {
+  border-radius: 10px !important;
+  border: 1px solid rgba(255,255,255,0.6) !important;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1) !important;
+  overflow: hidden !important;
+}
+.leaflet-bar a {
+  color: #0A3622 !important;
+  font-weight: 700 !important;
+}
+.leaflet-bar a:hover {
+  background: #F4EBE1 !important;
+}
+.leaflet-attribution-flag { display: none !important; }
+.leaflet-control-attribution {
+  background: rgba(255,255,255,0.75) !important;
+  backdrop-filter: blur(6px) !important;
+  border-radius: 8px !important;
+  font-size: 9px !important;
+  color: #555 !important;
+}
+
+
+:root {
+  --background: #F4EBE1; /* Warm organic Sand Beige default */
+  --foreground: #1E2229; /* Charcoal Stone text */
+  --card: rgba(255, 255, 255, 0.7);
+  --card-foreground: #1E2229;
+  --border: rgba(30, 34, 41, 0.1);
+  --primary: #0A3622; /* Bastar Forest Emerald */
+  --primary-foreground: #F4EBE1;
+  --secondary: #B25329; /* Tribal Terracotta */
+  --secondary-foreground: #F4EBE1;
+  --accent: #1A5E7A; /* River Blue */
+  --accent-foreground: #F4EBE1;
+}
+
+@theme {
+  --color-forest-emerald: #0A3622;
+  --color-tribal-terracotta: #B25329;
+  --color-river-blue: #1A5E7A;
+  --color-sand-beige: #F4EBE1;
+  --color-warm-orange: #E67E22;
+  --color-charcoal-stone: #1E2229;
+  --color-misty-forest: #0F5132;
+  
+  --font-sans: var(--font-geist-sans), Inter, sans-serif;
+  --font-mono: var(--font-geist-mono), monospace;
+}
+
+/* Custom premium scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #B25329; /* Terracotta thumb */
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #0A3622; /* Emerald on hover */
+}
+
+/* Smooth organic scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+}
+
+/* Glassmorphism utility */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.dark-glass-panel {
+  background: rgba(30, 34, 41, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Dhokra geometric tribal patterns */
+.tribal-border {
+  border-image: repeating-linear-gradient(45deg, #B25329, #B25329 10px, #E67E22 10px, #E67E22 20px) 15;
+}
+
+/* ── Custom Keyframe Animations ───────────────────────────── */
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes spinSlow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes pingSlow {
+  0%, 100% { transform: scale(1);   opacity: 1; }
+  50%       { transform: scale(1.15); opacity: 0.7; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+
+.animate-fade-in   { animation: fadeIn   0.4s ease-out both; }
+.animate-spin-slow { animation: spinSlow 3s linear infinite; }
+.animate-ping-slow { animation: pingSlow 2s ease-in-out infinite; }
+.animate-slide-up  { animation: slideUp  0.5s ease-out both; }
+
+/* ── Shimmer skeleton loader ─────────────────────────────── */
+.shimmer {
+  background: linear-gradient(90deg, #f0ebe3 25%, #ede4d8 50%, #f0ebe3 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.8s infinite;
+}
+
+/* ── Responsive mobile navigation overlay ───────────────── */
+.mobile-nav-open {
+  overflow: hidden;
+}
+
+/* ── Hero gradient overlay helper ───────────────────────── */
+.hero-gradient {
+  background: linear-gradient(
+    to bottom,
+    rgba(10, 54, 34, 0.0)  0%,
+    rgba(10, 54, 34, 0.35) 50%,
+    rgba(10, 54, 34, 0.85) 100%
+  );
+}
+
+/* ── Tribal texture pattern overlay ─────────────────────── */
+.tribal-texture {
+  background-image: 
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 8px,
+      rgba(178, 83, 41, 0.04) 8px,
+      rgba(178, 83, 41, 0.04) 16px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 8px,
+      rgba(10, 54, 34, 0.03) 8px,
+      rgba(10, 54, 34, 0.03) 16px
+    );
+}
+
+/* ── Scrollbar hide utility ─────────────────────────────────────────────── */
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ── Dark Earth-mode popup overrides ────────────────────────────────────── */
+.cg-popup .leaflet-popup-content-wrapper {
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45) !important;
+  border: 1px solid rgba(230, 126, 34, 0.2) !important;
+}
+.cg-popup .leaflet-popup-tip {
+  box-shadow: none !important;
+}
+
+/* ── Leaflet zoom control dark theme ────────────────────────────────────── */
+.leaflet-bar a {
+  background: rgba(10,14,20,0.88) !important;
+  backdrop-filter: blur(10px) !important;
+  color: #E67E22 !important;
+  border-bottom: 1px solid rgba(255,255,255,0.08) !important;
+}
+.leaflet-bar a:hover {
+  background: rgba(10,54,34,0.9) !important;
+  color: #fff !important;
+}
+.leaflet-bar {
+  border: 1px solid rgba(230,126,34,0.25) !important;
+}
+.leaflet-control-attribution {
+  background: rgba(10,14,20,0.7) !important;
+  color: rgba(255,255,255,0.35) !important;
+  font-size: 8px !important;
+  border-radius: 6px !important;
+}
+.leaflet-control-attribution a {
+  color: rgba(230,126,34,0.7) !important;
+}

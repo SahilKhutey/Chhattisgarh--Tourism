@@ -1,0 +1,137 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String          @id @default(uuid())
+  fullName      String
+  email         String          @unique
+  password      String
+  avatar        String?
+  role          UserRole        @default(USER)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  bookmarks     Bookmark[]
+  reviews       Review[]
+  folklore      Folklore[]
+  creatorProfile CreatorProfile?
+}
+
+model Folklore {
+  id              String      @id @default(uuid())
+  title           String
+  monument        String
+  location        String
+  description     String
+  images          String[]
+  videos          String[]
+  verified        Boolean     @default(false)
+  authorId        String
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  author          User        @relation(fields: [authorId], references: [id])
+}
+
+enum UserRole {
+  USER
+  CREATOR
+  MODERATOR
+  ADMIN
+  SUPER_ADMIN
+}
+
+model Place {
+  id              String      @id @default(uuid())
+  name            String
+  slug            String      @unique
+  description     String
+  district        String
+  categoryId      String
+
+  latitude        Float
+  longitude       Float
+
+  heroImage       String
+  bestSeason      String?
+
+  history         String?
+  safetyInfo      String?
+  rules           String?
+
+  verified        Boolean     @default(false)
+
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  category        Category    @relation(fields: [categoryId], references: [id])
+  media           Media[]
+  reviews         Review[]
+  bookmarks       Bookmark[]
+}
+
+model Category {
+  id        String   @id @default(uuid())
+  name      String
+  slug      String   @unique
+
+  places    Place[]
+}
+
+model Media {
+  id          String   @id @default(uuid())
+  url         String
+  type        MediaType
+  placeId     String
+
+  place       Place    @relation(fields: [placeId], references: [id])
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
+}
+
+model Review {
+  id          String    @id @default(uuid())
+  rating      Int
+  comment     String
+
+  userId      String
+  placeId     String
+
+  user        User      @relation(fields: [userId], references: [id])
+  place       Place     @relation(fields: [placeId], references: [id])
+
+  createdAt   DateTime  @default(now())
+}
+
+model Bookmark {
+  id          String   @id @default(uuid())
+
+  userId      String
+  placeId     String
+
+  user        User     @relation(fields: [userId], references: [id])
+  place       Place    @relation(fields: [placeId], references: [id])
+
+  @@unique([userId, placeId])
+}
+
+model CreatorProfile {
+  id            String   @id @default(uuid())
+  userId        String   @unique
+
+  verified      Boolean  @default(false)
+  bio           String?
+  instagram     String?
+  youtube       String?
+
+  user          User     @relation(fields: [userId], references: [id])
+}
