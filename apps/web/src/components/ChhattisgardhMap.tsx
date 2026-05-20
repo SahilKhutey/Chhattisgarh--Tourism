@@ -177,10 +177,10 @@ export default function EarthMap({
   onSelectDestination, onZoomChange,
 }: Props) {
   const containerRef  = useRef<HTMLDivElement>(null);
-  const mapRef        = useRef<import('leaflet').Map | null>(null);
+  const mapRef        = useRef<{ L: typeof import('leaflet'); map: import('leaflet').Map } | null>(null);
   const layerRefs     = useRef<{ base: import('leaflet').TileLayer | null; labels: import('leaflet').TileLayer | null; hillshade: import('leaflet').TileLayer | null }>({ base: null, labels: null, hillshade: null });
   const pinLayerRef   = useRef<import('leaflet').LayerGroup | null>(null);
-  const distLayerRef  = useRef<import('leaflet').GeoJSON | null>(null);
+  const distLayerRef  = useRef<import('leaflet').LayerGroup | null>(null);
 
   // ── Mount map once ────────────────────────────────────────────────────────
   useEffect(() => {
@@ -194,7 +194,7 @@ export default function EarthMap({
       const container = containerRef.current as HTMLDivElement & { _leaflet_id?: boolean };
       if (container._leaflet_id) return;
 
-      delete (L.Icon.Default.prototype as Record<string, unknown>)._getIconUrl;
+      delete (L.Icon.Default.prototype as L.Icon.Default & Record<string, unknown>)._getIconUrl;
 
       const map = L.map(containerRef.current, {
         center: CG_CENTER,
@@ -310,7 +310,7 @@ export default function EarthMap({
 
     // Hillshade toggle
     if (activeLayer === "satellite" || activeLayer === "hybrid") { hillshade?.addTo(map); }
-    else { hillshade && map.removeLayer(hillshade); }
+     else { if (hillshade) { map.removeLayer(hillshade); } }
 
     // Labels
     const newLabels = cfg.labels

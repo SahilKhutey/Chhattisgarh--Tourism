@@ -2,7 +2,6 @@ import { Injectable, NotFoundException, ConflictException } from '@nestjs/common
 import { PrismaService } from '../../database/prisma.service';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { RegisterCreatorDto } from './dto/register-creator.dto';
-import { UserRole } from '@prisma/client';
 
 @Injectable()
 export class UsersService {
@@ -73,7 +72,7 @@ export class UsersService {
     const updatedUser = await this.prisma.user.update({
       where: { id },
       data: {
-        role: UserRole.CREATOR,
+        role: 'CREATOR',
         creatorProfile: {
           create: {
             verified: false, // Held in queue for administrative checks

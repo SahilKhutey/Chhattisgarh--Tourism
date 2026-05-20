@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UsersService } from './users.service';
 import { PrismaService } from '../../database/prisma.service';
 import { NotFoundException, ConflictException } from '@nestjs/common';
-import { UserRole } from '@prisma/client';
 
 describe('UsersService Unit Tests', () => {
   let service: UsersService;
@@ -45,7 +44,7 @@ describe('UsersService Unit Tests', () => {
         fullName: 'Devendra Mandavi',
         email: 'traveler@cg.gov.in',
         password: 'secure_password_hash',
-        role: UserRole.USER,
+        role: 'USER',
         creatorProfile: null,
       };
 
@@ -72,7 +71,7 @@ describe('UsersService Unit Tests', () => {
         id: 'user-uuid-1',
         fullName: 'Aarav Mandavi',
         email: 'traveler@cg.gov.in',
-        role: UserRole.USER,
+        role: 'USER',
         avatar: 'avatar_url',
       };
       prismaMock.user.update.mockResolvedValue(mockUpdatedUser);
@@ -110,7 +109,7 @@ describe('UsersService Unit Tests', () => {
 
       const mockUpdatedUser = {
         id: 'user-uuid-1',
-        role: UserRole.CREATOR,
+        role: 'CREATOR',
         creatorProfile: {
           bio: 'Tribal heritage guide.',
           verified: false, // Default pending moderation review
@@ -125,7 +124,7 @@ describe('UsersService Unit Tests', () => {
       const result = await service.registerCreator('user-uuid-1', creatorDto);
 
       expect(result.success).toBe(true);
-      expect(result.profile.role).toBe(UserRole.CREATOR);
+      expect(result.profile.role).toBe('CREATOR');
       expect(result.profile.creatorProfile.verified).toBe(false);
       expect(prismaMock.user.update).toHaveBeenCalled();
     });

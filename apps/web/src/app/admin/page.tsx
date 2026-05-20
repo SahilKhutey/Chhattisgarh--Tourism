@@ -51,10 +51,12 @@ export default function AdminPage() {
 
 
 
+  const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api/v1";
+
   const fetchUsers = async () => {
     setLoadingUsers(true);
     try {
-      const res = await fetch("http://localhost:3001/moderation/users", {
+      const res = await fetch(`${API}/moderation/users`, {
         headers: { "x-admin-role": user?.role || "" }
       });
       const data = await res.json();
@@ -69,7 +71,7 @@ export default function AdminPage() {
   const fetchPendingCreators = async () => {
     setLoadingCreators(true);
     try {
-      const res = await fetch("http://localhost:3001/moderation/creators/pending", {
+      const res = await fetch(`${API}/moderation/creators/pending`, {
         headers: { "x-admin-role": user?.role || "" }
       });
       const data = await res.json();
@@ -83,7 +85,7 @@ export default function AdminPage() {
 
   const fetchPendingFolklore = async () => {
     try {
-      const res = await fetch("http://localhost:3001/moderation/folklore/pending", {
+      const res = await fetch(`${API}/moderation/folklore/pending`, {
         headers: { "x-admin-role": user?.role || "" }
       });
       const data = await res.json();
@@ -105,7 +107,7 @@ export default function AdminPage() {
 
   const handleAppointRole = async (userId: string, newRole: string) => {
     try {
-      const res = await fetch(`http://localhost:3001/moderation/appoint/${userId}`, {
+      const res = await fetch(`${API}/moderation/appoint/${userId}`, {
         method: "PATCH",
         headers: { 
           "Content-Type": "application/json",
@@ -123,7 +125,7 @@ export default function AdminPage() {
 
   const handleVerifyCreator = async (id: string) => {
     try {
-      const res = await fetch(`http://localhost:3001/moderation/creators/verify/${id}`, {
+      const res = await fetch(`${API}/moderation/creators/verify/${id}`, {
         method: "PATCH",
         headers: { "x-admin-role": user?.role || "" }
       });
@@ -137,7 +139,7 @@ export default function AdminPage() {
 
   const handleVerifyFolklore = async (id: string) => {
     try {
-      const res = await fetch(`http://localhost:3001/moderation/folklore/verify/${id}`, {
+      const res = await fetch(`${API}/moderation/folklore/verify/${id}`, {
         method: "PATCH",
         headers: { "x-admin-role": user?.role || "" }
       });
@@ -151,7 +153,7 @@ export default function AdminPage() {
 
   const handleRejectFolklore = async (id: string) => {
     try {
-      const res = await fetch(`http://localhost:3001/moderation/folklore/reject/${id}`, {
+      const res = await fetch(`${API}/moderation/folklore/reject/${id}`, {
         method: "DELETE",
         headers: { "x-admin-role": user?.role || "" }
       });

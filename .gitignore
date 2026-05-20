@@ -47,3 +47,15 @@ next-env.d.ts
 # local temporary
 .tempmediaStorage/
 uploads/
+
+# turbo & builds
+.turbo/
+.turbo*
+
+# databases
+*.db
+*.sqlite
+
+# logs
+*.log
+

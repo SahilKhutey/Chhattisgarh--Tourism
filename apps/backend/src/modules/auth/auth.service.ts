@@ -21,12 +21,9 @@ export class AuthService {
       throw new UnauthorizedException('Invalid official credentials email.');
     }
 
-    const isMatch = await bcrypt.compare(dto.password, user.password);
+        const isMatch = await bcrypt.compare(dto.password, user.password);
     
-    // For legacy mock users without bcrypt passwords, fallback comparison
-    const isLegacyMatch = dto.password === user.password || user.password === 'secure_creator_hash_placeholder';
-    
-    if (!isMatch && !isLegacyMatch) {
+    if (!isMatch) {
       throw new UnauthorizedException('Invalid password credential.');
     }
 

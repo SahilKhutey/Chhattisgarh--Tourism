@@ -68,9 +68,11 @@ export default function StoriesPage() {
 
 
 
+  const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api/v1";
+
   const fetchFolklore = async () => {
     try {
-      const res = await fetch("http://localhost:3001/folklore");
+      const res = await fetch(`${API}/folklore`);
       const data = await res.json();
       if (res.ok && data.length > 0) {
         interface FolkloreItem { id: string; monument: string; title: string; description: string; location: string; author?: { fullName: string; role: string; } }
@@ -109,7 +111,7 @@ export default function StoriesPage() {
     if (!isAuthenticated()) return;
     setSubmitting(true);
     try {
-      const res = await fetch("http://localhost:3001/folklore", {
+      const res = await fetch(`${API}/folklore`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -61,6 +61,13 @@ export default function CreatorStudio() {
     safety: string;
     localInsights: string;
     rules: string[];
+    status?: string;
+    coordinates?: {
+      x: number;
+      y: number;
+      mapX: number;
+      mapY: number;
+    };
   }
   const [submittedPlaces, setSubmittedPlaces] = useState<SubmittedPlace[]>([]);
   const [formSuccess, setFormSuccess] = useState(false);

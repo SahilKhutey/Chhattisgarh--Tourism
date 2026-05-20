@@ -1,0 +1,94 @@
+version: '3.8'
+
+services:
+  # 1. PostGIS Enabled PostgreSQL Cluster
+  postgres:
+    image: postgis/postgis:16-3.4
+    container_name: cgtourism_postgres_prod
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: secure_postgres_password
+      POSTGRES_DB: cgtourism
+    ports:
+      - '5432:5432'
+    volumes:
+      - pgdata_prod:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d cgtourism"]
+      interval: 8s
+      timeout: 5s
+      retries: 5
+    networks:
+      - cg-network
+
+  # 2. Redis Caching & Queue Broker
+  redis:
+    image: redis:7-alpine
+    container_name: cgtourism_redis_prod
+    restart: always
+    ports:
+      - '6379:6379'
+    volumes:
+      - redisdata_prod:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 8s
+      timeout: 5s
+      retries: 5
+    networks:
+      - cg-network
+
+  # 3. NestJS Core API Backend
+  backend:
+    build:
+      context: .
+      dockerfile: apps/backend/Dockerfile
+    container_name: cgtourism_backend_prod
+    restart: always
+    environment:
+      DATABASE_URL: "postgresql://postgres:secure_postgres_password@postgres:5432/cgtourism"
+      JWT_SECRET: "cg_tourism_jwt_secret_key_2026_bastar"
+      JWT_EXPIRES_IN: "7d"
+      PORT: 4000
+      CORS_ALLOWED_ORIGINS: "http://localhost:3000"
+      REDIS_URL: "redis://redis:6379"
+      NODE_ENV: production
+    ports:
+      - '4000:4000'
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - cg-network
+
+  # 4. Next.js Web Client Frontend
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: "http://localhost:4000/api/v1"
+    container_name: cgtourism_web_prod
+    restart: always
+    environment:
+      PORT: 3000
+      NODE_ENV: production
+    ports:
+      - '3000:3000'
+    depends_on:
+      - backend
+    networks:
+      - cg-network
+
+volumes:
+  pgdata_prod:
+    driver: local
+  redisdata_prod:
+    driver: local
+
+networks:
+  cg-network:
+    driver: bridge

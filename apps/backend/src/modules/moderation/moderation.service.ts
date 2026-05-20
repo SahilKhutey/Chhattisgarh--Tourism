@@ -113,12 +113,28 @@ export class ModerationService {
   }
 
   async getPendingFolklore() {
-    return this.prisma.folklore.findMany({
+    const items = await this.prisma.folklore.findMany({
       where: { verified: false },
       include: {
         author: { select: { fullName: true, email: true } }
       },
       orderBy: { createdAt: 'desc' }
+    });
+
+    return items.map(item => {
+      try {
+        return {
+          ...item,
+          images: JSON.parse(item.images || '[]'),
+          videos: JSON.parse(item.videos || '[]'),
+        };
+      } catch (e) {
+        return {
+          ...item,
+          images: [],
+          videos: [],
+        };
+      }
     });
   }
 

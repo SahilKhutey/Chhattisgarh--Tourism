@@ -214,4 +214,32 @@ out/
 .idea/
 *.suo
 *.ntvs*
+
+---
+
+## 7. Production-Grade Docker Containerization & Deployment
+
+To deploy the entire Chhattisgarh Tourism platform stack in a highly available, fully containerized production environment, we utilize optimized multi-stage Docker builds coupled with Docker Compose.
+
+### A. Core backend Service (`apps/backend/Dockerfile`)
+This Dockerfile builds the NestJS API monolith inside the monorepo workspace context:
+- Copies dependency manifests, locks down with `--frozen-lockfile`, and generates the Prisma Client.
+- Compiles TS sources down to optimal Javascript using the Next-gen Node runtime.
+- Employs a multi-stage `runner` image containing only essential runtimes to minimize the attack surface.
+
+### B. Web Client Gateway (`apps/web/Dockerfile`)
+Built on Next.js, the web container is fully optimized for speed and production serving:
+- Configures default environment variables at compilation time.
+- Mounts and packs pages to optimized static files and dynamic modules.
+
+### C. Multi-Container Orchestration (`docker-compose.prod.yml`)
+The orchestration configuration mounts all 4 core layers in a secure bridge network:
+- **`postgres`**: Relational store pre-loaded with PostGIS spatial engines.
+- **`redis`**: Caching and priority queue runner.
+- **`backend`**: Port `4000` service dependent on healthy db & queue.
+- **`web`**: Port `3000` app server serving pages.
+
+To boot the full production stack:
+```bash
+docker compose -f docker-compose.prod.yml up --build -d
 ```

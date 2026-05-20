@@ -318,7 +318,7 @@ export default function BookmarksPage() {
                   <div className="flex justify-between items-start">
                     <div className="flex flex-col">
                       <h4 className="font-sans font-bold text-base text-forest-emerald leading-tight">{place.name}</h4>
-                      <span className="text-[10px] font-mono text-tribal-terracotta uppercase font-bold mt-0.5">{(place as Record<string, unknown>).district || "Bastar"} District</span>
+                      <span className="text-[10px] font-mono text-tribal-terracotta uppercase font-bold mt-0.5">{place.district || "Bastar"} District</span>
                     </div>
                     <span className="text-xs font-mono font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded">★ {place.rating}</span>
                   </div>

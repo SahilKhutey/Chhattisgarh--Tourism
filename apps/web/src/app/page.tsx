@@ -93,7 +93,7 @@ export default function Home() {
   interface NearbyPlace {
     id: string;
     name: string;
-    district: string;
+    district?: string;
     computedDistance: number;
   }
   const [nearbyPlaces, setNearbyPlaces] = useState<NearbyPlace[]>([]);

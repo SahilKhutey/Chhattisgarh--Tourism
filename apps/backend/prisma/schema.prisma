@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -13,7 +13,7 @@ model User {
   email         String          @unique
   password      String
   avatar        String?
-  role          UserRole        @default(USER)
+  role          String          @default("USER")
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
 
@@ -29,8 +29,8 @@ model Folklore {
   monument        String
   location        String
   description     String
-  images          String[]
-  videos          String[]
+  images          String      @default("[]")
+  videos          String      @default("[]")
   verified        Boolean     @default(false)
   authorId        String
   createdAt       DateTime    @default(now())
@@ -39,13 +39,6 @@ model Folklore {
   author          User        @relation(fields: [authorId], references: [id])
 }
 
-enum UserRole {
-  USER
-  CREATOR
-  MODERATOR
-  ADMIN
-  SUPER_ADMIN
-}
 
 model Place {
   id              String      @id @default(uuid())
@@ -87,15 +80,10 @@ model Category {
 model Media {
   id          String   @id @default(uuid())
   url         String
-  type        MediaType
+  type        String   @default("IMAGE")
   placeId     String
 
   place       Place    @relation(fields: [placeId], references: [id])
-}
-
-enum MediaType {
-  IMAGE
-  VIDEO
 }
 
 model Review {

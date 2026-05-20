@@ -1,11 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
 import { PrismaService } from '../../database/prisma.service';
+import { JwtService } from '@nestjs/jwt';
 import { UnauthorizedException, BadRequestException } from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
 
 describe('AuthService Unit Tests', () => {
   let service: AuthService;
   let prismaMock: any;
+  let jwtServiceMock: any;
 
   beforeEach(async () => {
     prismaMock = {
@@ -15,12 +18,20 @@ describe('AuthService Unit Tests', () => {
       },
     };
 
+    jwtServiceMock = {
+      sign: jest.fn().mockReturnValue('mock_jwt_token'),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         AuthService,
         {
           provide: PrismaService,
           useValue: prismaMock,
+        },
+        {
+          provide: JwtService,
+          useValue: jwtServiceMock,
         },
       ],
     }).compile();
@@ -39,11 +50,12 @@ describe('AuthService Unit Tests', () => {
         password: 'secure_password',
       };
 
+      const hashedPassword = await bcrypt.hash('secure_password', 10);
       const mockDbUser = {
         id: 'user-uuid-123',
         fullName: 'Devendra Mandavi',
         email: 'traveler@cg.gov.in',
-        password: 'secure_password',
+        password: hashedPassword,
         role: 'USER',
       };
 
@@ -73,11 +85,12 @@ describe('AuthService Unit Tests', () => {
         password: 'incorrect_password',
       };
 
+      const hashedPassword = await bcrypt.hash('secure_password', 10);
       const mockDbUser = {
         id: 'user-uuid-123',
         fullName: 'Devendra Mandavi',
         email: 'traveler@cg.gov.in',
-        password: 'secure_password',
+        password: hashedPassword,
         role: 'USER',
       };
 

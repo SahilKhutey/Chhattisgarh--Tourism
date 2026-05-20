@@ -6,22 +6,31 @@ export class FolkloreService {
   constructor(private readonly prisma: PrismaService) {}
 
   async createFolklore(data: any, userId: string) {
-    return this.prisma.folklore.create({
+    const images = Array.isArray(data.images) ? JSON.stringify(data.images) : '[]';
+    const videos = Array.isArray(data.videos) ? JSON.stringify(data.videos) : '[]';
+
+    const result = await this.prisma.folklore.create({
       data: {
         title: data.title,
         monument: data.monument,
         location: data.location,
         description: data.description,
-        images: data.images || [],
-        videos: data.videos || [],
+        images,
+        videos,
         authorId: userId,
         verified: false,
       },
     });
+
+    return {
+      ...result,
+      images: JSON.parse(result.images),
+      videos: JSON.parse(result.videos),
+    };
   }
 
   async getVerifiedFolklore() {
-    return this.prisma.folklore.findMany({
+    const items = await this.prisma.folklore.findMany({
       where: { verified: true },
       include: {
         author: {
@@ -29,6 +38,22 @@ export class FolkloreService {
         }
       },
       orderBy: { createdAt: 'desc' }
+    });
+
+    return items.map(item => {
+      try {
+        return {
+          ...item,
+          images: JSON.parse(item.images || '[]'),
+          videos: JSON.parse(item.videos || '[]'),
+        };
+      } catch (e) {
+        return {
+          ...item,
+          images: [],
+          videos: [],
+        };
+      }
     });
   }
 }
