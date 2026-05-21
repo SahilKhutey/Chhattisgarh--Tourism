@@ -36,6 +36,7 @@ For extreme-detail blueprints of our individual subsystems, consult the `docs/` 
 - [Phase 4: Web Admin Platform](./docs/Phase4_Web_Admin_Platform.md)
 - [Phase 5: AI Tourism Intelligence](./docs/Phase5_AI_Tourism_Intelligence.md)
 - [System Architecture Details](./docs/Architecture.md)
+- [Security, Auth & Emergency SOS Subsystem](./docs/Security_Authentication_Emergency_SOS.md)
 
 ## 🚀 Getting Started
 

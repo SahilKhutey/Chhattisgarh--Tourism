@@ -160,4 +160,13 @@ export class ModerationService {
 
     return { success: true, message: 'Folklore rejected successfully.' };
   }
+
+  async getSosAlerts(status?: string) {
+    return this.prisma.emergencyAlert.findMany({
+      where: status ? { status } : undefined,
+      orderBy: { createdAt: 'desc' },
+      take: 100,
+    });
+  }
 }
+

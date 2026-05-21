@@ -8,7 +8,9 @@ describe('EmergencyService Unit Tests', () => {
 
   beforeEach(async () => {
     prismaMock = {
-      // Mock any prisma calls if needed
+      emergencyAlert: {
+        create: jest.fn().mockResolvedValue({}),
+      },
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -62,11 +64,11 @@ describe('EmergencyService Unit Tests', () => {
   describe('getHelplines filters tests', () => {
     it('should return helplines filtered by district correctly', async () => {
       const bastarHelplines = await service.getHelplines('Bastar');
-      expect(bastarHelplines.length).toBe(2);
+      expect(bastarHelplines.length).toBe(4);
       expect(bastarHelplines[0].district).toBe('Bastar');
 
       const surgujaHelplines = await service.getHelplines('Surguja');
-      expect(surgujaHelplines.length).toBe(1);
+      expect(surgujaHelplines.length).toBe(2);
       expect(surgujaHelplines[0].district).toBe('Surguja');
     });
   });

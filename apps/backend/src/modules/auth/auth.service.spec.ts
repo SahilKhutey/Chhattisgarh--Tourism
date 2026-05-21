@@ -16,6 +16,12 @@ describe('AuthService Unit Tests', () => {
         findUnique: jest.fn(),
         create: jest.fn(),
       },
+      refreshToken: {
+        create: jest.fn(),
+        findUnique: jest.fn(),
+        update: jest.fn(),
+        updateMany: jest.fn(),
+      },
     };
 
     jwtServiceMock = {

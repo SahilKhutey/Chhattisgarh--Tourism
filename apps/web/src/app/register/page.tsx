@@ -36,7 +36,7 @@ export default function RegisterPage() {
       }
 
       if (data.success) {
-        setAuth(data.user, data.accessToken);
+        setAuth(data.user, data.accessToken, data.refreshToken);
         router.push("/explore");
       }
     } catch (err: unknown) {

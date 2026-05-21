@@ -1,7 +1,7 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { existsSync, mkdirSync, writeFileSync } from 'fs';
 import { extname, join } from 'path';
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID } from 'crypto';
 
 @Injectable()
 export class StorageService {
@@ -30,7 +30,7 @@ export class StorageService {
       throw new BadRequestException(`Unsupported file type: ${fileExt}`);
     }
 
-    const uniqueFileName = `${uuidv4()}${fileExt}`;
+    const uniqueFileName = `${randomUUID()}${fileExt}`;
     const filePath = join(this.uploadDir, uniqueFileName);
 
     try {

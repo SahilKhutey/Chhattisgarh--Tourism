@@ -54,6 +54,9 @@ uploads/
 
 # databases
 *.db
+*.db-journal
+*.db-shm
+*.db-wal
 *.sqlite
 
 # logs

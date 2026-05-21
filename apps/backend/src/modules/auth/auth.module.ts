@@ -5,17 +5,20 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { PrismaService } from '../../database/prisma.service';
 import { JwtStrategy } from './jwt.strategy';
+import { JwtAuthGuard } from './jwt-auth.guard';
+import { RolesGuard } from './roles.guard';
 
 @Module({
   imports: [
     PassportModule,
     JwtModule.register({
       secret: process.env.JWT_SECRET || 'super-secret-tourism-key',
-      signOptions: { expiresIn: '7d' },
+      signOptions: { expiresIn: '15m' },  // Short-lived — access token only
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, PrismaService, JwtStrategy],
-  exports: [AuthService],
+  providers: [AuthService, PrismaService, JwtStrategy, JwtAuthGuard, RolesGuard],
+  exports: [AuthService, JwtAuthGuard, RolesGuard],
 })
 export class AuthModule {}
+

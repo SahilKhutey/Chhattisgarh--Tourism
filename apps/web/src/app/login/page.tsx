@@ -35,7 +35,7 @@ export default function LoginPage() {
       }
 
       if (data.success) {
-        setAuth(data.user, data.accessToken);
+        setAuth(data.user, data.accessToken, data.refreshToken);
         if (data.user.role === "ADMIN" || data.user.role === "SUPER_ADMIN") {
           router.push("/admin");
         } else {

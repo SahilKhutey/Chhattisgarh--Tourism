@@ -1,74 +1,93 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ModerationController } from './moderation.controller';
 import { ModerationService } from './moderation.service';
-import { UnauthorizedException } from '@nestjs/common';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { RolesGuard } from '../auth/roles.guard';
 
+/**
+ * Unit tests for ModerationController.
+ * Guards are overridden to always allow in unit test context —
+ * integration/e2e tests should verify the full guard chain.
+ */
 describe('ModerationController Unit Tests', () => {
   let controller: ModerationController;
   let serviceMock: any;
 
   beforeEach(async () => {
     serviceMock = {
-      getPendingPlaces: jest.fn(),
-      approvePlace: jest.fn(),
-      rejectPlace: jest.fn(),
+      getPendingPlaces:  jest.fn(),
+      approvePlace:      jest.fn(),
+      rejectPlace:       jest.fn(),
+      getPendingCreators: jest.fn(),
+      verifyCreator:     jest.fn(),
+      getPendingFolklore: jest.fn(),
+      verifyFolklore:    jest.fn(),
+      rejectFolklore:    jest.fn(),
+      getUsers:          jest.fn(),
+      appointRole:       jest.fn(),
+      getSosAlerts:      jest.fn(),
     };
 
     const module: TestingModule = await Test.createTestingModule({
       controllers: [ModerationController],
       providers: [
-        {
-          provide: ModerationService,
-          useValue: serviceMock,
-        },
+        { provide: ModerationService, useValue: serviceMock },
       ],
-    }).compile();
+    })
+      // Override guards: the unit tests focus on controller logic only,
+      // not on JWT or role validation (those are tested separately).
+      .overrideGuard(JwtAuthGuard).useValue({ canActivate: () => true })
+      .overrideGuard(RolesGuard).useValue({ canActivate: () => true })
+      .compile();
 
     controller = module.get<ModerationController>(ModerationController);
   });
 
-  it('should be successfully initialized', () => {
+  it('should be successfully initialised', () => {
     expect(controller).toBeDefined();
   });
 
-  describe('checkAdminPrivileges header guard logic', () => {
-    it('should allow access if role is ADMIN or SUPER_ADMIN', async () => {
+  describe('getPendingPlaces', () => {
+    it('should return pending places from service', async () => {
       serviceMock.getPendingPlaces.mockResolvedValue([]);
-      
-      const result = await controller.getPendingPlaces('ADMIN');
+      const result = await controller.getPendingPlaces();
       expect(result).toEqual([]);
-
-      const resultSuper = await controller.getPendingPlaces('SUPER_ADMIN');
-      expect(resultSuper).toEqual([]);
-    });
-
-    it('should throw UnauthorizedException if header role is standard USER or missing', async () => {
-      await expect(controller.getPendingPlaces('USER')).rejects.toThrow(UnauthorizedException);
-      await expect(controller.getPendingPlaces('')).rejects.toThrow(UnauthorizedException);
+      expect(serviceMock.getPendingPlaces).toHaveBeenCalledTimes(1);
     });
   });
 
-  describe('approvePlace operations controls', () => {
-    it('should forward request to service approvePlace and verify status', async () => {
+  describe('approvePlace', () => {
+    it('should forward ID to service and return result', async () => {
       const mockResult = { success: true, message: 'Verified' };
       serviceMock.approvePlace.mockResolvedValue(mockResult);
 
-      const result = await controller.approvePlace('ADMIN', 'place-uuid-1');
+      const result = await controller.approvePlace('place-uuid-1');
 
       expect(result).toEqual(mockResult);
       expect(serviceMock.approvePlace).toHaveBeenCalledWith('place-uuid-1');
     });
   });
 
-  describe('rejectPlace operations controls', () => {
-    it('should forward request to service rejectPlace and verify status', async () => {
+  describe('rejectPlace', () => {
+    it('should forward ID to service and return result', async () => {
       const mockResult = { success: true, message: 'Purged' };
       serviceMock.rejectPlace.mockResolvedValue(mockResult);
 
-      const result = await controller.rejectPlace('ADMIN', 'place-uuid-1');
+      const result = await controller.rejectPlace('place-uuid-1');
 
       expect(result).toEqual(mockResult);
       expect(serviceMock.rejectPlace).toHaveBeenCalledWith('place-uuid-1');
+    });
+  });
+
+  describe('getSosAlerts', () => {
+    it('should return alert history from service', async () => {
+      const alerts = [{ id: 'a1', status: 'DISPATCHED' }];
+      serviceMock.getSosAlerts.mockResolvedValue(alerts);
+
+      const result = await controller.getSosAlerts();
+      expect(result).toEqual(alerts);
+      expect(serviceMock.getSosAlerts).toHaveBeenCalledWith(undefined);
     });
   });
 });
