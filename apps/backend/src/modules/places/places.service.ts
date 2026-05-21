@@ -132,4 +132,51 @@ export class PlacesService {
   private deg2rad(deg: number): number {
     return deg * (Math.PI / 180);
   }
+
+  async semanticSearch(query: string, limit: number = 5) {
+    if (!query || query.trim() === '') {
+      return [];
+    }
+
+    const allPlaces = await this.prisma.place.findMany({
+      where: { verified: true },
+      include: { category: true, media: true }
+    });
+
+    const searchTerms = query.toLowerCase().split(/\s+/).filter(term => term.length > 2);
+
+    if (searchTerms.length === 0) {
+      return allPlaces
+        .filter(place => 
+          place.name.toLowerCase().includes(query.toLowerCase()) || 
+          place.description.toLowerCase().includes(query.toLowerCase())
+        )
+        .slice(0, limit);
+    }
+
+    const matchedPlaces = allPlaces.map(place => {
+      let score = 0;
+      const name = place.name.toLowerCase();
+      const description = place.description.toLowerCase();
+      const district = (place.district || '').toLowerCase();
+      const bestSeason = (place.bestSeason || '').toLowerCase();
+      const history = (place.history || '').toLowerCase();
+
+      searchTerms.forEach(term => {
+        if (name.includes(term)) score += 5.0;
+        if (district.includes(term)) score += 3.0;
+        if (description.includes(term)) score += 1.5;
+        if (bestSeason.includes(term)) score += 1.0;
+        if (history.includes(term)) score += 1.0;
+      });
+
+      return { ...place, similarity_score: score };
+    });
+
+    return matchedPlaces
+      .filter(place => place.similarity_score > 0)
+      .sort((a, b) => b.similarity_score - a.similarity_score)
+      .slice(0, limit);
+  }
 }
+

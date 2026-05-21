@@ -45,4 +45,24 @@ export class PlacesController {
   async getBySlug(@Param('slug') slug: string) {
     return this.placesService.findBySlug(slug);
   }
+
+  @Post('semantic-search')
+  @ApiOperation({ summary: 'Semantic search on regional legends and destinations' })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        query: { type: 'string', example: 'waterfalls in Bastar' },
+        limit: { type: 'number', example: 5 }
+      },
+      required: ['query']
+    }
+  })
+  async semanticSearch(
+    @Body('query') query: string,
+    @Body('limit', new DefaultValuePipe(5)) limit: number,
+  ) {
+    return this.placesService.semanticSearch(query, limit);
+  }
 }
+
