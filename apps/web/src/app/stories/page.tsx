@@ -3,10 +3,11 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { 
-  BookOpen, Volume2, VolumeX, Play, Pause, Mic, Info, ChevronRight, Compass, Calendar, Eye, Activity, Heart, RotateCcw, Plus, X, Upload
+  Volume2, VolumeX, Play, Pause, Square, Mic, Info, ChevronRight, Activity, RotateCcw, Plus, X
 } from "lucide-react";
 import { useAuthStore } from "../../store/auth-store";
 import { useLanguage } from "../../context/LanguageContext";
+import LiveTranslatedText from "../../components/LiveTranslatedText";
 
 interface StoryCard {
   id: string;
@@ -19,6 +20,8 @@ interface StoryCard {
   narratorRole: string;
   audioLength: string;
   biodiversityFocus: string;
+  audioUrl?: string;
+  audioNarrator?: string;
 }
 
 const mockStories: StoryCard[] = [
@@ -32,7 +35,9 @@ const mockStories: StoryCard[] = [
     narrator: "Shri Somnath Nag",
     narratorRole: "Bastar Tribal Clan Elder",
     audioLength: "4 min 12 sec",
-    biodiversityFocus: "River system protection & aquatic ecosystem preservation"
+    biodiversityFocus: "River system protection & aquatic ecosystem preservation",
+    audioUrl: "/audio/chitrakote_falls.mp3",
+    audioNarrator: "Shri Somnath Nag"
   },
   {
     id: "sirpur-story",
@@ -44,7 +49,9 @@ const mockStories: StoryCard[] = [
     narrator: "Shrimati Rukmani Satnami",
     narratorRole: "Local Historical Archivist",
     audioLength: "5 min 45 sec",
-    biodiversityFocus: "Preservation of ancient structural red clay formulations"
+    biodiversityFocus: "Preservation of ancient structural red clay formulations",
+    audioUrl: "/audio/sirpur_monuments.mp3",
+    audioNarrator: "Shrimati Rukmani Satnami"
   }
 ];
 
@@ -52,8 +59,12 @@ export default function StoriesPage() {
   const { user, token, isAuthenticated } = useAuthStore();
   const [activeStoryId, setActiveStoryId] = useState<string>("chitrakote-story");
   const [isMuted, setIsMuted] = useState<boolean>(false);
-  const [audioProgress, setAudioProgress] = useState<number>(34);
-  const { speakText, stopSpeaking, isSpeaking } = useLanguage();
+  const {
+    speakText, stopSpeaking, isSpeaking,
+    isPlayingAudio, audioProgress, audioDuration, audioNarrator,
+    playAudioFile, pauseAudioFile, stopAudioFile,
+    lang,
+  } = useLanguage();
   const [stories, setStories] = useState<StoryCard[]>(mockStories);
   const [showSubmitModal, setShowSubmitModal] = useState(false);
   
@@ -105,23 +116,47 @@ export default function StoriesPage() {
   useEffect(() => {
     return () => {
       stopSpeaking();
+      stopAudioFile();
     };
-  }, [stopSpeaking]);
+  }, [stopSpeaking, stopAudioFile]);
 
   useEffect(() => {
     stopSpeaking();
-  }, [activeStoryId, stopSpeaking]);
+    stopAudioFile();
+  }, [activeStoryId, stopSpeaking, stopAudioFile]);
 
   const handlePlayToggle = () => {
-    if (isSpeaking) {
-      stopSpeaking();
+    const story = stories.find(s => s.id === activeStoryId) || stories[0];
+    // Prefer physical audio guide file if available
+    if (story.audioUrl) {
+      if (isPlayingAudio) {
+        pauseAudioFile();
+      } else {
+        playAudioFile(story.audioUrl, story.audioNarrator || story.narrator);
+      }
     } else {
-      speakText(`${activeStory.title}. ${activeStory.folklore}`);
+      // Fall back to browser TTS
+      if (isSpeaking) {
+        stopSpeaking();
+      } else {
+        speakText(`${story.title}. ${story.folklore}`);
+      }
     }
   };
+
+  const handleStop = () => {
+    stopSpeaking();
+    stopAudioFile();
+  };
+
   const handleMuteToggle = () => setIsMuted(!isMuted);
 
+  // Formatted progress time helper (MM:SS)
+  const formatTime = (sec: number) =>
+    `${Math.floor(sec / 60)}:${String(Math.floor(sec % 60)).padStart(2, "0")}`;
+
   const activeStory = stories.find(s => s.id === activeStoryId) || stories[0];
+  const isActivelyPlaying = activeStory.audioUrl ? isPlayingAudio : isSpeaking;
 
   const handleSubmitFolklore = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -244,61 +279,112 @@ export default function StoriesPage() {
         {/* Right Side: Embedded Cinematic Audio Ingestion Player */}
         <div className="flex flex-col gap-6">
           <div className="glass-panel p-6 sm:p-8 rounded-3xl border border-white/60 shadow-xl flex flex-col gap-6">
+            {/* Player Header */}
             <div className="flex flex-col gap-1 pb-4 border-b border-charcoal-stone/10">
               <span className="text-[9px] font-mono text-purple-600 font-bold uppercase tracking-wider flex items-center gap-1.5">
-                <Volume2 className="w-3.5 h-3.5 text-purple-600 animate-pulse" />
-                Active Folklore Reading
+                {isActivelyPlaying
+                  ? <Activity className="w-3.5 h-3.5 text-purple-600 animate-pulse" />
+                  : <Volume2 className="w-3.5 h-3.5 text-purple-600" />
+                }
+                {activeStory.audioUrl ? "Pre-Recorded Audio Guide" : "AI Voice Narration"}
               </span>
               <h3 className="font-sans font-bold text-lg text-forest-emerald leading-snug">
                 {activeStory.title}
               </h3>
             </div>
 
+            {/* Narrator Card */}
             <div className="flex items-center gap-3 p-3 rounded-xl bg-purple-50 border border-purple-100">
               <span className="w-9 h-9 rounded-lg bg-purple-600 text-white flex items-center justify-center font-mono font-bold text-sm shrink-0">
-                {activeStory.narrator.charAt(0)}
+                {(audioNarrator || activeStory.narrator).charAt(0)}
               </span>
               <div className="flex flex-col">
                 <span className="text-xs font-sans font-bold text-charcoal-stone leading-tight">
-                  {activeStory.narrator}
+                  {audioNarrator || activeStory.narrator}
                 </span>
                 <span className="text-[10px] font-mono text-purple-600">
                   {activeStory.narratorRole}
+                  {activeStory.audioUrl && (
+                    <span className="ml-2 px-1.5 py-0.5 rounded bg-purple-600/10 text-purple-700 font-bold">
+                      🎙 Pre-Recorded
+                    </span>
+                  )}
                 </span>
               </div>
             </div>
 
+            {/* Progress Bar — shows for physical audio files */}
+            {activeStory.audioUrl && audioDuration > 0 && (
+              <div className="flex flex-col gap-1.5">
+                <div className="w-full h-2 bg-purple-100 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-purple-600 rounded-full transition-all duration-300"
+                    style={{ width: `${(audioProgress / audioDuration) * 100}%` }}
+                  />
+                </div>
+                <div className="flex justify-between text-[9px] font-mono text-charcoal-stone/40">
+                  <span>{formatTime(audioProgress)}</span>
+                  <span>{formatTime(audioDuration)}</span>
+                </div>
+              </div>
+            )}
+
+            {/* Folklore Text */}
             <div className="flex flex-col gap-2">
               <span className="text-[9px] font-mono text-charcoal-stone/40 uppercase">Full Folk Legend Transcription</span>
-              <p className="text-xs text-charcoal-stone/70 leading-relaxed bg-white/40 p-4 rounded-xl border border-white/30 h-44 overflow-y-auto font-sans whitespace-pre-wrap">
-                {activeStory.folklore}
-              </p>
+              <div className="text-xs text-charcoal-stone/70 leading-relaxed bg-white/40 p-4 rounded-xl border border-white/30 h-44 overflow-y-auto font-sans">
+                {activeStory.category === "Community Contribution" ? (
+                  <LiveTranslatedText
+                    text={activeStory.folklore}
+                    className="whitespace-pre-wrap"
+                    showBadge
+                  />
+                ) : (
+                  <span className="whitespace-pre-wrap">{activeStory.folklore}</span>
+                )}
+              </div>
             </div>
 
+            {/* Playback Controls */}
             <div className="flex items-center justify-between pt-4 border-t border-charcoal-stone/10">
-              <button 
-                onClick={() => setAudioProgress(10)}
-                className="w-8 h-8 rounded-lg bg-charcoal-stone/5 hover:bg-charcoal-stone/10 flex items-center justify-center text-charcoal-stone/60 transition-colors cursor-pointer"
+              <button
+                onClick={handleStop}
+                className="w-8 h-8 rounded-lg bg-charcoal-stone/5 hover:bg-red-50 hover:text-red-500 flex items-center justify-center text-charcoal-stone/60 transition-colors cursor-pointer"
+                aria-label="Stop"
               >
-                <RotateCcw className="w-4 h-4" />
+                <Square className="w-3.5 h-3.5" />
               </button>
               <button
                 onClick={handlePlayToggle}
-                className="w-12 h-12 rounded-full bg-purple-600 hover:bg-purple-700 text-white flex items-center justify-center shadow-md shadow-purple-600/20 hover:scale-[1.05] transition-all cursor-pointer"
+                className={`w-12 h-12 rounded-full text-white flex items-center justify-center shadow-md hover:scale-[1.05] transition-all cursor-pointer ${
+                  isActivelyPlaying
+                    ? "bg-purple-700 hover:bg-purple-800 shadow-purple-700/20"
+                    : "bg-purple-600 hover:bg-purple-700 shadow-purple-600/20"
+                }`}
+                aria-label={isActivelyPlaying ? "Pause" : "Play"}
               >
-                {isSpeaking ? <Pause className="w-5 h-5 text-white" fill="white" /> : <Play className="w-5 h-5 text-white ml-0.5" fill="white" />}
+                {isActivelyPlaying
+                  ? <Pause className="w-5 h-5 text-white" fill="white" />
+                  : <Play className="w-5 h-5 text-white ml-0.5" fill="white" />
+                }
               </button>
               <button
                 onClick={handleMuteToggle}
                 className="w-8 h-8 rounded-lg bg-charcoal-stone/5 hover:bg-charcoal-stone/10 flex items-center justify-center text-charcoal-stone/60 transition-colors cursor-pointer"
+                aria-label={isMuted ? "Unmute" : "Mute"}
               >
                 {isMuted ? <VolumeX className="w-4 h-4 text-red-600" /> : <Volume2 className="w-4 h-4 text-purple-600" />}
               </button>
             </div>
-            {isSpeaking && (
-              <div className="flex items-center justify-center gap-1 mt-1 text-[10px] font-mono text-purple-600 font-bold">
-                <Activity className="w-3.5 h-3.5 animate-pulse text-purple-600" />
-                Reading Aloud / बोलकर सुनाया जा रहा है...
+
+            {/* Live Status Indicator */}
+            {isActivelyPlaying && (
+              <div className="flex items-center justify-center gap-2 -mt-2 text-[10px] font-mono text-purple-600 font-bold">
+                <Activity className="w-3.5 h-3.5 animate-pulse" />
+                {activeStory.audioUrl
+                  ? (lang === "cg" ? "ऑडियो बजत हे..." : lang === "hi" ? "ऑडियो चल रहा है..." : "Playing Audio Guide...")
+                  : (lang === "cg" ? "बोलत हे... / Reading Aloud" : lang === "hi" ? "पढ़कर सुनाया जा रहा है..." : "Reading Aloud...")
+                }
               </div>
             )}
           </div>

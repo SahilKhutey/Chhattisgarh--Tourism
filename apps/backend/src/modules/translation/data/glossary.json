@@ -1,26 +1,320 @@
 {
   "waterfall": {
     "hi": "जलप्रपात",
-    "cg": "झरना"
+    "cg": "झरना",
+    "tourism_category": "waterfalls",
+    "context": "Natural waterfall / cascade"
   },
   "forest": {
     "hi": "वन",
-    "cg": "जंगल"
+    "cg": "जंगल",
+    "tourism_category": "forests",
+    "context": "Dense forest area"
   },
   "temple": {
     "hi": "मंदिर",
-    "cg": "देवगुड़ी"
+    "cg": "देवगुड़ी",
+    "tourism_category": "temples",
+    "context": "Place of Hindu worship"
   },
   "heritage": {
     "hi": "धरोहर",
-    "cg": "पुरखा धरोहर"
+    "cg": "पुरखा धरोहर",
+    "tourism_category": "heritage",
+    "context": "Historical/cultural heritage site"
   },
   "safety": {
     "hi": "सुरक्षा",
-    "cg": "बचाव"
+    "cg": "बचाव",
+    "tourism_category": "general",
+    "context": "Safety protocol / emergency"
   },
   "eco": {
     "hi": "पारिस्थितिकी",
-    "cg": "जंगल नियम"
+    "cg": "जंगल नियम",
+    "tourism_category": "ecology",
+    "context": "Ecological guidelines"
+  },
+  "tourism": {
+    "hi": "पर्यटन",
+    "cg": "घूमई",
+    "tourism_category": "general",
+    "context": "Tourism / travel activity"
+  },
+  "culture": {
+    "hi": "संस्कृति",
+    "cg": "संस्कृति",
+    "tourism_category": "tribal",
+    "context": "Cultural traditions"
+  },
+  "market": {
+    "hi": "बाज़ार",
+    "cg": "बाजार",
+    "tourism_category": "food",
+    "context": "Local market / bazaar"
+  },
+  "guide": {
+    "hi": "गाइड",
+    "cg": "रहनुमा",
+    "tourism_category": "services",
+    "context": "Tour guide"
+  },
+  "hotel": {
+    "hi": "होटल",
+    "cg": "घर-ठहरना",
+    "tourism_category": "accommodation",
+    "context": "Hotel or lodging"
+  },
+  "national park": {
+    "hi": "राष्ट्रीय उद्यान",
+    "cg": "राष्ट्रीय उद्यान",
+    "tourism_category": "nature",
+    "context": "Protected national park"
+  },
+  "tribal": {
+    "hi": "आदिवासी",
+    "cg": "आदिवासी",
+    "tourism_category": "tribal",
+    "context": "Indigenous tribal communities"
+  },
+  "cave": {
+    "hi": "गुफा",
+    "cg": "गुफा",
+    "tourism_category": "adventure",
+    "context": "Natural cave / cavern"
+  },
+  "river": {
+    "hi": "नदी",
+    "cg": "नदिया",
+    "tourism_category": "waterfalls",
+    "context": "River or stream"
+  },
+  "mountain": {
+    "hi": "पहाड़",
+    "cg": "पहाड़",
+    "tourism_category": "adventure",
+    "context": "Mountain or hill"
+  },
+  "festival": {
+    "hi": "त्योहार",
+    "cg": "तिहार",
+    "tourism_category": "culture",
+    "context": "Regional festival or celebration"
+  },
+  "food": {
+    "hi": "भोजन",
+    "cg": "खाना-पीना",
+    "tourism_category": "food",
+    "context": "Local cuisine"
+  },
+  "dance": {
+    "hi": "नृत्य",
+    "cg": "नाचा",
+    "tourism_category": "tribal",
+    "context": "Traditional tribal dance"
+  },
+  "music": {
+    "hi": "संगीत",
+    "cg": "गाना-बजाना",
+    "tourism_category": "tribal",
+    "context": "Folk music"
+  },
+  "village": {
+    "hi": "गाँव",
+    "cg": "गाँव",
+    "tourism_category": "villages",
+    "context": "Rural village"
+  },
+  "journey": {
+    "hi": "यात्रा",
+    "cg": "सफर",
+    "tourism_category": "general",
+    "context": "Travel / journey"
+  },
+  "ticket": {
+    "hi": "टिकट",
+    "cg": "टिकट",
+    "tourism_category": "services",
+    "context": "Entry ticket"
+  },
+  "photography": {
+    "hi": "फोटोग्राफी",
+    "cg": "फोटो खींचना",
+    "tourism_category": "photography",
+    "context": "Photography activity"
+  },
+  "wildlife": {
+    "hi": "वन्यजीव",
+    "cg": "जंगली जानवर",
+    "tourism_category": "wildlife",
+    "context": "Wildlife / animals"
+  },
+  "sanctuary": {
+    "hi": "अभयारण्य",
+    "cg": "अभयारण्य",
+    "tourism_category": "wildlife",
+    "context": "Wildlife sanctuary"
+  },
+  "sunrise": {
+    "hi": "सूर्योदय",
+    "cg": "सुरुज उगना",
+    "tourism_category": "photography",
+    "context": "Sunrise photography"
+  },
+  "sunset": {
+    "hi": "सूर्यास्त",
+    "cg": "सुरुज डूबना",
+    "tourism_category": "photography",
+    "context": "Sunset photography"
+  },
+  "ancient": {
+    "hi": "प्राचीन",
+    "cg": "पुरखा",
+    "tourism_category": "heritage",
+    "context": "Ancient / historical"
+  },
+  "story": {
+    "hi": "कहानी",
+    "cg": "गोठ-बात",
+    "tourism_category": "tribal",
+    "context": "Folklore story / oral history"
+  },
+  "elder": {
+    "hi": "बुजुर्ग",
+    "cg": "सियान",
+    "tourism_category": "tribal",
+    "context": "Village elder"
+  },
+  "boat": {
+    "hi": "नाव",
+    "cg": "डोंगा",
+    "tourism_category": "waterfalls",
+    "context": "Traditional river boat"
+  },
+  "monsoon": {
+    "hi": "मानसून",
+    "cg": "चौमास",
+    "tourism_category": "seasonal",
+    "context": "Monsoon rainy season"
+  },
+  "winter": {
+    "hi": "सर्दी",
+    "cg": "ठंड",
+    "tourism_category": "seasonal",
+    "context": "Winter season"
+  },
+  "summer": {
+    "hi": "गर्मी",
+    "cg": "घाम",
+    "tourism_category": "seasonal",
+    "context": "Summer / hot season"
+  },
+  "morning": {
+    "hi": "सुबह",
+    "cg": "बिहनिया",
+    "tourism_category": "general",
+    "context": "Morning time"
+  },
+  "evening": {
+    "hi": "शाम",
+    "cg": "संझा",
+    "tourism_category": "general",
+    "context": "Evening time"
+  },
+  "road": {
+    "hi": "सड़क",
+    "cg": "रद्दा",
+    "tourism_category": "services",
+    "context": "Road / path"
+  },
+  "way": {
+    "hi": "रास्ता",
+    "cg": "रद्दा",
+    "tourism_category": "services",
+    "context": "Route or path"
+  },
+  "beautiful": {
+    "hi": "सुंदर",
+    "cg": "मयारू",
+    "tourism_category": "general",
+    "context": "Beautiful / attractive"
+  },
+  "sacred": {
+    "hi": "पवित्र",
+    "cg": "पावन",
+    "tourism_category": "temples",
+    "context": "Sacred / holy"
+  },
+  "pond": {
+    "hi": "तालाब",
+    "cg": "तालाब",
+    "tourism_category": "waterfalls",
+    "context": "Lake / pond"
+  },
+  "hill": {
+    "hi": "पहाड़ी",
+    "cg": "पहाड़ी",
+    "tourism_category": "adventure",
+    "context": "Hill / elevated terrain"
+  },
+  "honey": {
+    "hi": "शहद",
+    "cg": "मधु",
+    "tourism_category": "food",
+    "context": "Wild forest honey"
+  },
+  "leaves": {
+    "hi": "पत्ते",
+    "cg": "पान",
+    "tourism_category": "ecology",
+    "context": "Forest leaves"
+  },
+  "flower": {
+    "hi": "फूल",
+    "cg": "फुल",
+    "tourism_category": "ecology",
+    "context": "Wild flowers"
+  },
+  "bird": {
+    "hi": "पक्षी",
+    "cg": "चिरई",
+    "tourism_category": "wildlife",
+    "context": "Bird / avian wildlife"
+  },
+  "fish": {
+    "hi": "मछली",
+    "cg": "माछी",
+    "tourism_category": "wildlife",
+    "context": "River fish"
+  },
+  "folk art": {
+    "hi": "लोक कला",
+    "cg": "लोक कला",
+    "tourism_category": "tribal",
+    "context": "Traditional folk art forms"
+  },
+  "legend": {
+    "hi": "पुराण",
+    "cg": "पुरखा गोठ",
+    "tourism_category": "tribal",
+    "context": "Oral legend / mythology"
+  },
+  "king": {
+    "hi": "राजा",
+    "cg": "राजा",
+    "tourism_category": "heritage",
+    "context": "Ancient ruler / king"
+  },
+  "queen": {
+    "hi": "रानी",
+    "cg": "रानी",
+    "tourism_category": "heritage",
+    "context": "Historical queen / consort"
+  },
+  "exploration": {
+    "hi": "अन्वेषण",
+    "cg": "खोजबीन",
+    "tourism_category": "adventure",
+    "context": "Site exploration / discovery"
   }
 }

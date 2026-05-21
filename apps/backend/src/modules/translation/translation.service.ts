@@ -1,41 +1,41 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../../database/prisma.service';
-import * as fs from 'fs';
-import * as path from 'path';
+import { GoogleTranslateService } from './google-translate.service';
+import { GlossaryService, GlossaryEntry } from './glossary.service';
 
+/**
+ * TranslationService
+ * ------------------
+ * Central orchestrator for all translation operations.
+ *
+ * Responsibilities:
+ *  1. Serve static DB translations (Prisma Translation model) by lang.
+ *  2. Live-translate dynamic user content via Google Translate.
+ *  3. Apply Chhattisgarhi glossary post-processing for cultural accuracy.
+ *  4. Cache live API results in SQLite (TranslationCache) to reduce cost.
+ *  5. In-memory LRU Map as L1 cache layer above SQLite.
+ */
 @Injectable()
 export class TranslationService {
   private readonly logger = new Logger(TranslationService.name);
-  private glossary: any = null;
 
-  constructor(private readonly prisma: PrismaService) {
-    this.loadGlossary();
-  }
+  /** L1 In-memory cache: `${sourceLang}:${targetLang}:${text}` → translated */
+  private readonly memCache = new Map<string, string>();
+  private readonly MAX_MEM_CACHE = 500;
 
-  private loadGlossary() {
-    try {
-      const glossaryPath = path.join(__dirname, 'data', 'glossary.json');
-      // If run in ts-node or compiled dist, handle path differences
-      const resolvedPath = fs.existsSync(glossaryPath) 
-        ? glossaryPath 
-        : path.join(process.cwd(), 'src/modules/translation/data/glossary.json');
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly googleTranslate: GoogleTranslateService,
+    private readonly glossary: GlossaryService,
+  ) {}
 
-      if (fs.existsSync(resolvedPath)) {
-        const fileContent = fs.readFileSync(resolvedPath, 'utf8');
-        this.glossary = JSON.parse(fileContent);
-        this.logger.log('Tourism glossary loaded successfully.');
-      } else {
-        this.logger.warn(`Glossary file not found at: ${resolvedPath}`);
-      }
-    } catch (error) {
-      this.logger.error('Failed to load tourism glossary:', error);
-    }
-  }
+  // ─────────────────────────────────────────────────────────────
+  // STATIC DB TRANSLATIONS
+  // ─────────────────────────────────────────────────────────────
 
   /**
    * Fetch all database translations for a given language.
-   * Formats output as: { [entityId]: { [field]: value } }
-   * For Places, keys translations by their slug to align with the client-side identifiers.
+   * Formats output as: { [entityId / slug]: { [field]: value } }
    */
   async getTranslations(lang: string, entityType?: string) {
     const where: any = { lang };
@@ -44,13 +44,13 @@ export class TranslationService {
     }
 
     const translations = await this.prisma.translation.findMany({ where });
-    
-    // Query places to map their UUIDs to slugs
+
+    // Map Place UUIDs → slugs so client can use slug-based keys
     const places = await this.prisma.place.findMany({
       select: { id: true, slug: true },
     });
     const placeIdToSlug = new Map<string, string>(
-      places.map((p) => [p.id, p.slug])
+      places.map((p) => [p.id, p.slug]),
     );
 
     const formatted: Record<string, Record<string, string>> = {};
@@ -59,14 +59,10 @@ export class TranslationService {
       let key = t.entityId;
       if (t.entityType === 'Place') {
         const slug = placeIdToSlug.get(t.entityId);
-        if (slug) {
-          key = slug;
-        }
+        if (slug) key = slug;
       }
 
-      if (!formatted[key]) {
-        formatted[key] = {};
-      }
+      if (!formatted[key]) formatted[key] = {};
       formatted[key][t.field] = t.value;
     }
 
@@ -74,55 +70,177 @@ export class TranslationService {
   }
 
   /**
-   * Validate a translation string against the glossary definitions.
-   * Returns a suggestions array and validation status.
+   * Insert or update a static translation record.
    */
-  validateTranslation(text: string, lang: string): { isValid: boolean; warning?: string; suggestions: string[] } {
-    if (!this.glossary) {
-      return { isValid: true, suggestions: [] };
+  async upsertTranslation(
+    lang: string,
+    entityType: string,
+    entityId: string,
+    field: string,
+    value: string,
+  ) {
+    return this.prisma.translation.upsert({
+      where: {
+        lang_entityType_entityId_field: { lang, entityType, entityId, field },
+      },
+      update: { value },
+      create: { lang, entityType, entityId, field, value },
+    });
+  }
+
+  // ─────────────────────────────────────────────────────────────
+  // LIVE TRANSLATION — Google Translate + Glossary Engine
+  // ─────────────────────────────────────────────────────────────
+
+  /**
+   * Translate dynamic user content using Google Cloud Translation.
+   * Pipeline: Google Translate → Chhattisgarhi Glossary → SQLite Cache
+   *
+   * @param text        Source text (any language, usually 'en').
+   * @param targetLang  Platform language code: 'en', 'hi', 'cg'.
+   * @param sourceLang  Source language code (default: 'en').
+   * @returns           Translated text + cache metadata.
+   */
+  async translateLive(
+    text: string,
+    targetLang: string,
+    sourceLang: string = 'en',
+  ): Promise<{ translated: string; cached: boolean; provider: string }> {
+    if (!text?.trim()) return { translated: text, cached: false, provider: 'passthrough' };
+    if (targetLang === 'en' || targetLang === sourceLang) {
+      return { translated: text, cached: false, provider: 'passthrough' };
     }
 
-    const lowercaseText = text.toLowerCase();
-    const suggestions: string[] = [];
-    let warning = '';
-    let isValid = true;
+    const cacheKey = `${sourceLang}:${targetLang}:${text}`;
 
-    for (const [key, langMap] of Object.entries(this.glossary)) {
-      const targetTerm = (langMap as any)[lang];
-      // If text contains the English keyword, verify the translation uses the correct regional word
-      if (lowercaseText.includes(key) && targetTerm) {
-        if (!text.includes(targetTerm)) {
-          isValid = false;
-          warning = `Translation may lack correct regional term for '${key}'. Expected '${targetTerm}'.`;
-          suggestions.push(targetTerm);
-        }
+    // ── L1: In-memory cache ──────────────────────────────────
+    if (this.memCache.has(cacheKey)) {
+      return {
+        translated: this.memCache.get(cacheKey)!,
+        cached: true,
+        provider: 'memory',
+      };
+    }
+
+    // ── L2: SQLite persistent cache ──────────────────────────
+    try {
+      const dbCache = await (this.prisma as any).translationCache?.findUnique({
+        where: { sourceText_sourceLang_targetLang: { sourceText: text, sourceLang, targetLang } },
+      });
+      if (dbCache) {
+        this.setMemCache(cacheKey, dbCache.translated);
+        return { translated: dbCache.translated, cached: true, provider: 'sqlite' };
       }
+    } catch {
+      // translationCache model may not exist in older schemas; skip gracefully
     }
 
-    return { isValid, warning, suggestions };
+    // ── L3: Google Cloud Translation API ──────────────────────
+    let translated = await this.googleTranslate.translateText(text, targetLang);
+
+    // ── L4: Chhattisgarhi Glossary Post-Processing ────────────
+    // For 'cg': Google translates to Hindi, then glossary replaces
+    // Hindi standard terms with culturally accurate Chhattisgarhi dialect words.
+    if (targetLang === 'cg') {
+      translated = this.glossary.applyGlossary(translated, 'cg');
+    }
+
+    // ── Save to caches ─────────────────────────────────────────
+    this.setMemCache(cacheKey, translated);
+    try {
+      await (this.prisma as any).translationCache?.upsert({
+        where: { sourceText_sourceLang_targetLang: { sourceText: text, sourceLang, targetLang } },
+        update: { translated },
+        create: { sourceText: text, sourceLang, targetLang, translated, apiProvider: 'google' },
+      });
+    } catch {
+      // Graceful skip if cache model unavailable
+    }
+
+    return {
+      translated,
+      cached: false,
+      provider: this.googleTranslate.isAvailable() ? 'google' : 'fallback',
+    };
   }
 
   /**
-   * Insert or update a translation record.
+   * Batch translate multiple texts in a single Google API call.
+   * Applies glossary post-processing for 'cg' target.
    */
-  async upsertTranslation(lang: string, entityType: string, entityId: string, field: string, value: string) {
-    return this.prisma.translation.upsert({
-      where: {
-        lang_entityType_entityId_field: {
-          lang,
-          entityType,
-          entityId,
-          field,
-        },
-      },
-      update: { value },
-      create: {
-        lang,
-        entityType,
-        entityId,
-        field,
-        value,
-      },
-    });
+  async batchTranslateLive(
+    texts: string[],
+    targetLang: string,
+    sourceLang: string = 'en',
+  ): Promise<{ translations: string[]; provider: string }> {
+    if (!texts.length || targetLang === 'en') {
+      return { translations: texts, provider: 'passthrough' };
+    }
+
+    // Check in-memory cache for each text
+    const results: string[] = new Array(texts.length);
+    const uncachedIndices: number[] = [];
+    const uncachedTexts: string[] = [];
+
+    for (let i = 0; i < texts.length; i++) {
+      const key = `${sourceLang}:${targetLang}:${texts[i]}`;
+      if (this.memCache.has(key)) {
+        results[i] = this.memCache.get(key)!;
+      } else {
+        uncachedIndices.push(i);
+        uncachedTexts.push(texts[i]);
+      }
+    }
+
+    if (uncachedTexts.length > 0) {
+      const translated = await this.googleTranslate.batchTranslate(
+        uncachedTexts,
+        targetLang,
+      );
+      for (let j = 0; j < uncachedIndices.length; j++) {
+        let result = translated[j] ?? uncachedTexts[j];
+        if (targetLang === 'cg') {
+          result = this.glossary.applyGlossary(result, 'cg');
+        }
+        results[uncachedIndices[j]] = result;
+        const key = `${sourceLang}:${targetLang}:${uncachedTexts[j]}`;
+        this.setMemCache(key, result);
+      }
+    }
+
+    return {
+      translations: results,
+      provider: this.googleTranslate.isAvailable() ? 'google' : 'fallback',
+    };
+  }
+
+  // ─────────────────────────────────────────────────────────────
+  // GLOSSARY / VALIDATION (delegated to GlossaryService)
+  // ─────────────────────────────────────────────────────────────
+
+  validateTranslation(
+    text: string,
+    lang: string,
+  ): { isValid: boolean; warning?: string; suggestions: string[] } {
+    return this.glossary.validateAgainstGlossary(text, lang);
+  }
+
+  getGlossary(): Record<string, GlossaryEntry> {
+    return this.glossary.getGlossary();
+  }
+
+  // ─────────────────────────────────────────────────────────────
+  // INTERNAL HELPERS
+  // ─────────────────────────────────────────────────────────────
+
+  private setMemCache(key: string, value: string) {
+    if (this.memCache.size >= this.MAX_MEM_CACHE) {
+      // Evict the oldest entry (first inserted)
+      const firstKey = this.memCache.keys().next().value;
+      if (firstKey !== undefined) {
+        this.memCache.delete(firstKey);
+      }
+    }
+    this.memCache.set(key, value);
   }
 }

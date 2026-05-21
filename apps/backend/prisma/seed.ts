@@ -16,7 +16,9 @@ const SEED_DESTINATIONS = [
     story: "According to ancient Bastar folk belief, the Indravati river is a mother goddess descending from the heavens. Chitrakote is where she showcases her supreme cosmic energy (Shakti). Local tribal elders narrate that during the monsoon, the heavy roar of the waterfall represents the celestial drums of Lord Shiva. The mist rising from the gorge is believed to carry the prayers of the forest spirits directly to the heavens.",
     bestTime: "July to October (Monsoon flow is jaw-dropping); November to February (Scenic emerald water)",
     safety: "Stay strictly within designated security railings. Do not attempt swimming in the base whirlpools under any conditions. Watch for wet, slippery stone structures.",
-    ecoGuidance: "Chhattisgarh state environmental protection rules strictly prohibit carrying plastic water bottles or packages down to the river bank. Bring reusable flasks. Ensure zero litter is left behind to safeguard the pristine aquatic life of the Indravati."
+    ecoGuidance: "Chhattisgarh state environmental protection rules strictly prohibit carrying plastic water bottles or packages down to the river bank. Bring reusable flasks. Ensure zero litter is left behind to safeguard the pristine aquatic life of the Indravati.",
+    audioUrl: "/audio/chitrakote_falls.mp3",
+    audioNarrator: "Aarav Mandavi"
   },
   {
     slug: "sirpur-monuments",
@@ -30,7 +32,9 @@ const SEED_DESTINATIONS = [
     story: "Sirpur, historically known as Shripura, was the ancient capital of Panduvansh kings in the 6th century. The centerpiece, Laxman Temple, stands as one of the finest surviving brick temples in India. Constructed with intricately carved red clay bricks, it was funded by Queen Vasata in memory of her late husband. Archaeological excavations reveal that Sirpur was a major international center for Buddhist, Hindu, and Jain learning, outdating even the famous Nalanda University.",
     bestTime: "October to March (Mild weather ideal for outdoor archaeological exploration)",
     safety: "Do not touch or lean on ancient brick friezes and stone carvings. Keep voice levels low inside the hollow main sanctum to preserve its tranquil energy.",
-    ecoGuidance: "Sirpur is a protected heritage zone. Do not step on ancient moss/lichen growing on brick foundations. Stay strictly on gravel walkways to prevent foundation erosion."
+    ecoGuidance: "Sirpur is a protected heritage zone. Do not step on ancient moss/lichen growing on brick foundations. Stay strictly on gravel walkways to prevent foundation erosion.",
+    audioUrl: "/audio/sirpur_monuments.mp3",
+    audioNarrator: "Devi Sahu"
   },
   {
     slug: "bhoramdeo-temple",
@@ -470,6 +474,8 @@ async function main() {
         history: destination.story,
         safetyInfo: destination.safety,
         rules: destination.ecoGuidance,
+        audioUrl: (destination as any).audioUrl || null,
+        audioNarrator: (destination as any).audioNarrator || null,
         verified: true,
       }
     });

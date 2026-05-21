@@ -44,43 +44,47 @@ model RefreshToken {
 // ─────────────────────────────────────────────────────────────────────────────
 
 model Folklore {
-  id          String   @id @default(uuid())
-  title       String
-  monument    String
-  location    String
-  description String
-  images      String   @default("[]")
-  videos      String   @default("[]")
-  verified    Boolean  @default(false)
-  authorId    String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id            String   @id @default(uuid())
+  title         String
+  monument      String
+  location      String
+  description   String
+  images        String   @default("[]")
+  videos        String   @default("[]")
+  audioUrl      String?
+  audioNarrator String?
+  verified      Boolean  @default(false)
+  authorId      String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
-  author      User     @relation(fields: [authorId], references: [id])
+  author        User     @relation(fields: [authorId], references: [id])
 }
 
 model Place {
-  id          String   @id @default(uuid())
-  name        String
-  slug        String   @unique
-  description String
-  district    String
-  categoryId  String
+  id            String   @id @default(uuid())
+  name          String
+  slug          String   @unique
+  description   String
+  district      String
+  categoryId    String
 
-  latitude    Float
-  longitude   Float
+  latitude      Float
+  longitude     Float
 
-  heroImage   String
-  bestSeason  String?
+  heroImage     String
+  bestSeason    String?
 
-  history     String?
-  safetyInfo  String?
-  rules       String?
+  history       String?
+  safetyInfo    String?
+  rules         String?
+  audioUrl      String?
+  audioNarrator String?
 
-  verified    Boolean  @default(false)
+  verified      Boolean  @default(false)
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   category    Category  @relation(fields: [categoryId], references: [id])
   media       Media[]
@@ -173,3 +177,21 @@ model Translation {
 
   @@unique([lang, entityType, entityId, field])
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// LIVE TRANSLATION CACHE (Google Cloud Translate API results)
+// ─────────────────────────────────────────────────────────────────────────────
+
+model TranslationCache {
+  id          String   @id @default(uuid())
+  sourceText  String
+  sourceLang  String   @default("en")
+  targetLang  String
+  translated  String
+  apiProvider String   @default("google")
+  createdAt   DateTime @default(now())
+
+  @@unique([sourceText, sourceLang, targetLang])
+  @@index([targetLang])
+}
+

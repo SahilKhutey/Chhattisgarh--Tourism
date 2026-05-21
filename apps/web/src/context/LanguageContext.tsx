@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import enLocale from "../locales/en/common.json";
 import hiLocale from "../locales/hi/common.json";
@@ -25,6 +25,13 @@ interface LanguageContextProps {
   tDynamic: (entityId: string, field: string, fallback: string) => string;
   dynamicTranslations: Record<string, Record<string, string>>;
   isLoadingTranslations: boolean;
+  isPlayingAudio: boolean;
+  audioProgress: number;
+  audioDuration: number;
+  audioNarrator: string | null;
+  playAudioFile: (url: string, narratorName?: string | null) => void;
+  pauseAudioFile: () => void;
+  stopAudioFile: () => void;
 }
 
 const locales: Record<Language, any> = {
@@ -54,6 +61,13 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [accessibilityMode, setAccessibilityMode] = useState(false);
   const [dynamicTranslations, setDynamicTranslations] = useState<Record<string, Record<string, string>>>({});
   const [isLoadingTranslations, setIsLoadingTranslations] = useState(false);
+
+  // Audio Playback state and reference
+  const [isPlayingAudio, setIsPlayingAudio] = useState(false);
+  const [audioProgress, setAudioProgress] = useState(0);
+  const [audioDuration, setAudioDuration] = useState(0);
+  const [audioNarrator, setAudioNarrator] = useState<string | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   // Helper to load dynamic translations from local cache
   const loadCachedTranslations = useCallback((targetLang: Language) => {
@@ -167,6 +181,8 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
     // Cancel any active TTS speech upon switching language
     stopSpeaking();
+    // Stop any active pre-recorded audio
+    stopAudioFile();
     // Load cached and fetch fresh database translations
     loadCachedTranslations(newLang);
     fetchTranslations(newLang);
@@ -213,6 +229,7 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const speakText = (text: string) => {
     if (typeof window === "undefined" || !window.speechSynthesis) return;
 
+    stopAudioFile(); // Stop any active pre-recorded audio guide
     window.speechSynthesis.cancel(); // Stop any active speaker first
     setIsSpeaking(true);
 
@@ -246,6 +263,73 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       setIsSpeaking(false);
     }
   };
+
+  const playAudioFile = useCallback((url: string, narratorName?: string | null) => {
+    // 1. Cancel TTS first
+    stopSpeaking();
+
+    if (typeof window === "undefined") return;
+
+    // 2. Manage native Audio
+    if (audioRef.current) {
+      // If same URL, just toggle play/pause
+      if (audioRef.current.src.endsWith(url)) {
+        audioRef.current.play().catch((err) => console.warn("Failed to play audio:", err));
+        setIsPlayingAudio(true);
+        if (narratorName) setAudioNarrator(narratorName);
+        return;
+      } else {
+        // Stop current audio first
+        audioRef.current.pause();
+        audioRef.current.src = "";
+      }
+    }
+
+    setAudioNarrator(narratorName || null);
+    const newAudio = new Audio(url);
+    audioRef.current = newAudio;
+
+    newAudio.addEventListener("play", () => setIsPlayingAudio(true));
+    newAudio.addEventListener("pause", () => setIsPlayingAudio(false));
+    newAudio.addEventListener("ended", () => {
+      setIsPlayingAudio(false);
+      setAudioProgress(0);
+    });
+    newAudio.addEventListener("timeupdate", () => {
+      setAudioProgress(newAudio.currentTime);
+    });
+    newAudio.addEventListener("loadedmetadata", () => {
+      setAudioDuration(newAudio.duration);
+    });
+
+    newAudio.play().catch((err) => console.warn("Audio play failed:", err));
+  }, []);
+
+  const pauseAudioFile = useCallback(() => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      setIsPlayingAudio(false);
+    }
+  }, []);
+
+  const stopAudioFile = useCallback(() => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      setIsPlayingAudio(false);
+      setAudioProgress(0);
+    }
+  }, []);
+
+  // Audio cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+    };
+  }, []);
 
   // Voice Assistant (Speech-to-Text Recognition and Command Router)
   const startVoiceListening = () => {
@@ -479,6 +563,13 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         tDynamic,
         dynamicTranslations,
         isLoadingTranslations,
+        isPlayingAudio,
+        audioProgress,
+        audioDuration,
+        audioNarrator,
+        playAudioFile,
+        pauseAudioFile,
+        stopAudioFile,
       }}
     >
       {children}

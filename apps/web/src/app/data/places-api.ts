@@ -119,6 +119,8 @@ function mapToDestination(item: Record<string, unknown>): Destination {
     rating: 4.8,
     localFood: 'Traditional Chhattisgarhi meals.',
     photographySpots: 'Scenic main viewpoints.',
+    audioUrl: (item.audioUrl as string) || undefined,
+    audioNarrator: (item.audioNarrator as string) || undefined,
   };
 }
 

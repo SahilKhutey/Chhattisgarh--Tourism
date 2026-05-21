@@ -32,18 +32,28 @@ export default function DestinationDetailPage({ params }: PageProps) {
   const resolvedParams = use(params);
   const destination = getDestinationById(resolvedParams.id);
   const [activeTab, setActiveTab] = useState<"story" | "travel" | "eco" | "food">("story");
-  const { lang, t, speakText, stopSpeaking, isSpeaking, tDynamic } = useLanguage();
+  const {
+    lang, t, speakText, stopSpeaking, isSpeaking, tDynamic,
+    isPlayingAudio, audioProgress, audioDuration, audioNarrator,
+    playAudioFile, pauseAudioFile, stopAudioFile,
+  } = useLanguage();
 
   // Stop speaking when user navigates away or tab changes to prevent speech continuing inappropriately
   useEffect(() => {
     return () => {
       stopSpeaking();
+      stopAudioFile();
     };
-  }, [stopSpeaking]);
+  }, [stopSpeaking, stopAudioFile]);
 
   useEffect(() => {
     stopSpeaking();
-  }, [activeTab, stopSpeaking]);
+    stopAudioFile();
+  }, [activeTab, stopSpeaking, stopAudioFile]);
+
+  // Format seconds → MM:SS display
+  const formatTime = (sec: number) =>
+    `${Math.floor(sec / 60)}:${String(Math.floor(sec % 60)).padStart(2, "0")}`;
 
   if (!destination) {
     return (
@@ -206,6 +216,94 @@ export default function DestinationDetailPage({ params }: PageProps) {
                   <span>{isSpeaking ? t("detail.stop_listen") : t("detail.listen")}</span>
                 </button>
               </div>
+
+              {/* ── Pre-Recorded Audio Guide Player ── */}
+              {destination.audioUrl && (
+                <div className="flex flex-col gap-3 p-5 rounded-2xl bg-gradient-to-br from-[#0b3a22]/5 to-[#0b3a22]/10 border border-[#0b3a22]/15 mt-1">
+                  {/* Guide Label + Narrator */}
+                  <div className="flex items-center justify-between gap-3 flex-wrap">
+                    <div className="flex items-center gap-2.5">
+                      <span className="w-8 h-8 rounded-lg bg-forest-emerald text-sand-beige flex items-center justify-center font-mono font-bold text-sm shrink-0 shadow">
+                        {(audioNarrator || destination.audioNarrator || "A").charAt(0)}
+                      </span>
+                      <div className="flex flex-col">
+                        <span className="text-[9px] font-mono text-forest-emerald/70 uppercase font-bold">Audio Guide</span>
+                        <span className="text-xs font-sans font-bold text-charcoal-stone leading-tight">
+                          {lang === "cg"
+                            ? `${audioNarrator || destination.audioNarrator} के सुरीली आवाज म`
+                            : lang === "hi"
+                            ? `${audioNarrator || destination.audioNarrator} की आवाज़ में`
+                            : `Narrated by ${audioNarrator || destination.audioNarrator}`
+                          }
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Play / Pause / Stop controls */}
+                    <div className="flex items-center gap-2 shrink-0">
+                      {/* Stop */}
+                      <button
+                        onClick={() => stopAudioFile()}
+                        className="w-8 h-8 rounded-lg bg-charcoal-stone/5 hover:bg-red-50 hover:text-red-500 flex items-center justify-center text-charcoal-stone/50 transition-all cursor-pointer border border-charcoal-stone/10"
+                        aria-label="Stop audio guide"
+                        title="Stop"
+                      >
+                        <svg className="w-3 h-3 fill-current" viewBox="0 0 12 12"><rect width="12" height="12" rx="2"/></svg>
+                      </button>
+
+                      {/* Play / Pause */}
+                      <button
+                        onClick={() => {
+                          if (isPlayingAudio) {
+                            pauseAudioFile();
+                          } else {
+                            playAudioFile(
+                              destination.audioUrl!,
+                              destination.audioNarrator,
+                            );
+                          }
+                        }}
+                        className={`w-10 h-10 rounded-full flex items-center justify-center shadow-md transition-all hover:scale-[1.06] cursor-pointer ${
+                          isPlayingAudio
+                            ? "bg-tribal-terracotta shadow-tribal-terracotta/25"
+                            : "bg-forest-emerald shadow-forest-emerald/25"
+                        }`}
+                        aria-label={isPlayingAudio ? "Pause audio guide" : "Play audio guide"}
+                        id="audio-guide-play-btn"
+                      >
+                        {isPlayingAudio
+                          ? <VolumeX className="w-4 h-4 text-white" />
+                          : <Volume2 className="w-4 h-4 text-white" />
+                        }
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Progress Bar */}
+                  {audioDuration > 0 && (
+                    <div className="flex flex-col gap-1">
+                      <div className="w-full h-1.5 bg-forest-emerald/10 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-forest-emerald rounded-full transition-all duration-300"
+                          style={{ width: `${(audioProgress / audioDuration) * 100}%` }}
+                        />
+                      </div>
+                      <div className="flex justify-between text-[9px] font-mono text-charcoal-stone/40">
+                        <span>{formatTime(audioProgress)}</span>
+                        <span>{formatTime(audioDuration)}</span>
+                      </div>
+                    </div>
+                  )}
+
+                  {isPlayingAudio && (
+                    <div className="text-[10px] font-mono text-forest-emerald/70 font-bold flex items-center gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-forest-emerald animate-pulse inline-block" />
+                      {lang === "cg" ? "ऑडियो बजत हे..." : lang === "hi" ? "ऑडियो चल रहा है..." : "Playing audio guide..."}
+                    </div>
+                  )}
+                </div>
+              )}
+
               <p className="text-sm text-charcoal-stone/85 leading-relaxed font-sans first-letter:text-4xl first-letter:font-bold first-letter:text-tribal-terracotta first-letter:mr-2 first-letter:float-left">
                 {localizedStory}
               </p>

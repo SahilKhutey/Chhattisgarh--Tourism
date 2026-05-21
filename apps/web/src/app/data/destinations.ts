@@ -21,6 +21,8 @@ export interface Destination {
   rating: number;
   localFood: string;
   photographySpots: string;
+  audioUrl?: string;
+  audioNarrator?: string;
 
   // Localized Properties
   name_hi?: string;
@@ -75,6 +77,8 @@ export const DESTINATIONS: Destination[] = [
     rating: 4.9,
     localFood: "Chapotda (Bastar Red Ant Chutney, renowned for its organic tang), Roasted Mahua flowers, and freshly brewed local Salphi nectar.",
     photographySpots: "The Southern Horseshoe Outlook at 5:30 PM (captures golden hour rays piercing the water curtain), and the base boat terminal for high-angle shots.",
+    audioUrl: "/audio/chitrakote_falls.mp3",
+    audioNarrator: "Aarav Mandavi",
     
     // Hindi Localized properties
     name_hi: "चित्रकोट जलप्रपात",
@@ -129,6 +133,8 @@ export const DESTINATIONS: Destination[] = [
     rating: 4.8,
     localFood: "Traditional Chila (rice flour crepes) served with sweet tomato-chili chutney, and local green leafy stews (Bhaji).",
     photographySpots: "The front courtyard of Laxman Temple at 07:30 AM (when morning light accentuates the crimson brick carvings perfectly), and the Buddhist Vihara ruins.",
+    audioUrl: "/audio/sirpur_monuments.mp3",
+    audioNarrator: "Devi Sahu",
 
     // Hindi Localized properties
     name_hi: "सिरपुर विरासत समूह",
