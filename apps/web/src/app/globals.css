@@ -270,3 +270,34 @@ body.lang-hi, body.lang-cg {
   font-family: var(--font-mukta), var(--font-devanagari), var(--font-sans) !important;
 }
 
+/* ─────────────────────────────────────────────────────────────────────────────
+   PRINT & EXPORT STYLES
+   ───────────────────────────────────────────────────────────────────────────── */
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+  
+  /* Hide navigation, inputs, footers */
+  header, footer, nav, .print\:hidden, [role="navigation"] {
+    display: none !important;
+  }
+
+  /* Expand panels to full width for printing */
+  .glass-panel {
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    margin-bottom: 2rem !important;
+    break-inside: avoid;
+  }
+  
+  /* Ensure backgrounds like colored day banners stay visible */
+  .bg-forest-emerald {
+    background-color: #0A3622 !important;
+    color: white !important;
+  }
+}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { 
   Sparkles, 
@@ -18,9 +18,13 @@ import {
   Car,
   RotateCcw,
   BookOpen,
-  ShieldCheck
+  ShieldCheck,
+  Map,
+  Printer
 } from "lucide-react";
-import { DESTINATIONS, Destination } from "../data/destinations";
+import { useLanguage } from "../../context/LanguageContext";
+import { get, set } from "idb-keyval";
+import { DESTINATIONS } from "../data/destinations";
 
 interface ItineraryItem {
   time: string;
@@ -42,96 +46,95 @@ interface DayPlan {
 }
 
 export default function PlannerPage() {
+  const { t } = useLanguage();
+
   // Input parameters state
   const [tripDays, setTripDays] = useState<number>(3);
-  const [budget, setBudget] = useState<string>("standard");
-  const [interest, setInterest] = useState<string>("nature");
+  const [district, setDistrict] = useState<string>("Bastar");
   const [transport, setTransport] = useState<string>("car");
   
   const [isGenerated, setIsGenerated] = useState<boolean>(false);
   const [generatedItinerary, setGeneratedItinerary] = useState<DayPlan[]>([]);
   const [earnedScore, setEarnedScore] = useState<number>(0);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  // Dynamic heuristic plan generation engine
-  const handleGenerateItinerary = () => {
-    // Determine target locations matching the selected category
-    let matchedSpots = DESTINATIONS.filter(d => {
-      if (interest === "nature") return d.category === "waterfalls" || d.category === "forests";
-      if (interest === "cultural") return d.category === "villages" || d.category === "temples";
-      return d.category === "temples"; // Spiritual
-    });
+  // Load from IndexedDB on mount
+  useEffect(() => {
+    const loadCache = async () => {
+      try {
+        const cachedPlan = await get("cg_planner_cache");
+        if (cachedPlan) {
+          setGeneratedItinerary(cachedPlan.itinerary);
+          setEarnedScore(cachedPlan.score);
+          setTripDays(cachedPlan.tripDays);
+          setIsGenerated(true);
+        }
+      } catch (err) {
+        console.warn("Failed to load planner cache from IndexedDB", err);
+      }
+    };
+    loadCache();
+  }, []);
 
-    if (matchedSpots.length === 0) {
-      matchedSpots = DESTINATIONS;
-    }
+  // Dynamic heuristic plan generation engine against real backend
+  const handleGenerateItinerary = async () => {
+    setIsLoading(true);
+    let pace: "slow" | "moderate" | "active" = "moderate";
+    if (transport === "bike") pace = "slow";
+    if (transport === "transit") pace = "active";
 
-    const plans: DayPlan[] = [];
-    
-    // Construct a custom schedule for each requested trip day
-    for (let day = 1; day <= tripDays; day++) {
-      // Pick dynamic locations for this day cyclically
-      const primaryLoc = matchedSpots[(day - 1) % matchedSpots.length];
-      const secondaryLoc = DESTINATIONS[(day + 1) % DESTINATIONS.length]; // Mix in another spot for variety
+    try {
+      const response = await fetch("http://localhost:4000/api/v1/itinerary/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ district, durationDays: tripDays, pace })
+      });
+
+      if (!response.ok) throw new Error("API failed");
+      const backendData = await response.json();
+
+      // Transform backend response into DayPlan interface
+      const plans: DayPlan[] = backendData.map((day: any) => ({
+        dayNumber: day.day,
+        title: t('planner.day_title') + ` ${day.stops[0]?.name || district}`,
+        routeOrder: day.stops.map((s: any) => s.name),
+        localFoodTip: "Try traditional local Chila and tribal curries near " + (day.stops[0]?.name || district),
+        carbonOffsetKg: day.distanceTraveledKm * (pace === 'slow' ? 0.3 : pace === 'moderate' ? 0.8 : 0.4),
+        schedule: day.stops.map((stop: any, idx: number) => ({
+          time: idx === 0 ? "08:00 AM" : idx === 1 ? "12:00 PM" : "03:30 PM",
+          activity: `Explore ${stop.name}`,
+          location: stop.name,
+          notes: `Distance milestone. Focus on local cultural elements.`,
+          ecoTip: stop.safetyRules || `Respect the ${district} tribal ecosystem.`,
+          photoTip: stop.bestSeasonInfo ? `Best during ${stop.bestSeasonInfo}` : `Ideal lighting conditions at this hour.`,
+          categoryIcon: idx === 0 ? "nature" : idx === 1 ? "food" : "heritage"
+        }))
+      }));
+
+      const score = 100 + (tripDays * 25) + (transport === "bike" ? 30 : 15);
       
-      const dayPlan: DayPlan = {
-        dayNumber: day,
-        title: `Exploring the ${primaryLoc.category === "waterfalls" ? "Primal Cascades" : primaryLoc.category === "forests" ? "Sacred Green Canopy" : "Lost Ancient Dynasties"} of ${primaryLoc.name.split(" ")[0]}`,
-        routeOrder: [primaryLoc.name, secondaryLoc.name],
-        localFoodTip: primaryLoc.localFood,
-        carbonOffsetKg: Number((12.5 * (transport === "bike" ? 0.3 : transport === "car" ? 1.0 : 0.6)).toFixed(1)),
-        schedule: [
-          {
-            time: "08:00 AM",
-            activity: `Morning Photographic Expedition to ${primaryLoc.name}`,
-            location: primaryLoc.name,
-            notes: `Ideal lighting. ${primaryLoc.tagline}.`,
-            ecoTip: `Stay on designated tracks. ${primaryLoc.ecoGuidance.split(".")[0]}.`,
-            photoTip: primaryLoc.photographySpots,
-            categoryIcon: "nature"
-          },
-          {
-            time: "11:30 AM",
-            activity: `Cultural Folklore & Oral Legends Session`,
-            location: primaryLoc.name,
-            notes: primaryLoc.storyTitle,
-            ecoTip: `Always ask permission before filming local tribal elders.`,
-            photoTip: `Capture the unique red carvings and intricate geometries.`,
-            categoryIcon: "culture"
-          },
-          {
-            time: "01:30 PM",
-            activity: `Traditional Regional Gastronomy Lunch`,
-            location: `Bastar Cooperative Kitchen near ${primaryLoc.name}`,
-            notes: `Featuring organic tribal forest gather recipes.`,
-            ecoTip: `Use compostable clay plates (Dona). Zero single-use plastics permitted.`,
-            photoTip: `Top-down macro shot of the freshly steamed Chila.`,
-            categoryIcon: "food"
-          },
-          {
-            time: "03:30 PM",
-            activity: `Exploration of neighboring heritage node: ${secondaryLoc.name}`,
-            location: secondaryLoc.name,
-            notes: secondaryLoc.tagline,
-            ecoTip: secondaryLoc.ecoGuidance.split(".")[0],
-            photoTip: secondaryLoc.photographySpots,
-            categoryIcon: "heritage"
-          }
-        ]
-      };
+      setGeneratedItinerary(plans);
+      setEarnedScore(score);
+      setIsGenerated(true);
       
-      plans.push(dayPlan);
-    }
+      // Save to IndexedDB
+      await set("cg_planner_cache", { itinerary: plans, score, tripDays });
 
-    setGeneratedItinerary(plans);
-    // Responsible Score: 100 base + 25 points per day + 30 bonus if low carbon transport
-    const score = 100 + (tripDays * 25) + (transport === "bike" ? 30 : 15);
-    setEarnedScore(score);
-    setIsGenerated(true);
+    } catch (error) {
+      console.warn('Backend API unavailable or empty. Using fallback mock.', error);
+      alert('Error connecting to backend API. Ensure server is running.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleReset = () => {
     setIsGenerated(false);
     setGeneratedItinerary([]);
+  };
+
+  const handlePrint = () => {
+    window.print();
   };
 
   return (
@@ -153,13 +156,22 @@ export default function PlannerPage() {
         </div>
 
         {isGenerated && (
-          <button
-            onClick={handleReset}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border border-charcoal-stone/20 hover:bg-white text-xs font-mono font-bold transition-all shadow-sm cursor-pointer"
-          >
-            <RotateCcw className="w-4 h-4 text-tribal-terracotta" />
-            Modify Trip Parameters
-          </button>
+          <div className="flex flex-col sm:flex-row items-center gap-3 print:hidden">
+            <button
+              onClick={handlePrint}
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border border-charcoal-stone/20 hover:bg-white text-xs font-mono font-bold transition-all shadow-sm cursor-pointer"
+            >
+              <Printer className="w-4 h-4 text-forest-emerald" />
+              Export PDF
+            </button>
+            <button
+              onClick={handleReset}
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border border-charcoal-stone/20 hover:bg-white text-xs font-mono font-bold transition-all shadow-sm cursor-pointer"
+            >
+              <RotateCcw className="w-4 h-4 text-tribal-terracotta" />
+              Modify Trip
+            </button>
+          </div>
         )}
       </div>
 
@@ -193,38 +205,38 @@ export default function PlannerPage() {
               </div>
             </div>
 
-            {/* Step 2: Primary Interests */}
+            {/* Step 2: Destination District */}
             <div className="flex flex-col gap-3">
               <label className="text-sm font-mono font-bold text-tribal-terracotta uppercase flex items-center gap-2">
-                <Compass className="w-4.5 h-4.5" />
-                2. Select Exploration Theme
+                <Map className="w-4.5 h-4.5" />
+                2. Target District
               </label>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 {[
-                  { id: "nature", title: "Nature & Cascades", desc: "Waterfalls, forests, caves, safaris", icon: Trees },
-                  { id: "cultural", title: "Tribal & Local Culture", desc: "Indigenous arts, folklore, village trails", icon: BookOpen },
-                  { id: "spiritual", title: "Spiritual & Heritage", desc: "Ancient brick temples, mystical shrines", icon: CheckCircle }
+                  { id: "Bastar", title: "Bastar", desc: "Heart of tribal culture and waterfalls", icon: Trees },
+                  { id: "Surguja", title: "Surguja", desc: "Hill stations and ancient caves", icon: Compass },
+                  { id: "Raipur", title: "Raipur", desc: "Capital city and heritage temples", icon: CheckCircle }
                 ].map(item => {
                   const Icon = item.icon;
                   return (
                     <button
                       key={item.id}
-                      onClick={() => setInterest(item.id)}
+                      onClick={() => setDistrict(item.id)}
                       className={`p-5 rounded-2xl text-left shadow-sm cursor-pointer transition-all flex flex-col gap-2.5 border ${
-                        interest === item.id
+                        district === item.id
                           ? "bg-forest-emerald text-sand-beige border-transparent"
                           : "bg-white/80 border-charcoal-stone/10 hover:bg-white text-charcoal-stone"
                       }`}
                     >
                       <span className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                        interest === item.id ? "bg-white/10 text-white" : "bg-forest-emerald/5 text-forest-emerald"
+                        district === item.id ? "bg-white/10 text-white" : "bg-forest-emerald/5 text-forest-emerald"
                       }`}>
                         <Icon className="w-4.5 h-4.5" />
                       </span>
                       <div className="flex flex-col gap-0.5">
                         <span className="font-sans font-bold text-sm leading-tight">{item.title}</span>
                         <span className={`text-[10px] leading-relaxed ${
-                          interest === item.id ? "text-sand-beige/70" : "text-charcoal-stone/50"
+                          district === item.id ? "text-sand-beige/70" : "text-charcoal-stone/50"
                         }`}>{item.desc}</span>
                       </div>
                     </button>
@@ -233,41 +245,11 @@ export default function PlannerPage() {
               </div>
             </div>
 
-            {/* Step 3: Budget tier */}
-            <div className="flex flex-col gap-3">
-              <label className="text-sm font-mono font-bold text-tribal-terracotta uppercase flex items-center gap-2">
-                <Compass className="w-4.5 h-4.5" />
-                3. Economic Scope (Budget)
-              </label>
-              <div className="grid grid-cols-3 gap-3">
-                {[
-                  { id: "budget", label: "Budget", desc: "Local homestays & state transport" },
-                  { id: "standard", label: "Standard", desc: "Comfy guest rooms & rental car" },
-                  { id: "premium", label: "Premium Experience", desc: "Luxury eco-resorts & private tours" }
-                ].map(tier => (
-                  <button
-                    key={tier.id}
-                    onClick={() => setBudget(tier.id)}
-                    className={`p-4 rounded-xl text-left shadow-sm cursor-pointer transition-all flex flex-col border ${
-                      budget === tier.id
-                        ? "bg-forest-emerald text-sand-beige border-transparent"
-                        : "bg-white/80 border-charcoal-stone/10 hover:bg-white text-charcoal-stone"
-                    }`}
-                  >
-                    <span className="font-sans font-bold text-sm leading-tight">{tier.label}</span>
-                    <span className={`text-[9px] leading-tight mt-1 ${
-                      budget === tier.id ? "text-sand-beige/70" : "text-charcoal-stone/40"
-                    }`}>{tier.desc}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-
             {/* Step 4: Transport mode */}
             <div className="flex flex-col gap-3">
               <label className="text-sm font-mono font-bold text-tribal-terracotta uppercase flex items-center gap-2">
                 <Car className="w-4.5 h-4.5" />
-                4. Primary Mode of Transport
+                3. Primary Mode of Transport (Sets Pace)
               </label>
               <div className="grid grid-cols-3 gap-3">
                 {[
@@ -297,9 +279,14 @@ export default function PlannerPage() {
             <button
               onClick={handleGenerateItinerary}
               className="w-full py-4.5 rounded-2xl bg-tribal-terracotta hover:bg-warm-orange text-white font-bold text-sm font-sans tracking-wide shadow-lg shadow-tribal-terracotta/20 transition-all duration-300 hover:scale-[1.01] inline-flex items-center justify-center gap-2 cursor-pointer"
+              disabled={isLoading}
             >
-              <Sparkles className="w-5 h-5 text-white animate-pulse" />
-              Generate Heuristic Travel Plan Instantly
+              {isLoading ? (
+                <Sparkles className="w-5 h-5 text-white animate-spin" />
+              ) : (
+                <Sparkles className="w-5 h-5 text-white animate-pulse" />
+              )}
+              {isLoading ? "Consulting AI Engine..." : "Generate Travel Plan Instantly"}
             </button>
 
           </div>
@@ -492,10 +479,11 @@ export default function PlannerPage() {
               </p>
               
               <button
-                onClick={() => alert("Itinerary cached locally! Open explore page offline to view saved trips.")}
-                className="w-full py-3.5 rounded-xl bg-forest-emerald hover:bg-tribal-terracotta text-white font-bold text-xs font-sans tracking-wide transition-colors cursor-pointer"
+                onClick={handlePrint}
+                className="w-full py-3.5 rounded-xl bg-forest-emerald hover:bg-tribal-terracotta text-white font-bold text-xs font-sans tracking-wide transition-colors cursor-pointer inline-flex justify-center items-center gap-2"
               >
-                Save Cache to Device
+                <Printer className="w-4 h-4" />
+                Print or Save PDF
               </button>
             </div>
 

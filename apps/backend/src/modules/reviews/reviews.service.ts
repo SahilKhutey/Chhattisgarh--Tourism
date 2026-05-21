@@ -23,6 +23,7 @@ export class ReviewsService {
         placeId: dto.placeId,
         rating: dto.rating,
         comment: dto.comment,
+        lang: dto.lang || 'en',
       },
       include: {
         user: {
@@ -40,6 +41,7 @@ export class ReviewsService {
         id: review.id,
         rating: review.rating,
         comment: review.comment,
+        lang: review.lang,
         createdAt: review.createdAt,
         reviewer: review.user.fullName,
       },
@@ -75,6 +77,7 @@ export class ReviewsService {
       id: r.id,
       rating: r.rating,
       comment: r.comment,
+      lang: r.lang,
       createdAt: r.createdAt,
       reviewer: {
         fullName: r.user.fullName,

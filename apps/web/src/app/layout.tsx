@@ -40,6 +40,8 @@ export const metadata: Metadata = {
   },
 };
 
+import { VoiceTranslator } from "../components/VoiceTranslator";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -59,6 +61,9 @@ export default function RootLayout({
 
           {/* Dynamic Page Outlet */}
           <main className="flex-1 flex flex-col">{children}</main>
+
+          {/* Global Voice Translator */}
+          <VoiceTranslator />
 
         {/* Global Footer */}
         <footer className="w-full bg-charcoal-stone text-sand-beige/90 py-16 border-t-4 border-tribal-terracotta">

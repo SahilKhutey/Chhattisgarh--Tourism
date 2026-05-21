@@ -15,7 +15,9 @@ import {
   ArrowRight,
   Eye,
   BookOpen,
-  Volume2
+  Volume2,
+  CalendarDays,
+  Ticket
 } from "lucide-react";
 import { DESTINATIONS } from "../data/destinations";
 
@@ -45,6 +47,7 @@ interface Collection {
 export default function BookmarksPage() {
   const [collections, setCollections] = useState<Collection[]>([]);
   const [activeCollection, setActiveCollection] = useState<string>("My Bastar Expedition");
+  const [activeTab, setActiveTab] = useState<"saved" | "bookings">("saved");
   const [newColName, setNewColName] = useState("");
   const [newColDesc, setNewColDesc] = useState("");
   const [showAddCol, setShowAddCol] = useState(false);
@@ -140,23 +143,48 @@ export default function BookmarksPage() {
           </span>
           <h1 className="text-3xl sm:text-4xl font-sans font-bold text-forest-emerald flex items-center gap-2.5">
             <Heart className="w-9 h-9 text-tribal-terracotta fill-tribal-terracotta" />
-            My Saved Journeys
+            My Dashboard
           </h1>
           <p className="text-sm text-charcoal-stone/75 leading-relaxed max-w-xl">
-            Organize discovery locations into custom circuits and sync details locally to enable 100% offline navigation in deep forest zones.
+            Organize discovery locations, sync details offline, and manage your confirmed heritage and eco-safari bookings.
           </p>
         </div>
 
-        <button
-          onClick={() => setShowAddCol(!showAddCol)}
-          className="mt-4 md:mt-0 inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-forest-emerald hover:bg-emerald-800 text-sand-beige text-xs font-bold transition-all shadow-md cursor-pointer"
-        >
-          <FolderPlus className="w-4 h-4" />
-          Create New Collection
-        </button>
+        <div className="flex bg-white/50 p-1.5 rounded-xl border border-charcoal-stone/10 shadow-sm self-start mt-4 md:mt-0">
+          <button
+            onClick={() => setActiveTab("saved")}
+            className={`px-6 py-2 rounded-lg font-mono font-bold text-xs uppercase tracking-wide transition-all flex items-center gap-2 ${
+              activeTab === "saved" ? "bg-forest-emerald text-sand-beige shadow" : "text-charcoal-stone hover:bg-white"
+            }`}
+          >
+            <FolderPlus className="w-3.5 h-3.5" />
+            Saved Routes
+          </button>
+          <button
+            onClick={() => setActiveTab("bookings")}
+            className={`px-6 py-2 rounded-lg font-mono font-bold text-xs uppercase tracking-wide transition-all flex items-center gap-2 ${
+              activeTab === "bookings" ? "bg-forest-emerald text-sand-beige shadow" : "text-charcoal-stone hover:bg-white"
+            }`}
+          >
+            <Ticket className="w-3.5 h-3.5" />
+            My Bookings
+          </button>
+        </div>
       </div>
 
-      {/* Creation Accordion Form */}
+      {activeTab === "saved" ? (
+        <>
+          <div className="flex justify-end">
+            <button
+              onClick={() => setShowAddCol(!showAddCol)}
+              className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-forest-emerald hover:bg-emerald-800 text-sand-beige text-xs font-bold transition-all shadow-md cursor-pointer"
+            >
+              <FolderPlus className="w-4 h-4" />
+              Create New Collection
+            </button>
+          </div>
+
+          {/* Creation Accordion Form */}
       {showAddCol && (
         <form onSubmit={handleCreateCollection} className="glass-panel p-6 rounded-2xl border border-white/60 bg-white/70 max-w-md flex flex-col gap-4 animate-fade-in">
           <h3 className="font-bold text-sm text-forest-emerald">Create Trip Collection</h3>
@@ -359,7 +387,48 @@ export default function BookmarksPage() {
         </div>
 
       </div>
-
+      </>
+      ) : (
+        <div className="flex flex-col gap-6">
+          <span className="text-[10px] font-mono font-bold tracking-wider text-charcoal-stone/40 uppercase">
+            Upcoming Confirmed Bookings (1)
+          </span>
+          <div className="glass-panel p-6 rounded-2xl border border-white/60 bg-white/70 shadow-md flex flex-col md:flex-row gap-6 hover:scale-[1.002] transition-all">
+            <div className="w-full md:w-48 h-32 bg-charcoal-stone rounded-xl overflow-hidden shrink-0 relative">
+              <img src="/images/bastar/chitrakote.webp" alt="Chitrakote Falls" className="w-full h-full object-cover" />
+              <span className="absolute top-2 right-2 bg-green-500 text-white px-2 py-0.5 rounded text-[10px] font-bold uppercase shadow-sm">
+                Confirmed
+              </span>
+            </div>
+            <div className="flex flex-col justify-between flex-1 gap-4">
+              <div>
+                <h3 className="font-sans font-bold text-xl text-forest-emerald">Chitrakote Falls Eco-Resort</h3>
+                <p className="text-sm text-charcoal-stone/75 font-medium mt-1">Tribal guided waterfall tour & overnight stay</p>
+              </div>
+              <div className="flex flex-wrap items-center gap-6 text-sm text-charcoal-stone/75">
+                <span className="flex items-center gap-1.5 font-mono font-bold">
+                  <CalendarDays className="w-4 h-4 text-tribal-terracotta" />
+                  Oct 12, 2026
+                </span>
+                <span className="flex items-center gap-1.5 font-mono font-bold">
+                  <MapPin className="w-4 h-4 text-river-blue" />
+                  Bastar District
+                </span>
+                <span className="flex items-center gap-1.5 font-mono font-bold">
+                  <Ticket className="w-4 h-4 text-warm-orange" />
+                  2 Guests
+                </span>
+              </div>
+              <div className="flex items-center justify-between border-t border-charcoal-stone/10 pt-4 mt-2">
+                <span className="text-xs font-mono font-bold text-charcoal-stone/50 uppercase">Booking ID: #CG-TR-8924</span>
+                <button className="px-5 py-2 rounded-lg bg-red-50 text-red-600 border border-red-100 hover:bg-red-100 font-bold text-xs uppercase tracking-wide transition-colors">
+                  Cancel Booking
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

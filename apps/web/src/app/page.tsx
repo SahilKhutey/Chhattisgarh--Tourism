@@ -570,22 +570,7 @@ export default function Home() {
           </div>
         )}
 
-        {/* Floating action button */}
-        <button
-          onClick={isListening ? stopVoiceListening : () => startVoiceListening()}
-          className={`w-14 h-14 rounded-full flex items-center justify-center shadow-xl border cursor-pointer transition-all duration-300 transform hover:scale-105 active:scale-95 ${
-            isListening
-              ? "bg-red-600 border-red-500 text-white animate-pulse"
-              : "bg-forest-emerald border-forest-emerald/20 text-sand-beige hover:bg-tribal-terracotta"
-          }`}
-          title={t("home.voice_assistance")}
-        >
-          {isListening ? (
-            <MicOff className="w-6 h-6 animate-bounce" />
-          ) : (
-            <Mic className="w-6 h-6" />
-          )}
-        </button>
+
       </div>
 
     </div>

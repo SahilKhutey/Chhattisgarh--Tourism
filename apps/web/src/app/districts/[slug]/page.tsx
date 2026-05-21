@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { Compass, MapPin, Calendar, Shield, BookOpen, Utensils, Camera, ArrowLeft } from 'lucide-react';
+import { Compass, MapPin, Calendar, Shield, BookOpen, Utensils, Camera, ArrowLeft, Cloud, Sun, Droplets, Wind, Star, Activity } from 'lucide-react';
 import { fetchAllPlaces } from '../../data/places-api';
 
 interface DistrictPageProps {
@@ -36,6 +36,19 @@ export default async function DistrictPage({ params }: DistrictPageProps) {
   if (!places || places.length === 0) {
     notFound();
   }
+
+  // Calculate Stats from backend data
+  const totalPlaces = places.length;
+  const avgRating = (places.reduce((acc, p) => acc + (p.rating || 0), 0) / totalPlaces).toFixed(1);
+  const avgBio = Math.round(places.reduce((acc, p) => acc + (p.biodiversityScore || 0), 0) / totalPlaces);
+  
+  // Mock Weather for UI completeness
+  const weather = {
+    temp: '28°C',
+    condition: 'Partly Cloudy',
+    humidity: '65%',
+    wind: '12 km/h'
+  };
 
   // Schema.org structured metadata markup for Search Engine optimization
   const jsonLd = {
@@ -93,6 +106,67 @@ export default async function DistrictPage({ params }: DistrictPageProps) {
             Welcome to {capitalized}, an authentic district of Chhattisgarh. From misty, thundering gorges to ancient tribal heritage, explore local-vetted destinations in this historic, preserved territory.
           </p>
         </header>
+
+        {/* District Dashboard / Stats Panel */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-16">
+          {/* Weather Card */}
+          <div className="bg-gradient-to-br from-forest-emerald to-emerald-900 rounded-3xl p-8 text-white shadow-xl animate-fade-in relative overflow-hidden group">
+            <div className="absolute top-0 right-0 w-48 h-48 bg-white/5 rounded-full blur-2xl transform translate-x-10 -translate-y-10 group-hover:bg-white/10 transition-colors duration-500"></div>
+            <h3 className="text-emerald-100 font-medium tracking-wide uppercase text-sm mb-6 flex items-center relative z-10">
+              <Cloud className="w-4 h-4 mr-2" /> Current Climate
+            </h3>
+            <div className="flex items-end space-x-4 mb-6 relative z-10">
+              <Sun className="w-16 h-16 text-yellow-400 animate-spin-slow" />
+              <div>
+                <div className="text-5xl font-bold">{weather.temp}</div>
+                <div className="text-emerald-200">{weather.condition}</div>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4 pt-6 border-t border-emerald-700/50 relative z-10">
+              <div className="flex items-center space-x-2">
+                <Droplets className="w-4 h-4 text-emerald-300" />
+                <span className="text-sm">{weather.humidity} Humidity</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Wind className="w-4 h-4 text-emerald-300" />
+                <span className="text-sm">{weather.wind} Wind</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Stats Cards */}
+          <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-6">
+            {/* Destinations Stat */}
+            <div className="bg-white/70 backdrop-blur-md rounded-3xl p-8 border border-forest-emerald/10 shadow-sm animate-slide-up flex flex-col justify-center hover:border-tribal-terracotta/30 hover:shadow-md transition-all duration-300" style={{ animationDelay: '100ms' }}>
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="p-3 bg-tribal-terracotta/10 rounded-2xl">
+                  <MapPin className="w-6 h-6 text-tribal-terracotta" />
+                </div>
+                <h3 className="text-charcoal-stone font-bold text-lg">Destinations</h3>
+              </div>
+              <div className="text-4xl font-black text-forest-emerald mb-2">{totalPlaces}</div>
+              <p className="text-sm text-emerald-950/60">Verified ecotourism and heritage sites.</p>
+            </div>
+
+            {/* Biodiversity Stat */}
+            <div className="bg-white/70 backdrop-blur-md rounded-3xl p-8 border border-forest-emerald/10 shadow-sm animate-slide-up flex flex-col justify-center hover:border-tribal-terracotta/30 hover:shadow-md transition-all duration-300" style={{ animationDelay: '200ms' }}>
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center space-x-3">
+                  <div className="p-3 bg-forest-emerald/10 rounded-2xl">
+                    <Activity className="w-6 h-6 text-forest-emerald" />
+                  </div>
+                  <h3 className="text-charcoal-stone font-bold text-lg">Biodiversity</h3>
+                </div>
+                <div className="flex items-center space-x-1 text-yellow-500 bg-yellow-50 px-2 py-1 rounded-lg">
+                  <Star className="w-3.5 h-3.5 fill-current" />
+                  <span className="text-xs font-bold">{avgRating}</span>
+                </div>
+              </div>
+              <div className="text-4xl font-black text-forest-emerald mb-2">{avgBio}<span className="text-xl text-emerald-950/40">/100</span></div>
+              <p className="text-sm text-emerald-950/60">Ecological preservation rating average.</p>
+            </div>
+          </div>
+        </div>
 
         {/* Tourist Attractions Grid */}
         <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">

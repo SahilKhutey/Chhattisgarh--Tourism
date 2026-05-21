@@ -1,4 +1,4 @@
-import { IsUUID, IsNotEmpty, IsInt, Min, Max, IsString, Length } from 'class-validator';
+import { IsUUID, IsNotEmpty, IsInt, Min, Max, IsString, Length, IsOptional } from 'class-validator';
 
 export class CreateReviewDto {
   @IsUUID('4', { message: 'Place ID must be a valid UUID.' })
@@ -14,4 +14,9 @@ export class CreateReviewDto {
   @IsNotEmpty({ message: 'Review comment cannot be empty.' })
   @Length(10, 500, { message: 'Review comment must be between 10 and 500 characters long.' })
   comment: string;
+
+  @IsString({ message: 'Language code must be a string.' })
+  @Length(2, 5, { message: 'Language code must be 2 to 5 characters long.' })
+  @IsOptional()
+  lang?: string;
 }

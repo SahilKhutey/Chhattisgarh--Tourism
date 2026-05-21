@@ -4,7 +4,7 @@
 ![Build](https://img.shields.io/badge/Build-Zero_Error-brightgreen.svg)
 ![Version](https://img.shields.io/badge/Version-1.0.0-blue.svg)
 
-**CG Tourism OS** is a highly scalable, full-stack intelligence platform built to digitize Chhattisgarh's rich tribal narratives, natural bio-reserves, and heritage corridors. Engineered for extreme reliability and professional commercialization, this platform bridges the gap between ancient folklore and modern decentralized architecture.
+**CG Tourism OS** is a highly scalable, full-stack intelligence platform built to digitize Chhattisgarh's rich tribal narratives, natural bio-reserves, and heritage corridors. Engineered for extreme reliability and professional commercialization, this platform bridges the gap between ancient folklore and modern decentralized architecture. Currently in **V2 MVP**, featuring deep offline accessibility and local language voice AI.
 
 ## 🏛️ Ecosystem Architecture
 
@@ -26,6 +26,14 @@ This platform utilizes a **Monorepo Architecture** powered by TurboRepo to maxim
     *   Moderation (RBAC for ADMIN, MODERATOR, CREATOR)
     *   Folklore (Multimedia-ready tribal story ingestion)
     *   Places (Georeferenced coordinate APIs)
+    *   Itinerary (Backend AI generation for Planner)
+
+## 🌟 Version 2 (V2) MVP Features
+The platform has been massively upgraded to V2, emphasizing **Rural Accessibility** and **Resilient Architecture**:
+*   **Multilingual Support (i18n)**: Seamless UI switching between English, Hindi, and Chhattisgarhi via Google Translate API and local glossary fallbacks.
+*   **Voice UI Translator**: Live Speech-to-Text and Text-to-Speech translator dialog globally accessible across the platform.
+*   **Offline AI Planner**: The AI Itinerary Planner now saves full route generation to IndexedDB for offline access in remote forest corridors (zero cellular zones).
+*   **Playwright E2E Testing**: Full offline network mocking (MSW/Playwright) to ensure translation and routing engines function reliably without live internet.
 
 ## 📖 Deep Dive Documentation
 
