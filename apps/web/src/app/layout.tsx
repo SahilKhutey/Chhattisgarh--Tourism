@@ -1,12 +1,23 @@
 import type { Metadata } from "next";
-import { Inter, Space_Grotesk, JetBrains_Mono } from "next/font/google";
+import { Inter, Space_Grotesk, JetBrains_Mono, Noto_Sans_Devanagari, Mukta } from "next/font/google";
 import { Navbar } from "../components/Navbar";
 import { ToastProvider } from "../components/ToastProvider";
+import { LanguageProvider } from "../context/LanguageContext";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 const space = Space_Grotesk({ subsets: ["latin"], variable: "--font-display" });
 const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono" });
+const notoDevanagari = Noto_Sans_Devanagari({
+  subsets: ["devanagari", "latin"],
+  variable: "--font-devanagari",
+  weight: ["400", "700"],
+});
+const mukta = Mukta({
+  subsets: ["devanagari", "latin"],
+  variable: "--font-mukta",
+  weight: ["300", "400", "500", "600", "700"],
+});
 
 export const metadata: Metadata = {
   title: "CG Tourism OS — Explore the Real Chhattisgarh",
@@ -36,16 +47,17 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${space.variable} ${mono.variable} h-full antialiased`}
+      className={`${inter.variable} ${space.variable} ${mono.variable} ${notoDevanagari.variable} ${mukta.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-sand-beige text-charcoal-stone selection:bg-tribal-terracotta selection:text-white">
-        <ToastProvider />
+        <LanguageProvider>
+          <ToastProvider />
 
-        {/* Global Cinematic Navigation */}
-        <Navbar />
+          {/* Global Cinematic Navigation */}
+          <Navbar />
 
-        {/* Dynamic Page Outlet */}
-        <main className="flex-1 flex flex-col">{children}</main>
+          {/* Dynamic Page Outlet */}
+          <main className="flex-1 flex flex-col">{children}</main>
 
         {/* Global Footer */}
         <footer className="w-full bg-charcoal-stone text-sand-beige/90 py-16 border-t-4 border-tribal-terracotta">
@@ -164,6 +176,7 @@ export default function RootLayout({
             </div>
           </div>
         </footer>
+        </LanguageProvider>
       </body>
     </html>
   );
