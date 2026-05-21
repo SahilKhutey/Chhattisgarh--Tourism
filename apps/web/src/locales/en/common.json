@@ -3,6 +3,7 @@
   "book_now": "Book Now",
   "nav": {
     "map": "Map Discovery",
+    "creators": "Creators Feed",
     "planner": "AI Planner",
     "creator": "Creator Studio",
     "saved": "Saved Journeys",
@@ -13,6 +14,11 @@
     "plan_trip": "Plan Trip",
     "govt_portal": "Govt Portal",
     "logout": "Log Out"
+  },
+  "creators": {
+    "hero_badge": "Community Driven Tourism",
+    "hero_title": "Discover Chhattisgarh Through Local Storytellers.",
+    "hero_subtitle": "Experience hidden waterfalls, ancient tribal heritage, and authentic street food straight from the lens of the creators who call this land home."
   },
   "home": {
     "banner": "Chhattisgarh Sustainable Travel Portal",

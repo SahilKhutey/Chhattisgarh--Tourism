@@ -67,7 +67,7 @@ export default function SOSPage() {
 
   useEffect(() => {
     if (!isSpeaking) {
-      setSpeakingReportIndex(null);
+      setTimeout(() => setSpeakingReportIndex(null), 0);
     }
   }, [isSpeaking]);
 

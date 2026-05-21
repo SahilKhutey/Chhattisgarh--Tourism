@@ -2,6 +2,7 @@
 
 import { use, useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { 
   ArrowLeft, 
   MapPin, 
@@ -104,10 +105,12 @@ export default function DestinationDetailPage({ params }: PageProps) {
       {/* 1. CINEMATIC HERO HEADER */}
       <section className="relative w-full h-[60vh] sm:h-[65vh] flex items-end overflow-hidden bg-charcoal-stone border-b-8 border-tribal-terracotta">
         <div className="absolute inset-0 z-0">
-          <img
-            src={destination.heroImage}
+          <Image
+            src={destination.heroImage || "/images/bastar/bastar-hero.webp"}
             alt={localizedName}
-            className="w-full h-full object-cover opacity-60 scale-105"
+            fill
+            priority
+            className="object-cover opacity-60 scale-105"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-charcoal-stone via-charcoal-stone/40 to-transparent"></div>
           <div className="absolute inset-0 bg-gradient-to-r from-forest-emerald/30 via-transparent to-transparent"></div>
@@ -501,9 +504,11 @@ export default function DestinationDetailPage({ params }: PageProps) {
                     href={`/destination/${rel.id}`}
                     className="glass-panel p-4 rounded-xl shadow-sm hover:shadow-md hover:scale-[1.01] transition-all flex items-center gap-4 border border-white/60 text-left group"
                   >
-                    <img
-                      src={rel.heroImage}
+                    <Image
+                      src={rel.heroImage || "/images/bastar/bastar-hero.webp"}
                       alt={relName}
+                      width={56}
+                      height={56}
                       className="w-14 h-14 rounded-lg object-cover shrink-0 bg-charcoal-stone"
                     />
                     <div className="flex flex-col gap-0.5 flex-1 min-w-0">

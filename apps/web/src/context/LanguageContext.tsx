@@ -34,6 +34,7 @@ interface LanguageContextProps {
   stopAudioFile: () => void;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const locales: Record<Language, any> = {
   en: enLocale,
   hi: hiLocale,
@@ -45,6 +46,7 @@ const LanguageContext = createContext<LanguageContextProps | undefined>(undefine
 // Web Speech API interfaces
 const SpeechRecognition =
   typeof window !== "undefined"
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ? (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
     : null;
 
@@ -55,6 +57,7 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [voiceResult, setVoiceResult] = useState("");
   const [voiceErrorMsg, setVoiceErrorMsg] = useState("");
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [recognitionInstance, setRecognitionInstance] = useState<any>(null);
   
   // Accessibility and Dynamic Translations state
@@ -130,13 +133,16 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           detectedLang = "hi"; // Default fallback
         }
       }
-      setLang(detectedLang);
-      loadCachedTranslations(detectedLang);
-      fetchTranslations(detectedLang);
+      // Use setTimeout to avoid synchronous cascading renders during effect
+      setTimeout(() => {
+        setLang(detectedLang);
+        loadCachedTranslations(detectedLang);
+        fetchTranslations(detectedLang);
+      }, 0);
 
       // 2. Detect accessibility mode settings
       const savedAccessibility = localStorage.getItem("accessibility_mode") === "true";
-      setAccessibilityMode(savedAccessibility);
+      setTimeout(() => setAccessibilityMode(savedAccessibility), 0);
 
       // 3. Register Progressive Web App Service Worker
       if ("serviceWorker" in navigator) {
@@ -354,13 +360,13 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         setVoiceErrorMsg("");
       };
 
-      rec.onresult = (event: any) => {
+      rec.onresult = (event: { results: { transcript: string }[][] }) => {
         const text = event.results[0][0].transcript.toLowerCase().trim();
         setVoiceResult(text);
         processVoiceCommand(text);
       };
 
-      rec.onerror = (event: any) => {
+      rec.onerror = (event: { error: string }) => {
         console.error("Speech Recognition Error:", event.error);
         setVoiceErrorMsg(t("home.voice_error"));
         setIsListening(false);

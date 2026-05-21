@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { 
   Heart, 
   Trash2, 
@@ -331,9 +332,11 @@ export default function BookmarksPage() {
               >
                 {/* Photo cover */}
                 <div className="w-full sm:w-36 h-28 bg-charcoal-stone rounded-xl overflow-hidden shrink-0 relative">
-                  <img
-                    src={place.heroImage}
+                  <Image
+                    src={place.heroImage || "/images/bastar/bastar-hero.webp"}
                     alt={place.name}
+                    width={400}
+                    height={300}
                     className="w-full h-full object-cover"
                   />
                   <span className="absolute bottom-2 left-2 text-[8px] font-mono font-bold bg-white text-forest-emerald px-1.5 py-0.5 rounded-full uppercase">
@@ -395,7 +398,7 @@ export default function BookmarksPage() {
           </span>
           <div className="glass-panel p-6 rounded-2xl border border-white/60 bg-white/70 shadow-md flex flex-col md:flex-row gap-6 hover:scale-[1.002] transition-all">
             <div className="w-full md:w-48 h-32 bg-charcoal-stone rounded-xl overflow-hidden shrink-0 relative">
-              <img src="/images/bastar/chitrakote.webp" alt="Chitrakote Falls" className="w-full h-full object-cover" />
+              <Image width={400} height={300} src="/images/bastar/chitrakote.webp" alt="Chitrakote Falls" className="w-full h-full object-cover" />
               <span className="absolute top-2 right-2 bg-green-500 text-white px-2 py-0.5 rounded text-[10px] font-bold uppercase shadow-sm">
                 Confirmed
               </span>

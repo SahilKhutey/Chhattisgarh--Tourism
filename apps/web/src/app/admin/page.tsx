@@ -103,6 +103,7 @@ export default function AdminPage() {
         fetchPendingFolklore();
       }, 0);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token, user]);
 
   const handleAppointRole = async (userId: string, newRole: string) => {

@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, Suspense } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
+import Image from "next/image";
 import {
   Search, Filter, Layers, Droplets, Trees, Landmark, Users,
   Eye, MapPin, Star, Leaf, ShieldCheck, Palette, ChevronRight,
@@ -217,10 +218,12 @@ export default function ExplorePage() {
                       className={`group flex flex-col bg-white rounded-2xl border-2 transition-all duration-300 cursor-pointer overflow-hidden ${isSelected ? 'border-tribal-terracotta shadow-lg shadow-tribal-terracotta/10 scale-[1.02]' : 'border-forest-emerald/10 hover:border-forest-emerald/30 hover:shadow-md'}`}
                     >
                       <div className="relative h-32 w-full overflow-hidden">
-                        <img
-                          src={dest.heroImage}
+                        <Image
+                          src={dest.heroImage || "/images/bastar/bastar-hero.webp"}
                           alt={dest.name}
-                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                          fill
+                          sizes="(max-width: 768px) 100vw, 33vw"
+                          className="object-cover transition-transform duration-700 group-hover:scale-110"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-charcoal-stone/80 to-transparent" />
                         <div className="absolute bottom-3 left-3 flex flex-col">

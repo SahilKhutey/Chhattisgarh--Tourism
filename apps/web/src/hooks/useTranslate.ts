@@ -99,10 +99,11 @@ export function useTranslate(
 
       // Save to IndexedDB for future offline use
       await setCache(cacheKey, result);
-    } catch (err: any) {
-      if (err?.name === "AbortError") return; // Cancelled — do nothing
-      console.warn("[useTranslate] Translation failed, using original text:", err?.message);
-      setError(err?.message ?? "Translation failed");
+    } catch (err: unknown) {
+      const e = err as Error;
+      if (e?.name === "AbortError") return; // Cancelled — do nothing
+      console.warn("[useTranslate] Translation failed, using original text:", e?.message);
+      setError(e?.message ?? "Translation failed");
       setTranslated(text); // Graceful fallback
     } finally {
       setIsLoading(false);
@@ -110,7 +111,9 @@ export function useTranslate(
   }, [text, lang, sourceLang, skip]);
 
   useEffect(() => {
-    translate();
+    setTimeout(() => {
+      translate();
+    }, 0);
     return () => {
       abortRef.current?.abort();
     };
@@ -137,14 +140,16 @@ export function useBatchTranslate(
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
+  const textsKey = JSON.stringify(texts);
+
   useEffect(() => {
     if (!texts.length || lang === "en") {
-      setTranslations(texts);
+      setTimeout(() => setTranslations(texts), 0);
       return;
     }
 
     let cancelled = false;
-    setIsLoading(true);
+    setTimeout(() => setIsLoading(true), 0);
 
     fetch(`${API_BASE}/translations/batch`, {
       method: "POST",
@@ -169,7 +174,7 @@ export function useBatchTranslate(
       });
 
     return () => { cancelled = true; };
-  }, [JSON.stringify(texts), lang, sourceLang]);
+  }, [textsKey, lang, sourceLang, texts]);
 
   return { translations, isLoading, error };
 }

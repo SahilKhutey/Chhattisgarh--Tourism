@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Compass, MapPin, Calendar, Shield, BookOpen, Utensils, Camera, ArrowLeft, Cloud, Sun, Droplets, Wind, Star, Activity } from 'lucide-react';
 import { fetchAllPlaces } from '../../data/places-api';
 
@@ -178,10 +179,12 @@ export default async function DistrictPage({ params }: DistrictPageProps) {
             >
               {/* Cinematic Thumbnail Image */}
               <div className="relative h-64 w-full bg-forest-emerald/10 overflow-hidden">
-                <img 
-                  src={place.heroImage} 
+                <Image 
+                  src={place.heroImage || "/images/bastar/bastar-hero.webp"} 
                   alt={place.name}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+                  fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
                   loading="lazy"
                 />
                 <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-md text-forest-emerald font-bold text-xs px-3.5 py-1.5 rounded-full uppercase tracking-wider shadow-sm">

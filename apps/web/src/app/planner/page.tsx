@@ -92,14 +92,15 @@ export default function PlannerPage() {
 
       if (!response.ok) throw new Error("API failed");
       const backendData = await response.json();
-
-      // Transform backend response into DayPlan interface
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const plans: DayPlan[] = backendData.map((day: any) => ({
         dayNumber: day.day,
         title: t('planner.day_title') + ` ${day.stops[0]?.name || district}`,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         routeOrder: day.stops.map((s: any) => s.name),
         localFoodTip: "Try traditional local Chila and tribal curries near " + (day.stops[0]?.name || district),
         carbonOffsetKg: day.distanceTraveledKm * (pace === 'slow' ? 0.3 : pace === 'moderate' ? 0.8 : 0.4),
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         schedule: day.stops.map((stop: any, idx: number) => ({
           time: idx === 0 ? "08:00 AM" : idx === 1 ? "12:00 PM" : "03:30 PM",
           activity: `Explore ${stop.name}`,

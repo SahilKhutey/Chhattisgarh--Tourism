@@ -1,5 +1,8 @@
-const { chromium } = require('@playwright/test');
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { chromium } = require('playwright');
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const path = require('path');
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const fs = require('fs');
 
 async function capture() {

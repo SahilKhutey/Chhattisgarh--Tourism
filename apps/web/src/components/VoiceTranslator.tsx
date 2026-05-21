@@ -18,86 +18,8 @@ export function VoiceTranslator() {
   const [translatedText, setTranslatedText] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const recognitionRef = useRef<any>(null);
-
-  // Initialize Speech Recognition
-  useEffect(() => {
-    const SpeechRecognition =
-      typeof window !== "undefined"
-        ? (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
-        : null;
-
-    if (SpeechRecognition) {
-      const rec = new SpeechRecognition();
-      rec.interimResults = true;
-      rec.maxAlternatives = 1;
-      rec.continuous = false;
-
-      rec.onstart = () => {
-        setIsListening(true);
-        setErrorMsg("");
-      };
-
-      rec.onresult = (event: any) => {
-        let finalTranscript = "";
-        let interimTranscript = "";
-        
-        for (let i = event.resultIndex; i < event.results.length; ++i) {
-          if (event.results[i].isFinal) {
-            finalTranscript += event.results[i][0].transcript;
-          } else {
-            interimTranscript += event.results[i][0].transcript;
-          }
-        }
-        
-        const currentText = finalTranscript || interimTranscript;
-        setSourceText(currentText);
-
-        // If we got a final result, trigger translation
-        if (finalTranscript) {
-          handleTranslation(finalTranscript);
-        }
-      };
-
-      rec.onerror = (event: any) => {
-        console.error("Speech Recognition Error:", event.error);
-        if (event.error !== "no-speech") {
-          setErrorMsg("Could not understand audio. Please try again.");
-        }
-        setIsListening(false);
-      };
-
-      rec.onend = () => {
-        setIsListening(false);
-      };
-
-      recognitionRef.current = rec;
-    }
-  }, [sourceLang]); // Re-init when source language changes
-
-  const toggleListening = () => {
-    if (isListening) {
-      recognitionRef.current?.stop();
-    } else {
-      if (recognitionRef.current) {
-        setSourceText("");
-        setTranslatedText("");
-        setErrorMsg("");
-        stopSpeaking();
-        
-        // Set language based on sourceLang selection
-        recognitionRef.current.lang = sourceLang === "en" ? "en-US" : "hi-IN";
-        
-        try {
-          recognitionRef.current.start();
-        } catch (err) {
-          console.error("Failed to start listening", err);
-        }
-      } else {
-        setErrorMsg("Voice recognition is not supported in this browser.");
-      }
-    }
-  };
 
   const handleTranslation = async (text: string) => {
     if (!text.trim()) return;
@@ -133,6 +55,91 @@ export function VoiceTranslator() {
       setIsTranslating(false);
     }
   };
+
+  // Initialize Speech Recognition
+  useEffect(() => {
+    const SpeechRecognition =
+      typeof window !== "undefined"
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        ? (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
+        : null;
+
+    if (SpeechRecognition) {
+      const rec = new SpeechRecognition();
+      rec.interimResults = true;
+      rec.maxAlternatives = 1;
+      rec.continuous = false;
+
+      rec.onstart = () => {
+        setIsListening(true);
+        setErrorMsg("");
+      };
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      rec.onresult = (event: any) => {
+        let finalTranscript = "";
+        let interimTranscript = "";
+        
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          if (event.results[i].isFinal) {
+            finalTranscript += event.results[i][0].transcript;
+          } else {
+            interimTranscript += event.results[i][0].transcript;
+          }
+        }
+        
+        const currentText = finalTranscript || interimTranscript;
+        setSourceText(currentText);
+
+        // If we got a final result, trigger translation
+        if (finalTranscript) {
+          handleTranslation(finalTranscript);
+        }
+      };
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      rec.onerror = (event: any) => {
+        console.error("Speech Recognition Error:", event.error);
+        if (event.error !== "no-speech") {
+          setErrorMsg("Could not understand audio. Please try again.");
+        }
+        setIsListening(false);
+      };
+
+      rec.onend = () => {
+        setIsListening(false);
+      };
+
+      recognitionRef.current = rec;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sourceLang]); // Re-init when source language changes
+
+  const toggleListening = () => {
+    if (isListening) {
+      recognitionRef.current?.stop();
+    } else {
+      if (recognitionRef.current) {
+        setSourceText("");
+        setTranslatedText("");
+        setErrorMsg("");
+        stopSpeaking();
+        
+        // Set language based on sourceLang selection
+        recognitionRef.current.lang = sourceLang === "en" ? "en-US" : "hi-IN";
+        
+        try {
+          recognitionRef.current.start();
+        } catch (err) {
+          console.error("Failed to start listening", err);
+        }
+      } else {
+        setErrorMsg("Voice recognition is not supported in this browser.");
+      }
+    }
+  };
+
+
 
   const playTranslation = () => {
     if (translatedText) {
@@ -194,6 +201,7 @@ export function VoiceTranslator() {
           <div className="flex items-center justify-between px-4 py-3 bg-gray-50 border-b border-gray-100">
             <select 
               value={sourceLang}
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               onChange={(e) => setSourceLang(e.target.value as any)}
               className="bg-transparent font-medium text-sm text-charcoal-stone focus:outline-none"
             >
@@ -210,6 +218,7 @@ export function VoiceTranslator() {
 
             <select 
               value={targetLang}
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               onChange={(e) => setTargetLang(e.target.value as any)}
               className="bg-transparent font-medium text-sm text-charcoal-stone focus:outline-none"
             >

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { 
   Compass, 
   Map, 
@@ -126,8 +127,8 @@ export default function Home() {
 
   // Set default telemetry instructions dynamically once component mounts
   useEffect(() => {
-    setLocationStatus(t("home.telemetry_deactivated_desc"));
-  }, [lang]);
+    setTimeout(() => setLocationStatus(t("home.telemetry_deactivated_desc")), 0);
+  }, [lang, t]);
 
   // Rotating slider effect
   useEffect(() => {
@@ -135,7 +136,7 @@ export default function Home() {
       setActiveSlide((prev) => (prev + 1) % heroSlidesData.length);
     }, 6000);
     return () => clearInterval(timer);
-  }, []);
+  }, [heroSlidesData.length]);
 
   // Simple geo-distance calculation (Haversine formula mock)
   const handleEnableGeolocation = () => {
@@ -187,10 +188,12 @@ export default function Home() {
               index === activeSlide ? "opacity-45" : "opacity-0"
             }`}
           >
-            <img
-              src={slide.image}
+            <Image
+              src={slide.image || "/images/bastar/bastar-hero.webp"}
               alt={t(slide.titleKey)}
-              className="w-full h-full object-cover scale-105"
+              fill
+              priority={index === 0}
+              className="object-cover scale-105"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-charcoal-stone via-charcoal-stone/75 to-transparent"></div>
           </div>
@@ -453,10 +456,12 @@ export default function Home() {
                 
                 {/* Cover visual */}
                 <div className="relative h-56 w-full bg-charcoal-stone">
-                  <img
-                    src={dest.heroImage}
+                  <Image
+                    src={dest.heroImage || "/images/bastar/bastar-hero.webp"}
                     alt={destName}
-                    className="w-full h-full object-cover"
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    className="object-cover"
                   />
                   <span className="absolute top-4 right-4 text-[10px] font-mono font-bold bg-white/95 text-forest-emerald px-2.5 py-1 rounded-full uppercase tracking-wider shadow">
                     {t("categories." + dest.category)}
@@ -560,7 +565,7 @@ export default function Home() {
             ) : voiceResult ? (
               <div className="flex flex-col gap-1">
                 <span className="text-[10px] text-white/50 font-mono">You said:</span>
-                <p className="text-xs font-semibold text-sand-beige italic font-mukta">"{voiceResult}"</p>
+                <p className="text-xs font-semibold text-sand-beige italic font-mukta">&quot;{voiceResult}&quot;</p>
               </div>
             ) : (
               <p className="text-xs text-white/80 leading-relaxed font-mukta">
