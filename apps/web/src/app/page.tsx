@@ -43,7 +43,7 @@ export default function Home() {
     name_cg?: string;
   }
   const [nearbyPlaces, setNearbyPlaces] = useState<NearbyPlace[]>([]);
-  const { lang, t, isListening, startVoiceListening, stopVoiceListening, voiceResult, voiceErrorMsg } = useLanguage();
+  const { lang, t, isListening, startVoiceListening, stopVoiceListening, voiceResult, voiceErrorMsg, accessibilityMode, toggleAccessibilityMode } = useLanguage();
 
   // Immersive rotating hero slides references
   const heroSlidesData = [
@@ -246,6 +246,64 @@ export default function Home() {
           ))}
         </div>
       </section>
+
+      {/* Low-Literacy / Easy Read Dashboard */}
+      {accessibilityMode && (
+        <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-fade-in relative z-20">
+          <div className="bg-tribal-terracotta/10 border-4 border-tribal-terracotta p-8 rounded-3xl flex flex-col gap-6 shadow-lg text-center bg-white/90 backdrop-blur">
+            <h2 className="text-3xl font-bold text-forest-emerald font-mukta">
+              {lang === "hi" ? "आसान नेविगेशन (सुगम मोड)" : lang === "cg" ? "आसान नेविगेशन (सुगम मोड)" : "Easy Navigation (Low-Literacy UI)"}
+            </h2>
+            <p className="text-base text-charcoal-stone/85 font-semibold font-mukta">
+              {lang === "hi" ? "जानकारी प्राप्त करने के लिए नीचे दिए गए किसी भी बड़े बटन को दबाएं या नीचे दिए गए आवाज बटन को दबाएं:" : lang === "cg" ? "जानकारी पाए बर नीचे के कोनो भी बड़े बटन ला दबाओ या आवाज बटन ला दबाओ:" : "Click any of the large buttons below to get information directly, or click the voice assistant at the bottom-right:"}
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+              <Link
+                href="/explore"
+                className="flex items-center justify-center gap-4 bg-forest-emerald hover:bg-tribal-terracotta text-sand-beige font-sans font-bold text-xl py-6 px-8 rounded-2xl shadow-md border-2 border-forest-emerald/20 hover:scale-[1.02] transition-all min-h-[80px]"
+              >
+                <span className="text-4xl">🏞️</span>
+                <span>{lang === "hi" ? "पर्यटन स्थल" : lang === "cg" ? "घूमइ के जगह" : "Explore Places"}</span>
+              </Link>
+              <Link
+                href="/planner"
+                className="flex items-center justify-center gap-4 bg-forest-emerald hover:bg-tribal-terracotta text-sand-beige font-sans font-bold text-xl py-6 px-8 rounded-2xl shadow-md border-2 border-forest-emerald/20 hover:scale-[1.02] transition-all min-h-[80px]"
+              >
+                <span className="text-4xl">📅</span>
+                <span>{lang === "hi" ? "यात्रा प्लानर" : lang === "cg" ? "टिकट/प्लानर" : "Trip Planner"}</span>
+              </Link>
+              <Link
+                href="/stories"
+                className="flex items-center justify-center gap-4 bg-forest-emerald hover:bg-tribal-terracotta text-sand-beige font-sans font-bold text-xl py-6 px-8 rounded-2xl shadow-md border-2 border-forest-emerald/20 hover:scale-[1.02] transition-all min-h-[80px]"
+              >
+                <span className="text-4xl">📖</span>
+                <span>{lang === "hi" ? "लोककथा कहानियां" : lang === "cg" ? "पुरखा कहानी मन" : "Folklore Stories"}</span>
+              </Link>
+              <Link
+                href="/explore?layer=food"
+                className="flex items-center justify-center gap-4 bg-forest-emerald hover:bg-tribal-terracotta text-sand-beige font-sans font-bold text-xl py-6 px-8 rounded-2xl shadow-md border-2 border-forest-emerald/20 hover:scale-[1.02] transition-all min-h-[80px]"
+              >
+                <span className="text-4xl">🍛</span>
+                <span>{lang === "hi" ? "बस्तर भोजन" : lang === "cg" ? "छत्तीसगढ़ी कलेवा" : "Bastar Food"}</span>
+              </Link>
+              <Link
+                href="/sos"
+                className="flex items-center justify-center gap-4 bg-red-600 hover:bg-red-700 text-white font-sans font-bold text-xl py-6 px-8 rounded-2xl shadow-md border-4 border-white hover:scale-[1.02] transition-all min-h-[80px] animate-pulse"
+              >
+                <span className="text-4xl animate-bounce">🚨</span>
+                <span>{lang === "hi" ? "आपातकालीन सुरक्षा (SOS)" : lang === "cg" ? "आपातकालीन सुरक्षा (SOS)" : "Emergency SOS"}</span>
+              </Link>
+              <button
+                onClick={() => startVoiceListening()}
+                className="flex items-center justify-center gap-4 bg-warm-orange hover:bg-orange-600 text-charcoal-stone font-sans font-bold text-xl py-6 px-8 rounded-2xl shadow-md border-2 border-warm-orange/20 hover:scale-[1.02] transition-all min-h-[80px] cursor-pointer"
+              >
+                <span className="text-4xl">🎙️</span>
+                <span>{lang === "hi" ? "बोलकर खोजें" : lang === "cg" ? "गोठिया के खोजव" : "Speak to Search"}</span>
+              </button>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* 2. Interactive Discovery Categories Grid */}
       <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 relative z-20">

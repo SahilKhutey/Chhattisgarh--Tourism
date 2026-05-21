@@ -10,6 +10,7 @@ import { UsersModule } from './modules/users/users.module';
 import { FolkloreModule } from './modules/folklore/folklore.module';
 import { StorageModule } from './modules/storage/storage.module';
 import { ItineraryModule } from './modules/itinerary/itinerary.module';
+import { TranslationModule } from './modules/translation/translation.module';
 import { PrismaService } from './database/prisma.service';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
@@ -33,6 +34,7 @@ import { APP_GUARD } from '@nestjs/core';
     FolkloreModule,
     StorageModule,
     ItineraryModule,
+    TranslationModule,
   ],
   providers: [
     PrismaService,

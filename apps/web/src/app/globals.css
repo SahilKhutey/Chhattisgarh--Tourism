@@ -238,3 +238,35 @@ body {
 .leaflet-control-attribution a {
   color: rgba(230,126,34,0.7) !important;
 }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   REGIONAL ACCESSIBILITY & LOW-LITERACY CSS RULES
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* High-contrast and oversized touch boundaries for low-literacy and elderly accessibility */
+body.accessibility-mode button,
+body.accessibility-mode a,
+body.accessibility-mode [role="button"],
+body.accessibility-mode .touch-target-large {
+  min-height: 64px !important;
+  padding-top: 1rem !important;
+  padding-bottom: 1rem !important;
+  font-size: 1.125rem !important; /* Slightly larger text */
+}
+
+body.accessibility-mode {
+  font-size: 1.05rem !important;
+  line-height: 1.75 !important;
+}
+
+/* Specific button layout optimization for low-literacy icons/quick actions */
+body.accessibility-mode .low-lit-grid {
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)) !important;
+  gap: 1.5rem !important;
+}
+
+/* Indic script dynamic font overrides */
+body.lang-hi, body.lang-cg {
+  font-family: var(--font-mukta), var(--font-devanagari), var(--font-sans) !important;
+}
+

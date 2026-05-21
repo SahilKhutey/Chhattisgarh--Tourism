@@ -160,3 +160,16 @@ model EmergencyAlert {
   createdAt        DateTime  @default(now())
   resolvedAt       DateTime?
 }
+
+model Translation {
+  id         String   @id @default(uuid())
+  lang       String   // "en", "hi", "cg", "gondi", "halbi"
+  entityType String   // "Place", "Category", "Folklore"
+  entityId   String
+  field      String   // "name", "description", "tagline", "story"
+  value      String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([lang, entityType, entityId, field])
+}

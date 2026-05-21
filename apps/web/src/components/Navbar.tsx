@@ -17,7 +17,7 @@ const NAV_LINKS = [
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { user, logout } = useAuthStore();
-  const { lang, changeLanguage, t } = useLanguage();
+  const { lang, changeLanguage, t, accessibilityMode, toggleAccessibilityMode } = useLanguage();
 
   return (
     <header className="sticky top-0 z-50 w-full glass-panel border-b border-white/40 shadow-sm">
@@ -89,6 +89,24 @@ export function Navbar() {
               छत्तीसगढ़ी
             </button>
           </div>
+
+          {/* Accessibility UI Toggle */}
+          <button
+            onClick={toggleAccessibilityMode}
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold transition-all border cursor-pointer ${
+              accessibilityMode
+                ? "bg-tribal-terracotta border-tribal-terracotta text-white shadow-md animate-pulse"
+                : "bg-white/80 border-charcoal-stone/10 text-charcoal-stone hover:bg-forest-emerald/5 hover:text-forest-emerald"
+            }`}
+            title={accessibilityMode ? "Disable Accessibility Mode" : "Enable Accessibility Mode"}
+          >
+            <span className="text-sm">👁️</span>
+            <span className="hidden sm:inline">
+              {accessibilityMode
+                ? (lang === "en" ? "Standard UI" : lang === "cg" ? "सामान्य मोड" : "सामान्य मोड")
+                : (lang === "en" ? "Easy Read" : lang === "cg" ? "सुगम मोड" : "सुगम मोड")}
+            </span>
+          </button>
 
           {user ? (
             <>
@@ -191,6 +209,25 @@ export function Navbar() {
                   छत्तीसगढ़ी
                 </button>
               </div>
+            </div>
+
+            {/* Mobile Accessibility Switcher */}
+            <div className="flex items-center justify-between px-4 py-3 border-b border-charcoal-stone/5 mb-2">
+              <span className="text-xs font-semibold text-charcoal-stone/50 flex items-center gap-1.5">
+                👁️ Easy Read / सुगम मोड
+              </span>
+              <button
+                onClick={toggleAccessibilityMode}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all border cursor-pointer ${
+                  accessibilityMode
+                    ? "bg-tribal-terracotta border-tribal-terracotta text-white"
+                    : "bg-forest-emerald/10 border-forest-emerald/15 text-forest-emerald"
+                }`}
+              >
+                {accessibilityMode
+                  ? (lang === "en" ? "Disable" : "बंद करें")
+                  : (lang === "en" ? "Enable" : "चालू करें")}
+              </button>
             </div>
 
             {[...NAV_LINKS, { href: "/admin", key: "nav.govt_portal" }].map(

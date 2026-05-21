@@ -6,6 +6,7 @@ import {
   BookOpen, Volume2, VolumeX, Play, Pause, Mic, Info, ChevronRight, Compass, Calendar, Eye, Activity, Heart, RotateCcw, Plus, X, Upload
 } from "lucide-react";
 import { useAuthStore } from "../../store/auth-store";
+import { useLanguage } from "../../context/LanguageContext";
 
 interface StoryCard {
   id: string;
@@ -50,9 +51,9 @@ const mockStories: StoryCard[] = [
 export default function StoriesPage() {
   const { user, token, isAuthenticated } = useAuthStore();
   const [activeStoryId, setActiveStoryId] = useState<string>("chitrakote-story");
-  const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [isMuted, setIsMuted] = useState<boolean>(false);
   const [audioProgress, setAudioProgress] = useState<number>(34);
+  const { speakText, stopSpeaking, isSpeaking } = useLanguage();
   const [stories, setStories] = useState<StoryCard[]>(mockStories);
   const [showSubmitModal, setShowSubmitModal] = useState(false);
   
@@ -101,7 +102,23 @@ export default function StoriesPage() {
     }, 0);
   }, []);
 
-  const handlePlayToggle = () => setIsPlaying(!isPlaying);
+  useEffect(() => {
+    return () => {
+      stopSpeaking();
+    };
+  }, [stopSpeaking]);
+
+  useEffect(() => {
+    stopSpeaking();
+  }, [activeStoryId, stopSpeaking]);
+
+  const handlePlayToggle = () => {
+    if (isSpeaking) {
+      stopSpeaking();
+    } else {
+      speakText(`${activeStory.title}. ${activeStory.folklore}`);
+    }
+  };
   const handleMuteToggle = () => setIsMuted(!isMuted);
 
   const activeStory = stories.find(s => s.id === activeStoryId) || stories[0];
@@ -181,7 +198,7 @@ export default function StoriesPage() {
                   key={story.id}
                   onClick={() => {
                     setActiveStoryId(story.id);
-                    setIsPlaying(false);
+                    stopSpeaking();
                   }}
                   className={`w-full text-left p-6 rounded-2xl transition-all cursor-pointer border flex flex-col gap-3 group ${
                     isSelected
@@ -269,7 +286,7 @@ export default function StoriesPage() {
                 onClick={handlePlayToggle}
                 className="w-12 h-12 rounded-full bg-purple-600 hover:bg-purple-700 text-white flex items-center justify-center shadow-md shadow-purple-600/20 hover:scale-[1.05] transition-all cursor-pointer"
               >
-                {isPlaying ? <Pause className="w-5 h-5 text-white" fill="white" /> : <Play className="w-5 h-5 text-white ml-0.5" fill="white" />}
+                {isSpeaking ? <Pause className="w-5 h-5 text-white" fill="white" /> : <Play className="w-5 h-5 text-white ml-0.5" fill="white" />}
               </button>
               <button
                 onClick={handleMuteToggle}
@@ -278,10 +295,10 @@ export default function StoriesPage() {
                 {isMuted ? <VolumeX className="w-4 h-4 text-red-600" /> : <Volume2 className="w-4 h-4 text-purple-600" />}
               </button>
             </div>
-            {isPlaying && (
+            {isSpeaking && (
               <div className="flex items-center justify-center gap-1 mt-1 text-[10px] font-mono text-purple-600 font-bold">
-                <Activity className="w-3.5 h-3.5 animate-spin" />
-                Simulating Audio...
+                <Activity className="w-3.5 h-3.5 animate-pulse text-purple-600" />
+                Reading Aloud / बोलकर सुनाया जा रहा है...
               </div>
             )}
           </div>

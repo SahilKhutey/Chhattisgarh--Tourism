@@ -32,7 +32,7 @@ export default function DestinationDetailPage({ params }: PageProps) {
   const resolvedParams = use(params);
   const destination = getDestinationById(resolvedParams.id);
   const [activeTab, setActiveTab] = useState<"story" | "travel" | "eco" | "food">("story");
-  const { lang, t, speakText, stopSpeaking, isSpeaking } = useLanguage();
+  const { lang, t, speakText, stopSpeaking, isSpeaking, tDynamic } = useLanguage();
 
   // Stop speaking when user navigates away or tab changes to prevent speech continuing inappropriately
   useEffect(() => {
@@ -63,25 +63,27 @@ export default function DestinationDetailPage({ params }: PageProps) {
     );
   }
 
-  const getLocalizedVal = (en: string, hi?: string, cg?: string) => {
+  const getLocalizedVal = (entityId: string, field: string, en: string, hi?: string, cg?: string) => {
+    const dbVal = tDynamic(entityId, field, "");
+    if (dbVal) return dbVal;
     if (lang === "hi" && hi) return hi;
     if (lang === "cg" && cg) return cg;
     return en;
   };
 
-  const localizedName = getLocalizedVal(destination.name, destination.name_hi, destination.name_cg);
-  const localizedTagline = getLocalizedVal(destination.tagline, destination.tagline_hi, destination.tagline_cg);
-  const localizedStoryTitle = getLocalizedVal(destination.storyTitle, destination.storyTitle_hi, destination.storyTitle_cg);
-  const localizedStory = getLocalizedVal(destination.story, destination.story_hi, destination.story_cg);
-  const localizedTimings = getLocalizedVal(destination.timings, destination.timings_hi, destination.timings_cg);
-  const localizedRoutes = getLocalizedVal(destination.routes, destination.routes_hi, destination.routes_cg);
-  const localizedBestTime = getLocalizedVal(destination.bestTime, destination.bestTime_hi, destination.bestTime_cg);
-  const localizedSeasonalAdvice = getLocalizedVal(destination.seasonalAdvice, destination.seasonalAdvice_hi, destination.seasonalAdvice_cg);
-  const localizedSafety = getLocalizedVal(destination.safety, destination.safety_hi, destination.safety_cg);
-  const localizedEcoGuidance = getLocalizedVal(destination.ecoGuidance, destination.ecoGuidance_hi, destination.ecoGuidance_cg);
-  const localizedLocalInsights = getLocalizedVal(destination.localInsights, destination.localInsights_hi, destination.localInsights_cg);
-  const localizedLocalFood = getLocalizedVal(destination.localFood, destination.localFood_hi, destination.localFood_cg);
-  const localizedPhotographySpots = getLocalizedVal(destination.photographySpots, destination.photographySpots_hi, destination.photographySpots_cg);
+  const localizedName = getLocalizedVal(destination.id, "name", destination.name, destination.name_hi, destination.name_cg);
+  const localizedTagline = getLocalizedVal(destination.id, "tagline", destination.tagline, destination.tagline_hi, destination.tagline_cg);
+  const localizedStoryTitle = getLocalizedVal(destination.id, "storyTitle", destination.storyTitle, destination.storyTitle_hi, destination.storyTitle_cg);
+  const localizedStory = getLocalizedVal(destination.id, "story", destination.story, destination.story_hi, destination.story_cg);
+  const localizedTimings = getLocalizedVal(destination.id, "timings", destination.timings, destination.timings_hi, destination.timings_cg);
+  const localizedRoutes = getLocalizedVal(destination.id, "routes", destination.routes, destination.routes_hi, destination.routes_cg);
+  const localizedBestTime = getLocalizedVal(destination.id, "bestTime", destination.bestTime, destination.bestTime_hi, destination.bestTime_cg);
+  const localizedSeasonalAdvice = getLocalizedVal(destination.id, "seasonalAdvice", destination.seasonalAdvice, destination.seasonalAdvice_hi, destination.seasonalAdvice_cg);
+  const localizedSafety = getLocalizedVal(destination.id, "safety", destination.safety, destination.safety_hi, destination.safety_cg);
+  const localizedEcoGuidance = getLocalizedVal(destination.id, "ecoGuidance", destination.ecoGuidance, destination.ecoGuidance_hi, destination.ecoGuidance_cg);
+  const localizedLocalInsights = getLocalizedVal(destination.id, "localInsights", destination.localInsights, destination.localInsights_hi, destination.localInsights_cg);
+  const localizedLocalFood = getLocalizedVal(destination.id, "localFood", destination.localFood, destination.localFood_hi, destination.localFood_cg);
+  const localizedPhotographySpots = getLocalizedVal(destination.id, "photographySpots", destination.photographySpots, destination.photographySpots_hi, destination.photographySpots_cg);
 
   // Get other destinations excluding the current one for "Nearby Related Nodes" section
   const relatedDestinations = DESTINATIONS.filter(d => d.id !== destination.id).slice(0, 3);
@@ -393,8 +395,8 @@ export default function DestinationDetailPage({ params }: PageProps) {
 
             <div className="flex flex-col gap-4">
               {relatedDestinations.map(rel => {
-                const relName = getLocalizedVal(rel.name, rel.name_hi, rel.name_cg);
-                const relTagline = getLocalizedVal(rel.tagline, rel.tagline_hi, rel.tagline_cg);
+                const relName = getLocalizedVal(rel.id, "name", rel.name, rel.name_hi, rel.name_cg);
+                const relTagline = getLocalizedVal(rel.id, "tagline", rel.tagline, rel.tagline_hi, rel.tagline_cg);
                 return (
                   <Link
                     key={rel.id}

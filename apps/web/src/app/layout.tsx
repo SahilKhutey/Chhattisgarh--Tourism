@@ -23,6 +23,7 @@ export const metadata: Metadata = {
   title: "CG Tourism OS — Explore the Real Chhattisgarh",
   description:
     "Digitizing Chhattisgarh's rich tribal narratives, natural bio-reserves, and heritage corridors. Built with authenticity for responsible digital discovery.",
+  manifest: "/manifest.json",
   keywords: [
     "Chhattisgarh tourism",
     "Bastar travel",

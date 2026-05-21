@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import enLocale from "../locales/en/common.json";
 import hiLocale from "../locales/hi/common.json";
@@ -20,6 +20,11 @@ interface LanguageContextProps {
   isSpeaking: boolean;
   voiceResult: string;
   voiceErrorMsg: string;
+  accessibilityMode: boolean;
+  toggleAccessibilityMode: () => void;
+  tDynamic: (entityId: string, field: string, fallback: string) => string;
+  dynamicTranslations: Record<string, Record<string, string>>;
+  isLoadingTranslations: boolean;
 }
 
 const locales: Record<Language, any> = {
@@ -44,27 +49,116 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [voiceResult, setVoiceResult] = useState("");
   const [voiceErrorMsg, setVoiceErrorMsg] = useState("");
   const [recognitionInstance, setRecognitionInstance] = useState<any>(null);
+  
+  // Accessibility and Dynamic Translations state
+  const [accessibilityMode, setAccessibilityMode] = useState(false);
+  const [dynamicTranslations, setDynamicTranslations] = useState<Record<string, Record<string, string>>>({});
+  const [isLoadingTranslations, setIsLoadingTranslations] = useState(false);
 
-  // Initialize and detect language
-  useEffect(() => {
+  // Helper to load dynamic translations from local cache
+  const loadCachedTranslations = useCallback((targetLang: Language) => {
     if (typeof window !== "undefined") {
-      const saved = localStorage.getItem("preferred_language") as Language | null;
-      if (saved && ["en", "hi", "cg"].includes(saved)) {
-        setLang(saved);
-      } else {
-        // Detect device/browser language
-        const browserLang = navigator.language.toLowerCase();
-        if (browserLang.startsWith("hi")) {
-          setLang("hi");
-        } else if (browserLang.startsWith("en")) {
-          setLang("en");
+      try {
+        const cached = localStorage.getItem(`dynamic_translations_${targetLang}`);
+        if (cached) {
+          setDynamicTranslations(JSON.parse(cached));
         } else {
-          // Default fallback is Hindi as requested for regional accessibility layer
-          setLang("hi");
+          setDynamicTranslations({});
         }
+      } catch (err) {
+        console.error("Failed to parse cached translations", err);
       }
     }
   }, []);
+
+  // Fetch dynamic translations from backend with fallback
+  const fetchTranslations = useCallback(async (targetLang: Language) => {
+    if (targetLang === "en") {
+      setDynamicTranslations({});
+      return;
+    }
+
+    setIsLoadingTranslations(true);
+    const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api/v1";
+    try {
+      const res = await fetch(`${apiBase}/translations?lang=${targetLang}`);
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+      const data = await res.json();
+      setDynamicTranslations(data);
+      if (typeof window !== "undefined") {
+        localStorage.setItem(`dynamic_translations_${targetLang}`, JSON.stringify(data));
+      }
+    } catch (err) {
+      console.warn(`Translation fetch failed for ${targetLang}. Using local cache fallback if available.`, err);
+      loadCachedTranslations(targetLang);
+    } finally {
+      setIsLoadingTranslations(false);
+    }
+  }, [loadCachedTranslations]);
+
+  // Initialize and detect language/settings
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      // 1. Detect language preferences
+      const savedLang = localStorage.getItem("preferred_language") as Language | null;
+      let detectedLang: Language = "en";
+      if (savedLang && ["en", "hi", "cg"].includes(savedLang)) {
+        detectedLang = savedLang;
+      } else {
+        const browserLang = navigator.language.toLowerCase();
+        if (browserLang.startsWith("hi")) {
+          detectedLang = "hi";
+        } else if (browserLang.startsWith("en")) {
+          detectedLang = "en";
+        } else {
+          detectedLang = "hi"; // Default fallback
+        }
+      }
+      setLang(detectedLang);
+      loadCachedTranslations(detectedLang);
+      fetchTranslations(detectedLang);
+
+      // 2. Detect accessibility mode settings
+      const savedAccessibility = localStorage.getItem("accessibility_mode") === "true";
+      setAccessibilityMode(savedAccessibility);
+
+      // 3. Register Progressive Web App Service Worker
+      if ("serviceWorker" in navigator) {
+        const registerSW = () => {
+          navigator.serviceWorker.register("/sw.js")
+            .then((registration) => {
+              console.log("ServiceWorker registered successfully with scope:", registration.scope);
+            })
+            .catch((err) => {
+              console.error("ServiceWorker registration failed:", err);
+            });
+        };
+
+        if (document.readyState === "complete") {
+          registerSW();
+        } else {
+          window.addEventListener("load", registerSW);
+          return () => window.removeEventListener("load", registerSW);
+        }
+      }
+    }
+  }, [loadCachedTranslations, fetchTranslations]);
+
+  // Apply typography classes and accessibility styles on body
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      document.body.classList.toggle("accessibility-mode", accessibilityMode);
+    }
+  }, [accessibilityMode]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      document.body.classList.remove("lang-en", "lang-hi", "lang-cg");
+      document.body.classList.add(`lang-${lang}`);
+    }
+  }, [lang]);
 
   const changeLanguage = (newLang: Language) => {
     setLang(newLang);
@@ -73,7 +167,26 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
     // Cancel any active TTS speech upon switching language
     stopSpeaking();
+    // Load cached and fetch fresh database translations
+    loadCachedTranslations(newLang);
+    fetchTranslations(newLang);
   };
+
+  const toggleAccessibilityMode = () => {
+    const nextMode = !accessibilityMode;
+    setAccessibilityMode(nextMode);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("accessibility_mode", nextMode ? "true" : "false");
+    }
+  };
+
+  // Dynamic localization utility for DB-driven elements
+  const tDynamic = (entityId: string, field: string, fallbackText: string): string => {
+    const translation = dynamicTranslations[entityId]?.[field];
+    if (translation) return translation;
+    return fallbackText;
+  };
+
 
   // Translation function helper
   const t = (key: string): string => {
@@ -361,6 +474,11 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         isSpeaking,
         voiceResult,
         voiceErrorMsg,
+        accessibilityMode,
+        toggleAccessibilityMode,
+        tDynamic,
+        dynamicTranslations,
+        isLoadingTranslations,
       }}
     >
       {children}
