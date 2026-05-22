@@ -3,6 +3,7 @@ import { TranslationController } from './translation.controller';
 import { TranslationService } from './translation.service';
 import { GoogleTranslateService } from './google-translate.service';
 import { GlossaryService } from './glossary.service';
+import { PrismaService } from '../../database/prisma.service';
 
 /**
  * TranslationModule
@@ -19,6 +20,7 @@ import { GlossaryService } from './glossary.service';
     TranslationService,
     GoogleTranslateService,
     GlossaryService,
+    PrismaService,
   ],
   exports: [
     TranslationService,
