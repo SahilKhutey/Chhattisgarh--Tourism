@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Space_Grotesk, JetBrains_Mono, Noto_Sans_Devanagari, Mukta } from "next/font/google";
+import { Inter, Space_Grotesk, JetBrains_Mono, Noto_Sans_Devanagari, Mukta, Playfair_Display } from "next/font/google";
 import { Navbar } from "../components/Navbar";
 import { ToastProvider } from "../components/ToastProvider";
 import { LanguageProvider } from "../context/LanguageContext";
@@ -18,9 +18,14 @@ const mukta = Mukta({
   variable: "--font-mukta",
   weight: ["300", "400", "500", "600", "700"],
 });
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  variable: "--font-serif",
+  weight: ["400", "600", "700"],
+});
 
 export const metadata: Metadata = {
-  title: "CG Tourism OS — Explore the Real Chhattisgarh",
+  title: "हमार Chhattisgarh — Explore the Real Chhattisgarh",
   description:
     "Digitizing Chhattisgarh's rich tribal narratives, natural bio-reserves, and heritage corridors. Built with authenticity for responsible digital discovery.",
   manifest: "/manifest.json",
@@ -33,7 +38,7 @@ export const metadata: Metadata = {
     "CG Tourism",
   ],
   openGraph: {
-    title: "CG Tourism OS",
+    title: "हमार Chhattisgarh",
     description: "Explore the Real Chhattisgarh — Tribal, Natural, Authentic.",
     locale: "en_IN",
     type: "website",
@@ -50,7 +55,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${space.variable} ${mono.variable} ${notoDevanagari.variable} ${mukta.variable} h-full antialiased`}
+      className={`${inter.variable} ${space.variable} ${mono.variable} ${notoDevanagari.variable} ${mukta.variable} ${playfair.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-sand-beige text-charcoal-stone selection:bg-tribal-terracotta selection:text-white">
         <LanguageProvider>
@@ -76,7 +81,7 @@ export default function RootLayout({
                     CG
                   </span>
                   <span className="font-sans text-lg font-bold tracking-tight text-white">
-                    CG Tourism OS
+                    हमार Chhattisgarh
                   </span>
                 </div>
                 <p className="text-xs text-sand-beige/60 leading-relaxed max-w-xs">

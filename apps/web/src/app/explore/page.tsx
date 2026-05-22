@@ -9,7 +9,7 @@ import {
   Eye, MapPin, Star, Leaf, ShieldCheck, Palette, ChevronRight,
   AlertCircle, Compass, Binoculars, X, SlidersHorizontal,
 } from "lucide-react";
-import { DESTINATIONS, type Destination } from "../data/destinations";
+import { fetchPlaces, type Destination } from "../data/api";
 import type { MapLayer } from "../../components/ChhattisgardhMap";
 
 // ── Lazy-load the Leaflet map component (SSR: false) ──────────────────────
@@ -79,6 +79,11 @@ export default function ExplorePage() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [creatorSpots, setCreatorSpots] = useState<{ name: string; lat: number; lng: number }[]>([]);
+  const [destinations, setDestinations] = useState<Destination[]>([]);
+
+  useEffect(() => {
+    fetchPlaces().then(setDestinations);
+  }, []);
 
   // Load verified creator spots from local storage
   useEffect(() => {
@@ -101,7 +106,7 @@ export default function ExplorePage() {
   }, []);
 
   // ── Compute filtered results ─────────────────────────────────────────────
-  const filteredDestinations = DESTINATIONS.filter((dest) => {
+  const filteredDestinations = destinations.filter((dest) => {
     const matchesSearch =
       dest.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       dest.tagline.toLowerCase().includes(searchQuery.toLowerCase());
@@ -219,7 +224,7 @@ export default function ExplorePage() {
                     >
                       <div className="relative h-32 w-full overflow-hidden">
                         <Image
-                          src={dest.heroImage || "/images/bastar/bastar-hero.webp"}
+                          src={dest.heroImage || "https://images.unsplash.com/photo-1432405972618-c60002a157c5?auto=format&fit=crop&w=1200&q=80"}
                           alt={dest.name}
                           fill
                           sizes="(max-width: 768px) 100vw, 33vw"

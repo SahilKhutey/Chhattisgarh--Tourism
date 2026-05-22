@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import type { Destination } from "../app/data/destinations";
+import type { Destination } from "../app/data/api";
 
 export type MapLayer = "satellite" | "terrain" | "hybrid" | "eco" | "cultural";
 
@@ -215,7 +215,7 @@ export default function EarthMap({
       L.control.zoom({ position: "bottomright" }).addTo(map);
 
       // Attribution — bottom left
-      map.attributionControl.setPrefix("CG Tourism OS");
+      map.attributionControl.setPrefix("हमार Chhattisgarh");
 
       // Zoom change callback
       map.on("zoomend", () => onZoomChange?.(map.getZoom()));

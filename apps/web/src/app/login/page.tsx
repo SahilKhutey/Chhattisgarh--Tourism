@@ -66,7 +66,7 @@ export default function LoginPage() {
           </div>
           <div>
             <h1 className="text-2xl font-sans font-bold text-forest-emerald tracking-tight">Sovereign Login</h1>
-            <p className="text-xs text-charcoal-stone/60 mt-1 font-mono">ACCESS CG TOURISM OS</p>
+            <p className="text-xs text-charcoal-stone/60 mt-1 font-mono">ACCESS हमार CHHATTISGARH</p>
           </div>
         </div>
 

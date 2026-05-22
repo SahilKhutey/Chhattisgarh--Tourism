@@ -11,7 +11,7 @@ export const translations = {
     navSaved: "Saved Journeys",
     navStories: "Folklore Stories",
     navEmergency: "Emergency SOS",
-    brandTitle: "CG TOURISM OS",
+    brandTitle: "हमार CHHATTISGARH",
     brandSubtitle: "Explore the Real",
     planTrip: "Plan Trip",
     govtPortal: "Govt Portal",

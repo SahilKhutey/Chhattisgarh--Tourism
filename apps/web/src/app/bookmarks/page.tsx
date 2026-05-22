@@ -20,8 +20,7 @@ import {
   CalendarDays,
   Ticket
 } from "lucide-react";
-import { DESTINATIONS } from "../data/destinations";
-
+import { fetchPlaces, type Destination } from "../data/api";
 // Default collections for high aesthetic MVP state
 const DEFAULT_COLLECTIONS = [
   {
@@ -58,8 +57,11 @@ export default function BookmarksPage() {
   const [offlineProgress, setOfflineProgress] = useState(0);
   const [syncedCollections, setSyncedCollections] = useState<string[]>([]);
 
+  const [destinations, setDestinations] = useState<Destination[]>([]);
+
   // Load existing collections
   useEffect(() => {
+    fetchPlaces().then(setDestinations);
     setTimeout(() => {
       const saved = localStorage.getItem("cg_saved_collections");
       if (saved) {
@@ -130,7 +132,7 @@ export default function BookmarksPage() {
   // Find saved places inside active folder
   const currentCollection = collections.find(c => c.name === activeCollection) || collections[0];
   const savedPlaces = currentCollection 
-    ? DESTINATIONS.filter(d => currentCollection.places.includes(d.id))
+    ? destinations.filter(d => currentCollection.places.includes(d.id))
     : [];
 
   return (
@@ -333,7 +335,7 @@ export default function BookmarksPage() {
                 {/* Photo cover */}
                 <div className="w-full sm:w-36 h-28 bg-charcoal-stone rounded-xl overflow-hidden shrink-0 relative">
                   <Image
-                    src={place.heroImage || "/images/bastar/bastar-hero.webp"}
+                    src={place.heroImage || "https://images.unsplash.com/photo-1432405972618-c60002a157c5?auto=format&fit=crop&w=1200&q=80"}
                     alt={place.name}
                     width={400}
                     height={300}
@@ -398,7 +400,7 @@ export default function BookmarksPage() {
           </span>
           <div className="glass-panel p-6 rounded-2xl border border-white/60 bg-white/70 shadow-md flex flex-col md:flex-row gap-6 hover:scale-[1.002] transition-all">
             <div className="w-full md:w-48 h-32 bg-charcoal-stone rounded-xl overflow-hidden shrink-0 relative">
-              <Image width={400} height={300} src="/images/bastar/chitrakote.webp" alt="Chitrakote Falls" className="w-full h-full object-cover" />
+              <Image width={400} height={300} src="https://images.unsplash.com/photo-1432405972618-c60002a157c5?auto=format&fit=crop&w=1200&q=80" alt="Chitrakote Falls" className="w-full h-full object-cover" />
               <span className="absolute top-2 right-2 bg-green-500 text-white px-2 py-0.5 rounded text-[10px] font-bold uppercase shadow-sm">
                 Confirmed
               </span>

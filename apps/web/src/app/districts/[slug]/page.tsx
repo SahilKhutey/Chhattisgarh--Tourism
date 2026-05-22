@@ -180,7 +180,7 @@ export default async function DistrictPage({ params }: DistrictPageProps) {
               {/* Cinematic Thumbnail Image */}
               <div className="relative h-64 w-full bg-forest-emerald/10 overflow-hidden">
                 <Image 
-                  src={place.heroImage || "/images/bastar/bastar-hero.webp"} 
+                  src={place.heroImage || "https://images.unsplash.com/photo-1432405972618-c60002a157c5?auto=format&fit=crop&w=1200&q=80"} 
                   alt={place.name}
                   fill
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"

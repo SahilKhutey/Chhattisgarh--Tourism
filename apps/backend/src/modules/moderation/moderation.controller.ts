@@ -122,4 +122,22 @@ export class ModerationController {
   async getSosAlerts(@Query('status') status?: string) {
     return this.moderationService.getSosAlerts(status);
   }
+
+  // ── Admin Content Removal ──────────────────────────────────────────────────
+
+  @Delete('places/:id')
+  @Roles('ADMIN', 'SUPER_ADMIN')
+  @ApiOperation({ summary: 'Admin force delete a verified place' })
+  @ApiParam({ name: 'id', type: String })
+  async deletePlace(@Param('id') id: string) {
+    return this.moderationService.deletePlace(id);
+  }
+
+  @Delete('creators/:id')
+  @Roles('ADMIN', 'SUPER_ADMIN')
+  @ApiOperation({ summary: 'Admin force delete a verified creator profile' })
+  @ApiParam({ name: 'id', type: String })
+  async deleteCreator(@Param('id') id: string) {
+    return this.moderationService.deleteCreator(id);
+  }
 }

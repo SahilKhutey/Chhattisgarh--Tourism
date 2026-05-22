@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { Filter, Play, Map, MapPin } from "lucide-react";
-import { CREATOR_VIDEOS, CREATORS, CreatorVideo } from "../data/creators";
+import { fetchCreators, type Creator, type CreatorVideo } from "../data/api";
 import { useLanguage } from "../../context/LanguageContext";
 import CreatorCard from "../../components/creators/CreatorCard";
 import TourismReelCard from "../../components/creators/TourismReelCard";
@@ -17,14 +17,24 @@ export default function CreatorsFeed() {
   const categories = ["All", "Nature", "Culture", "Food", "Festivals", "Trekking", "Hidden Places", "Adventure"];
   const languages = ["All", "Hindi", "Chhattisgarhi", "English"];
 
-  const filteredVideos = CREATOR_VIDEOS.filter((video) => {
+  const [creators, setCreators] = useState<Creator[]>([]);
+  const [videos, setVideos] = useState<CreatorVideo[]>([]);
+
+  React.useEffect(() => {
+    fetchCreators().then(res => {
+      setCreators(res.creators);
+      setVideos(res.videos);
+    });
+  }, []);
+
+  const filteredVideos = videos.filter((video) => {
     const matchesCategory = activeCategory === "All" || video.category === activeCategory;
     const matchesLanguage = activeLanguage === "All" || video.language === activeLanguage;
     return matchesCategory && matchesLanguage;
   });
 
-  const trendingVideos = CREATOR_VIDEOS.filter(v => v.isTrending);
-  const hiddenGems = CREATOR_VIDEOS.filter(v => v.isHiddenGem);
+  const trendingVideos = videos.filter(v => v.isTrending);
+  const hiddenGems = videos.filter(v => v.isHiddenGem);
 
   // Helper for masonry layout
   const col1: CreatorVideo[] = [];
@@ -92,7 +102,7 @@ export default function CreatorsFeed() {
           </h2>
         </div>
         <div className="flex overflow-x-auto pb-6 -mx-6 px-6 gap-6 hide-scrollbar snap-x snap-mandatory">
-          {CREATORS.map(creator => (
+          {creators.map(creator => (
             <div key={creator.id} className="snap-start">
               <CreatorCard creator={creator} />
             </div>
@@ -175,24 +185,28 @@ export default function CreatorsFeed() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             <div className="flex flex-col gap-6">
-              {col1.map((video, idx) => (
-                <TourismReelCard key={video.id} video={video} creator={CREATORS.find(c => c.id === video.creatorId)!} isLarge={idx % 2 === 0} />
-              ))}
+              {col1.map((video, idx) => {
+                const creator = creators.find(c => c.id === video.creatorId);
+                return creator ? <TourismReelCard key={video.id} video={video} creator={creator} isLarge={idx % 2 === 0} /> : null;
+              })}
             </div>
             <div className="flex flex-col gap-6">
-              {col2.map((video, idx) => (
-                <TourismReelCard key={video.id} video={video} creator={CREATORS.find(c => c.id === video.creatorId)!} isLarge={idx % 2 !== 0} />
-              ))}
+              {col2.map((video, idx) => {
+                const creator = creators.find(c => c.id === video.creatorId);
+                return creator ? <TourismReelCard key={video.id} video={video} creator={creator} isLarge={idx % 2 !== 0} /> : null;
+              })}
             </div>
             <div className="hidden lg:flex flex-col gap-6">
-              {col3.map((video, idx) => (
-                <TourismReelCard key={video.id} video={video} creator={CREATORS.find(c => c.id === video.creatorId)!} isLarge={idx % 2 === 0} />
-              ))}
+              {col3.map((video, idx) => {
+                const creator = creators.find(c => c.id === video.creatorId);
+                return creator ? <TourismReelCard key={video.id} video={video} creator={creator} isLarge={idx % 2 === 0} /> : null;
+              })}
             </div>
             <div className="hidden xl:flex flex-col gap-6">
-              {col4.map((video, idx) => (
-                <TourismReelCard key={video.id} video={video} creator={CREATORS.find(c => c.id === video.creatorId)!} isLarge={idx % 2 !== 0} />
-              ))}
+              {col4.map((video, idx) => {
+                const creator = creators.find(c => c.id === video.creatorId);
+                return creator ? <TourismReelCard key={video.id} video={video} creator={creator} isLarge={idx % 2 !== 0} /> : null;
+              })}
             </div>
           </div>
         )}

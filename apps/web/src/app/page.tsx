@@ -26,14 +26,19 @@ import {
   MicOff,
   Volume2
 } from "lucide-react";
-import { DESTINATIONS } from "./data/destinations";
 import { useLanguage } from "../context/LanguageContext";
+import { fetchPlaces, Destination } from "./data/api";
 
 export default function Home() {
   const [activeSlide, setActiveSlide] = useState(0);
   const [activeAccordion, setActiveAccordion] = useState<number | null>(0);
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [locationStatus, setLocationStatus] = useState<string>("");
+  const [destinations, setDestinations] = useState<Destination[]>([]);
+  
+  useEffect(() => {
+    fetchPlaces().then(setDestinations);
+  }, []);
   
   interface NearbyPlace {
     id: string;
@@ -153,7 +158,7 @@ export default function Home() {
         setLocationStatus(lang === "en" ? "Telemetry active" : lang === "cg" ? "लोकेशन मिलगे" : "टेलीमेट्री सक्रिय");
         
         // Calculate dynamic distances to spots
-        const calculated = DESTINATIONS.map((dest) => {
+        const calculated = destinations.map((dest) => {
           // Haversine-like calculation to mock realistic Bastar boundaries
           const dx = dest.coordinates.lng - 81.5; // Centered near Bastar
           const dy = dest.coordinates.lat - 19.5;
@@ -167,7 +172,7 @@ export default function Home() {
         // Fallback simulated location (Raipur airport baseline)
         setUserLocation({ lat: 21.18, lng: 81.73 });
         setLocationStatus(lang === "en" ? "Simulated from Raipur Hub" : lang === "cg" ? "रायपुर हब से अनुमानित" : "रायपुर हब से अनुमानित");
-        const calculated = DESTINATIONS.map((dest) => {
+        const calculated = destinations.map((dest) => {
           const distKm = Math.floor(Math.random() * 200) + 80;
           return { ...dest, computedDistance: distKm };
         }).sort((a, b) => a.computedDistance - b.computedDistance);
@@ -189,7 +194,7 @@ export default function Home() {
             }`}
           >
             <Image
-              src={slide.image || "/images/bastar/bastar-hero.webp"}
+              src={slide.image || "https://images.unsplash.com/photo-1432405972618-c60002a157c5?auto=format&fit=crop&w=1200&q=80"}
               alt={t(slide.titleKey)}
               fill
               priority={index === 0}
@@ -413,9 +418,9 @@ export default function Home() {
                 <span className="text-[9px] font-mono text-tribal-terracotta font-bold uppercase tracking-wider">Top Monitored Nodes</span>
                 <div className="flex gap-2">
                   {rec.places.map((p, idx) => {
-                    const matchedDest = DESTINATIONS.find(d => d.name === p || d.name_hi === p || d.id.includes(p.toLowerCase().split(" ")[0]));
+                    const matchedDest = destinations.find((d: any) => d.name === p || d.name_hi === p || d.id.includes(p.toLowerCase().split(" ")[0]));
                     const displayPlaceName = matchedDest 
-                      ? (lang === "hi" ? (matchedDest.name_hi || matchedDest.name) : lang === "cg" ? (matchedDest.name_cg || matchedDest.name) : matchedDest.name) 
+                      ? (lang === "hi" ? ((matchedDest as any).name_hi || matchedDest.name) : lang === "cg" ? ((matchedDest as any).name_cg || matchedDest.name) : matchedDest.name) 
                       : p;
                     return (
                       <span key={idx} className="text-[10px] bg-white border border-charcoal-stone/10 px-2 py-1 rounded text-charcoal-stone font-medium font-mukta">
@@ -446,7 +451,7 @@ export default function Home() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {DESTINATIONS.slice(0, 3).map((dest) => {
+          {destinations.slice(0, 3).map((dest: any) => {
             const destName = lang === "hi" ? (dest.name_hi || dest.name) : lang === "cg" ? (dest.name_cg || dest.name) : dest.name;
             const destTagline = lang === "hi" ? (dest.tagline_hi || dest.tagline) : lang === "cg" ? (dest.tagline_cg || dest.tagline) : dest.tagline;
             const destStory = lang === "hi" ? (dest.story_hi || dest.story) : lang === "cg" ? (dest.story_cg || dest.story) : dest.story;
@@ -457,7 +462,7 @@ export default function Home() {
                 {/* Cover visual */}
                 <div className="relative h-56 w-full bg-charcoal-stone">
                   <Image
-                    src={dest.heroImage || "/images/bastar/bastar-hero.webp"}
+                    src={dest.heroImage || "https://images.unsplash.com/photo-1432405972618-c60002a157c5?auto=format&fit=crop&w=1200&q=80"}
                     alt={destName}
                     fill
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"

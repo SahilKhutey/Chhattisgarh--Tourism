@@ -1,4 +1,4 @@
-import { Controller, Get, Put, Post, Body, Headers, UnauthorizedException, ValidationPipe } from '@nestjs/common';
+import { Controller, Get, Put, Post, Body, Headers, UnauthorizedException, ValidationPipe, Param } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiHeader, ApiBody } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { UpdateProfileDto } from './dto/update-profile.dto';
@@ -39,6 +39,18 @@ export class UsersController {
   ) {
     this.checkUserAuth(userId);
     return this.usersService.registerCreator(userId, dto);
+  }
+
+  @Get('creators')
+  @ApiOperation({ summary: 'Retrieve all verified creator profiles' })
+  async getCreators() {
+    return this.usersService.getVerifiedCreators();
+  }
+
+  @Get('creators/:id')
+  @ApiOperation({ summary: 'Retrieve a specific creator profile' })
+  async getCreatorProfile(@Param('id') id: string) {
+    return this.usersService.getCreatorProfile(id);
   }
 
   private checkUserAuth(userId: string) {

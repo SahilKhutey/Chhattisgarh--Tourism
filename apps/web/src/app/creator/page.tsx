@@ -14,7 +14,8 @@ import {
   Clock,
   Compass,
   FileText,
-  AlertTriangle
+  AlertTriangle,
+  Trash2
 } from "lucide-react";
 import { DESTINATIONS } from "../data/destinations";
 
@@ -156,6 +157,22 @@ export default function CreatorStudio() {
 
     // Hide success alert after 4 seconds
     setTimeout(() => setFormSuccess(false), 4000);
+  };
+
+  const handleRemovePlace = (id: string) => {
+    const pendingRaw = localStorage.getItem("cg_pending_places");
+    const approvedRaw = localStorage.getItem("cg_approved_places");
+    
+    if (pendingRaw) {
+      const pending = JSON.parse(pendingRaw).filter((p: any) => p.id !== id);
+      localStorage.setItem("cg_pending_places", JSON.stringify(pending));
+    }
+    if (approvedRaw) {
+      const approved = JSON.parse(approvedRaw).filter((p: any) => p.id !== id);
+      localStorage.setItem("cg_approved_places", JSON.stringify(approved));
+    }
+
+    setSubmittedPlaces((prev) => prev.filter((p) => p.id !== id));
   };
 
   return (
@@ -504,11 +521,20 @@ export default function CreatorStudio() {
 
                     <div className="flex justify-between items-center text-[9px] font-mono text-charcoal-stone/40 border-t border-charcoal-stone/5 pt-2">
                       <span>MAP PIN: X {place.coordinates?.mapX || 50}% / Y {place.coordinates?.mapY || 50}%</span>
-                      {place.status !== "approved" && (
-                        <span className="flex items-center gap-1 text-amber-600">
-                          <Clock className="w-3 h-3" /> Moderating
-                        </span>
-                      )}
+                      <div className="flex items-center gap-3">
+                        {place.status !== "approved" && (
+                          <span className="flex items-center gap-1 text-amber-600">
+                            <Clock className="w-3 h-3" /> Moderating
+                          </span>
+                        )}
+                        <button 
+                          onClick={() => handleRemovePlace(place.id)}
+                          className="flex items-center gap-1 text-red-500 hover:text-red-700 transition-colors"
+                          title="Remove submission"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
                     </div>
                   </div>
                 ))}

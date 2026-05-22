@@ -94,4 +94,27 @@ export class UsersService {
       profile: result,
     };
   }
+
+  async getVerifiedCreators() {
+    return this.prisma.creatorProfile.findMany({
+      where: { verified: true },
+      include: {
+        user: { select: { fullName: true, avatar: true } },
+        videos: { take: 5, orderBy: { views: 'desc' } }
+      }
+    });
+  }
+
+  async getCreatorProfile(id: string) {
+    const creator = await this.prisma.creatorProfile.findUnique({
+      where: { id },
+      include: {
+        user: { select: { fullName: true, avatar: true } },
+        videos: { orderBy: { createdAt: 'desc' } }
+      }
+    });
+    
+    if (!creator) throw new NotFoundException('Creator not found');
+    return creator;
+  }
 }

@@ -168,5 +168,15 @@ export class ModerationService {
       take: 100,
     });
   }
+
+  async deletePlace(id: string) {
+    await this.prisma.place.delete({ where: { id } });
+    return { success: true, message: 'Place deleted successfully.' };
+  }
+
+  async deleteCreator(id: string) {
+    await this.prisma.creatorProfile.delete({ where: { id } });
+    return { success: true, message: 'Creator deleted successfully.' };
+  }
 }
 

@@ -21,157 +21,168 @@ export function Navbar() {
   const { lang, changeLanguage, t, accessibilityMode, toggleAccessibilityMode } = useLanguage();
 
   return (
-    <header className="sticky top-0 z-50 w-full glass-panel border-b border-white/40 shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-        {/* Brand Logo */}
-        <Link href="/" className="flex items-center gap-3 group">
-          <span className="w-10 h-10 rounded-xl bg-forest-emerald flex items-center justify-center text-sand-beige font-mono text-xl font-bold shadow-md shadow-forest-emerald/20 transition-all duration-300 group-hover:bg-tribal-terracotta">
-            CG
-          </span>
-          <div className="flex flex-col">
-            <span className="font-sans text-lg font-bold tracking-tight text-forest-emerald group-hover:text-tribal-terracotta transition-colors">
-              CG TOURISM OS
-            </span>
-            <span className="text-[10px] font-mono tracking-widest text-tribal-terracotta uppercase">
-              {t("home.heading_real")}
-            </span>
-          </div>
-        </Link>
-
-        {/* Desktop Navigation */}
-        <nav className="hidden lg:flex items-center gap-6">
-          {NAV_LINKS.map(({ href, key }) => (
-            <Link
-              key={href}
-              href={href}
-              className="text-sm font-semibold text-charcoal-stone/85 hover:text-forest-emerald transition-colors"
-            >
-              {t(key)}
-            </Link>
-          ))}
-          <Link
-            href="/sos"
-            className="text-sm font-semibold text-red-600 hover:text-red-700 transition-colors flex items-center gap-1.5 animate-pulse"
-          >
-            <span className="w-2 h-2 rounded-full bg-red-600" />
-            {t("nav.sos")}
-          </Link>
-        </nav>
-
-        {/* Right Action Menu */}
-        <div className="flex items-center gap-4">
-          {/* Desktop Language Switcher Segmented Control */}
-          <div className="hidden md:flex items-center gap-1 bg-forest-emerald/10 p-1 rounded-xl border border-forest-emerald/15">
-            <Globe className="w-3.5 h-3.5 text-forest-emerald/60 mx-1.5" />
-            <button
-              onClick={() => changeLanguage("en")}
-              className={`px-2 py-0.5 rounded-lg text-xs font-semibold font-mono tracking-tight transition-all ${
-                lang === "en" ? "bg-forest-emerald text-sand-beige shadow-sm" : "text-forest-emerald hover:text-tribal-terracotta"
-              }`}
-            >
-              EN
-            </button>
-            <span className="text-forest-emerald/20 text-xs">|</span>
-            <button
-              onClick={() => changeLanguage("hi")}
-              className={`px-2 py-0.5 rounded-lg text-xs font-semibold transition-all ${
-                lang === "hi" ? "bg-forest-emerald text-sand-beige shadow-sm font-mukta" : "text-forest-emerald hover:text-tribal-terracotta font-mukta"
-              }`}
-            >
-              हिन्दी
-            </button>
-            <span className="text-forest-emerald/20 text-xs">|</span>
-            <button
-              onClick={() => changeLanguage("cg")}
-              className={`px-2 py-0.5 rounded-lg text-xs font-semibold transition-all ${
-                lang === "cg" ? "bg-forest-emerald text-sand-beige shadow-sm font-mukta" : "text-forest-emerald hover:text-tribal-terracotta font-mukta"
-              }`}
-            >
-              छत्तीसगढ़ी
-            </button>
-          </div>
-
-          {/* Accessibility UI Toggle */}
+    <header className="sticky top-0 z-50 w-full flex flex-col">
+      {/* Top Utility Bar (Desktop Only) */}
+      <div className="hidden lg:flex w-full bg-[#0A2A3B] text-white/90 px-4 sm:px-6 lg:px-8 py-1.5 justify-end items-center gap-6 border-b border-[#0A2A3B]/10">
+        
+        {/* Language Switcher */}
+        <div className="flex items-center gap-1.5">
+          <Globe className="w-3.5 h-3.5 text-white/60" />
           <button
-            onClick={toggleAccessibilityMode}
-            className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold transition-all border cursor-pointer ${
-              accessibilityMode
-                ? "bg-tribal-terracotta border-tribal-terracotta text-white shadow-md animate-pulse"
-                : "bg-white/80 border-charcoal-stone/10 text-charcoal-stone hover:bg-forest-emerald/5 hover:text-forest-emerald"
+            onClick={() => changeLanguage("en")}
+            className={`px-2 py-0.5 rounded text-xs font-semibold font-mono transition-colors ${
+              lang === "en" ? "bg-white/20 text-white" : "text-white/70 hover:text-white"
             }`}
-            title={accessibilityMode ? "Disable Accessibility Mode" : "Enable Accessibility Mode"}
           >
-            <span className="text-sm">👁️</span>
-            <span className="hidden sm:inline">
-              {accessibilityMode
-                ? (lang === "en" ? "Standard UI" : lang === "cg" ? "सामान्य मोड" : "सामान्य मोड")
-                : (lang === "en" ? "Easy Read" : lang === "cg" ? "सुगम मोड" : "सुगम मोड")}
-            </span>
+            EN
           </button>
+          <span className="text-white/20 text-xs">|</span>
+          <button
+            onClick={() => changeLanguage("hi")}
+            className={`px-2 py-0.5 rounded text-xs font-semibold font-mukta transition-colors ${
+              lang === "hi" ? "bg-white/20 text-white" : "text-white/70 hover:text-white"
+            }`}
+          >
+            हिन्दी
+          </button>
+          <span className="text-white/20 text-xs">|</span>
+          <button
+            onClick={() => changeLanguage("cg")}
+            className={`px-2 py-0.5 rounded text-xs font-semibold font-mukta transition-colors ${
+              lang === "cg" ? "bg-white/20 text-white" : "text-white/70 hover:text-white"
+            }`}
+          >
+            छत्तीसगढ़ी
+          </button>
+        </div>
 
-          {user ? (
-            <>
-              <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg border border-forest-emerald/20 bg-forest-emerald/5">
-                <UserCircle className="w-4 h-4 text-forest-emerald" />
-                <span className="text-xs font-semibold text-forest-emerald">
-                  {user.fullName.split(" ")[0]}
+        {/* Accessibility Toggle */}
+        <button
+          onClick={toggleAccessibilityMode}
+          className={`flex items-center gap-1.5 px-2.5 py-0.5 rounded text-xs font-bold transition-colors border ${
+            accessibilityMode
+              ? "bg-tribal-terracotta border-tribal-terracotta text-white"
+              : "bg-transparent border-white/20 text-white/90 hover:bg-white/10"
+          }`}
+          title={accessibilityMode ? "Disable Accessibility Mode" : "Enable Accessibility Mode"}
+        >
+          <span>👁️</span>
+          <span>
+            {accessibilityMode
+              ? (lang === "en" ? "Standard UI" : "सामान्य मोड")
+              : (lang === "en" ? "Easy Read" : "सुगम मोड")}
+          </span>
+        </button>
+
+        {/* User Menu */}
+        {user ? (
+          <div className="flex items-center gap-3 border-l border-white/20 pl-4">
+            <div className="flex items-center gap-1.5">
+              <UserCircle className="w-4 h-4 text-white/80" />
+              <span className="text-xs font-semibold text-white/90">
+                {user.fullName.split(" ")[0]}
+              </span>
+              <span className="text-[9px] font-mono font-bold uppercase text-tribal-terracotta ml-1 border border-tribal-terracotta/40 px-1 rounded">
+                {user.role}
+              </span>
+            </div>
+            {(user.role === "ADMIN" || user.role === "SUPER_ADMIN") && (
+              <Link
+                href="/admin"
+                className="text-[10px] font-mono font-bold uppercase text-white/80 hover:text-white transition-colors"
+              >
+                {t("nav.govt_portal")}
+              </Link>
+            )}
+            <button
+              onClick={() => logout()}
+              className="text-white/50 hover:text-red-400 transition-colors"
+              title={t("nav.logout")}
+            >
+              <LogOut className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        ) : (
+          <div className="flex items-center gap-3 border-l border-white/20 pl-4">
+            <Link
+              href="/login"
+              className="text-xs font-sans font-bold text-white/80 hover:text-white transition-all"
+            >
+              {t("nav.login")}
+            </Link>
+            <Link
+              href="/register"
+              className="text-xs font-bold bg-white text-[#0A2A3B] px-3 py-1 rounded transition-all hover:bg-gray-200"
+            >
+              {t("nav.signup")}
+            </Link>
+          </div>
+        )}
+      </div>
+
+      {/* Main Navbar */}
+      <div className="w-full glass-panel border-b border-white/40 shadow-sm bg-sand-beige/95 backdrop-blur-md">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between">
+          
+          {/* Brand Logo */}
+          <Link href="/" className="flex items-center gap-3 group">
+            <div className="flex flex-col justify-center">
+              <div className="flex flex-col leading-[0.9]">
+                <span className="font-mukta text-[17px] font-bold text-[#0A2A3B] group-hover:text-tribal-terracotta transition-colors tracking-wide">
+                  हमार
                 </span>
-                <span className="text-[9px] font-mono font-bold uppercase text-tribal-terracotta ml-1">
-                  {user.role}
+                <span className="font-serif text-[22px] font-bold text-[#0A2A3B] group-hover:text-tribal-terracotta transition-colors">
+                  Chhattisgarh
                 </span>
               </div>
-              {(user.role === "ADMIN" || user.role === "SUPER_ADMIN") && (
-                <Link
-                  href="/admin"
-                  className="hidden sm:inline-flex text-xs font-mono font-bold px-3.5 py-1.5 rounded-lg border border-forest-emerald/30 text-forest-emerald hover:bg-forest-emerald hover:text-sand-beige transition-all"
-                >
-                  {t("nav.govt_portal")}
-                </Link>
-              )}
-              <button
-                onClick={() => logout()}
-                className="text-charcoal-stone/50 hover:text-red-500 transition-colors p-2"
-                title={t("nav.logout")}
-              >
-                <LogOut className="w-4 h-4" />
-              </button>
-            </>
-          ) : (
-            <>
-              <Link
-                href="/login"
-                className="hidden sm:inline-flex text-xs font-sans font-bold px-3 py-2 text-charcoal-stone/70 hover:text-forest-emerald transition-all"
-              >
-                {t("nav.login")}
-              </Link>
-              <Link
-                href="/register"
-                className="hidden sm:inline-flex items-center justify-center text-xs font-bold bg-forest-emerald hover:bg-tribal-terracotta text-sand-beige px-4 py-2 rounded-xl shadow-md transition-all duration-300"
-              >
-                {t("nav.signup")}
-              </Link>
-            </>
-          )}
-
-          <Link
-            href="/planner"
-            className="hidden lg:inline-flex items-center justify-center text-sm font-bold bg-forest-emerald hover:bg-tribal-terracotta text-sand-beige px-4 py-2.5 rounded-xl shadow-md shadow-forest-emerald/10 transition-all duration-300 hover:scale-[1.02]"
-          >
-            {t("nav.plan_trip")}
+              <span className="text-[9px] font-mono tracking-widest text-tribal-terracotta uppercase mt-1">
+                {t("home.heading_real")}
+              </span>
+            </div>
           </Link>
 
-          {/* Mobile hamburger */}
-          <button
-            onClick={() => setMobileOpen(!mobileOpen)}
-            className="lg:hidden w-10 h-10 rounded-xl border border-charcoal-stone/10 flex items-center justify-center bg-white/60 hover:bg-white transition-all"
-            aria-label="Toggle mobile menu"
-          >
-            {mobileOpen ? (
-              <X className="w-5 h-5 text-forest-emerald" />
-            ) : (
-              <Menu className="w-5 h-5 text-forest-emerald" />
-            )}
-          </button>
+          {/* Desktop Navigation */}
+          <nav className="hidden lg:flex items-center gap-6">
+            {NAV_LINKS.map(({ href, key }) => (
+              <Link
+                key={href}
+                href={href}
+                className="text-sm font-semibold text-charcoal-stone/85 hover:text-forest-emerald transition-colors"
+              >
+                {t(key)}
+              </Link>
+            ))}
+            <Link
+              href="/sos"
+              className="text-sm font-semibold text-red-600 hover:text-red-700 transition-colors flex items-center gap-1.5 animate-pulse"
+            >
+              <span className="w-2 h-2 rounded-full bg-red-600" />
+              {t("nav.sos")}
+            </Link>
+          </nav>
+
+          {/* Right Action Menu (Mobile/Desktop CTA) */}
+          <div className="flex items-center gap-4">
+            <Link
+              href="/planner"
+              className="hidden lg:inline-flex items-center justify-center text-sm font-bold bg-forest-emerald hover:bg-tribal-terracotta text-sand-beige px-4 py-2 rounded-xl shadow-md transition-all duration-300 hover:scale-[1.02]"
+            >
+              {t("nav.plan_trip")}
+            </Link>
+
+            {/* Mobile hamburger */}
+            <button
+              onClick={() => setMobileOpen(!mobileOpen)}
+              className="lg:hidden w-10 h-10 rounded-xl border border-charcoal-stone/10 flex items-center justify-center bg-white/60 hover:bg-white transition-all"
+              aria-label="Toggle mobile menu"
+            >
+              {mobileOpen ? (
+                <X className="w-5 h-5 text-forest-emerald" />
+              ) : (
+                <Menu className="w-5 h-5 text-forest-emerald" />
+              )}
+            </button>
+          </div>
         </div>
       </div>
 

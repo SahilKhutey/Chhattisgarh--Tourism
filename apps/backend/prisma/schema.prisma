@@ -179,7 +179,40 @@ model CreatorProfile {
   instagram String?
   youtube   String?
 
-  user      User    @relation(fields: [userId], references: [id])
+  // Added from frontend mocks
+  district           String   @default("Unknown")
+  followers          String   @default("0")
+  contentCount       Int      @default(0)
+  engagementScore    Int      @default(0)
+  tourismScore       Int      @default(0)
+  ecoSafeScore       Int      @default(0)
+  categories         String   @default("[]") // JSON string array
+  languages          String   @default("[]") // JSON string array
+  verificationBadges String   @default("[]") // JSON string array
+
+  user      User           @relation(fields: [userId], references: [id])
+  videos    CreatorVideo[]
+}
+
+model CreatorVideo {
+  id           String  @id @default(uuid())
+  title        String
+  location     String
+  district     String
+  category     String
+  language     String
+  views        String  @default("0")
+  duration     String  @default("0:00")
+  thumbnailUrl String
+  videoUrl     String?
+  isTrending   Boolean @default(false)
+  isHiddenGem  Boolean @default(false)
+
+  creatorId    String
+  creator      CreatorProfile @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

@@ -4,13 +4,33 @@ import React, { use } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, MapPin, CheckCircle, Leaf, Sparkles, Globe, Video, MessageCircle, BarChart2, Compass } from "lucide-react";
-import { CREATORS, CREATOR_VIDEOS, VerificationBadge } from "../../data/creators";
-import TourismReelCard from "../../../components/creators/TourismReelCard";
+import { fetchCreatorById, type Creator, type CreatorVideo, type VerificationBadge } from "../../../data/api";
+import TourismReelCard from "../../../../components/creators/TourismReelCard";
 
 export default function CreatorProfile({ params }: { params: Promise<{ creator_id: string }> }) {
   const resolvedParams = use(params);
-  const creator = CREATORS.find(c => c.id === resolvedParams.creator_id);
-  const creatorVideos = CREATOR_VIDEOS.filter(v => v.creatorId === resolvedParams.creator_id);
+  const [creator, setCreator] = React.useState<Creator | null>(null);
+  const [creatorVideos, setCreatorVideos] = React.useState<CreatorVideo[]>([]);
+  const [isLoading, setIsLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    fetchCreatorById(resolvedParams.creator_id).then(res => {
+      setCreator(res.creator);
+      setCreatorVideos(res.videos);
+      setIsLoading(false);
+    });
+  }, [resolvedParams.creator_id]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-zinc-50 dark:bg-black text-zinc-900 dark:text-zinc-100 pt-20">
+        <div className="text-center animate-pulse">
+          <Sparkles className="w-8 h-8 text-emerald-500 mx-auto mb-4" />
+          <h1 className="text-2xl font-bold">Loading Creator...</h1>
+        </div>
+      </div>
+    );
+  }
 
   if (!creator) {
     return (
@@ -139,18 +159,18 @@ export default function CreatorProfile({ params }: { params: Promise<{ creator_i
                 </div>
               </div>
 
-              <div className="mt-6 flex justify-between items-center text-sm pt-6 border-t border-zinc-200 dark:border-zinc-800">
-                <div className="text-center">
-                  <div className="font-black text-xl">{creator.followers}</div>
-                  <div className="text-zinc-500 text-xs">Followers</div>
+              <div className="mt-6 grid grid-cols-2 gap-3 text-sm pt-6 border-t border-zinc-200 dark:border-zinc-800">
+                <div className="bg-white dark:bg-zinc-900 rounded-xl p-3 text-center border border-zinc-100 dark:border-zinc-800/60 shadow-sm">
+                  <div className="font-black text-xl text-zinc-900 dark:text-zinc-100">{creator.followers}</div>
+                  <div className="text-zinc-500 text-[10px] font-bold uppercase tracking-wider mt-0.5">Followers</div>
                 </div>
-                <div className="text-center">
-                  <div className="font-black text-xl">{creator.contentCount}</div>
-                  <div className="text-zinc-500 text-xs">Stories</div>
+                <div className="bg-white dark:bg-zinc-900 rounded-xl p-3 text-center border border-zinc-100 dark:border-zinc-800/60 shadow-sm">
+                  <div className="font-black text-xl text-zinc-900 dark:text-zinc-100">{creator.contentCount}</div>
+                  <div className="text-zinc-500 text-[10px] font-bold uppercase tracking-wider mt-0.5">Stories</div>
                 </div>
-                <div className="text-center">
-                  <div className="font-black text-xl">{creator.languages.join(", ")}</div>
-                  <div className="text-zinc-500 text-xs">Languages</div>
+                <div className="col-span-2 bg-white dark:bg-zinc-900 rounded-xl p-3 text-center border border-zinc-100 dark:border-zinc-800/60 shadow-sm">
+                  <div className="font-black text-base text-zinc-800 dark:text-zinc-200">{creator.languages.join(", ")}</div>
+                  <div className="text-zinc-500 text-[10px] font-bold uppercase tracking-wider mt-0.5">Languages</div>
                 </div>
               </div>
             </div>

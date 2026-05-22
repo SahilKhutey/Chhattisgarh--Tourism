@@ -24,7 +24,6 @@ import {
 } from "lucide-react";
 import { useLanguage } from "../../context/LanguageContext";
 import { get, set } from "idb-keyval";
-import { DESTINATIONS } from "../data/destinations";
 
 interface ItineraryItem {
   time: string;

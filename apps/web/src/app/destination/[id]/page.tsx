@@ -21,8 +21,8 @@ import {
   Volume2,
   VolumeX
 } from "lucide-react";
-import { getDestinationById, DESTINATIONS } from "../../data/destinations";
-import { useLanguage } from "../../../context/LanguageContext";
+import { fetchPlaceBySlug, fetchPlaces, type Destination } from "../../../data/api";
+import { useLanguage } from "../../../../context/LanguageContext";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -31,8 +31,22 @@ interface PageProps {
 export default function DestinationDetailPage({ params }: PageProps) {
   // Resolve the dynamic params promise in Next.js 15 style
   const resolvedParams = use(params);
-  const destination = getDestinationById(resolvedParams.id);
+  const [destination, setDestination] = useState<Destination | null>(null);
+  const [destinations, setDestinations] = useState<Destination[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"story" | "travel" | "eco" | "food">("story");
+  
+  useEffect(() => {
+    Promise.all([
+      fetchPlaceBySlug(resolvedParams.id),
+      fetchPlaces()
+    ]).then(([dest, all]) => {
+      setDestination(dest);
+      setDestinations(all);
+      setIsLoading(false);
+    });
+  }, [resolvedParams.id]);
+
   const {
     lang, t, speakText, stopSpeaking, isSpeaking, tDynamic,
     isPlayingAudio, audioProgress, audioDuration, audioNarrator,
@@ -55,6 +69,15 @@ export default function DestinationDetailPage({ params }: PageProps) {
   // Format seconds → MM:SS display
   const formatTime = (sec: number) =>
     `${Math.floor(sec / 60)}:${String(Math.floor(sec % 60)).padStart(2, "0")}`;
+
+  if (isLoading) {
+    return (
+      <div className="w-full min-h-[70vh] flex flex-col items-center justify-center gap-4 bg-sand-beige text-charcoal-stone p-6 animate-pulse">
+        <Compass className="w-16 h-16 text-forest-emerald animate-spin-slow" />
+        <h2 className="text-2xl font-sans font-bold">Loading Destination Profile...</h2>
+      </div>
+    );
+  }
 
   if (!destination) {
     return (
@@ -82,22 +105,22 @@ export default function DestinationDetailPage({ params }: PageProps) {
     return en;
   };
 
-  const localizedName = getLocalizedVal(destination.id, "name", destination.name, destination.name_hi, destination.name_cg);
-  const localizedTagline = getLocalizedVal(destination.id, "tagline", destination.tagline, destination.tagline_hi, destination.tagline_cg);
-  const localizedStoryTitle = getLocalizedVal(destination.id, "storyTitle", destination.storyTitle, destination.storyTitle_hi, destination.storyTitle_cg);
-  const localizedStory = getLocalizedVal(destination.id, "story", destination.story, destination.story_hi, destination.story_cg);
-  const localizedTimings = getLocalizedVal(destination.id, "timings", destination.timings, destination.timings_hi, destination.timings_cg);
-  const localizedRoutes = getLocalizedVal(destination.id, "routes", destination.routes, destination.routes_hi, destination.routes_cg);
-  const localizedBestTime = getLocalizedVal(destination.id, "bestTime", destination.bestTime, destination.bestTime_hi, destination.bestTime_cg);
-  const localizedSeasonalAdvice = getLocalizedVal(destination.id, "seasonalAdvice", destination.seasonalAdvice, destination.seasonalAdvice_hi, destination.seasonalAdvice_cg);
-  const localizedSafety = getLocalizedVal(destination.id, "safety", destination.safety, destination.safety_hi, destination.safety_cg);
-  const localizedEcoGuidance = getLocalizedVal(destination.id, "ecoGuidance", destination.ecoGuidance, destination.ecoGuidance_hi, destination.ecoGuidance_cg);
-  const localizedLocalInsights = getLocalizedVal(destination.id, "localInsights", destination.localInsights, destination.localInsights_hi, destination.localInsights_cg);
-  const localizedLocalFood = getLocalizedVal(destination.id, "localFood", destination.localFood, destination.localFood_hi, destination.localFood_cg);
-  const localizedPhotographySpots = getLocalizedVal(destination.id, "photographySpots", destination.photographySpots, destination.photographySpots_hi, destination.photographySpots_cg);
+  const localizedName = getLocalizedVal(destination.id, "name", destination.name, (destination as any).name_hi, (destination as any).name_cg);
+  const localizedTagline = getLocalizedVal(destination.id, "tagline", destination.tagline, (destination as any).tagline_hi, (destination as any).tagline_cg);
+  const localizedStoryTitle = getLocalizedVal(destination.id, "storyTitle", destination.storyTitle, (destination as any).storyTitle_hi, (destination as any).storyTitle_cg);
+  const localizedStory = getLocalizedVal(destination.id, "story", destination.story, (destination as any).story_hi, (destination as any).story_cg);
+  const localizedTimings = getLocalizedVal(destination.id, "timings", destination.timings, (destination as any).timings_hi, (destination as any).timings_cg);
+  const localizedRoutes = getLocalizedVal(destination.id, "routes", destination.routes, (destination as any).routes_hi, (destination as any).routes_cg);
+  const localizedBestTime = getLocalizedVal(destination.id, "bestTime", destination.bestTime, (destination as any).bestTime_hi, (destination as any).bestTime_cg);
+  const localizedSeasonalAdvice = getLocalizedVal(destination.id, "seasonalAdvice", destination.seasonalAdvice, (destination as any).seasonalAdvice_hi, (destination as any).seasonalAdvice_cg);
+  const localizedSafety = getLocalizedVal(destination.id, "safety", destination.safety, (destination as any).safety_hi, (destination as any).safety_cg);
+  const localizedEcoGuidance = getLocalizedVal(destination.id, "ecoGuidance", destination.ecoGuidance, (destination as any).ecoGuidance_hi, (destination as any).ecoGuidance_cg);
+  const localizedLocalInsights = getLocalizedVal(destination.id, "localInsights", destination.localInsights, (destination as any).localInsights_hi, (destination as any).localInsights_cg);
+  const localizedLocalFood = getLocalizedVal(destination.id, "localFood", destination.localFood, (destination as any).localFood_hi, (destination as any).localFood_cg);
+  const localizedPhotographySpots = getLocalizedVal(destination.id, "photographySpots", destination.photographySpots, (destination as any).photographySpots_hi, (destination as any).photographySpots_cg);
 
   // Get other destinations excluding the current one for "Nearby Related Nodes" section
-  const relatedDestinations = DESTINATIONS.filter(d => d.id !== destination.id).slice(0, 3);
+  const relatedDestinations = destinations.filter(d => d.id !== destination.id).slice(0, 3);
 
   return (
     <div className="w-full flex flex-col bg-sand-beige text-charcoal-stone">
@@ -106,7 +129,7 @@ export default function DestinationDetailPage({ params }: PageProps) {
       <section className="relative w-full h-[60vh] sm:h-[65vh] flex items-end overflow-hidden bg-charcoal-stone border-b-8 border-tribal-terracotta">
         <div className="absolute inset-0 z-0">
           <Image
-            src={destination.heroImage || "/images/bastar/bastar-hero.webp"}
+            src={destination.heroImage || "https://images.unsplash.com/photo-1432405972618-c60002a157c5?auto=format&fit=crop&w=1200&q=80"}
             alt={localizedName}
             fill
             priority
@@ -505,7 +528,7 @@ export default function DestinationDetailPage({ params }: PageProps) {
                     className="glass-panel p-4 rounded-xl shadow-sm hover:shadow-md hover:scale-[1.01] transition-all flex items-center gap-4 border border-white/60 text-left group"
                   >
                     <Image
-                      src={rel.heroImage || "/images/bastar/bastar-hero.webp"}
+                      src={rel.heroImage || "https://images.unsplash.com/photo-1432405972618-c60002a157c5?auto=format&fit=crop&w=1200&q=80"}
                       alt={relName}
                       width={56}
                       height={56}
