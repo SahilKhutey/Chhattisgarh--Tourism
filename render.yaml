@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: cg-tourism-backend
+    env: node
+    buildCommand: "pnpm install && pnpm run build --filter backend"
+    startCommand: "cd apps/backend && pnpm run start"
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: CORS_ALLOWED_ORIGINS
+        value: "https://cg-tourism.vercel.app" # Will be updated with actual Vercel domain
