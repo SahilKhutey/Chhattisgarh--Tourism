@@ -2,5 +2,5 @@
   "framework": "nextjs",
   "buildCommand": "cd ../../ && npx turbo run build --filter=web",
   "devCommand": "cd ../../ && npx turbo run dev --filter=web",
-  "installCommand": "cd ../../ && pnpm install"
+  "installCommand": "cd ../../ && npm install -g pnpm@9.14.0 && pnpm install"
 }
