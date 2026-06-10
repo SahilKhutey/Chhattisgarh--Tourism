@@ -1,27 +1,23 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
 import { 
   ShieldAlert, 
   Phone, 
-  MapPin, 
   AlertTriangle, 
-  Eye, 
   Share2, 
   Flame, 
   Droplet, 
   CloudRain,
-  Compass, 
-  ArrowRight,
   ShieldCheck,
   CheckCircle,
   Activity,
-  Heart,
   Volume2,
   VolumeX
 } from "lucide-react";
 import { useLanguage } from "../../context/LanguageContext";
+import { useAuthStore } from "../../store/auth-store";
+import { getApiBase } from "../data/api-config";
 
 interface EmergencyContact {
   department: string;
@@ -51,11 +47,23 @@ interface IncidentReport {
   message_cg?: string;
 }
 
+interface SosDispatchDetails {
+  referenceId?: string;
+  etaMinutes?: number;
+  message?: string;
+}
+
 export default function SOSPage() {
   const [activeDistrict, setActiveDistrict] = useState<string>("bastar");
   const [sosTriggered, setSosTriggered] = useState<boolean>(false);
+  const [isSosDispatching, setIsSosDispatching] = useState<boolean>(false);
+  const [dispatchDetails, setDispatchDetails] = useState<SosDispatchDetails | null>(null);
+  const [liveHelplines, setLiveHelplines] = useState<EmergencyContact[]>([]);
   const [safetyShared, setSafetyShared] = useState<boolean>(false);
+  
   const { lang, t, speakText, stopSpeaking, isSpeaking } = useLanguage();
+  const { user } = useAuthStore();
+  
   const [speakingReportIndex, setSpeakingReportIndex] = useState<number | null>(null);
 
   // Stop speaking when user navigates away to prevent speech continuing inappropriately
@@ -70,6 +78,22 @@ export default function SOSPage() {
       setTimeout(() => setSpeakingReportIndex(null), 0);
     }
   }, [isSpeaking]);
+
+  useEffect(() => {
+    fetch(`${getApiBase()}/emergency/helplines?district=${activeDistrict}`)
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data) && data.length > 0) {
+          setLiveHelplines(data);
+          return;
+        }
+        setLiveHelplines(emergencyContacts[activeDistrict] || []);
+      })
+      .catch(() => {
+        setLiveHelplines(emergencyContacts[activeDistrict] || []);
+      });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeDistrict]);
 
   const emergencyContacts: Record<string, EmergencyContact[]> = {
     bastar: [
@@ -245,8 +269,42 @@ export default function SOSPage() {
     }
   ];
 
-  const handleSOSTrigger = () => {
-    setSosTriggered(!sosTriggered);
+  const handleSOSTrigger = async () => {
+    if (sosTriggered) {
+      setSosTriggered(false);
+      setDispatchDetails(null);
+      return;
+    }
+
+    setSosTriggered(true);
+    setIsSosDispatching(true);
+
+    try {
+      const position = await new Promise<GeolocationPosition>((resolve, reject) => {
+        if (!navigator.geolocation) return reject("No geo");
+        navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 10000 });
+      }).catch(() => null);
+
+      const payload = {
+        touristName: user?.fullName || "Unregistered Tourist",
+        touristPhone: "9999999999",
+        latitude: position?.coords.latitude || 19.0760, // Default Jagdalpur Bastar if blocked
+        longitude: position?.coords.longitude || 82.0253,
+      };
+
+      const res = await fetch(`${getApiBase()}/emergency/sos`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      setDispatchDetails(data);
+    } catch (err) {
+      console.error(err);
+      setDispatchDetails({ message: "Network failure. Calling 112 directly..." });
+    } finally {
+      setIsSosDispatching(false);
+    }
   };
 
   const getLocalizedVal = (en: string, hi?: string, cg?: string) => {
@@ -321,9 +379,11 @@ export default function SOSPage() {
               <div className="p-4 rounded-2xl bg-red-600 text-white flex items-center gap-3 animate-pulse text-left w-full">
                 <Activity className="w-6 h-6 shrink-0 text-white" />
                 <div className="flex flex-col">
-                  <span className="text-xs font-mono font-bold uppercase">{t("sos.broadcasting_telemetry")}</span>
-                  <span className="text-[10px] text-white/80">
-                    {t("sos.broadcasting_desc")}
+                  <span className="text-xs font-mono font-bold uppercase">
+                    {isSosDispatching ? t("sos.broadcasting_telemetry") : "Rescue Dispatched"}
+                  </span>
+                  <span className="text-[10px] text-white/80 mt-1">
+                    {isSosDispatching ? t("sos.broadcasting_desc") : dispatchDetails?.message}
                   </span>
                 </div>
               </div>
@@ -415,27 +475,27 @@ export default function SOSPage() {
 
             {/* Helplines List */}
             <div className="flex flex-col gap-3 max-h-[300px] overflow-y-auto pr-1">
-              {emergencyContacts[activeDistrict].map((contact, index) => {
-                const dept = getLocalizedVal(contact.department, contact.department_hi, contact.department_cg);
-                const scope = getLocalizedVal(contact.scope, contact.scope_hi, contact.scope_cg);
-                const notes = getLocalizedVal(contact.notes, contact.notes_hi, contact.notes_cg);
+              {liveHelplines.map((station, index) => {
+                const dept = station.department;
+                const scope = station.scope;
+                const notes = station.notes;
                 return (
                   <div key={index} className="p-3.5 rounded-xl bg-white border border-charcoal-stone/10 flex flex-col gap-1.5 animate-fadeIn">
                     <div className="flex justify-between items-start gap-1">
                       <span className="font-sans font-bold text-xs text-forest-emerald leading-tight">{dept}</span>
                       <span className="text-[8px] font-mono bg-charcoal-stone/5 text-charcoal-stone/60 px-1.5 py-0.5 rounded uppercase shrink-0">
-                        {notes.split(" ")[0]}
+                        {notes}
                       </span>
                     </div>
                     <span className="text-[10px] text-charcoal-stone/50 font-sans leading-tight">
                       {scope}
                     </span>
                     <a 
-                      href={`tel:${contact.number}`}
+                      href={`tel:${station.number}`}
                       className="text-xs font-mono font-bold text-tribal-terracotta hover:underline inline-flex items-center gap-1.5 mt-1"
                     >
                       <Phone className="w-3.5 h-3.5 text-tribal-terracotta shrink-0" />
-                      {contact.number}
+                      {station.number}
                     </a>
                   </div>
                 );
@@ -517,4 +577,3 @@ export default function SOSPage() {
     </div>
   );
 }
-

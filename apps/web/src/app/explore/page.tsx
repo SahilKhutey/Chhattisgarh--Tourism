@@ -1,13 +1,14 @@
 "use client";
 
-import { useState, useEffect, useCallback, Suspense } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import Image from "next/image";
+
+import { useRouter } from "next/navigation";
 import {
   Search, Filter, Layers, Droplets, Trees, Landmark, Users,
-  Eye, MapPin, Star, Leaf, ShieldCheck, Palette, ChevronRight,
-  AlertCircle, Compass, Binoculars, X, SlidersHorizontal,
+  Eye, MapPin, Star, Leaf, ShieldCheck, Palette, ChevronRight, ChevronLeft,
+  AlertCircle, Compass, X, SlidersHorizontal,
 } from "lucide-react";
 import { fetchPlaces, type Destination } from "../data/api";
 import type { MapLayer } from "../../components/ChhattisgardhMap";
@@ -69,7 +70,6 @@ const LAYERS: { id: MapLayer; label: string; desc: string; icon: React.ElementTy
 
 // ── Sub-filters ────────────────────────────────────────────────────────────
 const DISTRICTS = ["All", "Bastar", "Raipur", "Bilaspur", "Kawardha", "Surguja", "Raigarh", "Durg"];
-const EXPERIENCES = ["Family-Friendly", "Eco-First", "Photography", "Offbeat"];
 
 export default function ExplorePage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -80,6 +80,8 @@ export default function ExplorePage() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [creatorSpots, setCreatorSpots] = useState<{ name: string; lat: number; lng: number }[]>([]);
   const [destinations, setDestinations] = useState<Destination[]>([]);
+  const carouselRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
 
   useEffect(() => {
     fetchPlaces().then(setDestinations);
@@ -118,6 +120,13 @@ export default function ExplorePage() {
   const handleSelectDestination = useCallback((id: string) => {
     setSelectedId((prev) => (prev === id ? null : id));
   }, []);
+
+  const scrollCarousel = (direction: "left" | "right") => {
+    if (carouselRef.current) {
+      const scrollAmount = 300;
+      carouselRef.current.scrollBy({ left: direction === "left" ? -scrollAmount : scrollAmount, behavior: "smooth" });
+    }
+  };
 
   return (
     <div className="w-full min-h-screen bg-sand-beige relative overflow-hidden flex flex-col">
@@ -161,125 +170,15 @@ export default function ExplorePage() {
 
       {/* ── Main Content Area ─────────────────────────────────────────────── */}
       <div className="max-w-[1400px] mx-auto w-full px-4 sm:px-6 lg:px-8 -mt-12 relative z-20 flex-1 pb-12 flex flex-col">
-        <div className="bg-white rounded-3xl shadow-xl border border-forest-emerald/10 overflow-hidden flex-1 flex flex-col lg:flex-row h-[800px]">
+        <div className="bg-white rounded-3xl shadow-xl border border-forest-emerald/10 overflow-hidden flex-1 flex flex-col h-[85vh]">
           
-          {/* ── Left Sidebar (Destinations) ─────────────────────────────────── */}
-          <div className={`flex flex-col bg-sand-beige/30 border-r border-forest-emerald/10 transition-all duration-300 ease-in-out shrink-0 ${sidebarOpen ? 'w-full lg:w-[420px]' : 'w-0 overflow-hidden lg:w-0'}`}>
-            
-            {/* Category Tabs */}
-            <div className="p-4 border-b border-forest-emerald/10 bg-white/50 backdrop-blur-sm shrink-0">
-              <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-2">
-                {CATEGORIES.map((cat) => {
-                  const Icon = cat.icon;
-                  const isActive = activeCategory === cat.id;
-                  return (
-                    <button
-                      key={cat.id}
-                      onClick={() => setActiveCategory(cat.id)}
-                      className={`flex items-center gap-2 px-4 py-2.5 rounded-xl whitespace-nowrap transition-all duration-300 ${isActive ? 'bg-forest-emerald text-white shadow-md' : 'bg-white text-charcoal-stone border border-forest-emerald/10 hover:border-forest-emerald/30 hover:bg-forest-emerald/5'}`}
-                    >
-                      <Icon className={`w-4 h-4 ${isActive ? 'text-tribal-terracotta' : cat.color}`} />
-                      <span className="text-sm font-bold">{cat.label}</span>
-                    </button>
-                  );
-                })}
-              </div>
-
-              {/* Sub-filters (District) */}
-              <div className="flex items-center gap-2 mt-2 overflow-x-auto scrollbar-hide pb-1">
-                <Filter className="w-3.5 h-3.5 text-forest-emerald/60 shrink-0 mr-1" />
-                {DISTRICTS.map((dist) => (
-                  <button
-                    key={dist}
-                    onClick={() => setSelectedDistrict(dist)}
-                    className={`px-3 py-1 rounded-full text-xs font-semibold transition-colors ${selectedDistrict === dist ? 'bg-tribal-terracotta text-white' : 'bg-white text-charcoal-stone/70 border border-charcoal-stone/10 hover:bg-sand-beige'}`}
-                  >
-                    {dist}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Destination List */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4 relative scroll-smooth">
-              {filteredDestinations.length === 0 ? (
-                <div className="flex flex-col items-center justify-center h-48 text-center px-4">
-                  <div className="w-16 h-16 rounded-full bg-forest-emerald/5 flex items-center justify-center mb-3">
-                    <AlertCircle className="w-8 h-8 text-forest-emerald/40" />
-                  </div>
-                  <h3 className="text-charcoal-stone font-bold">No destinations found</h3>
-                  <p className="text-xs text-charcoal-stone/60 mt-1">Try adjusting your filters or search query.</p>
-                  <button onClick={() => { setSearchQuery(""); setActiveCategory("all"); setSelectedDistrict("All"); }} className="mt-4 text-xs font-bold text-tribal-terracotta hover:underline">
-                    Clear all filters
-                  </button>
-                </div>
-              ) : (
-                filteredDestinations.map((dest) => {
-                  const isSelected = selectedId === dest.id;
-                  return (
-                    <div
-                      key={dest.id}
-                      onClick={() => handleSelectDestination(dest.id)}
-                      className={`group flex flex-col bg-white rounded-2xl border-2 transition-all duration-300 cursor-pointer overflow-hidden ${isSelected ? 'border-tribal-terracotta shadow-lg shadow-tribal-terracotta/10 scale-[1.02]' : 'border-forest-emerald/10 hover:border-forest-emerald/30 hover:shadow-md'}`}
-                    >
-                      <div className="relative h-32 w-full overflow-hidden">
-                        <Image
-                          src={dest.heroImage || "https://images.unsplash.com/photo-1432405972618-c60002a157c5?auto=format&fit=crop&w=1200&q=80"}
-                          alt={dest.name}
-                          fill
-                          sizes="(max-width: 768px) 100vw, 33vw"
-                          className="object-cover transition-transform duration-700 group-hover:scale-110"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-charcoal-stone/80 to-transparent" />
-                        <div className="absolute bottom-3 left-3 flex flex-col">
-                          <span className="text-white font-bold text-sm drop-shadow-md">{dest.name}</span>
-                          <span className="text-white/80 text-[10px] font-mono tracking-widest uppercase flex items-center gap-1">
-                            <MapPin className="w-3 h-3" /> {dest.district || "Chhattisgarh"}
-                          </span>
-                        </div>
-                        <div className="absolute top-3 right-3 bg-white/95 backdrop-blur-md px-2 py-1 rounded-lg flex items-center gap-1 text-xs font-bold text-charcoal-stone shadow-sm">
-                          <Star className="w-3.5 h-3.5 text-tribal-terracotta fill-tribal-terracotta" />
-                          {dest.rating}
-                        </div>
-                      </div>
-                      
-                      {isSelected && (
-                        <div className="p-4 bg-sand-beige/20 border-t border-forest-emerald/10">
-                          <p className="text-xs text-charcoal-stone/80 italic mb-3 leading-relaxed">&quot;{dest.tagline}&quot;</p>
-                          <div className="grid grid-cols-2 gap-2 mb-4">
-                            <div className="flex items-center gap-2 bg-white p-2 rounded-xl border border-forest-emerald/5">
-                              <Leaf className="w-4 h-4 text-green-600" />
-                              <div className="flex flex-col">
-                                <span className="text-[9px] uppercase font-mono text-charcoal-stone/50 font-bold">Biodiversity</span>
-                                <span className="text-xs font-bold text-charcoal-stone">{dest.biodiversityScore}/100</span>
-                              </div>
-                            </div>
-                            <div className="flex items-center gap-2 bg-white p-2 rounded-xl border border-forest-emerald/5">
-                              <Users className="w-4 h-4 text-blue-600" />
-                              <div className="flex flex-col">
-                                <span className="text-[9px] uppercase font-mono text-charcoal-stone/50 font-bold">Capacity</span>
-                                <span className="text-xs font-bold text-charcoal-stone">{dest.crowdCapacity} pax</span>
-                              </div>
-                            </div>
-                          </div>
-                          <Link href={`/destination/${dest.id}`} className="w-full flex items-center justify-center gap-2 py-2.5 bg-forest-emerald hover:bg-tribal-terracotta text-white rounded-xl text-sm font-bold transition-colors">
-                            <Eye className="w-4 h-4" /> View Full Details
-                          </Link>
-                        </div>
-                      )}
-                    </div>
-                  );
-                })
-              )}
-            </div>
-          </div>
-
-          {/* ── Right Map Area ──────────────────────────────────────────────── */}
-          <div className="flex-1 relative bg-charcoal-stone flex flex-col h-full min-h-[400px]">
-            {/* Toggle Sidebar Button (Mobile/Desktop) */}
+          {/* ── Top Map Area ──────────────────────────────────────────────── */}
+          <div className="flex-1 relative bg-charcoal-stone flex flex-col h-full min-h-[300px]">
+            {/* Toggle Sidebar Button */}
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
               className="absolute top-4 left-4 z-[1000] w-10 h-10 bg-white rounded-xl shadow-lg border border-charcoal-stone/10 flex items-center justify-center text-charcoal-stone hover:text-tribal-terracotta transition-colors"
+              title="Toggle Destinations"
             >
               {sidebarOpen ? <X className="w-5 h-5" /> : <SlidersHorizontal className="w-5 h-5" />}
             </button>
@@ -347,8 +246,140 @@ export default function ExplorePage() {
             </div>
           </div>
 
+          {/* ── Bottom Carousel (Destinations) ─────────────────────────────────── */}
+          <div className={`flex flex-col bg-sand-beige/30 border-t border-forest-emerald/10 transition-all duration-300 ease-in-out shrink-0 ${sidebarOpen ? 'h-[360px]' : 'h-0 overflow-hidden'}`}>
+            
+            {/* Category Tabs */}
+            <div className="p-4 border-b border-forest-emerald/10 bg-white/50 backdrop-blur-sm shrink-0">
+              <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-2">
+                {CATEGORIES.map((cat) => {
+                  const Icon = cat.icon;
+                  const isActive = activeCategory === cat.id;
+                  return (
+                    <button
+                      key={cat.id}
+                      onClick={() => setActiveCategory(cat.id)}
+                      className={`flex items-center gap-2 px-4 py-2.5 rounded-xl whitespace-nowrap transition-all duration-300 ${isActive ? 'bg-forest-emerald text-white shadow-md' : 'bg-white text-charcoal-stone border border-forest-emerald/10 hover:border-forest-emerald/30 hover:bg-forest-emerald/5'}`}
+                    >
+                      <Icon className={`w-4 h-4 ${isActive ? 'text-tribal-terracotta' : cat.color}`} />
+                      <span className="text-sm font-bold">{cat.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Sub-filters (District) */}
+              <div className="flex items-center gap-2 mt-2 overflow-x-auto scrollbar-hide pb-1">
+                <Filter className="w-3.5 h-3.5 text-forest-emerald/60 shrink-0 mr-1" />
+                {DISTRICTS.map((dist) => (
+                  <button
+                    key={dist}
+                    onClick={() => setSelectedDistrict(dist)}
+                    className={`px-3 py-1 rounded-full text-xs font-semibold transition-colors ${selectedDistrict === dist ? 'bg-tribal-terracotta text-white' : 'bg-white text-charcoal-stone/70 border border-charcoal-stone/10 hover:bg-sand-beige'}`}
+                  >
+                    {dist}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Destination List (Carousel) */}
+            <div className="flex-1 relative flex items-center">
+              {filteredDestinations.length > 0 && (
+                <>
+                  <button onClick={() => scrollCarousel('left')} className="absolute left-4 z-10 w-10 h-10 bg-white shadow-lg rounded-full flex items-center justify-center text-charcoal-stone hover:text-tribal-terracotta hover:scale-105 transition-all border border-charcoal-stone/10">
+                    <ChevronLeft className="w-6 h-6" />
+                  </button>
+                  <button onClick={() => scrollCarousel('right')} className="absolute right-4 z-10 w-10 h-10 bg-white shadow-lg rounded-full flex items-center justify-center text-charcoal-stone hover:text-tribal-terracotta hover:scale-105 transition-all border border-charcoal-stone/10">
+                    <ChevronRight className="w-6 h-6" />
+                  </button>
+                </>
+              )}
+
+              <div ref={carouselRef} className="w-full h-full overflow-x-auto overflow-y-hidden px-16 py-4 flex gap-6 relative scroll-smooth items-center scrollbar-hide">
+                {filteredDestinations.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center w-full h-full text-center px-4 shrink-0">
+                    <div className="w-16 h-16 rounded-full bg-forest-emerald/5 flex items-center justify-center mb-3">
+                      <AlertCircle className="w-8 h-8 text-forest-emerald/40" />
+                    </div>
+                    <h3 className="text-charcoal-stone font-bold">No destinations found</h3>
+                    <p className="text-xs text-charcoal-stone/60 mt-1">Try adjusting your filters or search query.</p>
+                    <button onClick={() => { setSearchQuery(""); setActiveCategory("all"); setSelectedDistrict("All"); }} className="mt-4 text-xs font-bold text-tribal-terracotta hover:underline">
+                      Clear all filters
+                    </button>
+                  </div>
+                ) : (
+                  filteredDestinations.map((dest) => {
+                    const isSelected = selectedId === dest.id;
+                    return (
+                      <div
+                        key={dest.id}
+                        onClick={() => handleSelectDestination(dest.id)}
+                        className={`group flex flex-col shrink-0 w-[280px] bg-white rounded-2xl border-2 transition-all duration-300 cursor-pointer overflow-hidden ${isSelected ? 'border-tribal-terracotta shadow-lg shadow-tribal-terracotta/10 scale-105' : 'border-forest-emerald/10 hover:border-forest-emerald/30 hover:shadow-md'}`}
+                      >
+                        <div 
+                          className="relative h-32 w-full overflow-hidden group/img"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            router.push(`/destination/${dest.id}`);
+                          }}
+                          title="Click image to view full details"
+                        >
+                          <img
+                            src={dest.heroImage || "https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Chitrakot_waterfalls.JPG/1280px-Chitrakot_waterfalls.JPG"}
+                            referrerPolicy="no-referrer"
+                            alt={dest.name}
+                            loading="lazy"
+                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-charcoal-stone/80 to-transparent" />
+                          <div className="absolute bottom-3 left-3 flex flex-col">
+                            <span className="text-white font-bold text-sm drop-shadow-md">{dest.name}</span>
+                            <span className="text-white/80 text-[10px] font-mono tracking-widest uppercase flex items-center gap-1">
+                              <MapPin className="w-3 h-3" /> {dest.district || "Chhattisgarh"}
+                            </span>
+                          </div>
+                          <div className="absolute top-3 right-3 bg-white/95 backdrop-blur-md px-2 py-1 rounded-lg flex items-center gap-1 text-xs font-bold text-charcoal-stone shadow-sm">
+                            <Star className="w-3.5 h-3.5 text-tribal-terracotta fill-tribal-terracotta" />
+                            {dest.rating}
+                          </div>
+                        </div>
+                        
+                        {isSelected && (
+                          <div className="p-4 bg-sand-beige/20 border-t border-forest-emerald/10">
+                            <p className="text-xs text-charcoal-stone/80 italic mb-3 leading-relaxed">&quot;{dest.tagline}&quot;</p>
+                            <div className="grid grid-cols-2 gap-2 mb-4">
+                              <div className="flex items-center gap-2 bg-white p-2 rounded-xl border border-forest-emerald/5">
+                                <Leaf className="w-4 h-4 text-green-600" />
+                                <div className="flex flex-col">
+                                  <span className="text-[9px] uppercase font-mono text-charcoal-stone/50 font-bold">Biodiversity</span>
+                                  <span className="text-xs font-bold text-charcoal-stone">{dest.biodiversityScore}/100</span>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-2 bg-white p-2 rounded-xl border border-forest-emerald/5">
+                                <Users className="w-4 h-4 text-blue-600" />
+                                <div className="flex flex-col">
+                                  <span className="text-[9px] uppercase font-mono text-charcoal-stone/50 font-bold">Capacity</span>
+                                  <span className="text-xs font-bold text-charcoal-stone">{dest.crowdCapacity} pax</span>
+                                </div>
+                              </div>
+                            </div>
+                            <Link href={`/destination/${dest.id}`} className="w-full flex items-center justify-center gap-2 py-2.5 bg-forest-emerald hover:bg-tribal-terracotta text-white rounded-xl text-sm font-bold transition-colors">
+                              <Eye className="w-4 h-4" /> View Full Details
+                            </Link>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
   );
 }
+

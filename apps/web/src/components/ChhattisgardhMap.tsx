@@ -1,6 +1,11 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
+import { MapContainer, TileLayer, Marker, Popup, Polygon, useMap } from "react-leaflet";
+// @ts-expect-error react-leaflet-cluster lacks typescript definitions
+import MarkerClusterGroup from "react-leaflet-cluster";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
 import type { Destination } from "../app/data/api";
 
 export type MapLayer = "satellite" | "terrain" | "hybrid" | "eco" | "cultural";
@@ -11,7 +16,17 @@ interface Props {
   activeLayer: MapLayer;
   selectedId: string | null;
   onSelectDestination: (id: string) => void;
-  onZoomChange?: (zoom: number) => void;
+}
+
+// Fix Leaflet's default icon paths
+if (typeof window !== "undefined") {
+  type LeafletDefaultIcon = typeof L.Icon.Default.prototype & { _getIconUrl?: string };
+  delete (L.Icon.Default.prototype as LeafletDefaultIcon)._getIconUrl;
+  L.Icon.Default.mergeOptions({
+    iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
+    iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
+    shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+  });
 }
 
 // ── CG bounding box ─────────────────────────────────────────────────────────
@@ -22,15 +37,15 @@ const CG_CENTER: [number, number] = [20.5, 81.85];
 const TILES = {
   satellite: {
     base:   "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-    labels: "https://services.arcgisonline.com/arcgis/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}",
-    attr:   "Tiles © Esri — Source: Esri, Maxar, GeoEye, Earthstar Geographics",
+    labels: "https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}",
+    attr:   "Tiles © Esri",
     maxZoom: 19,
   },
   terrain: {
-    base:   "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
+    base:   "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
     labels: null,
-    attr:   "Map data © OpenStreetMap contributors, SRTM | Map style © OpenTopoMap (CC-BY-SA)",
-    maxZoom: 17,
+    attr:   "© OpenStreetMap contributors",
+    maxZoom: 19,
   },
   hybrid: {
     base:   "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
@@ -103,331 +118,171 @@ const CG_BOUNDARY: [number,number][] = [
   [22.89,80.40],[23.18,80.36],[23.53,80.49],[23.79,80.19],[24.08,80.24],
 ];
 
-// ── Hillshade overlay URL (free ESRI) ───────────────────────────────────────
-const HILLSHADE_URL =
-  "https://server.arcgisonline.com/ArcGIS/rest/services/Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}";
+// ── Component to handle side-effects like Map FlyTo ────────────────────────
+function MapEffectController({ selectedId, destinations }: { selectedId: string | null; destinations: Destination[] }) {
+  const map = useMap();
+  useEffect(() => {
+    if (selectedId) {
+      const dest = destinations.find((d) => d.id === selectedId);
+      if (dest) {
+        map.flyTo([dest.coordinates.lat, dest.coordinates.lng], 14, { animate: true, duration: 1.4 });
+      }
+    }
+  }, [selectedId, destinations, map]);
+  
+  useEffect(() => {
+    // Ensure map takes up full container height correctly on initial load
+    setTimeout(() => { map.invalidateSize() }, 300);
+  }, [map]);
 
-function buildPopupHTML(dest: Destination, pinColor: string): string {
-  const catEmoji = CAT_ICON[dest.category] || "📍";
-  return `
-<div style="font-family:Inter,sans-serif;min-width:260px;border-radius:14px;overflow:hidden;">
-  <div style="position:relative;height:130px;overflow:hidden;">
-    <img src="${dest.heroImage}" alt="${dest.name}"
-      style="width:100%;height:100%;object-fit:cover;"
-      onerror="this.src='https://images.unsplash.com/photo-1448375240586-882707db888b?w=500'"/>
-    <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.7) 0%,transparent 55%);"></div>
-    <div style="position:absolute;bottom:10px;left:12px;right:12px;display:flex;justify-content:space-between;align-items:flex-end;">
-      <span style="font-size:18px;">${catEmoji}</span>
-      <span style="background:rgba(255,255,255,0.95);color:#92400e;font-size:11px;font-weight:700;padding:3px 8px;border-radius:20px;">★ ${dest.rating}</span>
-    </div>
-  </div>
-  <div style="padding:14px 15px 15px;background:#fff;">
-    <h3 style="margin:0 0 3px;font-size:15px;font-weight:800;color:#0A3622;line-height:1.2;">${dest.name}</h3>
-    <p style="margin:0 0 10px;font-size:11px;color:#6b7280;line-height:1.5;font-style:italic;">"${dest.tagline}"</p>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px;">
-      <div style="background:#f8f6f2;border-radius:8px;padding:7px 9px;">
-        <div style="font-size:8px;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:2px;">Best Time</div>
-        <div style="font-size:10px;font-weight:600;color:#374151;">${dest.bestTime.split("(")[0].trim().split(";")[0].trim()}</div>
-      </div>
-      <div style="background:#f8f6f2;border-radius:8px;padding:7px 9px;">
-        <div style="font-size:8px;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:2px;">Capacity</div>
-        <div style="font-size:10px;font-weight:600;color:#374151;">${dest.crowdCapacity} visitors/day</div>
-      </div>
-      <div style="background:#f8f6f2;border-radius:8px;padding:7px 9px;">
-        <div style="font-size:8px;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:2px;">Biodiversity</div>
-        <div style="font-size:10px;font-weight:600;color:#15803d;">${dest.biodiversityScore}/100</div>
-      </div>
-      <div style="background:#f8f6f2;border-radius:8px;padding:7px 9px;">
-        <div style="font-size:8px;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:2px;">District</div>
-        <div style="font-size:10px;font-weight:600;color:#374151;">${dest.district || "Chhattisgarh"}</div>
-      </div>
-    </div>
-    <div style="background:#fef3c7;border-radius:8px;padding:8px 10px;margin-bottom:12px;font-size:10px;color:#92400e;">
-      <strong>🍽 Local Food:</strong> ${dest.localFood.split(",")[0]}
-    </div>
-    <div style="font-size:10px;color:#6b7280;margin-bottom:12px;padding:8px 10px;background:#f0fdf4;border-radius:8px;border-left:3px solid #16a34a;">
-      <strong style="color:#15803d;">🌿 Eco Tip:</strong> ${dest.ecoGuidance.split(".")[0]}.
-    </div>
-    <div style="display:flex;gap:8px;">
-      <a href="/destination/${dest.id}" style="flex:1;display:block;text-align:center;background:${pinColor};color:#fff;font-size:11px;font-weight:700;padding:9px;border-radius:9px;text-decoration:none;">
-        Full Details →
-      </a>
-      <a href="/planner" style="display:block;text-align:center;background:#f3f4f6;color:#374151;font-size:11px;font-weight:700;padding:9px 12px;border-radius:9px;text-decoration:none;">
-        Plan Trip
-      </a>
-    </div>
-  </div>
-</div>`;
-}
-
-function buildDistrictPopup(d: typeof CG_DISTRICTS[0]): string {
-  return `
-<div style="font-family:Inter,sans-serif;padding:12px 14px;min-width:180px;">
-  <div style="font-size:8px;font-weight:700;color:#B25329;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Chhattisgarh District</div>
-  <h4 style="margin:0 0 8px;font-size:15px;font-weight:800;color:#0A3622;">${d.name}</h4>
-  <div style="display:flex;flex-direction:column;gap:4px;font-size:11px;color:#4b5563;">
-    <div>👥 Population: <strong>${d.pop}</strong></div>
-    <div>📐 Area: <strong>${d.area}</strong></div>
-  </div>
-</div>`;
+  return null;
 }
 
 export default function EarthMap({
   destinations, creatorSpots, activeLayer, selectedId,
-  onSelectDestination, onZoomChange,
+  onSelectDestination,
 }: Props) {
-  const containerRef  = useRef<HTMLDivElement>(null);
-  const mapRef        = useRef<{ L: typeof import('leaflet'); map: import('leaflet').Map } | null>(null);
-  const layerRefs     = useRef<{ base: import('leaflet').TileLayer | null; labels: import('leaflet').TileLayer | null; hillshade: import('leaflet').TileLayer | null }>({ base: null, labels: null, hillshade: null });
-  const pinLayerRef   = useRef<import('leaflet').LayerGroup | null>(null);
-  const distLayerRef  = useRef<import('leaflet').LayerGroup | null>(null);
-
-  // ── Mount map once ────────────────────────────────────────────────────────
-  useEffect(() => {
-    if (typeof window === "undefined" || mapRef.current) return;
-    if (!containerRef.current) return;
-
-    import("leaflet").then((L) => {
-      if (!containerRef.current) return;
-      
-      // Strict Mode protection: if async import resolves after another instance initialized
-      const container = containerRef.current as HTMLDivElement & { _leaflet_id?: boolean };
-      if (container._leaflet_id) return;
-
-      delete (L.Icon.Default.prototype as L.Icon.Default & Record<string, unknown>)._getIconUrl;
-
-      const map = L.map(containerRef.current, {
-        center: CG_CENTER,
-        zoom: 7,
-        minZoom: 6,
-        maxZoom: 19,
-        maxBounds: [
-          [17.0, 79.5],
-          [24.5, 84.5]
-        ],
-        maxBoundsViscosity: 1.0,
-        zoomControl: false,
-        attributionControl: true,
-        preferCanvas: true,
-      });
-
-      // Zoom control — bottom right
-      L.control.zoom({ position: "bottomright" }).addTo(map);
-
-      // Attribution — bottom left
-      map.attributionControl.setPrefix("हमार Chhattisgarh");
-
-      // Zoom change callback
-      map.on("zoomend", () => onZoomChange?.(map.getZoom()));
-
-      // ── Initial tile layers ───────────────────────────────────────────────
-      const cfg = TILES[activeLayer];
-      const baseLayer = L.tileLayer(cfg.base, { maxZoom: cfg.maxZoom, attribution: cfg.attr });
-      baseLayer.addTo(map);
-
-      // Hillshade overlay (satellite / hybrid modes only, 35% opacity)
-      const hillshade = L.tileLayer(HILLSHADE_URL, { maxZoom: 13, opacity: 0.35 });
-      if (activeLayer === "satellite" || activeLayer === "hybrid") hillshade.addTo(map);
-
-      // Labels overlay
-      const labelsLayer = cfg.labels
-        ? L.tileLayer(cfg.labels, { maxZoom: 19, opacity: 0.9, pane: "shadowPane" })
-        : null;
-      if (labelsLayer) labelsLayer.addTo(map);
-
-      layerRefs.current = { base: baseLayer, labels: labelsLayer, hillshade };
-
-      // ── CG state boundary ─────────────────────────────────────────────────
-      L.polygon(CG_BOUNDARY, {
-        color: "#E67E22", weight: 2, opacity: 0.8,
-        fillColor: "#0A3622", fillOpacity: 0.0,
-        dashArray: "8 5",
-      }).addTo(map);
-
-      // Outer glow effect (subtle)
-      L.polygon(CG_BOUNDARY, {
-        color: "#E67E22", weight: 8, opacity: 0.08,
-        fillColor: "transparent", fillOpacity: 0,
-      }).addTo(map);
-
-      // ── District layer group ──────────────────────────────────────────────
-      const distGroup = L.layerGroup();
-      CG_DISTRICTS.forEach((d) => {
-        const icon = L.divIcon({
-          className: "",
-          html: `<div style="
-            background:rgba(10,54,34,0.82);backdrop-filter:blur(4px);
-            color:#F4EBE1;font-size:9px;font-weight:700;
-            letter-spacing:0.8px;text-transform:uppercase;
-            padding:3px 7px;border-radius:20px;
-            border:1px solid rgba(230,126,34,0.5);
-            white-space:nowrap;pointer-events:auto;
-            box-shadow:0 2px 6px rgba(0,0,0,0.3);
-          ">${d.name}</div>`,
-          iconAnchor: [0, 0],
-        });
-        L.marker([d.lat, d.lng], { icon, interactive: true, zIndexOffset: -500 })
-          .bindPopup(buildDistrictPopup(d), { maxWidth: 220, className: "cg-popup" })
-          .addTo(distGroup);
-      });
-      distGroup.addTo(map);
-      distLayerRef.current = distGroup;
-
-      // ── Show/hide district labels based on zoom ───────────────────────────
-      map.on("zoomend", () => {
-        const z = map.getZoom();
-        if (z >= 9) { distGroup.remove(); }
-        else        { distGroup.addTo(map); }
-      });
-
-      mapRef.current = { L, map };
-
-      // Initial pins
-      renderDestinationPins(L, map, destinations, creatorSpots, activeLayer, selectedId, onSelectDestination, pinLayerRef);
-    });
-
-    return () => {
-      mapRef.current?.map.remove();
-      mapRef.current = null;
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // ── Swap tile layers when activeLayer changes ─────────────────────────────
-  useEffect(() => {
-    if (!mapRef.current) return;
-    const { L, map } = mapRef.current;
-    const { base, labels, hillshade } = layerRefs.current;
-    const cfg = TILES[activeLayer];
-
-    // Remove old layers
-    if (base)     map.removeLayer(base);
-    if (labels)   map.removeLayer(labels);
-
-    // Add new base
-    const newBase = L.tileLayer(cfg.base, { maxZoom: cfg.maxZoom, attribution: cfg.attr });
-    newBase.addTo(map);
-
-    // Hillshade toggle
-    if (activeLayer === "satellite" || activeLayer === "hybrid") { hillshade?.addTo(map); }
-     else { if (hillshade) { map.removeLayer(hillshade); } }
-
-    // Labels
-    const newLabels = cfg.labels
-      ? L.tileLayer(cfg.labels, { maxZoom: 19, opacity: 0.9 })
-      : null;
-    if (newLabels) newLabels.addTo(map);
-
-    layerRefs.current = { base: newBase, labels: newLabels, hillshade };
-  }, [activeLayer]);
-
-  // ── Re-render pins on change ──────────────────────────────────────────────
-  useEffect(() => {
-    if (!mapRef.current) return;
-    const { L, map } = mapRef.current;
-    renderDestinationPins(L, map, destinations, creatorSpots, activeLayer, selectedId, onSelectDestination, pinLayerRef);
-  }, [activeLayer, selectedId, destinations, creatorSpots, onSelectDestination]);
-
-  // ── Fly to selected destination ───────────────────────────────────────────
-  useEffect(() => {
-    if (!mapRef.current || !selectedId) return;
-    const dest = destinations.find((d) => d.id === selectedId);
-    if (!dest) return;
-    mapRef.current.map.flyTo(
-      [dest.coordinates.lat, dest.coordinates.lng],
-      14,
-      { animate: true, duration: 1.4, easeLinearity: 0.25 }
-    );
-  }, [selectedId, destinations]);
+  const cfg = TILES[activeLayer];
+  const { bg, border } = PIN[activeLayer];
 
   return (
-    <div ref={containerRef} className="w-full h-full" style={{ minHeight: 500 }} />
+    <div className="w-full h-full relative" style={{ minHeight: 500 }}>
+      <MapContainer 
+        center={CG_CENTER} 
+        zoom={7} 
+        minZoom={6} 
+        maxZoom={19} 
+        maxBounds={CG_BOUNDS}
+        zoomControl={false}
+        scrollWheelZoom={true}
+        className="w-full h-full absolute inset-0 z-0"
+      >
+        <MapEffectController selectedId={selectedId} destinations={destinations} />
+        
+        {/* Base Tile Layer */}
+        <TileLayer key={cfg.base} url={cfg.base} attribution={cfg.attr} maxZoom={cfg.maxZoom} />
+        
+        {/* Labels Overlay if applicable */}
+        {cfg.labels && (
+          <TileLayer key={cfg.labels} url={cfg.labels} maxZoom={19} opacity={0.9} />
+        )}
+
+        {/* State Boundaries */}
+        <Polygon positions={CG_BOUNDARY} pathOptions={{ color: "#E67E22", weight: 2, opacity: 0.8, fillColor: "#0A3622", fillOpacity: 0.0, dashArray: "8 5" }} />
+        <Polygon positions={CG_BOUNDARY} pathOptions={{ color: "#E67E22", weight: 8, opacity: 0.08, fillColor: "transparent", fillOpacity: 0 }} />
+
+        {/* District Labels */}
+        {CG_DISTRICTS.map((d) => (
+          <Marker 
+            key={d.name} 
+            position={[d.lat, d.lng]}
+            interactive={true}
+            zIndexOffset={-500}
+            icon={L.divIcon({
+              className: "",
+              html: `<div style="background:rgba(10,54,34,0.82);backdrop-filter:blur(4px);color:#F4EBE1;font-size:9px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;padding:3px 7px;border-radius:20px;border:1px solid rgba(230,126,34,0.5);white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,0.3);">${d.name}</div>`,
+              iconAnchor: [0, 0],
+            })}
+          >
+            <Popup className="cg-popup" maxWidth={220}>
+              <div style={{ fontFamily:"Inter,sans-serif", padding:"12px 14px", minWidth:180 }}>
+                <div style={{ fontSize:8, fontWeight:700, color:"#B25329", textTransform:"uppercase", letterSpacing:1, marginBottom:4 }}>Chhattisgarh District</div>
+                <h4 style={{ margin:"0 0 8px", fontSize:15, fontWeight:800, color:"#0A3622" }}>{d.name}</h4>
+                <div style={{ display:"flex", flexDirection:"column", gap:4, fontSize:11, color:"#4b5563" }}>
+                  <div>👥 Population: <strong>{d.pop}</strong></div>
+                  <div>📐 Area: <strong>{d.area}</strong></div>
+                </div>
+              </div>
+            </Popup>
+          </Marker>
+        ))}
+
+        {/* Destinations */}
+        {destinations.map((dest) => {
+          const sel = dest.id === selectedId;
+          const size = sel ? 46 : 38;
+          const catEmoji = CAT_ICON[dest.category] || "📍";
+
+          return (
+            <Marker
+              key={dest.id}
+              position={[dest.coordinates.lat, dest.coordinates.lng]}
+              zIndexOffset={sel ? 2000 : 0}
+              eventHandlers={{ click: () => onSelectDestination(dest.id) }}
+              icon={L.divIcon({
+                className: "",
+                html: `<div style="position:relative;width:${size}px;height:${size + 12}px;filter:${sel ? 'drop-shadow(0 6px 16px ' + border + '88)' : 'drop-shadow(0 3px 6px rgba(0,0,0,0.35))'};">
+                  <div style="width:${size}px;height:${size}px;border-radius:50% 50% 50% 0;background:linear-gradient(135deg,${sel ? border : bg} 0%,${bg} 100%);border:${sel ? 3 : 2}px solid ${border};transform:rotate(-45deg);display:flex;align-items:center;justify-content:center;box-shadow:${sel ? '0 0 0 4px ' + border + '40' : 'none'};">
+                    <span style="transform:rotate(45deg);font-size:${sel ? 16 : 13}px;">${catEmoji}</span>
+                  </div>
+                  ${sel ? '<div style="position:absolute;bottom:-4px;left:50%;transform:translateX(-50%);background:' + bg + ';color:#fff;font-size:8px;font-weight:700;padding:2px 6px;border-radius:10px;white-space:nowrap;border:1px solid ' + border + ';">' + dest.name.split(" ")[0] + '</div>' : ""}
+                </div>`,
+                iconSize: [size, size + 12],
+                iconAnchor: [size / 2, size + 12],
+                popupAnchor: [0, -(size + 12)],
+              })}
+            >
+              <Popup className="cg-popup" maxWidth={300}>
+                <div style={{ fontFamily: "Inter,sans-serif", minWidth: 260, borderRadius: 14, overflow: "hidden" }}>
+                  <div style={{ position: "relative", height: 130, overflow: "hidden" }}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={dest.heroImage} alt={dest.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} referrerPolicy="no-referrer" onError={(e) => (e.currentTarget.src = "https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Chitrakot_waterfalls.JPG/1280px-Chitrakot_waterfalls.JPG")} />
+                    <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top,rgba(0,0,0,0.7) 0%,transparent 55%)" }}></div>
+                    <div style={{ position: "absolute", bottom: 10, left: 12, right: 12, display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+                      <span style={{ fontSize: 18 }}>{catEmoji}</span>
+                      <span style={{ background: "rgba(255,255,255,0.95)", color: "#92400e", fontSize: 11, fontWeight: 700, padding: "3px 8px", borderRadius: 20 }}>★ {dest.rating}</span>
+                    </div>
+                  </div>
+                  <div style={{ padding: "14px 15px 15px", background: "#fff" }}>
+                    <h3 style={{ margin: "0 0 3px", fontSize: 15, fontWeight: 800, color: "#0A3622", lineHeight: 1.2 }}>{dest.name}</h3>
+                    <p style={{ margin: "0 0 10px", fontSize: 11, color: "#6b7280", lineHeight: 1.5, fontStyle: "italic" }}>&quot;{dest.tagline}&quot;</p>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6, marginBottom: 12 }}>
+                      <div style={{ background: "#f8f6f2", borderRadius: 8, padding: "7px 9px" }}>
+                        <div style={{ fontSize: 8, fontWeight: 700, color: "#9ca3af", textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 2 }}>Best Time</div>
+                        <div style={{ fontSize: 10, fontWeight: 600, color: "#374151" }}>{dest.bestTime.split("(")[0].trim().split(";")[0].trim()}</div>
+                      </div>
+                      <div style={{ background: "#f8f6f2", borderRadius: 8, padding: "7px 9px" }}>
+                        <div style={{ fontSize: 8, fontWeight: 700, color: "#9ca3af", textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 2 }}>Capacity</div>
+                        <div style={{ fontSize: 10, fontWeight: 600, color: "#374151" }}>{dest.crowdCapacity} visitors/day</div>
+                      </div>
+                    </div>
+                    <div style={{ background: "#fef3c7", borderRadius: 8, padding: "8px 10px", marginBottom: 12, fontSize: 10, color: "#92400e" }}>
+                      <strong>🍽 Local Food:</strong> {dest.localFood.split(",")[0]}
+                    </div>
+                    <div style={{ display: "flex", gap: 8 }}>
+                      <a href={`/destination/${dest.id}`} style={{ flex: 1, display: "block", textAlign: "center", background: bg, color: "#fff", fontSize: 11, fontWeight: 700, padding: 9, borderRadius: 9, textDecoration: "none" }}>Full Details →</a>
+                    </div>
+                  </div>
+                </div>
+              </Popup>
+            </Marker>
+          );
+        })}
+
+        {/* Creator Spots */}
+        {creatorSpots.map((spot, i) => (
+          <Marker
+            key={`spot-${i}`}
+            position={[spot.lat, spot.lng]}
+            zIndexOffset={800}
+            icon={L.divIcon({
+              className: "",
+              html: `<div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#E67E22,#B25329);border:3px solid #fff;box-shadow:0 3px 10px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;font-size:15px;">✦</div>`,
+              iconSize: [34, 34], iconAnchor: [17, 34],
+            })}
+          >
+            <Popup maxWidth={220}>
+              <div style={{ fontFamily:"Inter,sans-serif", padding:"10px 12px" }}>
+                <div style={{ fontSize:8, fontWeight:700, color:"#B25329", textTransform:"uppercase", letterSpacing:1 }}>Creator Submission</div>
+                <h4 style={{ margin:"4px 0 0", fontSize:14, color:"#0A3622", fontWeight:800 }}>{spot.name}</h4>
+                <p style={{ margin:"4px 0 0", fontSize:10, color:"#6b7280" }}>Pending admin approval</p>
+              </div>
+            </Popup>
+          </Marker>
+        ))}
+
+      </MapContainer>
+    </div>
   );
 }
 
-// ── Pin renderer ─────────────────────────────────────────────────────────────
-function renderDestinationPins(
-  L: typeof import('leaflet'), map: import('leaflet').Map,
-  destinations: Destination[],
-  creatorSpots: { name: string; lat: number; lng: number }[],
-  layer: MapLayer,
-  selectedId: string | null,
-  onSelect: (id: string) => void,
-  pinLayerRef: React.MutableRefObject<import('leaflet').LayerGroup | null>,
-) {
-  // Clear previous pin group
-  if (pinLayerRef.current) map.removeLayer(pinLayerRef.current);
-  const group = L.layerGroup();
-  const { bg, border } = PIN[layer];
-
-  destinations.forEach((dest) => {
-    const sel  = dest.id === selectedId;
-    const size = sel ? 46 : 38;
-    const catEmoji = (CAT_ICON as Record<string, string>)[dest.category] || "📍";
-
-    const icon = L.divIcon({
-      className: "",
-      html: `
-        <div style="
-          position:relative;width:${size}px;height:${size + 12}px;
-          filter:${sel ? `drop-shadow(0 6px 16px ${border}88)` : "drop-shadow(0 3px 6px rgba(0,0,0,0.35))"};
-        ">
-          <div style="
-            width:${size}px;height:${size}px;border-radius:50% 50% 50% 0;
-            background:linear-gradient(135deg,${sel ? border : bg} 0%,${bg} 100%);
-            border:${sel ? 3 : 2}px solid ${border};
-            transform:rotate(-45deg);
-            display:flex;align-items:center;justify-content:center;
-            box-shadow:${sel ? `0 0 0 4px ${border}40` : "none"};
-          ">
-            <span style="transform:rotate(45deg);font-size:${sel ? 16 : 13}px;">${catEmoji}</span>
-          </div>
-          ${sel ? `<div style="
-            position:absolute;bottom:-4px;left:50%;transform:translateX(-50%);
-            background:${bg};color:#fff;font-size:8px;font-weight:700;
-            padding:2px 6px;border-radius:10px;white-space:nowrap;
-            border:1px solid ${border};
-          ">${dest.name.split(" ")[0]}</div>` : ""}
-        </div>`,
-      iconSize:    [size, size + 12],
-      iconAnchor:  [size / 2, size + 12],
-      popupAnchor: [0, -(size + 12)],
-    });
-
-    const marker = L.marker([dest.coordinates.lat, dest.coordinates.lng], {
-      icon, zIndexOffset: sel ? 2000 : 0,
-    });
-
-    marker.bindPopup(buildPopupHTML(dest, bg), { maxWidth: 300, className: "cg-popup" });
-    marker.on("click", () => onSelect(dest.id));
-
-    if (sel) { setTimeout(() => marker.openPopup(), 300); }
-    marker.addTo(group);
-  });
-
-  // Creator spots
-  creatorSpots.forEach((spot) => {
-    const icon = L.divIcon({
-      className: "",
-      html: `<div style="
-        width:34px;height:34px;border-radius:50%;
-        background:linear-gradient(135deg,#E67E22,#B25329);
-        border:3px solid #fff;box-shadow:0 3px 10px rgba(0,0,0,0.3);
-        display:flex;align-items:center;justify-content:center;
-        font-size:15px;
-      ">✦</div>`,
-      iconSize: [34, 34], iconAnchor: [17, 34],
-    });
-    L.marker([spot.lat, spot.lng], { icon, zIndexOffset: 800 })
-      .bindPopup(`
-        <div style="font-family:Inter,sans-serif;padding:10px 12px;">
-          <div style="font-size:8px;font-weight:700;color:#B25329;text-transform:uppercase;letter-spacing:1px;">Creator Submission</div>
-          <h4 style="margin:4px 0 0;font-size:14px;color:#0A3622;font-weight:800;">${spot.name}</h4>
-          <p style="margin:4px 0 0;font-size:10px;color:#6b7280;">Pending admin approval</p>
-        </div>`, { maxWidth: 220 })
-      .addTo(group);
-  });
-
-  group.addTo(map);
-  pinLayerRef.current = group;
-}

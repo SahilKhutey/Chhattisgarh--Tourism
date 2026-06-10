@@ -1,7 +1,13 @@
 import type { NextConfig } from "next";
 
+const backendOrigin = process.env.NEXT_PUBLIC_API_URL
+  ? process.env.NEXT_PUBLIC_API_URL.replace(/\/api\/v1\/?$/, "")
+  : "http://localhost:4000";
+
 const nextConfig: NextConfig = {
   images: {
+    unoptimized: true,
+    dangerouslyAllowSVG: true,
     remotePatterns: [
       {
         protocol: 'https',
@@ -12,10 +18,38 @@ const nextConfig: NextConfig = {
         hostname: 'pvxaltfozqbjijuqgnac.supabase.co',
       },
       {
+        protocol: 'https',
+        hostname: 'picsum.photos',
+      },
+      {
+        protocol: 'https',
+        hostname: 'fastly.picsum.photos',
+      },
+      {
+        protocol: 'https',
+        hostname: 'upload.wikimedia.org',
+      },
+      {
+        protocol: 'https',
+        hostname: 'placehold.co',
+      },
+      {
         protocol: 'http',
         hostname: 'localhost',
       },
     ],
+  },
+  async rewrites() {
+    return [
+      {
+        source: '/uploads/:path*',
+        destination: `${backendOrigin}/uploads/:path*`
+      },
+      {
+        source: '/cdn/:path*',
+        destination: `${backendOrigin}/cdn/:path*`
+      }
+    ];
   },
   async headers() {
     return [

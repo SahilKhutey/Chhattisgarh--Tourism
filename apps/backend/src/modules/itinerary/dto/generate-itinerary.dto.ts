@@ -1,5 +1,5 @@
-import { IsString, IsNotEmpty, IsNumber, Min, Max, IsIn } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { IsString, IsNotEmpty, IsNumber, Min, Max, IsIn, IsOptional, IsArray } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class GenerateItineraryDto {
   @ApiProperty({ example: 'Bastar', description: 'The district to plan the itinerary for' })
@@ -17,4 +17,10 @@ export class GenerateItineraryDto {
   @IsString()
   @IsIn(['slow', 'moderate', 'active'], { message: 'Pace must be slow, moderate, or active.' })
   pace: 'slow' | 'moderate' | 'active';
+
+  @ApiPropertyOptional({ example: ['nature', 'heritage'], description: 'Optional list of traveler interests to personalize routing' })
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  interests?: string[];
 }

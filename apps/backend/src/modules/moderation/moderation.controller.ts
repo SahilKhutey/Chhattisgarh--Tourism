@@ -113,6 +113,31 @@ export class ModerationController {
     return this.moderationService.rejectFolklore(id);
   }
 
+  // ── Social Media Aggregation ───────────────────────────────────────────────
+
+  @Get('social/pending')
+  @Roles('ADMIN', 'SUPER_ADMIN', 'MODERATOR')
+  @ApiOperation({ summary: 'Retrieve backlog list of pending aggregated social media posts' })
+  async getPendingSocial() {
+    return this.moderationService.getPendingSocial();
+  }
+
+  @Patch('social/verify/:id')
+  @Roles('ADMIN', 'SUPER_ADMIN', 'MODERATOR')
+  @ApiOperation({ summary: 'Verify and publish an aggregated social media post' })
+  @ApiParam({ name: 'id', type: String })
+  async verifySocial(@Param('id') id: string) {
+    return this.moderationService.verifySocial(id);
+  }
+
+  @Patch('social/reject/:id')
+  @Roles('ADMIN', 'SUPER_ADMIN', 'MODERATOR')
+  @ApiOperation({ summary: 'Reject an aggregated social media post' })
+  @ApiParam({ name: 'id', type: String })
+  async rejectSocial(@Param('id') id: string) {
+    return this.moderationService.rejectSocial(id);
+  }
+
   // ── SOS Alerts ─────────────────────────────────────────────────────────────
 
   @Get('sos-alerts')

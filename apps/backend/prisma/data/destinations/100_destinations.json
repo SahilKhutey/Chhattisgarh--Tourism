@@ -1,0 +1,1282 @@
+[
+  {
+    "name": "Chitrakote Falls",
+    "slug": "chitrakote-falls",
+    "category": "Waterfall",
+    "district": "Bastar",
+    "highlights": [
+      "Widest waterfall in India",
+      "Known as the “Niagara Falls of India”",
+      "Monsoon rainbow views"
+    ],
+    "mediaAssets": [
+      "Drone waterfall shots",
+      "Sunset cinematic videos",
+      "Monsoon timelapses"
+    ],
+    "experienceTypes": [
+      "Nature",
+      "Photography",
+      "Adventure"
+    ],
+    "platformFeatures": [
+      "Monsoon travel alerts",
+      "Viewpoint maps",
+      "Local guide listings"
+    ],
+    "priorityPhase": "Phase 1"
+  },
+  {
+    "name": "Tirathgarh Falls",
+    "slug": "tirathgarh-falls",
+    "category": "Waterfall",
+    "district": "Bastar",
+    "highlights": [
+      "Multi-tier waterfall",
+      "Forest surroundings",
+      "Near Kanger Valley"
+    ],
+    "mediaAssets": [
+      "Slow-motion waterfall clips",
+      "Trek reels",
+      "Forest ambience audio"
+    ],
+    "experienceTypes": [
+      "Trekking",
+      "Eco-tourism",
+      "Photography"
+    ],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 1"
+  },
+  {
+    "name": "Kanger Valley National Park",
+    "slug": "kanger-valley-national-park",
+    "category": "National Park",
+    "district": "Bastar",
+    "highlights": [
+      "Dense forests",
+      "Biodiversity hotspot",
+      "Limestone caves"
+    ],
+    "mediaAssets": [
+      "Wildlife videos",
+      "Cave exploration footage",
+      "Aerial forest imagery"
+    ],
+    "experienceTypes": [
+      "Wildlife",
+      "Nature",
+      "Eco-tourism"
+    ],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 1"
+  },
+  {
+    "name": "Kutumsar Cave",
+    "slug": "kutumsar-cave",
+    "category": "Cave",
+    "district": "Bastar",
+    "highlights": [
+      "Underground limestone cave",
+      "Unique rock formations",
+      "Rare cave species"
+    ],
+    "mediaAssets": [
+      "Cave walkthrough videos",
+      "Flashlight cinematic shots",
+      "Geological closeups"
+    ],
+    "experienceTypes": [
+      "Adventure",
+      "Geology",
+      "Exploration"
+    ],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Kailash Cave",
+    "slug": "kailash-cave",
+    "category": "Cave",
+    "district": "Bastar",
+    "highlights": [
+      "Limestone cave system",
+      "Religious significance",
+      "Nearby forest trails"
+    ],
+    "mediaAssets": [
+      "Spiritual reels",
+      "Cave photography",
+      "Nature drone footage"
+    ],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Dandak Cave",
+    "slug": "dandak-cave",
+    "category": "Cave",
+    "district": "Bastar",
+    "highlights": [
+      "Natural cave structures",
+      "Dense jungle access",
+      "Adventure exploration"
+    ],
+    "mediaAssets": [
+      "Exploration videos",
+      "Trek POV clips",
+      "Rock texture images"
+    ],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Barnawapara Wildlife Sanctuary",
+    "slug": "barnawapara-wildlife-sanctuary",
+    "category": "Wildlife Sanctuary",
+    "district": "Baloda Bazar",
+    "highlights": [
+      "Rich biodiversity",
+      "Jungle safari",
+      "Birdwatching"
+    ],
+    "mediaAssets": [
+      "Safari reels",
+      "Wildlife photography",
+      "Sunrise jungle shots"
+    ],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 1"
+  },
+  {
+    "name": "Achanakmar Tiger Reserve",
+    "slug": "achanakmar-tiger-reserve",
+    "category": "Tiger Reserve",
+    "district": "Mungeli",
+    "highlights": [
+      "Tiger habitat",
+      "Dense sal forests",
+      "Eco-tourism zone"
+    ],
+    "mediaAssets": [
+      "Jeep safari videos",
+      "Wildlife imagery",
+      "Forest documentaries"
+    ],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 2"
+  },
+  {
+    "name": "Mainpat",
+    "slug": "mainpat",
+    "category": "Hill Station",
+    "district": "Surguja",
+    "highlights": [
+      "Mini Tibet of Chhattisgarh",
+      "Waterfalls and meadows",
+      "Tibetan culture"
+    ],
+    "mediaAssets": [
+      "Hillscape drone videos",
+      "Tibetan monastery photos",
+      "Fog timelapses"
+    ],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 1"
+  },
+  {
+    "name": "Tiger Point Waterfall",
+    "slug": "tiger-point-waterfall",
+    "category": "Waterfall",
+    "district": "Surguja",
+    "highlights": [
+      "Mainpat attraction",
+      "Valley viewpoints",
+      "Monsoon beauty"
+    ],
+    "mediaAssets": [
+      "Waterfall reels",
+      "Adventure vlogs",
+      "Scenic panoramas"
+    ],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Fish Point",
+    "slug": "fish-point",
+    "category": "Nature Spot",
+    "district": "Surguja",
+    "highlights": [
+      "Scenic stream area",
+      "Local food stalls",
+      "Relaxation destination"
+    ],
+    "mediaAssets": [
+      "Picnic visuals",
+      "Drone stream footage",
+      "Family tourism videos"
+    ],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Jaljali",
+    "slug": "jaljali",
+    "category": "Natural Wonder",
+    "district": "Surguja",
+    "highlights": [
+      "Bouncing land phenomenon",
+      "Unique ecological feature",
+      "Dense greenery"
+    ],
+    "mediaAssets": [
+      "Walking bounce demonstrations",
+      "Nature explainers",
+      "Educational reels"
+    ],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Bhoramdeo Temple",
+    "slug": "bhoramdeo-temple",
+    "category": "Heritage Temple",
+    "district": "Kabirdham",
+    "highlights": [
+      "Khajuraho of Chhattisgarh",
+      "Ancient carvings",
+      "Historical architecture"
+    ],
+    "mediaAssets": [
+      "Temple drone shots",
+      "Architecture photography",
+      "Heritage storytelling videos"
+    ],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 1"
+  },
+  {
+    "name": "Dongargarh",
+    "slug": "dongargarh",
+    "category": "Pilgrimage",
+    "district": "Rajnandgaon",
+    "highlights": [
+      "Maa Bamleshwari Temple",
+      "Ropeway attraction",
+      "Hilltop temple views"
+    ],
+    "mediaAssets": [
+      "Ropeway videos",
+      "Festival coverage",
+      "Sunrise hill shots"
+    ],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 1"
+  },
+  {
+    "name": "Rajim",
+    "slug": "rajim",
+    "category": "Religious Heritage",
+    "district": "Gariaband",
+    "highlights": [
+      "Triveni Sangam",
+      "Rajiv Lochan Temple",
+      "Kumbh Mela site"
+    ],
+    "mediaAssets": [
+      "Festival reels",
+      "Temple photography",
+      "River drone shots"
+    ],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 1"
+  },
+  {
+    "name": "Sirpur",
+    "slug": "sirpur",
+    "category": "Archaeological Site",
+    "district": "Mahasamund",
+    "highlights": [
+      "Ancient Buddhist heritage",
+      "Lakshman Temple",
+      "Excavation sites"
+    ],
+    "mediaAssets": [
+      "Archaeological documentaries",
+      "Temple walkthroughs",
+      "Historical storytelling content"
+    ],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 1"
+  },
+  {
+    "name": "Lakshman Temple",
+    "slug": "lakshman-temple",
+    "category": "Ancient Temple",
+    "district": "Mahasamund",
+    "highlights": [
+      "Brick temple architecture",
+      "Ancient Vishnu temple",
+      "Cultural heritage"
+    ],
+    "mediaAssets": [
+      "Architecture closeups",
+      "Heritage reels",
+      "Drone imagery"
+    ],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Gandheshwar Temple",
+    "slug": "gandheshwar-temple",
+    "category": "Temple",
+    "district": "Mahasamund",
+    "highlights": [
+      "Riverbank temple",
+      "Stone sculptures",
+      "Spiritual tourism"
+    ],
+    "mediaAssets": [
+      "Devotional videos",
+      "River sunrise footage",
+      "Temple photography"
+    ],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Ratanpur",
+    "slug": "ratanpur",
+    "category": "Heritage Town",
+    "district": "Bilaspur",
+    "highlights": [
+      "Mahamaya Temple",
+      "Ancient forts",
+      "Historic importance"
+    ],
+    "mediaAssets": [
+      "Temple festival videos",
+      "Heritage walkthroughs",
+      "Drone town shots"
+    ],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 2"
+  },
+  {
+    "name": "Malhar",
+    "slug": "malhar",
+    "category": "Archaeological Site",
+    "district": "Bilaspur",
+    "highlights": [
+      "Ancient ruins",
+      "Museums",
+      "Historic temples"
+    ],
+    "mediaAssets": [
+      "Excavation visuals",
+      "Artifact photography",
+      "Documentary clips"
+    ],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 2"
+  },
+  {
+    "name": "Khutaghat Dam",
+    "slug": "khutaghat-dam",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Hasdeo Bango Dam",
+    "slug": "hasdeo-bango-dam",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Gangrel Dam",
+    "slug": "gangrel-dam",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 2"
+  },
+  {
+    "name": "Madku Dweep",
+    "slug": "madku-dweep",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 2"
+  },
+  {
+    "name": "Sitanadi Wildlife Sanctuary",
+    "slug": "sitanadi-wildlife-sanctuary",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Udanti Wildlife Sanctuary",
+    "slug": "udanti-wildlife-sanctuary",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Indravati National Park",
+    "slug": "indravati-national-park",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Dantewada",
+    "slug": "dantewada",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 2"
+  },
+  {
+    "name": "Dholkal Ganesh",
+    "slug": "dholkal-ganesh",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Barsur Temples",
+    "slug": "barsur-temples",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Narayanpur Tribal Region",
+    "slug": "narayanpur-tribal-region",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Chaiturgarh Fort",
+    "slug": "chaiturgarh-fort",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Ramgarh Hills",
+    "slug": "ramgarh-hills",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Sita Bengra Caves",
+    "slug": "sita-bengra-caves",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Jogimara Cave",
+    "slug": "jogimara-cave",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Kotumsar Bioluminescent Region",
+    "slug": "kotumsar-bioluminescent-region",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Teerathgarh Eco Trails",
+    "slug": "teerathgarh-eco-trails",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Charre-Marre Waterfalls",
+    "slug": "charre-marre-waterfalls",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Tamra Ghumar Waterfall",
+    "slug": "tamra-ghumar-waterfall",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Mendri Ghumar",
+    "slug": "mendri-ghumar",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Chingra Pagar Waterfall",
+    "slug": "chingra-pagar-waterfall",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Devdhara Waterfall",
+    "slug": "devdhara-waterfall",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Ghatarani Waterfall",
+    "slug": "ghatarani-waterfall",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 2"
+  },
+  {
+    "name": "Jatmai Temple",
+    "slug": "jatmai-temple",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 2"
+  },
+  {
+    "name": "Kanker Palace",
+    "slug": "kanker-palace",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Keshkal Valley",
+    "slug": "keshkal-valley",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 2"
+  },
+  {
+    "name": "Keshkal Ghat",
+    "slug": "keshkal-ghat",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Orchha Eco Tourism Region",
+    "slug": "orchha-eco-tourism-region",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Chandan Mahal",
+    "slug": "chandan-mahal",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Kawardha Palace",
+    "slug": "kawardha-palace",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Raipur Marine Drive",
+    "slug": "raipur-marine-drive",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Nandan Van Zoo",
+    "slug": "nandan-van-zoo",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Purkhouti Muktangan",
+    "slug": "purkhouti-muktangan",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Mahant Ghasidas Museum",
+    "slug": "mahant-ghasidas-museum",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Vivekananda Sarovar",
+    "slug": "vivekananda-sarovar",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Energy Park Raipur",
+    "slug": "energy-park-raipur",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "MM Fun City",
+    "slug": "mm-fun-city",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Budha Talab",
+    "slug": "budha-talab",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Champaran",
+    "slug": "champaran",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Deobaloda Temple",
+    "slug": "deobaloda-temple",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Maitri Bagh",
+    "slug": "maitri-bagh",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Tandula Dam",
+    "slug": "tandula-dam",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Ganga Maiya Temple",
+    "slug": "ganga-maiya-temple",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Rajnandgaon Heritage Circuit",
+    "slug": "rajnandgaon-heritage-circuit",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Khallari Temple",
+    "slug": "khallari-temple",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Pali Temple",
+    "slug": "pali-temple",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Shivrinarayan",
+    "slug": "shivrinarayan",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Arang Temples",
+    "slug": "arang-temples",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Belpan",
+    "slug": "belpan",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Deorani-Jethani Temple",
+    "slug": "deorani-jethani-temple",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Turturiya",
+    "slug": "turturiya",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Kabir Chabutra",
+    "slug": "kabir-chabutra",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Amrit Dhara Waterfall",
+    "slug": "amrit-dhara-waterfall",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Ramdaha Waterfall",
+    "slug": "ramdaha-waterfall",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Semarsot Wildlife Sanctuary",
+    "slug": "semarsot-wildlife-sanctuary",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Gomarda Wildlife Sanctuary",
+    "slug": "gomarda-wildlife-sanctuary",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Badalkhol Sanctuary",
+    "slug": "badalkhol-sanctuary",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Jashpur Hill Region",
+    "slug": "jashpur-hill-region",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Rani Dah Waterfall",
+    "slug": "rani-dah-waterfall",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Kailash Gufa Jashpur",
+    "slug": "kailash-gufa-jashpur",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Gira Waterfalls Region",
+    "slug": "gira-waterfalls-region",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Hazar Kund",
+    "slug": "hazar-kund",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Pakhanjur Region",
+    "slug": "pakhanjur-region",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Abujhmad",
+    "slug": "abujhmad",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Bango Reservoir",
+    "slug": "bango-reservoir",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Korba Eco Region",
+    "slug": "korba-eco-region",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Coal Heritage Tourism Circuit",
+    "slug": "coal-heritage-tourism-circuit",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Sonhat Hills",
+    "slug": "sonhat-hills",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Korea Palace Heritage",
+    "slug": "korea-palace-heritage",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Manendragarh Hills",
+    "slug": "manendragarh-hills",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Sanjay Market Cultural District",
+    "slug": "sanjay-market-cultural-district",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Bastar Dussehra Festival Circuit",
+    "slug": "bastar-dussehra-festival-circuit",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Bastar Handicraft Villages",
+    "slug": "bastar-handicraft-villages",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Bell Metal Craft Villages",
+    "slug": "bell-metal-craft-villages",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Kondagaon Art Cluster",
+    "slug": "kondagaon-art-cluster",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Tribal Food Tourism Circuit",
+    "slug": "tribal-food-tourism-circuit",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Chhattisgarh Rural Homestay Circuit",
+    "slug": "chhattisgarh-rural-homestay-circuit",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Forest Camping Destinations",
+    "slug": "forest-camping-destinations",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "River Eco Tourism Circuit",
+    "slug": "river-eco-tourism-circuit",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  },
+  {
+    "name": "Tribal Cultural Experience Villages",
+    "slug": "tribal-cultural-experience-villages",
+    "category": "Uncategorized",
+    "district": "Unknown",
+    "highlights": [],
+    "mediaAssets": [],
+    "experienceTypes": [],
+    "platformFeatures": [],
+    "priorityPhase": "Phase 3"
+  }
+]

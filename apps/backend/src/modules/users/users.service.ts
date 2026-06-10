@@ -95,6 +95,43 @@ export class UsersService {
     };
   }
 
+  async getCreatorFeed(page: number, limit: number) {
+    const skip = (page - 1) * limit;
+    
+    // Fetch videos linked to verified creators, ordered by trending status and creation date
+    const [total, videos] = await this.prisma.$transaction([
+      this.prisma.creatorVideo.count({
+        where: { creator: { verified: true } }
+      }),
+      this.prisma.creatorVideo.findMany({
+        where: { creator: { verified: true } },
+        include: {
+          creator: {
+            include: {
+              user: { select: { fullName: true, avatar: true } }
+            }
+          }
+        },
+        orderBy: [
+          { isTrending: 'desc' },
+          { createdAt: 'desc' }
+        ],
+        skip,
+        take: limit,
+      })
+    ]);
+
+    return {
+      videos,
+      metadata: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit)
+      }
+    };
+  }
+
   async getVerifiedCreators() {
     return this.prisma.creatorProfile.findMany({
       where: { verified: true },
@@ -116,5 +153,46 @@ export class UsersService {
     
     if (!creator) throw new NotFoundException('Creator not found');
     return creator;
+  }
+
+  async createCreatorVideo(userId: string, dto: any) {
+    let user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      include: { creatorProfile: true }
+    });
+
+    if (!user) {
+      throw new NotFoundException(`User profile with ID ${userId} does not exist.`);
+    }
+
+    let creatorId = user.creatorProfile?.id;
+
+    if (!creatorId) {
+      // Auto-provision CreatorProfile if missing for native uploads
+      const updatedUser = await this.prisma.user.update({
+        where: { id: userId },
+        data: {
+          role: 'CREATOR',
+          creatorProfile: {
+            create: { verified: true, bio: 'Native Content Creator' }
+          }
+        },
+        include: { creatorProfile: true }
+      });
+      creatorId = updatedUser.creatorProfile!.id;
+    }
+
+    return this.prisma.creatorVideo.create({
+      data: {
+        title: dto.title,
+        location: dto.location,
+        district: dto.district,
+        category: dto.category,
+        language: dto.language || 'English',
+        thumbnailUrl: dto.thumbnailUrl,
+        videoUrl: dto.videoUrl || null,
+        creatorId: creatorId,
+      }
+    });
   }
 }

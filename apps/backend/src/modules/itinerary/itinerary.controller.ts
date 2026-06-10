@@ -16,6 +16,7 @@ export class ItineraryController {
       dto.district,
       dto.durationDays,
       dto.pace,
+      dto.interests,
     );
   }
 }

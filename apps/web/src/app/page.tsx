@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import Image from "next/image";
+import Image from "@/components/ui/NativeImage";
 import { 
   Compass, 
   Map, 
@@ -586,3 +586,4 @@ export default function Home() {
     </div>
   );
 }
+

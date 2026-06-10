@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import { useLanguage } from "../../context/LanguageContext";
 import { get, set } from "idb-keyval";
+import { getApiBase } from "../data/api-config";
 
 interface ItineraryItem {
   time: string;
@@ -51,6 +52,7 @@ export default function PlannerPage() {
   const [tripDays, setTripDays] = useState<number>(3);
   const [district, setDistrict] = useState<string>("Bastar");
   const [transport, setTransport] = useState<string>("car");
+  const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
   
   const [isGenerated, setIsGenerated] = useState<boolean>(false);
   const [generatedItinerary, setGeneratedItinerary] = useState<DayPlan[]>([]);
@@ -83,10 +85,10 @@ export default function PlannerPage() {
     if (transport === "transit") pace = "active";
 
     try {
-      const response = await fetch("http://localhost:4000/api/v1/itinerary/generate", {
+      const response = await fetch(`${getApiBase()}/itinerary/generate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ district, durationDays: tripDays, pace })
+        body: JSON.stringify({ district, durationDays: tripDays, pace, interests: selectedInterests })
       });
 
       if (!response.ok) throw new Error("API failed");
@@ -107,7 +109,7 @@ export default function PlannerPage() {
           notes: `Distance milestone. Focus on local cultural elements.`,
           ecoTip: stop.safetyRules || `Respect the ${district} tribal ecosystem.`,
           photoTip: stop.bestSeasonInfo ? `Best during ${stop.bestSeasonInfo}` : `Ideal lighting conditions at this hour.`,
-          categoryIcon: idx === 0 ? "nature" : idx === 1 ? "food" : "heritage"
+          categoryIcon: stop.categoryIcon || "nature"
         }))
       }));
 
@@ -272,6 +274,36 @@ export default function PlannerPage() {
                     }`}>{mode.sub}</span>
                   </button>
                 ))}
+              </div>
+            </div>
+
+            {/* Step 4: Interests */}
+            <div className="flex flex-col gap-3">
+              <label className="text-sm font-mono font-bold text-tribal-terracotta uppercase flex items-center gap-2">
+                <Sparkles className="w-4.5 h-4.5" />
+                4. Travel Interests
+              </label>
+              <div className="flex flex-wrap gap-2">
+                {["Nature", "Heritage", "Culture", "Food", "Adventure"].map(interest => {
+                  const isSelected = selectedInterests.includes(interest);
+                  return (
+                    <button
+                      key={interest}
+                      onClick={() => {
+                        setSelectedInterests(prev => 
+                          isSelected ? prev.filter(i => i !== interest) : [...prev, interest]
+                        );
+                      }}
+                      className={`px-4 py-2 rounded-full text-xs font-bold font-sans transition-all border shadow-sm ${
+                        isSelected
+                          ? "bg-forest-emerald text-sand-beige border-transparent"
+                          : "bg-white/80 border-charcoal-stone/10 hover:bg-white text-charcoal-stone"
+                      }`}
+                    >
+                      {interest}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 

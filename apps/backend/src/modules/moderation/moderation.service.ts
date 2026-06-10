@@ -161,6 +161,71 @@ export class ModerationService {
     return { success: true, message: 'Folklore rejected successfully.' };
   }
 
+  // ── Social Media Aggregation ────────────────────────────────────────────────
+
+  async getPendingSocial() {
+    return this.prisma.aggregatedContent.findMany({
+      where: { status: 'PENDING' },
+      include: {
+        creator: {
+          include: { user: { select: { fullName: true, email: true } } }
+        }
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+  }
+
+  async verifySocial(id: string) {
+    const content = await this.prisma.aggregatedContent.findUnique({
+      where: { id },
+      include: { creator: true }
+    });
+    if (!content) throw new NotFoundException('Pending social content not found.');
+
+    // 1. Update status to APPROVED
+    await this.prisma.aggregatedContent.update({
+      where: { id },
+      data: { status: 'APPROVED' }
+    });
+
+    // 2. Bridge to Public Feed
+    const location = content.detectedLocation || 'Chhattisgarh';
+    const category = content.detectedCategory || 'Explore';
+    
+    const newVideo = await this.prisma.creatorVideo.create({
+      data: {
+        creatorId: content.creatorId,
+        title: `${location} - ${category}`, // Auto generated title
+        videoUrl: content.mediaUrl,
+        thumbnailUrl: content.thumbnailUrl,
+        location: location,
+        district: 'Bastar', // Default
+        category: category,
+        language: 'en'
+      }
+    });
+
+    // 3. Link back
+    await this.prisma.aggregatedContent.update({
+      where: { id },
+      data: { publishedVideoId: newVideo.id }
+    });
+
+    return { success: true, message: 'Content verified and published to live feed successfully.' };
+  }
+
+  async rejectSocial(id: string) {
+    const content = await this.prisma.aggregatedContent.findUnique({ where: { id } });
+    if (!content) throw new NotFoundException('Pending social content not found.');
+
+    await this.prisma.aggregatedContent.update({
+      where: { id },
+      data: { status: 'REJECTED' }
+    });
+
+    return { success: true, message: 'Content rejected successfully.' };
+  }
+
   async getSosAlerts(status?: string) {
     return this.prisma.emergencyAlert.findMany({
       where: status ? { status } : undefined,

@@ -2,7 +2,7 @@
 
 import { use, useState, useEffect } from "react";
 import Link from "next/link";
-import Image from "next/image";
+import Image from "@/components/ui/NativeImage";
 import { 
   ArrowLeft, 
   MapPin, 
@@ -19,10 +19,17 @@ import {
   ChevronRight,
   Eye,
   Volume2,
-  VolumeX
+  VolumeX,
+  Image as ImageIcon,
+  X
 } from "lucide-react";
-import { fetchPlaceBySlug, fetchPlaces, type Destination } from "../../../data/api";
-import { useLanguage } from "../../../../context/LanguageContext";
+import { fetchPlaceBySlug, fetchPlaces, type Destination } from "../../data/api";
+import { useLanguage } from "../../../context/LanguageContext";
+import BookingWidget from "../../../components/BookingWidget";
+import { WeatherAlertBanner } from "../../../components/WeatherAlertBanner";
+import { TransitOverviewCard } from "../../../components/TransitOverviewCard";
+import { TrustVerificationBadge } from "../../../components/TrustVerificationBadge";
+import { CreatorMediaGallery } from "../../../components/CreatorMediaGallery";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -34,7 +41,8 @@ export default function DestinationDetailPage({ params }: PageProps) {
   const [destination, setDestination] = useState<Destination | null>(null);
   const [destinations, setDestinations] = useState<Destination[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<"story" | "travel" | "eco" | "food">("story");
+  const [activeTab, setActiveTab] = useState<"story" | "travel" | "eco" | "food" | "images">("story");
+  const [lightboxImage, setLightboxImage] = useState<string | null>(null);
   
   useEffect(() => {
     Promise.all([
@@ -128,12 +136,11 @@ export default function DestinationDetailPage({ params }: PageProps) {
       {/* 1. CINEMATIC HERO HEADER */}
       <section className="relative w-full h-[60vh] sm:h-[65vh] flex items-end overflow-hidden bg-charcoal-stone border-b-8 border-tribal-terracotta">
         <div className="absolute inset-0 z-0">
-          <Image
-            src={destination.heroImage || "https://images.unsplash.com/photo-1432405972618-c60002a157c5?auto=format&fit=crop&w=1200&q=80"}
+          <img
+            src={destination.heroImage || "https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Chitrakot_waterfalls.JPG/1280px-Chitrakot_waterfalls.JPG"}
+            referrerPolicy="no-referrer"
             alt={localizedName}
-            fill
-            priority
-            className="object-cover opacity-60 scale-105"
+            className="w-full h-full object-cover opacity-60 scale-105"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-charcoal-stone via-charcoal-stone/40 to-transparent"></div>
           <div className="absolute inset-0 bg-gradient-to-r from-forest-emerald/30 via-transparent to-transparent"></div>
@@ -151,11 +158,15 @@ export default function DestinationDetailPage({ params }: PageProps) {
 
           <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-warm-orange/40 bg-warm-orange/15 text-xs font-mono font-bold tracking-widest text-warm-orange w-fit uppercase">
             ★ {destination.rating} {t("detail.rating")} • {t("detail.certified")}
+            {destination.priorityPhase && ` • ${destination.priorityPhase}`}
           </span>
 
-          <h1 className="text-3xl sm:text-5xl md:text-6xl font-sans font-bold tracking-tight text-white drop-shadow-md">
-            {localizedName}
-          </h1>
+          <div className="flex items-center gap-4 flex-wrap">
+            <h1 className="text-3xl sm:text-5xl md:text-6xl font-sans font-bold tracking-tight text-white drop-shadow-md">
+              {localizedName}
+            </h1>
+            <TrustVerificationBadge level={destination.verificationLevel} />
+          </div>
 
           <p className="text-sm sm:text-lg text-sand-beige/85 italic max-w-2xl font-sans drop-shadow leading-relaxed">
             &quot;{localizedTagline}&quot;
@@ -184,19 +195,22 @@ export default function DestinationDetailPage({ params }: PageProps) {
         {/* Left Column: Comprehensive Tabs and Core Readout */}
         <div className="lg:col-span-2 flex flex-col gap-8">
           
+          <WeatherAlertBanner weather={destination.weather} />
+
           {/* Tab Navigation header */}
           <div className="flex border-b border-charcoal-stone/10 gap-2 overflow-x-auto pb-1">
             {[
-              { id: "story", label: t("detail.tab_story"), icon: BookOpen },
-              { id: "travel", label: t("detail.tab_travel"), icon: Compass },
-              { id: "eco", label: t("detail.tab_eco"), icon: Leaf },
-              { id: "food", label: t("detail.tab_food"), icon: UtensilsCrossed }
+              { id: "story", label: t("detail.tab_story") || "Story", icon: BookOpen },
+              { id: "images", label: t("detail.tab_images") || "Gallery", icon: ImageIcon },
+              { id: "travel", label: t("detail.tab_travel") || "Travel", icon: Compass },
+              { id: "eco", label: t("detail.tab_eco") || "Eco", icon: Leaf },
+              { id: "food", label: t("detail.tab_food") || "Food", icon: UtensilsCrossed }
             ].map(tab => {
               const Icon = tab.icon;
               return (
                 <button
                   key={tab.id}
-                  onClick={() => setActiveTab(tab.id as "story" | "travel" | "eco" | "food")}
+                  onClick={() => setActiveTab(tab.id as "story" | "travel" | "eco" | "food" | "images")}
                   className={`flex items-center gap-2 text-sm font-sans font-bold px-4 py-3.5 border-b-2 cursor-pointer transition-all shrink-0 ${
                     activeTab === tab.id
                       ? "border-tribal-terracotta text-tribal-terracotta"
@@ -345,6 +359,31 @@ export default function DestinationDetailPage({ params }: PageProps) {
                   </span>
                 </div>
               </div>
+
+              {destination.highlights && destination.highlights.length > 0 && (
+                <div className="flex flex-col gap-3 mt-4 border-t border-charcoal-stone/10 pt-4">
+                  <h4 className="text-xs font-mono font-bold text-forest-emerald uppercase">Core Highlights</h4>
+                  <ul className="list-disc list-inside text-sm text-charcoal-stone/85 leading-relaxed font-sans grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {destination.highlights.map((h, i) => (
+                      <li key={i}>{h}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* TAB: Images Gallery */}
+          {activeTab === "images" && (
+            <div className="flex flex-col gap-6 bg-white/50 p-6 sm:p-8 rounded-3xl border border-white/60 shadow-md">
+              <div className="flex items-center gap-3 border-b border-charcoal-stone/10 pb-4">
+                <ImageIcon className="w-6 h-6 text-forest-emerald" />
+                <h3 className="text-xl font-sans font-bold text-forest-emerald">
+                  Visual Gallery
+                </h3>
+              </div>
+              
+              <CreatorMediaGallery media={destination.media} />
             </div>
           )}
 
@@ -394,6 +433,21 @@ export default function DestinationDetailPage({ params }: PageProps) {
                   </span>
                 </div>
               </div>
+
+              {destination.experienceTypes && destination.experienceTypes.length > 0 && (
+                <div className="flex flex-col gap-2 mt-4 border-t border-charcoal-stone/10 pt-4">
+                  <span className="text-[9px] font-mono text-tribal-terracotta font-bold uppercase">Experience Types</span>
+                  <div className="flex flex-wrap gap-2">
+                    {destination.experienceTypes.map((ext, idx) => (
+                      <span key={idx} className="px-3 py-1.5 bg-white border border-charcoal-stone/10 rounded-full text-xs font-sans font-bold text-forest-emerald shadow-sm">
+                        {ext}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <TransitOverviewCard transport={destination.transport} />
 
             </div>
           )}
@@ -483,6 +537,9 @@ export default function DestinationDetailPage({ params }: PageProps) {
         {/* Right Column: Geographic Side Info Panel & Nearby Related Nodes */}
         <div className="flex flex-col gap-8">
           
+          {/* Booking Widget */}
+          <BookingWidget placeId={destination.id} placeName={localizedName} />
+
           {/* Quick Metrics Panel */}
           <div className="glass-panel p-6 rounded-2xl border border-white/60 shadow-md flex flex-col gap-4">
             <h3 className="font-sans font-bold text-base text-forest-emerald flex items-center gap-2">
@@ -507,6 +564,19 @@ export default function DestinationDetailPage({ params }: PageProps) {
                 <span className="text-xs text-charcoal-stone/60">{t("detail.daily_limits")}</span>
                 <span className="text-xs font-mono font-bold text-tribal-terracotta">{destination.crowdCapacity} {t("detail.max")}</span>
               </div>
+
+              {destination.platformFeatures && destination.platformFeatures.length > 0 && (
+                <div className="flex flex-col gap-2 pt-3 border-t border-charcoal-stone/10 mt-1">
+                  <span className="text-[10px] font-mono text-charcoal-stone/60 uppercase font-bold">Suggested Features</span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {destination.platformFeatures.map((pf, idx) => (
+                      <span key={idx} className="text-[9px] bg-forest-emerald/10 text-forest-emerald font-bold px-2 py-1 rounded border border-forest-emerald/20">
+                        {pf}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
@@ -519,19 +589,18 @@ export default function DestinationDetailPage({ params }: PageProps) {
 
             <div className="flex flex-col gap-4">
               {relatedDestinations.map(rel => {
-                const relName = getLocalizedVal(rel.id, "name", rel.name, rel.name_hi, rel.name_cg);
-                const relTagline = getLocalizedVal(rel.id, "tagline", rel.tagline, rel.tagline_hi, rel.tagline_cg);
+                const relName = getLocalizedVal(rel.id, "name", rel.name, (rel as any).name_hi, (rel as any).name_cg);
+                const relTagline = getLocalizedVal(rel.id, "tagline", rel.tagline, (rel as any).tagline_hi, (rel as any).tagline_cg);
                 return (
                   <Link
                     key={rel.id}
                     href={`/destination/${rel.id}`}
                     className="glass-panel p-4 rounded-xl shadow-sm hover:shadow-md hover:scale-[1.01] transition-all flex items-center gap-4 border border-white/60 text-left group"
                   >
-                    <Image
-                      src={rel.heroImage || "https://images.unsplash.com/photo-1432405972618-c60002a157c5?auto=format&fit=crop&w=1200&q=80"}
+                    <img
+                      src={rel.heroImage || "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/Bhoramdeo_Temple%2C_Kawardha.jpg/1280px-Bhoramdeo_Temple%2C_Kawardha.jpg"}
+                      referrerPolicy="no-referrer"
                       alt={relName}
-                      width={56}
-                      height={56}
                       className="w-14 h-14 rounded-lg object-cover shrink-0 bg-charcoal-stone"
                     />
                     <div className="flex flex-col gap-0.5 flex-1 min-w-0">
@@ -552,6 +621,26 @@ export default function DestinationDetailPage({ params }: PageProps) {
         </div>
 
       </section>
+
+      {/* LIGHTBOX OVERLAY */}
+      {lightboxImage && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-sm p-4 sm:p-8" onClick={() => setLightboxImage(null)}>
+          <button 
+            className="absolute top-6 right-6 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
+            onClick={(e) => { e.stopPropagation(); setLightboxImage(null); }}
+          >
+            <X className="w-6 h-6" />
+          </button>
+          <div className="relative w-full h-full max-w-5xl max-h-[90vh]">
+            <img
+              src={lightboxImage}
+              referrerPolicy="no-referrer"
+              alt="Fullscreen view"
+              className="w-full h-full object-contain"
+            />
+          </div>
+        </div>
+      )}
 
     </div>
   );

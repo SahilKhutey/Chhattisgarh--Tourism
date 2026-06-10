@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import Image from 'next/image';
+import Image from "@/components/ui/NativeImage";
 import { Compass, MapPin, Calendar, Shield, BookOpen, Utensils, Camera, ArrowLeft, Cloud, Sun, Droplets, Wind, Star, Activity } from 'lucide-react';
 import { fetchAllPlaces } from '../../data/places-api';
 
@@ -180,7 +180,7 @@ export default async function DistrictPage({ params }: DistrictPageProps) {
               {/* Cinematic Thumbnail Image */}
               <div className="relative h-64 w-full bg-forest-emerald/10 overflow-hidden">
                 <Image 
-                  src={place.heroImage || "https://images.unsplash.com/photo-1432405972618-c60002a157c5?auto=format&fit=crop&w=1200&q=80"} 
+                  src={place.heroImage || "https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Chitrakot_waterfalls.JPG/1280px-Chitrakot_waterfalls.JPG"} 
                   alt={place.name}
                   fill
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"

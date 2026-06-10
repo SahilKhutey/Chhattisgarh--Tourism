@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import Image from "next/image";
+import Image from "@/components/ui/NativeImage";
 import { 
   Heart, 
   Trash2, 
@@ -335,7 +335,7 @@ export default function BookmarksPage() {
                 {/* Photo cover */}
                 <div className="w-full sm:w-36 h-28 bg-charcoal-stone rounded-xl overflow-hidden shrink-0 relative">
                   <Image
-                    src={place.heroImage || "https://images.unsplash.com/photo-1432405972618-c60002a157c5?auto=format&fit=crop&w=1200&q=80"}
+                    src={place.heroImage || "https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Chitrakot_waterfalls.JPG/1280px-Chitrakot_waterfalls.JPG"}
                     alt={place.name}
                     width={400}
                     height={300}
@@ -400,7 +400,7 @@ export default function BookmarksPage() {
           </span>
           <div className="glass-panel p-6 rounded-2xl border border-white/60 bg-white/70 shadow-md flex flex-col md:flex-row gap-6 hover:scale-[1.002] transition-all">
             <div className="w-full md:w-48 h-32 bg-charcoal-stone rounded-xl overflow-hidden shrink-0 relative">
-              <Image width={400} height={300} src="https://images.unsplash.com/photo-1432405972618-c60002a157c5?auto=format&fit=crop&w=1200&q=80" alt="Chitrakote Falls" className="w-full h-full object-cover" />
+              <Image width={400} height={300} src={`/fallback.jpg`} alt="Chitrakote Falls" className="w-full h-full object-cover" />
               <span className="absolute top-2 right-2 bg-green-500 text-white px-2 py-0.5 rounded text-[10px] font-bold uppercase shadow-sm">
                 Confirmed
               </span>
@@ -437,3 +437,5 @@ export default function BookmarksPage() {
     </div>
   );
 }
+
+

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import enLocale from "../locales/en/common.json";
 import hiLocale from "../locales/hi/common.json";
 import cgLocale from "../locales/cg/common.json";
+import { getApiBase } from "../app/data/api-config";
 
 export type Language = "en" | "hi" | "cg";
 
@@ -96,7 +97,7 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
 
     setIsLoadingTranslations(true);
-    const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api/v1";
+    const apiBase = getApiBase();
     try {
       const res = await fetch(`${apiBase}/translations?lang=${targetLang}`);
       if (!res.ok) {

@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import Link from "next/link";
+import { useState, useEffect, useRef } from "react";
 import { 
-  Volume2, VolumeX, Play, Pause, Square, Mic, Info, ChevronRight, Activity, RotateCcw, Plus, X
+  Volume2, VolumeX, Play, Pause, Square, Mic, ChevronRight, Activity, RotateCcw, Plus, X, Upload, CircleDot
 } from "lucide-react";
 import { useAuthStore } from "../../store/auth-store";
 import { useLanguage } from "../../context/LanguageContext";
 import LiveTranslatedText from "../../components/LiveTranslatedText";
+import { getApiBase } from "../data/api-config";
 
 interface StoryCard {
   id: string;
@@ -22,6 +22,10 @@ interface StoryCard {
   biodiversityFocus: string;
   audioUrl?: string;
   audioNarrator?: string;
+}
+
+interface StorySubmitError {
+  message?: string;
 }
 
 const mockStories: StoryCard[] = [
@@ -56,7 +60,7 @@ const mockStories: StoryCard[] = [
 ];
 
 export default function StoriesPage() {
-  const { user, token, isAuthenticated } = useAuthStore();
+  const { token, isAuthenticated } = useAuthStore();
   const [activeStoryId, setActiveStoryId] = useState<string>("chitrakote-story");
   const [isMuted, setIsMuted] = useState<boolean>(false);
   const {
@@ -74,20 +78,26 @@ export default function StoriesPage() {
     monument: "",
     location: "",
     description: "",
+    audioNarrator: "",
   });
   const [submitting, setSubmitting] = useState(false);
   const [submitMsg, setSubmitMsg] = useState("");
 
+  // Audio Recording State
+  const [isRecording, setIsRecording] = useState(false);
+  const [recordedAudio, setRecordedAudio] = useState<Blob | null>(null);
+  const [audioUrlPreview, setAudioUrlPreview] = useState<string | null>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
 
-
-  const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api/v1";
+  const API = getApiBase();
 
   const fetchFolklore = async () => {
     try {
       const res = await fetch(`${API}/folklore`);
       const data = await res.json();
       if (res.ok && data.length > 0) {
-        interface FolkloreItem { id: string; monument: string; title: string; description: string; location: string; author?: { fullName: string; role: string; } }
+        interface FolkloreItem { id: string; monument: string; title: string; description: string; location: string; author?: { fullName: string; role: string; }; audioUrl?: string; audioNarrator?: string; }
         const mapped = data.map((d: FolkloreItem) => ({
           id: d.id,
           destinationName: d.monument,
@@ -97,8 +107,10 @@ export default function StoriesPage() {
           origin: d.location,
           narrator: d.author?.fullName || "Citizen",
           narratorRole: d.author?.role || "Contributor",
-          audioLength: "Reading",
-          biodiversityFocus: "Cultural Heritage"
+          audioLength: d.audioUrl ? "Audio Playback" : "Reading",
+          biodiversityFocus: "Cultural Heritage",
+          audioUrl: d.audioUrl,
+          audioNarrator: d.audioNarrator || d.author?.fullName || "Citizen",
         }));
         setStories([...mockStories, ...mapped]);
       }
@@ -128,7 +140,6 @@ export default function StoriesPage() {
 
   const handlePlayToggle = () => {
     const story = stories.find(s => s.id === activeStoryId) || stories[0];
-    // Prefer physical audio guide file if available
     if (story.audioUrl) {
       if (isPlayingAudio) {
         pauseAudioFile();
@@ -136,7 +147,6 @@ export default function StoriesPage() {
         playAudioFile(story.audioUrl, story.audioNarrator || story.narrator);
       }
     } else {
-      // Fall back to browser TTS
       if (isSpeaking) {
         stopSpeaking();
       } else {
@@ -152,39 +162,120 @@ export default function StoriesPage() {
 
   const handleMuteToggle = () => setIsMuted(!isMuted);
 
-  // Formatted progress time helper (MM:SS)
   const formatTime = (sec: number) =>
     `${Math.floor(sec / 60)}:${String(Math.floor(sec % 60)).padStart(2, "0")}`;
 
   const activeStory = stories.find(s => s.id === activeStoryId) || stories[0];
   const isActivelyPlaying = activeStory.audioUrl ? isPlayingAudio : isSpeaking;
 
+  // Recording Handlers
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream);
+      mediaRecorderRef.current = mediaRecorder;
+      audioChunksRef.current = [];
+
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          audioChunksRef.current.push(event.data);
+        }
+      };
+
+      mediaRecorder.onstop = () => {
+        const audioBlob = new Blob(audioChunksRef.current, { type: "audio/webm" });
+        setRecordedAudio(audioBlob);
+        setAudioUrlPreview(URL.createObjectURL(audioBlob));
+        stream.getTracks().forEach(track => track.stop());
+      };
+
+      mediaRecorder.start();
+      setIsRecording(true);
+    } catch (err) {
+      console.error("Error accessing microphone:", err);
+      alert("Microphone access is required to record folklore.");
+    }
+  };
+
+  const stopRecording = () => {
+    if (mediaRecorderRef.current && isRecording) {
+      mediaRecorderRef.current.stop();
+      setIsRecording(false);
+    }
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setRecordedAudio(file);
+      setAudioUrlPreview(URL.createObjectURL(file));
+    }
+  };
+
+  const resetAudio = () => {
+    setRecordedAudio(null);
+    if (audioUrlPreview) {
+      URL.revokeObjectURL(audioUrlPreview);
+      setAudioUrlPreview(null);
+    }
+  };
+
   const handleSubmitFolklore = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!isAuthenticated()) return;
     setSubmitting(true);
     try {
+      let finalAudioUrl = "";
+      
+      // Upload Audio to Storage if provided
+      if (recordedAudio) {
+        const fileData = new FormData();
+        fileData.append("file", recordedAudio, recordedAudio.type.includes("webm") ? "folklore_audio.webm" : "folklore_audio.mp3");
+        
+        const uploadRes = await fetch(`${API}/storage/upload`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`
+          },
+          body: fileData
+        });
+        
+        if (uploadRes.ok) {
+          const uploadData = await uploadRes.json();
+          finalAudioUrl = uploadData.url;
+        } else {
+          throw new Error("Failed to upload audio recording.");
+        }
+      }
+
+      // Submit Folklore Meta Data
       const res = await fetch(`${API}/folklore`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify({
+          ...formData,
+          audioUrl: finalAudioUrl || undefined,
+          audioNarrator: formData.audioNarrator || undefined,
+        })
       });
+      
       if (res.ok) {
-        setSubmitMsg("Submitted successfully! Awaiting moderator verification.");
-        setFormData({ title: "", monument: "", location: "", description: "" });
+        setSubmitMsg("Folklore oral history submitted successfully! Awaiting moderator verification.");
+        setFormData({ title: "", monument: "", location: "", description: "", audioNarrator: "" });
+        resetAudio();
         setTimeout(() => {
           setShowSubmitModal(false);
           setSubmitMsg("");
-        }, 3000);
+        }, 4000);
       } else {
-        const err = await res.json();
+        const err = await res.json() as StorySubmitError;
         setSubmitMsg(err.message || "Submission failed.");
       }
-    } catch (e) {
-      setSubmitMsg("Network error.");
+    } catch (e: unknown) {
+      setSubmitMsg(e instanceof Error ? e.message : "Network error.");
     } finally {
       setSubmitting(false);
     }
@@ -395,46 +486,119 @@ export default function StoriesPage() {
       {/* Submission Modal */}
       {showSubmitModal && (
         <div className="fixed inset-0 z-[100] bg-charcoal-stone/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-sand-beige w-full max-w-2xl rounded-3xl shadow-2xl flex flex-col relative max-h-[90vh]">
-            <button onClick={() => setShowSubmitModal(false)} className="absolute top-4 right-4 p-2 text-charcoal-stone/50 hover:text-red-500 transition-colors">
+          <div className="bg-sand-beige w-full max-w-4xl rounded-3xl shadow-2xl flex flex-col relative max-h-[95vh]">
+            <button onClick={() => setShowSubmitModal(false)} className="absolute top-4 right-4 p-2 text-charcoal-stone/50 hover:text-red-500 transition-colors z-10">
               <X className="w-5 h-5" />
             </button>
             
-            <div className="p-6 sm:p-8 overflow-y-auto">
-              <h2 className="text-2xl font-bold font-sans text-forest-emerald mb-2">Contribute Folklore</h2>
-              <p className="text-sm text-charcoal-stone/60 mb-6 font-mono">Submit a local legend, story, or historical account to the registry.</p>
+            <div className="p-6 sm:p-8 overflow-y-auto w-full">
+              <h2 className="text-2xl font-bold font-sans text-forest-emerald mb-2">Contribute Oral Folklore</h2>
+              <p className="text-sm text-charcoal-stone/60 mb-6 font-mono">Preserve a local legend, story, or historical account in the sovereign registry. We highly recommend recording the folklore directly to retain the original dialect and cultural inflection.</p>
               
               {submitMsg && (
-                <div className="mb-6 p-3 rounded-xl bg-purple-100 text-purple-800 text-xs font-bold text-center">
+                <div className="mb-6 p-3 rounded-xl bg-purple-100 text-purple-800 text-sm font-bold text-center border border-purple-200">
                   {submitMsg}
                 </div>
               )}
 
-              <form onSubmit={handleSubmitFolklore} className="flex flex-col gap-4">
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-[10px] font-mono font-bold uppercase text-charcoal-stone/60">Story Title</label>
-                  <input required value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} className="px-4 py-2.5 rounded-xl border border-charcoal-stone/20 bg-white/50 text-sm focus:outline-none focus:border-purple-500" placeholder="e.g. The Legend of the Waterfall" />
-                </div>
-                
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-[10px] font-mono font-bold uppercase text-charcoal-stone/60">Related Monument</label>
-                    <input required value={formData.monument} onChange={e => setFormData({...formData, monument: e.target.value})} className="px-4 py-2.5 rounded-xl border border-charcoal-stone/20 bg-white/50 text-sm focus:outline-none focus:border-purple-500" placeholder="e.g. Sirpur Temple" />
-                  </div>
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-[10px] font-mono font-bold uppercase text-charcoal-stone/60">Location / District</label>
-                    <input required value={formData.location} onChange={e => setFormData({...formData, location: e.target.value})} className="px-4 py-2.5 rounded-xl border border-charcoal-stone/20 bg-white/50 text-sm focus:outline-none focus:border-purple-500" placeholder="e.g. Bastar" />
+              <form onSubmit={handleSubmitFolklore} className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {/* Left Side: Audio Recording Console */}
+                <div className="flex flex-col gap-4">
+                  <div className="bg-white/80 border border-charcoal-stone/10 p-5 rounded-2xl flex flex-col gap-4 shadow-sm h-full">
+                    <div className="flex items-center justify-between border-b border-charcoal-stone/10 pb-3">
+                      <span className="text-[10px] font-mono font-bold uppercase text-purple-600 flex items-center gap-1.5">
+                        <Mic className="w-3.5 h-3.5" />
+                        Oral Recording Console
+                      </span>
+                      {isRecording && <span className="text-[9px] font-mono text-red-600 font-bold uppercase animate-pulse flex items-center gap-1"><CircleDot className="w-3 h-3 fill-red-600" /> Live</span>}
+                    </div>
+
+                    {!audioUrlPreview ? (
+                      <div className="flex flex-col items-center justify-center flex-1 gap-4 py-6">
+                        {isRecording ? (
+                          <button
+                            type="button"
+                            onClick={stopRecording}
+                            className="w-16 h-16 rounded-full bg-red-600 hover:bg-red-700 text-white flex items-center justify-center shadow-lg shadow-red-600/30 transition-all cursor-pointer animate-pulse"
+                          >
+                            <Square className="w-6 h-6 fill-white" />
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={startRecording}
+                            className="w-16 h-16 rounded-full bg-purple-600 hover:bg-purple-700 text-white flex items-center justify-center shadow-lg shadow-purple-600/30 transition-all hover:scale-105 cursor-pointer"
+                          >
+                            <Mic className="w-6 h-6" />
+                          </button>
+                        )}
+                        <span className="text-xs font-mono text-charcoal-stone/60">
+                          {isRecording ? "Recording... Click to Stop" : "Click to Start Recording"}
+                        </span>
+                        
+                        <div className="flex items-center gap-3 w-full max-w-[200px] mt-4">
+                          <div className="h-[1px] bg-charcoal-stone/10 flex-1"></div>
+                          <span className="text-[9px] font-mono text-charcoal-stone/40 uppercase">OR</span>
+                          <div className="h-[1px] bg-charcoal-stone/10 flex-1"></div>
+                        </div>
+
+                        <label className="text-xs font-bold text-purple-600 bg-purple-50 hover:bg-purple-100 px-4 py-2 rounded-xl border border-purple-200 cursor-pointer transition-colors flex items-center gap-2">
+                          <Upload className="w-3.5 h-3.5" />
+                          Upload Audio File
+                          <input type="file" accept="audio/*" onChange={handleFileUpload} className="hidden" />
+                        </label>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col flex-1 gap-4 items-center justify-center py-4">
+                        <div className="w-full bg-purple-50 p-4 rounded-xl border border-purple-100 flex flex-col gap-3">
+                          <span className="text-[10px] font-mono font-bold text-purple-600 uppercase">Audio Preview</span>
+                          <audio src={audioUrlPreview} controls className="w-full h-10 outline-none" />
+                        </div>
+                        <button
+                          type="button"
+                          onClick={resetAudio}
+                          className="text-xs font-bold text-red-600 hover:text-red-700 flex items-center gap-1.5 px-4 py-2"
+                        >
+                          <RotateCcw className="w-3.5 h-3.5" />
+                          Discard & Re-record
+                        </button>
+                      </div>
+                    )}
+
+                    <div className="flex flex-col gap-1.5 mt-auto border-t border-charcoal-stone/10 pt-4">
+                      <label className="text-[10px] font-mono font-bold uppercase text-charcoal-stone/60">Narrator Name (Optional)</label>
+                      <input value={formData.audioNarrator} onChange={e => setFormData({...formData, audioNarrator: e.target.value})} className="px-4 py-2 rounded-xl border border-charcoal-stone/20 bg-white/50 text-sm focus:outline-none focus:border-purple-500" placeholder="e.g. Grandma Sita" />
+                    </div>
                   </div>
                 </div>
 
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-[10px] font-mono font-bold uppercase text-charcoal-stone/60">Folklore Description</label>
-                  <textarea required value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} rows={5} className="px-4 py-2.5 rounded-xl border border-charcoal-stone/20 bg-white/50 text-sm focus:outline-none focus:border-purple-500 resize-none" placeholder="Narrate the story here..." />
-                </div>
+                {/* Right Side: Metadata Form */}
+                <div className="flex flex-col gap-4">
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-[10px] font-mono font-bold uppercase text-charcoal-stone/60">Story Title</label>
+                    <input required value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} className="px-4 py-2.5 rounded-xl border border-charcoal-stone/20 bg-white/50 text-sm focus:outline-none focus:border-purple-500" placeholder="e.g. The Legend of the Waterfall" />
+                  </div>
+                  
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-[10px] font-mono font-bold uppercase text-charcoal-stone/60">Related Monument / Place</label>
+                      <input required value={formData.monument} onChange={e => setFormData({...formData, monument: e.target.value})} className="px-4 py-2.5 rounded-xl border border-charcoal-stone/20 bg-white/50 text-sm focus:outline-none focus:border-purple-500" placeholder="e.g. Sirpur Temple" />
+                    </div>
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-[10px] font-mono font-bold uppercase text-charcoal-stone/60">Location / District</label>
+                      <input required value={formData.location} onChange={e => setFormData({...formData, location: e.target.value})} className="px-4 py-2.5 rounded-xl border border-charcoal-stone/20 bg-white/50 text-sm focus:outline-none focus:border-purple-500" placeholder="e.g. Bastar" />
+                    </div>
+                  </div>
 
-                <button disabled={submitting} type="submit" className="mt-4 bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-xl transition-colors disabled:opacity-50">
-                  {submitting ? "Transmitting..." : "Submit to Moderators"}
-                </button>
+                  <div className="flex flex-col gap-1.5 flex-1">
+                    <label className="text-[10px] font-mono font-bold uppercase text-charcoal-stone/60">Transcription / Description</label>
+                    <textarea required value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} className="px-4 py-2.5 rounded-xl border border-charcoal-stone/20 bg-white/50 text-sm focus:outline-none focus:border-purple-500 resize-none flex-1" placeholder="Write down the transcription or context of the folklore..." />
+                  </div>
+
+                  <button disabled={submitting} type="submit" className="mt-2 bg-purple-600 hover:bg-purple-700 text-white font-bold py-3.5 rounded-xl transition-all shadow-md hover:shadow-lg disabled:opacity-50">
+                    {submitting ? "Transmitting payload & audio..." : "Submit to Moderation Queue"}
+                  </button>
+                </div>
               </form>
             </div>
           </div>

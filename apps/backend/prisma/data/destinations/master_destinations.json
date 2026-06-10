@@ -1,0 +1,3078 @@
+{
+  "destinations": [
+    {
+      "slug": "chitrakote-falls",
+      "name": "Chitrakote Falls",
+      "categorySlug": "waterfall",
+      "district": "Bastar",
+      "tagline": "Experience the authentic beauty of Chitrakote Falls",
+      "latitude": 22.9922,
+      "longitude": 83.4883,
+      "heroImage": "https://placehold.co/1200x800/115e59/ffffff.png?text=CG+Tourism",
+      "bestTime": "October to March is the ideal time to visit.",
+      "safety": "Maintain caution around remote areas and follow local guidelines.",
+      "ecoGuidance": "Zero plastic tolerance zone. Leave no trace and respect local boundaries.",
+      "story": "The Chitrakote Falls (also spelled Chitrakote, Chitrakot, and Chitrakoot) is a natural waterfall on the Indravati River, located approximately 38 kilometres (24 mi) to the west of Jagdalpur, in Bastar district in the Indian state of Chhattisgarh.\nThe height of the falls is about 29 metres (95 ft). It is the widest waterfall in India, reaching a width of nearly 300 metres (980 ft) during the peak monsoon season. Because of its width and horseshoe shape during the monsoon season, it is often called the \"Niagara Falls of India\".",
+      "media": [
+        {
+          "url": "/cdn/videos/waterfall.mp4",
+          "type": "VIDEO"
+        },
+        {
+          "url": "https://placehold.co/1200x800/115e59/ffffff.png?text=CG+Tourism",
+          "type": "IMAGE"
+        }
+      ],
+      "translations": {
+        "hi": {
+          "name": "Chitrakote Falls",
+          "description": "Bastar में स्थित एक सुंदर स्थल",
+          "history": "The Chitrakote Falls (also spelled Chitrakote, Chitrakot, and Chitrakoot) is a natural waterfall on the Indravati River, located approximately 38 kilometres (24 mi) to the west of Jagdalpur, in Bastar district in the Indian state of Chhattisgarh.\nThe height of the falls is about 29 metres (95 ft). It is the widest waterfall in India, reaching a width of nearly 300 metres (980 ft) during the peak monsoon season. Because of its width and horseshoe shape during the monsoon season, it is often called the \"Niagara Falls of India\".",
+          "bestSeason": "अक्टूबर से मार्च",
+          "safetyInfo": "सुदूर क्षेत्रों में सावधानी बरतें।",
+          "rules": "प्लास्टिक का उपयोग सख्त मना है।"
+        },
+        "cg": {
+          "name": "Chitrakote Falls",
+          "description": "Bastar म स्थित एक सुघ्घर जगह",
+          "history": "The Chitrakote Falls (also spelled Chitrakote, Chitrakot, and Chitrakoot) is a natural waterfall on the Indravati River, located approximately 38 kilometres (24 mi) to the west of Jagdalpur, in Bastar district in the Indian state of Chhattisgarh.\nThe height of the falls is about 29 metres (95 ft). It is the widest waterfall in India, reaching a width of nearly 300 metres (980 ft) during the peak monsoon season. Because of its width and horseshoe shape during the monsoon season, it is often called the \"Niagara Falls of India\".",
+          "bestSeason": "अक्टूबर से मार्च",
+          "safetyInfo": "दूरिहा के जगह म संभल के जाव।",
+          "rules": "प्लास्टिक के उपयोग एकदम मना हे।"
+        },
+        "en": {
+          "name": "Chitrakote Falls",
+          "description": "Experience the beauty of Chitrakote Falls",
+          "history": "The Chitrakote Falls (also spelled Chitrakote, Chitrakot, and Chitrakoot) is a natural waterfall on the Indravati River, located approximately 38 kilometres (24 mi) to the west of Jagdalpur, in Bastar district in the Indian state of Chhattisgarh.\nThe height of the falls is about 29 metres (95 ft). It is the widest waterfall in India, reaching a width of nearly 300 metres (980 ft) during the peak monsoon season. Because of its width and horseshoe shape during the monsoon season, it is often called the \"Niagara Falls of India\".",
+          "bestSeason": "October to March is the ideal time to visit.",
+          "safetyInfo": "Maintain caution around remote areas.",
+          "rules": "Zero plastic tolerance zone. Leave no trace."
+        }
+      },
+      "categoryName": "Waterfall",
+      "highlights": [
+        "Widest waterfall in India",
+        "Known as the “Niagara Falls of India”",
+        "Monsoon rainbow views"
+      ],
+      "mediaAssets": [
+        "Drone waterfall shots",
+        "Sunset cinematic videos",
+        "Monsoon timelapses"
+      ],
+      "experienceTypes": [
+        "Nature",
+        "Photography",
+        "Adventure"
+      ],
+      "platformFeatures": [
+        "Monsoon travel alerts",
+        "Viewpoint maps",
+        "Local guide listings"
+      ],
+      "priorityPhase": "Phase 1"
+    },
+    {
+      "slug": "tirathgarh-falls",
+      "name": "Tirathgarh Falls",
+      "tagline": "Experience the beauty of Tirathgarh Falls",
+      "district": "Bastar",
+      "categorySlug": "waterfall",
+      "categoryName": "Waterfall",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Tirathgarh Falls is a beautiful destination in Bastar.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [
+        "Multi-tier waterfall",
+        "Forest surroundings",
+        "Near Kanger Valley"
+      ],
+      "mediaAssets": [
+        "Slow-motion waterfall clips",
+        "Trek reels",
+        "Forest ambience audio"
+      ],
+      "experienceTypes": [
+        "Trekking",
+        "Eco-tourism",
+        "Photography"
+      ],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 1"
+    },
+    {
+      "slug": "kanger-valley-national-park",
+      "name": "Kanger Valley National Park",
+      "categorySlug": "national-park",
+      "district": "Bastar",
+      "tagline": "Experience the authentic beauty of Kanger Valley National Park",
+      "latitude": 18.7667,
+      "longitude": 81.9833,
+      "heroImage": "https://placehold.co/1200x800/115e59/ffffff.png?text=CG+Tourism",
+      "bestTime": "October to March is the ideal time to visit.",
+      "safety": "Maintain caution around remote areas and follow local guidelines.",
+      "ecoGuidance": "Zero plastic tolerance zone. Leave no trace and respect local boundaries.",
+      "story": "Kanger Valley National Park (also known as Kanger Ghati National Park) is a national park in the Bastar region of Chhattisgarh state in India. It came into existence in July 1982 and covers an area of approximately 200 square kilometres (77 sq mi). The park extends from the Teerathagarh waterfalls in the west to the Kolab river (Odisha state boundary) in the east, spanning an average length of 33.5 km (20.8 mi) and an average width of 6 km (3.7 mi) from north to south. It derives its name from the Kanger river, which flows centrally through it. Situated at a distance of 30 km (19 mi) southeast of Jagdalpur city, it is one of India's densest national parks and is known for its biodiversity, landscape, waterfalls, and subterranean geomorphologic limestone caves. It is also the home to the Bastar hill myna, the state bird of Chhattisgarh. In 2025, the national park was included to the tentative list of UNESCO.\nThe park is noted for its highly heterogeneous land formations, from low, flat areas to steep slopes, plateaus, valleys, and stream courses. Its vast, undulating terrain harbours habitats for diverse flora and fauna. It has a significant tribal population, and is a popular destination for hikers, wildlife enthusiasts and researchers.",
+      "media": [
+        {
+          "url": "/cdn/videos/forest.mp4",
+          "type": "VIDEO"
+        },
+        {
+          "url": "https://placehold.co/1200x800/115e59/ffffff.png?text=CG+Tourism",
+          "type": "IMAGE"
+        }
+      ],
+      "translations": {
+        "hi": {
+          "name": "Kanger Valley National Park",
+          "description": "Bastar में स्थित एक सुंदर स्थल",
+          "history": "Kanger Valley National Park (also known as Kanger Ghati National Park) is a national park in the Bastar region of Chhattisgarh state in India. It came into existence in July 1982 and covers an area of approximately 200 square kilometres (77 sq mi). The park extends from the Teerathagarh waterfalls in the west to the Kolab river (Odisha state boundary) in the east, spanning an average length of 33.5 km (20.8 mi) and an average width of 6 km (3.7 mi) from north to south. It derives its name from the Kanger river, which flows centrally through it. Situated at a distance of 30 km (19 mi) southeast of Jagdalpur city, it is one of India's densest national parks and is known for its biodiversity, landscape, waterfalls, and subterranean geomorphologic limestone caves. It is also the home to the Bastar hill myna, the state bird of Chhattisgarh. In 2025, the national park was included to the tentative list of UNESCO.\nThe park is noted for its highly heterogeneous land formations, from low, flat areas to steep slopes, plateaus, valleys, and stream courses. Its vast, undulating terrain harbours habitats for diverse flora and fauna. It has a significant tribal population, and is a popular destination for hikers, wildlife enthusiasts and researchers.",
+          "bestSeason": "अक्टूबर से मार्च",
+          "safetyInfo": "सुदूर क्षेत्रों में सावधानी बरतें।",
+          "rules": "प्लास्टिक का उपयोग सख्त मना है।"
+        },
+        "cg": {
+          "name": "Kanger Valley National Park",
+          "description": "Bastar म स्थित एक सुघ्घर जगह",
+          "history": "Kanger Valley National Park (also known as Kanger Ghati National Park) is a national park in the Bastar region of Chhattisgarh state in India. It came into existence in July 1982 and covers an area of approximately 200 square kilometres (77 sq mi). The park extends from the Teerathagarh waterfalls in the west to the Kolab river (Odisha state boundary) in the east, spanning an average length of 33.5 km (20.8 mi) and an average width of 6 km (3.7 mi) from north to south. It derives its name from the Kanger river, which flows centrally through it. Situated at a distance of 30 km (19 mi) southeast of Jagdalpur city, it is one of India's densest national parks and is known for its biodiversity, landscape, waterfalls, and subterranean geomorphologic limestone caves. It is also the home to the Bastar hill myna, the state bird of Chhattisgarh. In 2025, the national park was included to the tentative list of UNESCO.\nThe park is noted for its highly heterogeneous land formations, from low, flat areas to steep slopes, plateaus, valleys, and stream courses. Its vast, undulating terrain harbours habitats for diverse flora and fauna. It has a significant tribal population, and is a popular destination for hikers, wildlife enthusiasts and researchers.",
+          "bestSeason": "अक्टूबर से मार्च",
+          "safetyInfo": "दूरिहा के जगह म संभल के जाव।",
+          "rules": "प्लास्टिक के उपयोग एकदम मना हे।"
+        },
+        "en": {
+          "name": "Kanger Valley National Park",
+          "description": "Experience the beauty of Kanger Valley National Park",
+          "history": "Kanger Valley National Park (also known as Kanger Ghati National Park) is a national park in the Bastar region of Chhattisgarh state in India. It came into existence in July 1982 and covers an area of approximately 200 square kilometres (77 sq mi). The park extends from the Teerathagarh waterfalls in the west to the Kolab river (Odisha state boundary) in the east, spanning an average length of 33.5 km (20.8 mi) and an average width of 6 km (3.7 mi) from north to south. It derives its name from the Kanger river, which flows centrally through it. Situated at a distance of 30 km (19 mi) southeast of Jagdalpur city, it is one of India's densest national parks and is known for its biodiversity, landscape, waterfalls, and subterranean geomorphologic limestone caves. It is also the home to the Bastar hill myna, the state bird of Chhattisgarh. In 2025, the national park was included to the tentative list of UNESCO.\nThe park is noted for its highly heterogeneous land formations, from low, flat areas to steep slopes, plateaus, valleys, and stream courses. Its vast, undulating terrain harbours habitats for diverse flora and fauna. It has a significant tribal population, and is a popular destination for hikers, wildlife enthusiasts and researchers.",
+          "bestSeason": "October to March is the ideal time to visit.",
+          "safetyInfo": "Maintain caution around remote areas.",
+          "rules": "Zero plastic tolerance zone. Leave no trace."
+        }
+      },
+      "categoryName": "National Park",
+      "highlights": [
+        "Dense forests",
+        "Biodiversity hotspot",
+        "Limestone caves"
+      ],
+      "mediaAssets": [
+        "Wildlife videos",
+        "Cave exploration footage",
+        "Aerial forest imagery"
+      ],
+      "experienceTypes": [
+        "Wildlife",
+        "Nature",
+        "Eco-tourism"
+      ],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 1"
+    },
+    {
+      "slug": "kutumsar-cave",
+      "name": "Kutumsar Cave",
+      "tagline": "Experience the beauty of Kutumsar Cave",
+      "district": "Bastar",
+      "categorySlug": "cave",
+      "categoryName": "Cave",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Kutumsar Cave is a beautiful destination in Bastar.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [
+        "Underground limestone cave",
+        "Unique rock formations",
+        "Rare cave species"
+      ],
+      "mediaAssets": [
+        "Cave walkthrough videos",
+        "Flashlight cinematic shots",
+        "Geological closeups"
+      ],
+      "experienceTypes": [
+        "Adventure",
+        "Geology",
+        "Exploration"
+      ],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "kailash-cave",
+      "name": "Kailash Cave",
+      "tagline": "Experience the beauty of Kailash Cave",
+      "district": "Bastar",
+      "categorySlug": "cave",
+      "categoryName": "Cave",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Kailash Cave is a beautiful destination in Bastar.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [
+        "Limestone cave system",
+        "Religious significance",
+        "Nearby forest trails"
+      ],
+      "mediaAssets": [
+        "Spiritual reels",
+        "Cave photography",
+        "Nature drone footage"
+      ],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "dandak-cave",
+      "name": "Dandak Cave",
+      "tagline": "Experience the beauty of Dandak Cave",
+      "district": "Bastar",
+      "categorySlug": "cave",
+      "categoryName": "Cave",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Dandak Cave is a beautiful destination in Bastar.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [
+        "Natural cave structures",
+        "Dense jungle access",
+        "Adventure exploration"
+      ],
+      "mediaAssets": [
+        "Exploration videos",
+        "Trek POV clips",
+        "Rock texture images"
+      ],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "barnawapara-wildlife-sanctuary",
+      "name": "Barnawapara Wildlife Sanctuary",
+      "categorySlug": "wildlife-sanctuary",
+      "district": "Baloda Bazar",
+      "tagline": "Experience the authentic beauty of Barnawapara Wildlife Sanctuary",
+      "latitude": 21.4,
+      "longitude": 82.4639,
+      "heroImage": "https://images.unsplash.com/photo-1500279224264?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March is the ideal time to visit.",
+      "safety": "Maintain caution around remote areas and follow local guidelines.",
+      "ecoGuidance": "Zero plastic tolerance zone. Leave no trace and respect local boundaries.",
+      "story": "The Barnawapara Wildlife Sanctuary is located in Mahasamund district. It was established in 1976 under the Wildlife Protection Act.",
+      "media": [
+        {
+          "url": "/cdn/videos/forest.mp4",
+          "type": "VIDEO"
+        },
+        {
+          "url": "https://images.unsplash.com/photo-1500279224264?auto=format&fit=crop&w=1200&q=80",
+          "type": "IMAGE"
+        }
+      ],
+      "translations": {
+        "hi": {
+          "name": "Barnawapara Wildlife Sanctuary",
+          "description": "Mahasamund में स्थित एक सुंदर स्थल",
+          "history": "The Barnawapara Wildlife Sanctuary is located in Mahasamund district. It was established in 1976 under the Wildlife Protection Act.",
+          "bestSeason": "अक्टूबर से मार्च",
+          "safetyInfo": "सुदूर क्षेत्रों में सावधानी बरतें।",
+          "rules": "प्लास्टिक का उपयोग सख्त मना है।"
+        },
+        "cg": {
+          "name": "Barnawapara Wildlife Sanctuary",
+          "description": "Mahasamund म स्थित एक सुघ्घर जगह",
+          "history": "The Barnawapara Wildlife Sanctuary is located in Mahasamund district. It was established in 1976 under the Wildlife Protection Act.",
+          "bestSeason": "अक्टूबर से मार्च",
+          "safetyInfo": "दूरिहा के जगह म संभल के जाव।",
+          "rules": "प्लास्टिक के उपयोग एकदम मना हे।"
+        },
+        "en": {
+          "name": "Barnawapara Wildlife Sanctuary",
+          "description": "Experience the beauty of Barnawapara Wildlife Sanctuary",
+          "history": "The Barnawapara Wildlife Sanctuary is located in Mahasamund district. It was established in 1976 under the Wildlife Protection Act.",
+          "bestSeason": "October to March is the ideal time to visit.",
+          "safetyInfo": "Maintain caution around remote areas.",
+          "rules": "Zero plastic tolerance zone. Leave no trace."
+        }
+      },
+      "categoryName": "Wildlife Sanctuary",
+      "highlights": [
+        "Rich biodiversity",
+        "Jungle safari",
+        "Birdwatching"
+      ],
+      "mediaAssets": [
+        "Safari reels",
+        "Wildlife photography",
+        "Sunrise jungle shots"
+      ],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 1"
+    },
+    {
+      "slug": "achanakmar-tiger-reserve",
+      "name": "Achanakmar Tiger Reserve",
+      "categorySlug": "tiger-reserve",
+      "district": "Mungeli",
+      "tagline": "Experience the authentic beauty of Achanakmar Tiger Reserve",
+      "latitude": 22.55,
+      "longitude": 81.73,
+      "heroImage": "https://placehold.co/1200x800/115e59/ffffff.png?text=CG+Tourism",
+      "bestTime": "October to March is the ideal time to visit.",
+      "safety": "Maintain caution around remote areas and follow local guidelines.",
+      "ecoGuidance": "Zero plastic tolerance zone. Leave no trace and respect local boundaries.",
+      "story": "Achanakmar Wildlife Sanctuary is a sanctuary in Mungeli district of Chhattisgarh and in the Anuppur and Dindori districts of Madhya Pradesh in India. It was established in 1975, under the provisions of the Indian Wildlife Protection Act of 1972, and declared as a Tiger Reserve under Project Tiger, in 2009. It is a part of the Achanakmar-Amarkantak Biosphere Reserve.",
+      "media": [
+        {
+          "url": "/cdn/videos/forest.mp4",
+          "type": "VIDEO"
+        },
+        {
+          "url": "https://placehold.co/1200x800/115e59/ffffff.png?text=CG+Tourism",
+          "type": "IMAGE"
+        }
+      ],
+      "translations": {
+        "hi": {
+          "name": "Achanakmar Tiger Reserve",
+          "description": "Mungeli में स्थित एक सुंदर स्थल",
+          "history": "Achanakmar Wildlife Sanctuary is a sanctuary in Mungeli district of Chhattisgarh and in the Anuppur and Dindori districts of Madhya Pradesh in India. It was established in 1975, under the provisions of the Indian Wildlife Protection Act of 1972, and declared as a Tiger Reserve under Project Tiger, in 2009. It is a part of the Achanakmar-Amarkantak Biosphere Reserve.",
+          "bestSeason": "अक्टूबर से मार्च",
+          "safetyInfo": "सुदूर क्षेत्रों में सावधानी बरतें।",
+          "rules": "प्लास्टिक का उपयोग सख्त मना है।"
+        },
+        "cg": {
+          "name": "Achanakmar Tiger Reserve",
+          "description": "Mungeli म स्थित एक सुघ्घर जगह",
+          "history": "Achanakmar Wildlife Sanctuary is a sanctuary in Mungeli district of Chhattisgarh and in the Anuppur and Dindori districts of Madhya Pradesh in India. It was established in 1975, under the provisions of the Indian Wildlife Protection Act of 1972, and declared as a Tiger Reserve under Project Tiger, in 2009. It is a part of the Achanakmar-Amarkantak Biosphere Reserve.",
+          "bestSeason": "अक्टूबर से मार्च",
+          "safetyInfo": "दूरिहा के जगह म संभल के जाव।",
+          "rules": "प्लास्टिक के उपयोग एकदम मना हे।"
+        },
+        "en": {
+          "name": "Achanakmar Tiger Reserve",
+          "description": "Experience the beauty of Achanakmar Tiger Reserve",
+          "history": "Achanakmar Wildlife Sanctuary is a sanctuary in Mungeli district of Chhattisgarh and in the Anuppur and Dindori districts of Madhya Pradesh in India. It was established in 1975, under the provisions of the Indian Wildlife Protection Act of 1972, and declared as a Tiger Reserve under Project Tiger, in 2009. It is a part of the Achanakmar-Amarkantak Biosphere Reserve.",
+          "bestSeason": "October to March is the ideal time to visit.",
+          "safetyInfo": "Maintain caution around remote areas.",
+          "rules": "Zero plastic tolerance zone. Leave no trace."
+        }
+      },
+      "categoryName": "Tiger Reserve",
+      "highlights": [
+        "Tiger habitat",
+        "Dense sal forests",
+        "Eco-tourism zone"
+      ],
+      "mediaAssets": [
+        "Jeep safari videos",
+        "Wildlife imagery",
+        "Forest documentaries"
+      ],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 2"
+    },
+    {
+      "slug": "mainpat",
+      "name": "Mainpat",
+      "categorySlug": "hill-station",
+      "district": "Surguja",
+      "tagline": "Experience the authentic beauty of Mainpat",
+      "latitude": 22.837,
+      "longitude": 83.315,
+      "heroImage": "https://placehold.co/1200x800/115e59/ffffff.png?text=CG+Tourism",
+      "bestTime": "October to March is the ideal time to visit.",
+      "safety": "Maintain caution around remote areas and follow local guidelines.",
+      "ecoGuidance": "Zero plastic tolerance zone. Leave no trace and respect local boundaries.",
+      "story": "Mainpat is a hill station and small village in the Surguja district in the northern part of the state of Chhattisgarh, India. It lies about 55 kilometres (34 mi) by road from the divisional headquarter of Ambikapur. The hill station is 50 km south of Ambikapur, 160 km northeast of Korba, and 360 km northeast of state capital Raipur.\n\n\nThis hill station is famous for the Ulta Pani or Bisar Paani which seems to defy the gravity and flows upward.",
+      "media": [
+        {
+          "url": "/cdn/videos/waterfall.mp4",
+          "type": "VIDEO"
+        },
+        {
+          "url": "https://placehold.co/1200x800/115e59/ffffff.png?text=CG+Tourism",
+          "type": "IMAGE"
+        }
+      ],
+      "translations": {
+        "hi": {
+          "name": "Mainpat",
+          "description": "Surguja में स्थित एक सुंदर स्थल",
+          "history": "Mainpat is a hill station and small village in the Surguja district in the northern part of the state of Chhattisgarh, India. It lies about 55 kilometres (34 mi) by road from the divisional headquarter of Ambikapur. The hill station is 50 km south of Ambikapur, 160 km northeast of Korba, and 360 km northeast of state capital Raipur.\n\n\nThis hill station is famous for the Ulta Pani or Bisar Paani which seems to defy the gravity and flows upward.",
+          "bestSeason": "अक्टूबर से मार्च",
+          "safetyInfo": "सुदूर क्षेत्रों में सावधानी बरतें।",
+          "rules": "प्लास्टिक का उपयोग सख्त मना है।"
+        },
+        "cg": {
+          "name": "Mainpat",
+          "description": "Surguja म स्थित एक सुघ्घर जगह",
+          "history": "Mainpat is a hill station and small village in the Surguja district in the northern part of the state of Chhattisgarh, India. It lies about 55 kilometres (34 mi) by road from the divisional headquarter of Ambikapur. The hill station is 50 km south of Ambikapur, 160 km northeast of Korba, and 360 km northeast of state capital Raipur.\n\n\nThis hill station is famous for the Ulta Pani or Bisar Paani which seems to defy the gravity and flows upward.",
+          "bestSeason": "अक्टूबर से मार्च",
+          "safetyInfo": "दूरिहा के जगह म संभल के जाव।",
+          "rules": "प्लास्टिक के उपयोग एकदम मना हे।"
+        },
+        "en": {
+          "name": "Mainpat",
+          "description": "Experience the beauty of Mainpat",
+          "history": "Mainpat is a hill station and small village in the Surguja district in the northern part of the state of Chhattisgarh, India. It lies about 55 kilometres (34 mi) by road from the divisional headquarter of Ambikapur. The hill station is 50 km south of Ambikapur, 160 km northeast of Korba, and 360 km northeast of state capital Raipur.\n\n\nThis hill station is famous for the Ulta Pani or Bisar Paani which seems to defy the gravity and flows upward.",
+          "bestSeason": "October to March is the ideal time to visit.",
+          "safetyInfo": "Maintain caution around remote areas.",
+          "rules": "Zero plastic tolerance zone. Leave no trace."
+        }
+      },
+      "categoryName": "Hill Station",
+      "highlights": [
+        "Mini Tibet of Chhattisgarh",
+        "Waterfalls and meadows",
+        "Tibetan culture"
+      ],
+      "mediaAssets": [
+        "Hillscape drone videos",
+        "Tibetan monastery photos",
+        "Fog timelapses"
+      ],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 1"
+    },
+    {
+      "slug": "tiger-point-waterfall",
+      "name": "Tiger Point Waterfall",
+      "tagline": "Experience the beauty of Tiger Point Waterfall",
+      "district": "Surguja",
+      "categorySlug": "waterfall",
+      "categoryName": "Waterfall",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Tiger Point Waterfall is a beautiful destination in Surguja.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [
+        "Mainpat attraction",
+        "Valley viewpoints",
+        "Monsoon beauty"
+      ],
+      "mediaAssets": [
+        "Waterfall reels",
+        "Adventure vlogs",
+        "Scenic panoramas"
+      ],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "fish-point",
+      "name": "Fish Point",
+      "tagline": "Experience the beauty of Fish Point",
+      "district": "Surguja",
+      "categorySlug": "nature-spot",
+      "categoryName": "Nature Spot",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Fish Point is a beautiful destination in Surguja.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [
+        "Scenic stream area",
+        "Local food stalls",
+        "Relaxation destination"
+      ],
+      "mediaAssets": [
+        "Picnic visuals",
+        "Drone stream footage",
+        "Family tourism videos"
+      ],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "jaljali",
+      "name": "Jaljali",
+      "tagline": "Experience the beauty of Jaljali",
+      "district": "Surguja",
+      "categorySlug": "natural-wonder",
+      "categoryName": "Natural Wonder",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Jaljali is a beautiful destination in Surguja.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [
+        "Bouncing land phenomenon",
+        "Unique ecological feature",
+        "Dense greenery"
+      ],
+      "mediaAssets": [
+        "Walking bounce demonstrations",
+        "Nature explainers",
+        "Educational reels"
+      ],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "bhoramdeo-temple",
+      "name": "Bhoramdeo Temple",
+      "categorySlug": "heritage-temple",
+      "district": "Kabirdham",
+      "tagline": "Experience the authentic beauty of Bhoramdeo Temple",
+      "latitude": 22.116,
+      "longitude": 81.148,
+      "heroImage": "https://placehold.co/1200x800/115e59/ffffff.png?text=CG+Tourism",
+      "bestTime": "October to March is the ideal time to visit.",
+      "safety": "Maintain caution around remote areas and follow local guidelines.",
+      "ecoGuidance": "Zero plastic tolerance zone. Leave no trace and respect local boundaries.",
+      "story": "Bhoramdeo Temple is a Hindu temple dedicated to the god Shiva in Bhoramdeo, in the Indian state of Chhattisgarh. It comprises a group of four temples of which the earliest is a brick-temple. The main temple is the Bhoramdeo temple built in stone. The architectural features with erotic sculptures has given a distinct style akin to the Khajuraho temple and the Konark Sun Temple in Odisha, and hence the Bhoramdeo complex is known by the sobriquet the \"Khajuraho of Chhattisgarh\".\nAnother temple within a distance of about 1 kilometre (0.62 mi) from Bhoramdeo, which is mentioned along with the Bhoramdeo complex is the Madwa Mahal, meaning marriage hall in local dialect, also known as Dullhadeo. It was built in 1349 during the reign of Ramchandra Deo of the Naga dynasty of Kawardha and has a unique Shiva Linga erected over 16 pillars.",
+      "media": [
+        {
+          "url": "/cdn/videos/temple.mp4",
+          "type": "VIDEO"
+        },
+        {
+          "url": "https://placehold.co/1200x800/115e59/ffffff.png?text=CG+Tourism",
+          "type": "IMAGE"
+        }
+      ],
+      "translations": {
+        "hi": {
+          "name": "Bhoramdeo Temple",
+          "description": "Kawardha में स्थित एक सुंदर स्थल",
+          "history": "Bhoramdeo Temple is a Hindu temple dedicated to the god Shiva in Bhoramdeo, in the Indian state of Chhattisgarh. It comprises a group of four temples of which the earliest is a brick-temple. The main temple is the Bhoramdeo temple built in stone. The architectural features with erotic sculptures has given a distinct style akin to the Khajuraho temple and the Konark Sun Temple in Odisha, and hence the Bhoramdeo complex is known by the sobriquet the \"Khajuraho of Chhattisgarh\".\nAnother temple within a distance of about 1 kilometre (0.62 mi) from Bhoramdeo, which is mentioned along with the Bhoramdeo complex is the Madwa Mahal, meaning marriage hall in local dialect, also known as Dullhadeo. It was built in 1349 during the reign of Ramchandra Deo of the Naga dynasty of Kawardha and has a unique Shiva Linga erected over 16 pillars.",
+          "bestSeason": "अक्टूबर से मार्च",
+          "safetyInfo": "सुदूर क्षेत्रों में सावधानी बरतें।",
+          "rules": "प्लास्टिक का उपयोग सख्त मना है।"
+        },
+        "cg": {
+          "name": "Bhoramdeo Temple",
+          "description": "Kawardha म स्थित एक सुघ्घर जगह",
+          "history": "Bhoramdeo Temple is a Hindu temple dedicated to the god Shiva in Bhoramdeo, in the Indian state of Chhattisgarh. It comprises a group of four temples of which the earliest is a brick-temple. The main temple is the Bhoramdeo temple built in stone. The architectural features with erotic sculptures has given a distinct style akin to the Khajuraho temple and the Konark Sun Temple in Odisha, and hence the Bhoramdeo complex is known by the sobriquet the \"Khajuraho of Chhattisgarh\".\nAnother temple within a distance of about 1 kilometre (0.62 mi) from Bhoramdeo, which is mentioned along with the Bhoramdeo complex is the Madwa Mahal, meaning marriage hall in local dialect, also known as Dullhadeo. It was built in 1349 during the reign of Ramchandra Deo of the Naga dynasty of Kawardha and has a unique Shiva Linga erected over 16 pillars.",
+          "bestSeason": "अक्टूबर से मार्च",
+          "safetyInfo": "दूरिहा के जगह म संभल के जाव।",
+          "rules": "प्लास्टिक के उपयोग एकदम मना हे।"
+        },
+        "en": {
+          "name": "Bhoramdeo Temple",
+          "description": "Experience the beauty of Bhoramdeo Temple",
+          "history": "Bhoramdeo Temple is a Hindu temple dedicated to the god Shiva in Bhoramdeo, in the Indian state of Chhattisgarh. It comprises a group of four temples of which the earliest is a brick-temple. The main temple is the Bhoramdeo temple built in stone. The architectural features with erotic sculptures has given a distinct style akin to the Khajuraho temple and the Konark Sun Temple in Odisha, and hence the Bhoramdeo complex is known by the sobriquet the \"Khajuraho of Chhattisgarh\".\nAnother temple within a distance of about 1 kilometre (0.62 mi) from Bhoramdeo, which is mentioned along with the Bhoramdeo complex is the Madwa Mahal, meaning marriage hall in local dialect, also known as Dullhadeo. It was built in 1349 during the reign of Ramchandra Deo of the Naga dynasty of Kawardha and has a unique Shiva Linga erected over 16 pillars.",
+          "bestSeason": "October to March is the ideal time to visit.",
+          "safetyInfo": "Maintain caution around remote areas.",
+          "rules": "Zero plastic tolerance zone. Leave no trace."
+        }
+      },
+      "categoryName": "Heritage Temple",
+      "highlights": [
+        "Khajuraho of Chhattisgarh",
+        "Ancient carvings",
+        "Historical architecture"
+      ],
+      "mediaAssets": [
+        "Temple drone shots",
+        "Architecture photography",
+        "Heritage storytelling videos"
+      ],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 1"
+    },
+    {
+      "slug": "dongargarh",
+      "name": "Dongargarh",
+      "categorySlug": "pilgrimage",
+      "district": "Rajnandgaon",
+      "tagline": "Experience the authentic beauty of Dongargarh",
+      "latitude": 21.1887,
+      "longitude": 80.7591,
+      "heroImage": "https://placehold.co/1200x800/115e59/ffffff.png?text=CG+Tourism",
+      "bestTime": "October to March is the ideal time to visit.",
+      "safety": "Maintain caution around remote areas and follow local guidelines.",
+      "ecoGuidance": "Zero plastic tolerance zone. Leave no trace and respect local boundaries.",
+      "story": "Dongargarh is a town and municipality in Rajnandgaon District in the state of Chhattisgarh, India and the site of the Bambleshwari Temple and Chandragiri Jain Temple. A prominent pilgrim destination in Rajnandgaon District, the city lies about 35 kilometres (22 mi) west from Rajnandgaon, 67 kilometres (42 mi) west from Durg and 132 kilometres (82 mi) east from Bhandara which are situated on National Highway 6. Featuring majestic mountains and ponds, Dongargarh is derived from the words: Dongarh meaning 'mountains' and garh meaning 'fort'. \nThe Maa Bamleshwari Devi Temple, situated on a 1,600 feet (490 m) high hilltop, is a popular landmark. It is of great spiritual importance and several legends are associated with this shrine too. Another prominent shrine in the vicinity is Chhoti Bamleshwari Temple. Devotees flock these temples during Navratri. Shivji Temple and temples dedicated to Lord Hanuman are also located here. The ropeway is an added attraction and is the only passenger ropeway in Chhattisgarh. A severe accident occurred in 2016 when the ropeway broke and fell down killing several people.\nThe town is known for religious Harmony and has considerable population of Buddhists, Sikhs, Christians and Jains apart from Hindus.A 30 feet high statue of Budhha situated at the hilltop of the Pragyagiri hill is another attraction of the town. This is visible from the all the 06 major hills of the town. In addition to these, A Jain temple is also being constructed  on a hill known as Chandragiri with the blessings of Jain saint Acharya Shri Vidyasagar Ji Maharaaj. The temple is specially recognized for an ancient statue of the Teerthankara god Chandraprabhuji. One of the biggest gurudwaras in the state is also located in the heart of the city managed by the Sikh society which also run Khalsa Public School, one of the biggest schools in the town. Dongargarhs oldest and most beautiful Roman Catholic church (Sacred Heart Church) is situated just near the railway station as well as there is a tall and beautiful Calvary hill near the railway colony which has a huge cross on the tip of the hill which can be seen from a far distance during the day. Every year a huge crowd of devotees Christians and other Religions gather here during the month of April for the way of the cross marking the Crucifixion of Jesus Christ as well as to get his blessings.\nThe nearest airport Swami Vivekanand Airport is at Raipur, 110 kilometres (68 mi) away while the nearest railhead is Dongargarh Railway Station. Dongargarh has good road communication and buses and taxis are available from Rajnandgaon.",
+      "media": [
+        {
+          "url": "/cdn/videos/temple.mp4",
+          "type": "VIDEO"
+        },
+        {
+          "url": "https://placehold.co/1200x800/115e59/ffffff.png?text=CG+Tourism",
+          "type": "IMAGE"
+        }
+      ],
+      "translations": {
+        "hi": {
+          "name": "Dongargarh",
+          "description": "Rajnandgaon में स्थित एक सुंदर स्थल",
+          "history": "Dongargarh is a town and municipality in Rajnandgaon District in the state of Chhattisgarh, India and the site of the Bambleshwari Temple and Chandragiri Jain Temple. A prominent pilgrim destination in Rajnandgaon District, the city lies about 35 kilometres (22 mi) west from Rajnandgaon, 67 kilometres (42 mi) west from Durg and 132 kilometres (82 mi) east from Bhandara which are situated on National Highway 6. Featuring majestic mountains and ponds, Dongargarh is derived from the words: Dongarh meaning 'mountains' and garh meaning 'fort'. \nThe Maa Bamleshwari Devi Temple, situated on a 1,600 feet (490 m) high hilltop, is a popular landmark. It is of great spiritual importance and several legends are associated with this shrine too. Another prominent shrine in the vicinity is Chhoti Bamleshwari Temple. Devotees flock these temples during Navratri. Shivji Temple and temples dedicated to Lord Hanuman are also located here. The ropeway is an added attraction and is the only passenger ropeway in Chhattisgarh. A severe accident occurred in 2016 when the ropeway broke and fell down killing several people.\nThe town is known for religious Harmony and has considerable population of Buddhists, Sikhs, Christians and Jains apart from Hindus.A 30 feet high statue of Budhha situated at the hilltop of the Pragyagiri hill is another attraction of the town. This is visible from the all the 06 major hills of the town. In addition to these, A Jain temple is also being constructed  on a hill known as Chandragiri with the blessings of Jain saint Acharya Shri Vidyasagar Ji Maharaaj. The temple is specially recognized for an ancient statue of the Teerthankara god Chandraprabhuji. One of the biggest gurudwaras in the state is also located in the heart of the city managed by the Sikh society which also run Khalsa Public School, one of the biggest schools in the town. Dongargarhs oldest and most beautiful Roman Catholic church (Sacred Heart Church) is situated just near the railway station as well as there is a tall and beautiful Calvary hill near the railway colony which has a huge cross on the tip of the hill which can be seen from a far distance during the day. Every year a huge crowd of devotees Christians and other Religions gather here during the month of April for the way of the cross marking the Crucifixion of Jesus Christ as well as to get his blessings.\nThe nearest airport Swami Vivekanand Airport is at Raipur, 110 kilometres (68 mi) away while the nearest railhead is Dongargarh Railway Station. Dongargarh has good road communication and buses and taxis are available from Rajnandgaon.",
+          "bestSeason": "अक्टूबर से मार्च",
+          "safetyInfo": "सुदूर क्षेत्रों में सावधानी बरतें।",
+          "rules": "प्लास्टिक का उपयोग सख्त मना है।"
+        },
+        "cg": {
+          "name": "Dongargarh",
+          "description": "Rajnandgaon म स्थित एक सुघ्घर जगह",
+          "history": "Dongargarh is a town and municipality in Rajnandgaon District in the state of Chhattisgarh, India and the site of the Bambleshwari Temple and Chandragiri Jain Temple. A prominent pilgrim destination in Rajnandgaon District, the city lies about 35 kilometres (22 mi) west from Rajnandgaon, 67 kilometres (42 mi) west from Durg and 132 kilometres (82 mi) east from Bhandara which are situated on National Highway 6. Featuring majestic mountains and ponds, Dongargarh is derived from the words: Dongarh meaning 'mountains' and garh meaning 'fort'. \nThe Maa Bamleshwari Devi Temple, situated on a 1,600 feet (490 m) high hilltop, is a popular landmark. It is of great spiritual importance and several legends are associated with this shrine too. Another prominent shrine in the vicinity is Chhoti Bamleshwari Temple. Devotees flock these temples during Navratri. Shivji Temple and temples dedicated to Lord Hanuman are also located here. The ropeway is an added attraction and is the only passenger ropeway in Chhattisgarh. A severe accident occurred in 2016 when the ropeway broke and fell down killing several people.\nThe town is known for religious Harmony and has considerable population of Buddhists, Sikhs, Christians and Jains apart from Hindus.A 30 feet high statue of Budhha situated at the hilltop of the Pragyagiri hill is another attraction of the town. This is visible from the all the 06 major hills of the town. In addition to these, A Jain temple is also being constructed  on a hill known as Chandragiri with the blessings of Jain saint Acharya Shri Vidyasagar Ji Maharaaj. The temple is specially recognized for an ancient statue of the Teerthankara god Chandraprabhuji. One of the biggest gurudwaras in the state is also located in the heart of the city managed by the Sikh society which also run Khalsa Public School, one of the biggest schools in the town. Dongargarhs oldest and most beautiful Roman Catholic church (Sacred Heart Church) is situated just near the railway station as well as there is a tall and beautiful Calvary hill near the railway colony which has a huge cross on the tip of the hill which can be seen from a far distance during the day. Every year a huge crowd of devotees Christians and other Religions gather here during the month of April for the way of the cross marking the Crucifixion of Jesus Christ as well as to get his blessings.\nThe nearest airport Swami Vivekanand Airport is at Raipur, 110 kilometres (68 mi) away while the nearest railhead is Dongargarh Railway Station. Dongargarh has good road communication and buses and taxis are available from Rajnandgaon.",
+          "bestSeason": "अक्टूबर से मार्च",
+          "safetyInfo": "दूरिहा के जगह म संभल के जाव।",
+          "rules": "प्लास्टिक के उपयोग एकदम मना हे।"
+        },
+        "en": {
+          "name": "Dongargarh",
+          "description": "Experience the beauty of Dongargarh",
+          "history": "Dongargarh is a town and municipality in Rajnandgaon District in the state of Chhattisgarh, India and the site of the Bambleshwari Temple and Chandragiri Jain Temple. A prominent pilgrim destination in Rajnandgaon District, the city lies about 35 kilometres (22 mi) west from Rajnandgaon, 67 kilometres (42 mi) west from Durg and 132 kilometres (82 mi) east from Bhandara which are situated on National Highway 6. Featuring majestic mountains and ponds, Dongargarh is derived from the words: Dongarh meaning 'mountains' and garh meaning 'fort'. \nThe Maa Bamleshwari Devi Temple, situated on a 1,600 feet (490 m) high hilltop, is a popular landmark. It is of great spiritual importance and several legends are associated with this shrine too. Another prominent shrine in the vicinity is Chhoti Bamleshwari Temple. Devotees flock these temples during Navratri. Shivji Temple and temples dedicated to Lord Hanuman are also located here. The ropeway is an added attraction and is the only passenger ropeway in Chhattisgarh. A severe accident occurred in 2016 when the ropeway broke and fell down killing several people.\nThe town is known for religious Harmony and has considerable population of Buddhists, Sikhs, Christians and Jains apart from Hindus.A 30 feet high statue of Budhha situated at the hilltop of the Pragyagiri hill is another attraction of the town. This is visible from the all the 06 major hills of the town. In addition to these, A Jain temple is also being constructed  on a hill known as Chandragiri with the blessings of Jain saint Acharya Shri Vidyasagar Ji Maharaaj. The temple is specially recognized for an ancient statue of the Teerthankara god Chandraprabhuji. One of the biggest gurudwaras in the state is also located in the heart of the city managed by the Sikh society which also run Khalsa Public School, one of the biggest schools in the town. Dongargarhs oldest and most beautiful Roman Catholic church (Sacred Heart Church) is situated just near the railway station as well as there is a tall and beautiful Calvary hill near the railway colony which has a huge cross on the tip of the hill which can be seen from a far distance during the day. Every year a huge crowd of devotees Christians and other Religions gather here during the month of April for the way of the cross marking the Crucifixion of Jesus Christ as well as to get his blessings.\nThe nearest airport Swami Vivekanand Airport is at Raipur, 110 kilometres (68 mi) away while the nearest railhead is Dongargarh Railway Station. Dongargarh has good road communication and buses and taxis are available from Rajnandgaon.",
+          "bestSeason": "October to March is the ideal time to visit.",
+          "safetyInfo": "Maintain caution around remote areas.",
+          "rules": "Zero plastic tolerance zone. Leave no trace."
+        }
+      },
+      "categoryName": "Pilgrimage",
+      "highlights": [
+        "Maa Bamleshwari Temple",
+        "Ropeway attraction",
+        "Hilltop temple views"
+      ],
+      "mediaAssets": [
+        "Ropeway videos",
+        "Festival coverage",
+        "Sunrise hill shots"
+      ],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 1"
+    },
+    {
+      "slug": "rajim",
+      "name": "Rajim",
+      "categorySlug": "religious-heritage",
+      "district": "Gariaband",
+      "tagline": "Experience the authentic beauty of Rajim",
+      "latitude": 20.965,
+      "longitude": 81.8817,
+      "heroImage": "https://placehold.co/1200x800/115e59/ffffff.png?text=CG+Tourism",
+      "bestTime": "October to March is the ideal time to visit.",
+      "safety": "Maintain caution around remote areas and follow local guidelines.",
+      "ecoGuidance": "Zero plastic tolerance zone. Leave no trace and respect local boundaries.",
+      "story": "Rajim is a town which is proposed to be in Raipur district but officially in Gariaband district, Chhattisgarh, India. Rajim is named after Rajiv Lochan Mandir which is the main Hindu pilgrimage temple of Rajim dedicated to Vishnu. There is also the ancient Kuleshwar Mahadev Mandir dedicated to Shiva at the Triveni Sangam. The town hosts the Triveni Sangam of Mahanadi, Pairi (physically) and Sondor (virtually). Being of such importance, Rajim is also called the Prayag of Chhattisgarh. It was also the centre of work of freedom fighter and social reformer Pt. Sundarlal Sharma.",
+      "media": [
+        {
+          "url": "/cdn/videos/temple.mp4",
+          "type": "VIDEO"
+        },
+        {
+          "url": "https://placehold.co/1200x800/115e59/ffffff.png?text=CG+Tourism",
+          "type": "IMAGE"
+        }
+      ],
+      "translations": {
+        "hi": {
+          "name": "Rajim",
+          "description": "Gariaband में स्थित एक सुंदर स्थल",
+          "history": "Rajim is a town which is proposed to be in Raipur district but officially in Gariaband district, Chhattisgarh, India. Rajim is named after Rajiv Lochan Mandir which is the main Hindu pilgrimage temple of Rajim dedicated to Vishnu. There is also the ancient Kuleshwar Mahadev Mandir dedicated to Shiva at the Triveni Sangam. The town hosts the Triveni Sangam of Mahanadi, Pairi (physically) and Sondor (virtually). Being of such importance, Rajim is also called the Prayag of Chhattisgarh. It was also the centre of work of freedom fighter and social reformer Pt. Sundarlal Sharma.",
+          "bestSeason": "अक्टूबर से मार्च",
+          "safetyInfo": "सुदूर क्षेत्रों में सावधानी बरतें।",
+          "rules": "प्लास्टिक का उपयोग सख्त मना है।"
+        },
+        "cg": {
+          "name": "Rajim",
+          "description": "Gariaband म स्थित एक सुघ्घर जगह",
+          "history": "Rajim is a town which is proposed to be in Raipur district but officially in Gariaband district, Chhattisgarh, India. Rajim is named after Rajiv Lochan Mandir which is the main Hindu pilgrimage temple of Rajim dedicated to Vishnu. There is also the ancient Kuleshwar Mahadev Mandir dedicated to Shiva at the Triveni Sangam. The town hosts the Triveni Sangam of Mahanadi, Pairi (physically) and Sondor (virtually). Being of such importance, Rajim is also called the Prayag of Chhattisgarh. It was also the centre of work of freedom fighter and social reformer Pt. Sundarlal Sharma.",
+          "bestSeason": "अक्टूबर से मार्च",
+          "safetyInfo": "दूरिहा के जगह म संभल के जाव।",
+          "rules": "प्लास्टिक के उपयोग एकदम मना हे।"
+        },
+        "en": {
+          "name": "Rajim",
+          "description": "Experience the beauty of Rajim",
+          "history": "Rajim is a town which is proposed to be in Raipur district but officially in Gariaband district, Chhattisgarh, India. Rajim is named after Rajiv Lochan Mandir which is the main Hindu pilgrimage temple of Rajim dedicated to Vishnu. There is also the ancient Kuleshwar Mahadev Mandir dedicated to Shiva at the Triveni Sangam. The town hosts the Triveni Sangam of Mahanadi, Pairi (physically) and Sondor (virtually). Being of such importance, Rajim is also called the Prayag of Chhattisgarh. It was also the centre of work of freedom fighter and social reformer Pt. Sundarlal Sharma.",
+          "bestSeason": "October to March is the ideal time to visit.",
+          "safetyInfo": "Maintain caution around remote areas.",
+          "rules": "Zero plastic tolerance zone. Leave no trace."
+        }
+      },
+      "categoryName": "Religious Heritage",
+      "highlights": [
+        "Triveni Sangam",
+        "Rajiv Lochan Temple",
+        "Kumbh Mela site"
+      ],
+      "mediaAssets": [
+        "Festival reels",
+        "Temple photography",
+        "River drone shots"
+      ],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 1"
+    },
+    {
+      "slug": "sirpur",
+      "name": "Sirpur",
+      "tagline": "Experience the beauty of Sirpur",
+      "district": "Mahasamund",
+      "categorySlug": "archaeological-site",
+      "categoryName": "Archaeological Site",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Sirpur is a beautiful destination in Mahasamund.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [
+        "Ancient Buddhist heritage",
+        "Lakshman Temple",
+        "Excavation sites"
+      ],
+      "mediaAssets": [
+        "Archaeological documentaries",
+        "Temple walkthroughs",
+        "Historical storytelling content"
+      ],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 1"
+    },
+    {
+      "slug": "lakshman-temple",
+      "name": "Lakshman Temple",
+      "tagline": "Experience the beauty of Lakshman Temple",
+      "district": "Mahasamund",
+      "categorySlug": "ancient-temple",
+      "categoryName": "Ancient Temple",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Lakshman Temple is a beautiful destination in Mahasamund.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [
+        "Brick temple architecture",
+        "Ancient Vishnu temple",
+        "Cultural heritage"
+      ],
+      "mediaAssets": [
+        "Architecture closeups",
+        "Heritage reels",
+        "Drone imagery"
+      ],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "gandheshwar-temple",
+      "name": "Gandheshwar Temple",
+      "tagline": "Experience the beauty of Gandheshwar Temple",
+      "district": "Mahasamund",
+      "categorySlug": "temple",
+      "categoryName": "Temple",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Gandheshwar Temple is a beautiful destination in Mahasamund.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [
+        "Riverbank temple",
+        "Stone sculptures",
+        "Spiritual tourism"
+      ],
+      "mediaAssets": [
+        "Devotional videos",
+        "River sunrise footage",
+        "Temple photography"
+      ],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "ratanpur",
+      "name": "Ratanpur",
+      "tagline": "Experience the beauty of Ratanpur",
+      "district": "Bilaspur",
+      "categorySlug": "heritage-town",
+      "categoryName": "Heritage Town",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Ratanpur is a beautiful destination in Bilaspur.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [
+        "Mahamaya Temple",
+        "Ancient forts",
+        "Historic importance"
+      ],
+      "mediaAssets": [
+        "Temple festival videos",
+        "Heritage walkthroughs",
+        "Drone town shots"
+      ],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 2"
+    },
+    {
+      "slug": "malhar",
+      "name": "Malhar",
+      "tagline": "Experience the beauty of Malhar",
+      "district": "Bilaspur",
+      "categorySlug": "archaeological-site",
+      "categoryName": "Archaeological Site",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Malhar is a beautiful destination in Bilaspur.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [
+        "Ancient ruins",
+        "Museums",
+        "Historic temples"
+      ],
+      "mediaAssets": [
+        "Excavation visuals",
+        "Artifact photography",
+        "Documentary clips"
+      ],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 2"
+    },
+    {
+      "slug": "khutaghat-dam",
+      "name": "Khutaghat Dam",
+      "categorySlug": "uncategorized",
+      "district": "Unknown",
+      "tagline": "Experience the authentic beauty of Khutaghat Dam",
+      "latitude": 22.09,
+      "longitude": 82.15,
+      "heroImage": "https://placehold.co/1200x800/115e59/ffffff.png?text=CG+Tourism",
+      "bestTime": "October to March is the ideal time to visit.",
+      "safety": "Maintain caution around remote areas and follow local guidelines.",
+      "ecoGuidance": "Zero plastic tolerance zone. Leave no trace and respect local boundaries.",
+      "story": "Bilaspur division (; Hindi: बिलासपुर संभाग) is one of the administrative divisions of the Indian state of Chhattisgarh, located in the northern and north-eastern part of the state. It is administered from its headquarters at Bilaspur and comprises total 9 districts including Bilaspur district.\nThe division constitutes one of the key economic regions of northern Chhattisgarh, supported by coal mining and thermal power generation in Korba district and agricultural production in the Mahanadi basin. The city of Bilaspur also serves as the seat of the Chhattisgarh High Court, the highest judicial authority in the state.",
+      "media": [
+        {
+          "url": "/cdn/videos/waterfall.mp4",
+          "type": "VIDEO"
+        },
+        {
+          "url": "https://placehold.co/1200x800/115e59/ffffff.png?text=CG+Tourism",
+          "type": "IMAGE"
+        }
+      ],
+      "translations": {
+        "hi": {
+          "name": "Khutaghat Dam",
+          "description": "Bilaspur में स्थित एक सुंदर स्थल",
+          "history": "Bilaspur division (; Hindi: बिलासपुर संभाग) is one of the administrative divisions of the Indian state of Chhattisgarh, located in the northern and north-eastern part of the state. It is administered from its headquarters at Bilaspur and comprises total 9 districts including Bilaspur district.\nThe division constitutes one of the key economic regions of northern Chhattisgarh, supported by coal mining and thermal power generation in Korba district and agricultural production in the Mahanadi basin. The city of Bilaspur also serves as the seat of the Chhattisgarh High Court, the highest judicial authority in the state.",
+          "bestSeason": "अक्टूबर से मार्च",
+          "safetyInfo": "सुदूर क्षेत्रों में सावधानी बरतें।",
+          "rules": "प्लास्टिक का उपयोग सख्त मना है।"
+        },
+        "cg": {
+          "name": "Khutaghat Dam",
+          "description": "Bilaspur म स्थित एक सुघ्घर जगह",
+          "history": "Bilaspur division (; Hindi: बिलासपुर संभाग) is one of the administrative divisions of the Indian state of Chhattisgarh, located in the northern and north-eastern part of the state. It is administered from its headquarters at Bilaspur and comprises total 9 districts including Bilaspur district.\nThe division constitutes one of the key economic regions of northern Chhattisgarh, supported by coal mining and thermal power generation in Korba district and agricultural production in the Mahanadi basin. The city of Bilaspur also serves as the seat of the Chhattisgarh High Court, the highest judicial authority in the state.",
+          "bestSeason": "अक्टूबर से मार्च",
+          "safetyInfo": "दूरिहा के जगह म संभल के जाव।",
+          "rules": "प्लास्टिक के उपयोग एकदम मना हे।"
+        },
+        "en": {
+          "name": "Khutaghat Dam",
+          "description": "Experience the beauty of Khutaghat Dam",
+          "history": "Bilaspur division (; Hindi: बिलासपुर संभाग) is one of the administrative divisions of the Indian state of Chhattisgarh, located in the northern and north-eastern part of the state. It is administered from its headquarters at Bilaspur and comprises total 9 districts including Bilaspur district.\nThe division constitutes one of the key economic regions of northern Chhattisgarh, supported by coal mining and thermal power generation in Korba district and agricultural production in the Mahanadi basin. The city of Bilaspur also serves as the seat of the Chhattisgarh High Court, the highest judicial authority in the state.",
+          "bestSeason": "October to March is the ideal time to visit.",
+          "safetyInfo": "Maintain caution around remote areas.",
+          "rules": "Zero plastic tolerance zone. Leave no trace."
+        }
+      },
+      "categoryName": "Uncategorized",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "hasdeo-bango-dam",
+      "name": "Hasdeo Bango Dam",
+      "categorySlug": "uncategorized",
+      "district": "Unknown",
+      "tagline": "Experience the authentic beauty of Hasdeo Bango Dam",
+      "latitude": 22.605,
+      "longitude": 82.598,
+      "heroImage": "https://images.unsplash.com/photo-1500486625868?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March is the ideal time to visit.",
+      "safety": "Maintain caution around remote areas and follow local guidelines.",
+      "ecoGuidance": "Zero plastic tolerance zone. Leave no trace and respect local boundaries.",
+      "story": "Hasdeo Bango Dam is a dam constructed in 1961-62 across the Hasdeo river in Chhattisgarh, India. It is the longest, widest dam in Chhattisgarh and the first multi-purpose water project in Chhattisgarh. It is located 70 km from Korba, Korba district. It has a catchment area of 6,730 km2. The dam has a large effective storage capacity of 2.89 cubic kms (102.07 tmc ft). \nIt has the capacity to generate 120MW electricity. Hasdeo Bango Dam is constructed across Hasedo river. The river originates about 910.0 m (2,985.6 ft) above sea level, at a place about 10.0 km (6.2 mi) from Sonhat in Koriya district. The total length of the river is 333.0 km (206.9 mi),",
+      "media": [
+        {
+          "url": "/cdn/videos/waterfall.mp4",
+          "type": "VIDEO"
+        },
+        {
+          "url": "https://images.unsplash.com/photo-1500486625868?auto=format&fit=crop&w=1200&q=80",
+          "type": "IMAGE"
+        }
+      ],
+      "translations": {
+        "hi": {
+          "name": "Hasdeo Bango Dam",
+          "description": "Korba में स्थित एक सुंदर स्थल",
+          "history": "Hasdeo Bango Dam is a dam constructed in 1961-62 across the Hasdeo river in Chhattisgarh, India. It is the longest, widest dam in Chhattisgarh and the first multi-purpose water project in Chhattisgarh. It is located 70 km from Korba, Korba district. It has a catchment area of 6,730 km2. The dam has a large effective storage capacity of 2.89 cubic kms (102.07 tmc ft). \nIt has the capacity to generate 120MW electricity. Hasdeo Bango Dam is constructed across Hasedo river. The river originates about 910.0 m (2,985.6 ft) above sea level, at a place about 10.0 km (6.2 mi) from Sonhat in Koriya district. The total length of the river is 333.0 km (206.9 mi),",
+          "bestSeason": "अक्टूबर से मार्च",
+          "safetyInfo": "सुदूर क्षेत्रों में सावधानी बरतें।",
+          "rules": "प्लास्टिक का उपयोग सख्त मना है।"
+        },
+        "cg": {
+          "name": "Hasdeo Bango Dam",
+          "description": "Korba म स्थित एक सुघ्घर जगह",
+          "history": "Hasdeo Bango Dam is a dam constructed in 1961-62 across the Hasdeo river in Chhattisgarh, India. It is the longest, widest dam in Chhattisgarh and the first multi-purpose water project in Chhattisgarh. It is located 70 km from Korba, Korba district. It has a catchment area of 6,730 km2. The dam has a large effective storage capacity of 2.89 cubic kms (102.07 tmc ft). \nIt has the capacity to generate 120MW electricity. Hasdeo Bango Dam is constructed across Hasedo river. The river originates about 910.0 m (2,985.6 ft) above sea level, at a place about 10.0 km (6.2 mi) from Sonhat in Koriya district. The total length of the river is 333.0 km (206.9 mi),",
+          "bestSeason": "अक्टूबर से मार्च",
+          "safetyInfo": "दूरिहा के जगह म संभल के जाव।",
+          "rules": "प्लास्टिक के उपयोग एकदम मना हे।"
+        },
+        "en": {
+          "name": "Hasdeo Bango Dam",
+          "description": "Experience the beauty of Hasdeo Bango Dam",
+          "history": "Hasdeo Bango Dam is a dam constructed in 1961-62 across the Hasdeo river in Chhattisgarh, India. It is the longest, widest dam in Chhattisgarh and the first multi-purpose water project in Chhattisgarh. It is located 70 km from Korba, Korba district. It has a catchment area of 6,730 km2. The dam has a large effective storage capacity of 2.89 cubic kms (102.07 tmc ft). \nIt has the capacity to generate 120MW electricity. Hasdeo Bango Dam is constructed across Hasedo river. The river originates about 910.0 m (2,985.6 ft) above sea level, at a place about 10.0 km (6.2 mi) from Sonhat in Koriya district. The total length of the river is 333.0 km (206.9 mi),",
+          "bestSeason": "October to March is the ideal time to visit.",
+          "safetyInfo": "Maintain caution around remote areas.",
+          "rules": "Zero plastic tolerance zone. Leave no trace."
+        }
+      },
+      "categoryName": "Uncategorized",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "gangrel-dam",
+      "name": "Gangrel Dam",
+      "categorySlug": "uncategorized",
+      "district": "Unknown",
+      "tagline": "Experience the authentic beauty of Gangrel Dam",
+      "latitude": 20.6267,
+      "longitude": 81.56,
+      "heroImage": "https://placehold.co/1200x800/115e59/ffffff.png?text=CG+Tourism",
+      "bestTime": "October to March is the ideal time to visit.",
+      "safety": "Maintain caution around remote areas and follow local guidelines.",
+      "ecoGuidance": "Zero plastic tolerance zone. Leave no trace and respect local boundaries.",
+      "story": "Gangrel Dam officially the Pandit Ravishankar Sagar is located in Chhattisgarh, India. It is built across the Mahanadi River. It is located in Dhamtari district, about 17 km from Dhamtari and about 90 km from Raipur. It is the longest &amp; largest dam in Chhattisgarh. This dam supplies year round irrigation, allowing farmers to harvest two crops per year and key water supplier of Bhilai Steel Plant. The dam also supplies 10 MW of hydro-electric power capacity.\nThe chief Engineer of this project was Devraj.\nOnakona is a popular tourist spot located on the banks of the reservoir.",
+      "media": [
+        {
+          "url": "/cdn/videos/waterfall.mp4",
+          "type": "VIDEO"
+        },
+        {
+          "url": "https://placehold.co/1200x800/115e59/ffffff.png?text=CG+Tourism",
+          "type": "IMAGE"
+        }
+      ],
+      "translations": {
+        "hi": {
+          "name": "Gangrel Dam",
+          "description": "Dhamtari में स्थित एक सुंदर स्थल",
+          "history": "Gangrel Dam officially the Pandit Ravishankar Sagar is located in Chhattisgarh, India. It is built across the Mahanadi River. It is located in Dhamtari district, about 17 km from Dhamtari and about 90 km from Raipur. It is the longest &amp; largest dam in Chhattisgarh. This dam supplies year round irrigation, allowing farmers to harvest two crops per year and key water supplier of Bhilai Steel Plant. The dam also supplies 10 MW of hydro-electric power capacity.\nThe chief Engineer of this project was Devraj.\nOnakona is a popular tourist spot located on the banks of the reservoir.",
+          "bestSeason": "अक्टूबर से मार्च",
+          "safetyInfo": "सुदूर क्षेत्रों में सावधानी बरतें।",
+          "rules": "प्लास्टिक का उपयोग सख्त मना है।"
+        },
+        "cg": {
+          "name": "Gangrel Dam",
+          "description": "Dhamtari म स्थित एक सुघ्घर जगह",
+          "history": "Gangrel Dam officially the Pandit Ravishankar Sagar is located in Chhattisgarh, India. It is built across the Mahanadi River. It is located in Dhamtari district, about 17 km from Dhamtari and about 90 km from Raipur. It is the longest &amp; largest dam in Chhattisgarh. This dam supplies year round irrigation, allowing farmers to harvest two crops per year and key water supplier of Bhilai Steel Plant. The dam also supplies 10 MW of hydro-electric power capacity.\nThe chief Engineer of this project was Devraj.\nOnakona is a popular tourist spot located on the banks of the reservoir.",
+          "bestSeason": "अक्टूबर से मार्च",
+          "safetyInfo": "दूरिहा के जगह म संभल के जाव।",
+          "rules": "प्लास्टिक के उपयोग एकदम मना हे।"
+        },
+        "en": {
+          "name": "Gangrel Dam",
+          "description": "Experience the beauty of Gangrel Dam",
+          "history": "Gangrel Dam officially the Pandit Ravishankar Sagar is located in Chhattisgarh, India. It is built across the Mahanadi River. It is located in Dhamtari district, about 17 km from Dhamtari and about 90 km from Raipur. It is the longest &amp; largest dam in Chhattisgarh. This dam supplies year round irrigation, allowing farmers to harvest two crops per year and key water supplier of Bhilai Steel Plant. The dam also supplies 10 MW of hydro-electric power capacity.\nThe chief Engineer of this project was Devraj.\nOnakona is a popular tourist spot located on the banks of the reservoir.",
+          "bestSeason": "October to March is the ideal time to visit.",
+          "safetyInfo": "Maintain caution around remote areas.",
+          "rules": "Zero plastic tolerance zone. Leave no trace."
+        }
+      },
+      "categoryName": "Uncategorized",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 2"
+    },
+    {
+      "slug": "madku-dweep",
+      "name": "Madku Dweep",
+      "categorySlug": "uncategorized",
+      "district": "Unknown",
+      "tagline": "Experience the authentic beauty of Madku Dweep",
+      "latitude": 22.09,
+      "longitude": 82.15,
+      "heroImage": "https://placehold.co/1200x800/115e59/ffffff.png?text=CG+Tourism",
+      "bestTime": "October to March is the ideal time to visit.",
+      "safety": "Maintain caution around remote areas and follow local guidelines.",
+      "ecoGuidance": "Zero plastic tolerance zone. Leave no trace and respect local boundaries.",
+      "story": "Bilaspur division (; Hindi: बिलासपुर संभाग) is one of the administrative divisions of the Indian state of Chhattisgarh, located in the northern and north-eastern part of the state. It is administered from its headquarters at Bilaspur and comprises total 9 districts including Bilaspur district.\nThe division constitutes one of the key economic regions of northern Chhattisgarh, supported by coal mining and thermal power generation in Korba district and agricultural production in the Mahanadi basin. The city of Bilaspur also serves as the seat of the Chhattisgarh High Court, the highest judicial authority in the state.",
+      "media": [
+        {
+          "url": "/cdn/videos/village.mp4",
+          "type": "VIDEO"
+        },
+        {
+          "url": "https://placehold.co/1200x800/115e59/ffffff.png?text=CG+Tourism",
+          "type": "IMAGE"
+        }
+      ],
+      "translations": {
+        "hi": {
+          "name": "Madku Dweep",
+          "description": "Mungeli में स्थित एक सुंदर स्थल",
+          "history": "Bilaspur division (; Hindi: बिलासपुर संभाग) is one of the administrative divisions of the Indian state of Chhattisgarh, located in the northern and north-eastern part of the state. It is administered from its headquarters at Bilaspur and comprises total 9 districts including Bilaspur district.\nThe division constitutes one of the key economic regions of northern Chhattisgarh, supported by coal mining and thermal power generation in Korba district and agricultural production in the Mahanadi basin. The city of Bilaspur also serves as the seat of the Chhattisgarh High Court, the highest judicial authority in the state.",
+          "bestSeason": "अक्टूबर से मार्च",
+          "safetyInfo": "सुदूर क्षेत्रों में सावधानी बरतें।",
+          "rules": "प्लास्टिक का उपयोग सख्त मना है।"
+        },
+        "cg": {
+          "name": "Madku Dweep",
+          "description": "Mungeli म स्थित एक सुघ्घर जगह",
+          "history": "Bilaspur division (; Hindi: बिलासपुर संभाग) is one of the administrative divisions of the Indian state of Chhattisgarh, located in the northern and north-eastern part of the state. It is administered from its headquarters at Bilaspur and comprises total 9 districts including Bilaspur district.\nThe division constitutes one of the key economic regions of northern Chhattisgarh, supported by coal mining and thermal power generation in Korba district and agricultural production in the Mahanadi basin. The city of Bilaspur also serves as the seat of the Chhattisgarh High Court, the highest judicial authority in the state.",
+          "bestSeason": "अक्टूबर से मार्च",
+          "safetyInfo": "दूरिहा के जगह म संभल के जाव।",
+          "rules": "प्लास्टिक के उपयोग एकदम मना हे।"
+        },
+        "en": {
+          "name": "Madku Dweep",
+          "description": "Experience the beauty of Madku Dweep",
+          "history": "Bilaspur division (; Hindi: बिलासपुर संभाग) is one of the administrative divisions of the Indian state of Chhattisgarh, located in the northern and north-eastern part of the state. It is administered from its headquarters at Bilaspur and comprises total 9 districts including Bilaspur district.\nThe division constitutes one of the key economic regions of northern Chhattisgarh, supported by coal mining and thermal power generation in Korba district and agricultural production in the Mahanadi basin. The city of Bilaspur also serves as the seat of the Chhattisgarh High Court, the highest judicial authority in the state.",
+          "bestSeason": "October to March is the ideal time to visit.",
+          "safetyInfo": "Maintain caution around remote areas.",
+          "rules": "Zero plastic tolerance zone. Leave no trace."
+        }
+      },
+      "categoryName": "Uncategorized",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 2"
+    },
+    {
+      "slug": "sitanadi-wildlife-sanctuary",
+      "name": "Sitanadi Wildlife Sanctuary",
+      "categorySlug": "uncategorized",
+      "district": "Unknown",
+      "tagline": "Experience the authentic beauty of Sitanadi Wildlife Sanctuary",
+      "latitude": 19.483,
+      "longitude": 81.3403,
+      "heroImage": "https://images.unsplash.com/photo-1506440559413?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March is the ideal time to visit.",
+      "safety": "Maintain caution around remote areas and follow local guidelines.",
+      "ecoGuidance": "Zero plastic tolerance zone. Leave no trace and respect local boundaries.",
+      "story": "A wildlife sanctuary in India is a protected area of importance for flora, fauna, or features of geological or other interest, which is reserved and managed for conservation and to provide opportunities for study or research. The Wild Life (Protection) Act, 1972 provides for the establishment of protected areas in India.\nWildlife sanctuaries of India, are classified as IUCN Category IV protected areas. As of March 2025, 573 wildlife sanctuaries have been established, covering 123,762.56 km2 (47,784.99 sq mi). Among these, Project Tiger governs 53 tiger reserves, which are of special significance for the conservation of the Bengal tiger. Additionally, there are 33 elephant reserves covering 80,778 km2 (31,189 sq mi) established under the Project Elephant, some of which overlap with the boundaries of declared wildlife sanctuaries and tiger reserves. \nEstablished in 1936, Vedanthangal Bird Sanctuary in Tamil Nadu was the first bird sanctuary in the country and the Mudumalai Wildlife Sanctuary was established later in 1940. Spanning 7,506.22 km2 (2,898.17 sq mi), Kutch Desert Wildlife Sanctuary in Gujarat is the largest wildlife sanctuary in the country and spanning just 2.0 km2 (0.77 sq mi), Kutch Bustard Sanctuary in Gujarat is the smallest wildlife sanctuary in the country. Andaman and Nicobar Islands has the most number of wildlife sanctuaries (97).",
+      "media": [
+        {
+          "url": "/cdn/videos/forest.mp4",
+          "type": "VIDEO"
+        },
+        {
+          "url": "https://images.unsplash.com/photo-1506440559413?auto=format&fit=crop&w=1200&q=80",
+          "type": "IMAGE"
+        }
+      ],
+      "translations": {
+        "hi": {
+          "name": "Sitanadi Wildlife Sanctuary",
+          "description": "Dhamtari में स्थित एक सुंदर स्थल",
+          "history": "A wildlife sanctuary in India is a protected area of importance for flora, fauna, or features of geological or other interest, which is reserved and managed for conservation and to provide opportunities for study or research. The Wild Life (Protection) Act, 1972 provides for the establishment of protected areas in India.\nWildlife sanctuaries of India, are classified as IUCN Category IV protected areas. As of March 2025, 573 wildlife sanctuaries have been established, covering 123,762.56 km2 (47,784.99 sq mi). Among these, Project Tiger governs 53 tiger reserves, which are of special significance for the conservation of the Bengal tiger. Additionally, there are 33 elephant reserves covering 80,778 km2 (31,189 sq mi) established under the Project Elephant, some of which overlap with the boundaries of declared wildlife sanctuaries and tiger reserves. \nEstablished in 1936, Vedanthangal Bird Sanctuary in Tamil Nadu was the first bird sanctuary in the country and the Mudumalai Wildlife Sanctuary was established later in 1940. Spanning 7,506.22 km2 (2,898.17 sq mi), Kutch Desert Wildlife Sanctuary in Gujarat is the largest wildlife sanctuary in the country and spanning just 2.0 km2 (0.77 sq mi), Kutch Bustard Sanctuary in Gujarat is the smallest wildlife sanctuary in the country. Andaman and Nicobar Islands has the most number of wildlife sanctuaries (97).",
+          "bestSeason": "अक्टूबर से मार्च",
+          "safetyInfo": "सुदूर क्षेत्रों में सावधानी बरतें।",
+          "rules": "प्लास्टिक का उपयोग सख्त मना है।"
+        },
+        "cg": {
+          "name": "Sitanadi Wildlife Sanctuary",
+          "description": "Dhamtari म स्थित एक सुघ्घर जगह",
+          "history": "A wildlife sanctuary in India is a protected area of importance for flora, fauna, or features of geological or other interest, which is reserved and managed for conservation and to provide opportunities for study or research. The Wild Life (Protection) Act, 1972 provides for the establishment of protected areas in India.\nWildlife sanctuaries of India, are classified as IUCN Category IV protected areas. As of March 2025, 573 wildlife sanctuaries have been established, covering 123,762.56 km2 (47,784.99 sq mi). Among these, Project Tiger governs 53 tiger reserves, which are of special significance for the conservation of the Bengal tiger. Additionally, there are 33 elephant reserves covering 80,778 km2 (31,189 sq mi) established under the Project Elephant, some of which overlap with the boundaries of declared wildlife sanctuaries and tiger reserves. \nEstablished in 1936, Vedanthangal Bird Sanctuary in Tamil Nadu was the first bird sanctuary in the country and the Mudumalai Wildlife Sanctuary was established later in 1940. Spanning 7,506.22 km2 (2,898.17 sq mi), Kutch Desert Wildlife Sanctuary in Gujarat is the largest wildlife sanctuary in the country and spanning just 2.0 km2 (0.77 sq mi), Kutch Bustard Sanctuary in Gujarat is the smallest wildlife sanctuary in the country. Andaman and Nicobar Islands has the most number of wildlife sanctuaries (97).",
+          "bestSeason": "अक्टूबर से मार्च",
+          "safetyInfo": "दूरिहा के जगह म संभल के जाव।",
+          "rules": "प्लास्टिक के उपयोग एकदम मना हे।"
+        },
+        "en": {
+          "name": "Sitanadi Wildlife Sanctuary",
+          "description": "Experience the beauty of Sitanadi Wildlife Sanctuary",
+          "history": "A wildlife sanctuary in India is a protected area of importance for flora, fauna, or features of geological or other interest, which is reserved and managed for conservation and to provide opportunities for study or research. The Wild Life (Protection) Act, 1972 provides for the establishment of protected areas in India.\nWildlife sanctuaries of India, are classified as IUCN Category IV protected areas. As of March 2025, 573 wildlife sanctuaries have been established, covering 123,762.56 km2 (47,784.99 sq mi). Among these, Project Tiger governs 53 tiger reserves, which are of special significance for the conservation of the Bengal tiger. Additionally, there are 33 elephant reserves covering 80,778 km2 (31,189 sq mi) established under the Project Elephant, some of which overlap with the boundaries of declared wildlife sanctuaries and tiger reserves. \nEstablished in 1936, Vedanthangal Bird Sanctuary in Tamil Nadu was the first bird sanctuary in the country and the Mudumalai Wildlife Sanctuary was established later in 1940. Spanning 7,506.22 km2 (2,898.17 sq mi), Kutch Desert Wildlife Sanctuary in Gujarat is the largest wildlife sanctuary in the country and spanning just 2.0 km2 (0.77 sq mi), Kutch Bustard Sanctuary in Gujarat is the smallest wildlife sanctuary in the country. Andaman and Nicobar Islands has the most number of wildlife sanctuaries (97).",
+          "bestSeason": "October to March is the ideal time to visit.",
+          "safetyInfo": "Maintain caution around remote areas.",
+          "rules": "Zero plastic tolerance zone. Leave no trace."
+        }
+      },
+      "categoryName": "Uncategorized",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "udanti-wildlife-sanctuary",
+      "name": "Udanti Wildlife Sanctuary",
+      "categorySlug": "uncategorized",
+      "district": "Unknown",
+      "tagline": "Experience the authentic beauty of Udanti Wildlife Sanctuary",
+      "latitude": 20.12,
+      "longitude": 82.37,
+      "heroImage": "https://images.unsplash.com/photo-1505892564746?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March is the ideal time to visit.",
+      "safety": "Maintain caution around remote areas and follow local guidelines.",
+      "ecoGuidance": "Zero plastic tolerance zone. Leave no trace and respect local boundaries.",
+      "story": "Udanti Wildlife Sanctuary is a protected area and wildlife sanctuary located in Gariaband district of the Indian state of Chhattisgarh.",
+      "media": [
+        {
+          "url": "/cdn/videos/forest.mp4",
+          "type": "VIDEO"
+        },
+        {
+          "url": "https://images.unsplash.com/photo-1505892564746?auto=format&fit=crop&w=1200&q=80",
+          "type": "IMAGE"
+        }
+      ],
+      "translations": {
+        "hi": {
+          "name": "Udanti Wildlife Sanctuary",
+          "description": "Gariaband में स्थित एक सुंदर स्थल",
+          "history": "Udanti Wildlife Sanctuary is a protected area and wildlife sanctuary located in Gariaband district of the Indian state of Chhattisgarh.",
+          "bestSeason": "अक्टूबर से मार्च",
+          "safetyInfo": "सुदूर क्षेत्रों में सावधानी बरतें।",
+          "rules": "प्लास्टिक का उपयोग सख्त मना है।"
+        },
+        "cg": {
+          "name": "Udanti Wildlife Sanctuary",
+          "description": "Gariaband म स्थित एक सुघ्घर जगह",
+          "history": "Udanti Wildlife Sanctuary is a protected area and wildlife sanctuary located in Gariaband district of the Indian state of Chhattisgarh.",
+          "bestSeason": "अक्टूबर से मार्च",
+          "safetyInfo": "दूरिहा के जगह म संभल के जाव।",
+          "rules": "प्लास्टिक के उपयोग एकदम मना हे।"
+        },
+        "en": {
+          "name": "Udanti Wildlife Sanctuary",
+          "description": "Experience the beauty of Udanti Wildlife Sanctuary",
+          "history": "Udanti Wildlife Sanctuary is a protected area and wildlife sanctuary located in Gariaband district of the Indian state of Chhattisgarh.",
+          "bestSeason": "October to March is the ideal time to visit.",
+          "safetyInfo": "Maintain caution around remote areas.",
+          "rules": "Zero plastic tolerance zone. Leave no trace."
+        }
+      },
+      "categoryName": "Uncategorized",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "indravati-national-park",
+      "name": "Indravati National Park",
+      "categorySlug": "uncategorized",
+      "district": "Unknown",
+      "tagline": "Experience the authentic beauty of Indravati National Park",
+      "latitude": 19.205,
+      "longitude": 81.0314,
+      "heroImage": "https://images.unsplash.com/photo-1505918078061?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March is the ideal time to visit.",
+      "safety": "Maintain caution around remote areas and follow local guidelines.",
+      "ecoGuidance": "Zero plastic tolerance zone. Leave no trace and respect local boundaries.",
+      "story": "Indravati National Park is a national park located in Bijapur district of Chhattisgarh state in India. The park derives its name from the Indravati River, which flows from east to west and forms the northern boundary of the reserve with the Indian state of Maharashtra.\nIndravati National Park is among the most famous wildlife parks of Chhattisgarh. It is one of four Project Tiger sites in Chhattisgarh, along with Udanti-sitanadi, and is home to one of the last remaining populations of the endangered wild water buffalo. With a total area of approximately 2799.08 km2, Indravati attained the status of a national park in 1981 and a tiger reserve in 1983, becoming one of the most famous tiger reserves in India.\nAs of 2022, the park is reported to be largely under Naxal control.",
+      "media": [
+        {
+          "url": "/cdn/videos/forest.mp4",
+          "type": "VIDEO"
+        },
+        {
+          "url": "https://images.unsplash.com/photo-1505918078061?auto=format&fit=crop&w=1200&q=80",
+          "type": "IMAGE"
+        }
+      ],
+      "translations": {
+        "hi": {
+          "name": "Indravati National Park",
+          "description": "Bijapur में स्थित एक सुंदर स्थल",
+          "history": "Indravati National Park is a national park located in Bijapur district of Chhattisgarh state in India. The park derives its name from the Indravati River, which flows from east to west and forms the northern boundary of the reserve with the Indian state of Maharashtra.\nIndravati National Park is among the most famous wildlife parks of Chhattisgarh. It is one of four Project Tiger sites in Chhattisgarh, along with Udanti-sitanadi, and is home to one of the last remaining populations of the endangered wild water buffalo. With a total area of approximately 2799.08 km2, Indravati attained the status of a national park in 1981 and a tiger reserve in 1983, becoming one of the most famous tiger reserves in India.\nAs of 2022, the park is reported to be largely under Naxal control.",
+          "bestSeason": "अक्टूबर से मार्च",
+          "safetyInfo": "सुदूर क्षेत्रों में सावधानी बरतें।",
+          "rules": "प्लास्टिक का उपयोग सख्त मना है।"
+        },
+        "cg": {
+          "name": "Indravati National Park",
+          "description": "Bijapur म स्थित एक सुघ्घर जगह",
+          "history": "Indravati National Park is a national park located in Bijapur district of Chhattisgarh state in India. The park derives its name from the Indravati River, which flows from east to west and forms the northern boundary of the reserve with the Indian state of Maharashtra.\nIndravati National Park is among the most famous wildlife parks of Chhattisgarh. It is one of four Project Tiger sites in Chhattisgarh, along with Udanti-sitanadi, and is home to one of the last remaining populations of the endangered wild water buffalo. With a total area of approximately 2799.08 km2, Indravati attained the status of a national park in 1981 and a tiger reserve in 1983, becoming one of the most famous tiger reserves in India.\nAs of 2022, the park is reported to be largely under Naxal control.",
+          "bestSeason": "अक्टूबर से मार्च",
+          "safetyInfo": "दूरिहा के जगह म संभल के जाव।",
+          "rules": "प्लास्टिक के उपयोग एकदम मना हे।"
+        },
+        "en": {
+          "name": "Indravati National Park",
+          "description": "Experience the beauty of Indravati National Park",
+          "history": "Indravati National Park is a national park located in Bijapur district of Chhattisgarh state in India. The park derives its name from the Indravati River, which flows from east to west and forms the northern boundary of the reserve with the Indian state of Maharashtra.\nIndravati National Park is among the most famous wildlife parks of Chhattisgarh. It is one of four Project Tiger sites in Chhattisgarh, along with Udanti-sitanadi, and is home to one of the last remaining populations of the endangered wild water buffalo. With a total area of approximately 2799.08 km2, Indravati attained the status of a national park in 1981 and a tiger reserve in 1983, becoming one of the most famous tiger reserves in India.\nAs of 2022, the park is reported to be largely under Naxal control.",
+          "bestSeason": "October to March is the ideal time to visit.",
+          "safetyInfo": "Maintain caution around remote areas.",
+          "rules": "Zero plastic tolerance zone. Leave no trace."
+        }
+      },
+      "categoryName": "Uncategorized",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "dantewada",
+      "name": "Dantewada",
+      "tagline": "Experience the beauty of Dantewada",
+      "district": "Unknown",
+      "categorySlug": "uncategorized",
+      "categoryName": "Uncategorized",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Dantewada is a beautiful destination in Unknown.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 2"
+    },
+    {
+      "slug": "dholkal-ganesh",
+      "name": "Dholkal Ganesh",
+      "tagline": "Experience the beauty of Dholkal Ganesh",
+      "district": "Unknown",
+      "categorySlug": "uncategorized",
+      "categoryName": "Uncategorized",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Dholkal Ganesh is a beautiful destination in Unknown.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "barsur-temples",
+      "name": "Barsur Temples",
+      "tagline": "Experience the beauty of Barsur Temples",
+      "district": "Unknown",
+      "categorySlug": "uncategorized",
+      "categoryName": "Uncategorized",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Barsur Temples is a beautiful destination in Unknown.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "narayanpur-tribal-region",
+      "name": "Narayanpur Tribal Region",
+      "tagline": "Experience the beauty of Narayanpur Tribal Region",
+      "district": "Unknown",
+      "categorySlug": "uncategorized",
+      "categoryName": "Uncategorized",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Narayanpur Tribal Region is a beautiful destination in Unknown.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "chaiturgarh-fort",
+      "name": "Chaiturgarh Fort",
+      "tagline": "Experience the beauty of Chaiturgarh Fort",
+      "district": "Unknown",
+      "categorySlug": "uncategorized",
+      "categoryName": "Uncategorized",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Chaiturgarh Fort is a beautiful destination in Unknown.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "ramgarh-hills",
+      "name": "Ramgarh Hills",
+      "tagline": "Experience the beauty of Ramgarh Hills",
+      "district": "Unknown",
+      "categorySlug": "uncategorized",
+      "categoryName": "Uncategorized",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Ramgarh Hills is a beautiful destination in Unknown.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "sita-bengra-caves",
+      "name": "Sita Bengra Caves",
+      "tagline": "Experience the beauty of Sita Bengra Caves",
+      "district": "Unknown",
+      "categorySlug": "uncategorized",
+      "categoryName": "Uncategorized",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Sita Bengra Caves is a beautiful destination in Unknown.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "jogimara-cave",
+      "name": "Jogimara Cave",
+      "tagline": "Experience the beauty of Jogimara Cave",
+      "district": "Unknown",
+      "categorySlug": "uncategorized",
+      "categoryName": "Uncategorized",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Jogimara Cave is a beautiful destination in Unknown.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "kotumsar-bioluminescent-region",
+      "name": "Kotumsar Bioluminescent Region",
+      "tagline": "Experience the beauty of Kotumsar Bioluminescent Region",
+      "district": "Unknown",
+      "categorySlug": "uncategorized",
+      "categoryName": "Uncategorized",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Kotumsar Bioluminescent Region is a beautiful destination in Unknown.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "teerathgarh-eco-trails",
+      "name": "Teerathgarh Eco Trails",
+      "tagline": "Experience the beauty of Teerathgarh Eco Trails",
+      "district": "Unknown",
+      "categorySlug": "uncategorized",
+      "categoryName": "Uncategorized",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Teerathgarh Eco Trails is a beautiful destination in Unknown.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "charre-marre-waterfalls",
+      "name": "Charre-Marre Waterfalls",
+      "tagline": "Experience the beauty of Charre-Marre Waterfalls",
+      "district": "Unknown",
+      "categorySlug": "uncategorized",
+      "categoryName": "Uncategorized",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Charre-Marre Waterfalls is a beautiful destination in Unknown.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "tamra-ghumar-waterfall",
+      "name": "Tamra Ghumar Waterfall",
+      "tagline": "Experience the beauty of Tamra Ghumar Waterfall",
+      "district": "Unknown",
+      "categorySlug": "uncategorized",
+      "categoryName": "Uncategorized",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Tamra Ghumar Waterfall is a beautiful destination in Unknown.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "mendri-ghumar",
+      "name": "Mendri Ghumar",
+      "tagline": "Experience the beauty of Mendri Ghumar",
+      "district": "Unknown",
+      "categorySlug": "uncategorized",
+      "categoryName": "Uncategorized",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Mendri Ghumar is a beautiful destination in Unknown.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "chingra-pagar-waterfall",
+      "name": "Chingra Pagar Waterfall",
+      "tagline": "Experience the beauty of Chingra Pagar Waterfall",
+      "district": "Unknown",
+      "categorySlug": "uncategorized",
+      "categoryName": "Uncategorized",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Chingra Pagar Waterfall is a beautiful destination in Unknown.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "devdhara-waterfall",
+      "name": "Devdhara Waterfall",
+      "tagline": "Experience the beauty of Devdhara Waterfall",
+      "district": "Unknown",
+      "categorySlug": "uncategorized",
+      "categoryName": "Uncategorized",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Devdhara Waterfall is a beautiful destination in Unknown.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "ghatarani-waterfall",
+      "name": "Ghatarani Waterfall",
+      "tagline": "Experience the beauty of Ghatarani Waterfall",
+      "district": "Unknown",
+      "categorySlug": "uncategorized",
+      "categoryName": "Uncategorized",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Ghatarani Waterfall is a beautiful destination in Unknown.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 2"
+    },
+    {
+      "slug": "jatmai-temple",
+      "name": "Jatmai Temple",
+      "categorySlug": "uncategorized",
+      "district": "Unknown",
+      "tagline": "Experience the authentic beauty of Jatmai Temple",
+      "latitude": 22.9641,
+      "longitude": 82.3055,
+      "heroImage": "https://placehold.co/1200x800/115e59/ffffff.png?text=CG+Tourism",
+      "bestTime": "October to March is the ideal time to visit.",
+      "safety": "Maintain caution around remote areas and follow local guidelines.",
+      "ecoGuidance": "Zero plastic tolerance zone. Leave no trace and respect local boundaries.",
+      "story": "Jatmai Mata Mandir or Jatmayi Temple is a Hindu temple of Goddess Durga ji located in Gariaband district, 80 km from state capital Raipur, Chhattisgarh, India. The water streams are adjacent to the temple where Mata touched her feet and fell down from the rocks. According to local beliefs, these water streams are the servants of the mother. Every year a fair is organized in the temple of Mata in the Navratri of Chaitra and Kunwar.\nThis temple of Jatmai Mata is built between the waterfalls; hence it is also one of the most popular picnic spots in Chhattisgarh.\nThere is also another temple named Ghatarani temple, located 25 km from the Jatamai Mata Mandir.",
+      "media": [
+        {
+          "url": "/cdn/videos/temple.mp4",
+          "type": "VIDEO"
+        },
+        {
+          "url": "https://placehold.co/1200x800/115e59/ffffff.png?text=CG+Tourism",
+          "type": "IMAGE"
+        }
+      ],
+      "translations": {
+        "hi": {
+          "name": "Jatmai Temple",
+          "description": "Gariaband में स्थित एक सुंदर स्थल",
+          "history": "Jatmai Mata Mandir or Jatmayi Temple is a Hindu temple of Goddess Durga ji located in Gariaband district, 80 km from state capital Raipur, Chhattisgarh, India. The water streams are adjacent to the temple where Mata touched her feet and fell down from the rocks. According to local beliefs, these water streams are the servants of the mother. Every year a fair is organized in the temple of Mata in the Navratri of Chaitra and Kunwar.\nThis temple of Jatmai Mata is built between the waterfalls; hence it is also one of the most popular picnic spots in Chhattisgarh.\nThere is also another temple named Ghatarani temple, located 25 km from the Jatamai Mata Mandir.",
+          "bestSeason": "अक्टूबर से मार्च",
+          "safetyInfo": "सुदूर क्षेत्रों में सावधानी बरतें।",
+          "rules": "प्लास्टिक का उपयोग सख्त मना है।"
+        },
+        "cg": {
+          "name": "Jatmai Temple",
+          "description": "Gariaband म स्थित एक सुघ्घर जगह",
+          "history": "Jatmai Mata Mandir or Jatmayi Temple is a Hindu temple of Goddess Durga ji located in Gariaband district, 80 km from state capital Raipur, Chhattisgarh, India. The water streams are adjacent to the temple where Mata touched her feet and fell down from the rocks. According to local beliefs, these water streams are the servants of the mother. Every year a fair is organized in the temple of Mata in the Navratri of Chaitra and Kunwar.\nThis temple of Jatmai Mata is built between the waterfalls; hence it is also one of the most popular picnic spots in Chhattisgarh.\nThere is also another temple named Ghatarani temple, located 25 km from the Jatamai Mata Mandir.",
+          "bestSeason": "अक्टूबर से मार्च",
+          "safetyInfo": "दूरिहा के जगह म संभल के जाव।",
+          "rules": "प्लास्टिक के उपयोग एकदम मना हे।"
+        },
+        "en": {
+          "name": "Jatmai Temple",
+          "description": "Experience the beauty of Jatmai Temple",
+          "history": "Jatmai Mata Mandir or Jatmayi Temple is a Hindu temple of Goddess Durga ji located in Gariaband district, 80 km from state capital Raipur, Chhattisgarh, India. The water streams are adjacent to the temple where Mata touched her feet and fell down from the rocks. According to local beliefs, these water streams are the servants of the mother. Every year a fair is organized in the temple of Mata in the Navratri of Chaitra and Kunwar.\nThis temple of Jatmai Mata is built between the waterfalls; hence it is also one of the most popular picnic spots in Chhattisgarh.\nThere is also another temple named Ghatarani temple, located 25 km from the Jatamai Mata Mandir.",
+          "bestSeason": "October to March is the ideal time to visit.",
+          "safetyInfo": "Maintain caution around remote areas.",
+          "rules": "Zero plastic tolerance zone. Leave no trace."
+        }
+      },
+      "categoryName": "Uncategorized",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 2"
+    },
+    {
+      "slug": "kanker-palace",
+      "name": "Kanker Palace",
+      "categorySlug": "uncategorized",
+      "district": "Unknown",
+      "tagline": "Experience the authentic beauty of Kanker Palace",
+      "latitude": 20.2719,
+      "longitude": 81.4931,
+      "heroImage": "https://placehold.co/1200x800/115e59/ffffff.png?text=CG+Tourism",
+      "bestTime": "October to March is the ideal time to visit.",
+      "safety": "Maintain caution around remote areas and follow local guidelines.",
+      "ecoGuidance": "Zero plastic tolerance zone. Leave no trace and respect local boundaries.",
+      "story": "Uttar Bastar Kanker district is located in the southern region of the state of Chhattisgarh, India within the latitudes 20.6-20.24 and longitudes 80.48-81.48. The total area of the district is 6432 square kilometers. The population is 748,941.\nThe district's headquarters, Kanker town, is situated on the National Highway 30 almost halfway between Chhattisgarh's two major cities - Raipur, the state capital, and Jagdalpur, the second biggest city and headquarters of the neighbouring Bastar district and Bastar Division.",
+      "media": [
+        {
+          "url": "/cdn/videos/village.mp4",
+          "type": "VIDEO"
+        },
+        {
+          "url": "https://placehold.co/1200x800/115e59/ffffff.png?text=CG+Tourism",
+          "type": "IMAGE"
+        }
+      ],
+      "translations": {
+        "hi": {
+          "name": "Kanker Palace",
+          "description": "Kanker में स्थित एक सुंदर स्थल",
+          "history": "Uttar Bastar Kanker district is located in the southern region of the state of Chhattisgarh, India within the latitudes 20.6-20.24 and longitudes 80.48-81.48. The total area of the district is 6432 square kilometers. The population is 748,941.\nThe district's headquarters, Kanker town, is situated on the National Highway 30 almost halfway between Chhattisgarh's two major cities - Raipur, the state capital, and Jagdalpur, the second biggest city and headquarters of the neighbouring Bastar district and Bastar Division.",
+          "bestSeason": "अक्टूबर से मार्च",
+          "safetyInfo": "सुदूर क्षेत्रों में सावधानी बरतें।",
+          "rules": "प्लास्टिक का उपयोग सख्त मना है।"
+        },
+        "cg": {
+          "name": "Kanker Palace",
+          "description": "Kanker म स्थित एक सुघ्घर जगह",
+          "history": "Uttar Bastar Kanker district is located in the southern region of the state of Chhattisgarh, India within the latitudes 20.6-20.24 and longitudes 80.48-81.48. The total area of the district is 6432 square kilometers. The population is 748,941.\nThe district's headquarters, Kanker town, is situated on the National Highway 30 almost halfway between Chhattisgarh's two major cities - Raipur, the state capital, and Jagdalpur, the second biggest city and headquarters of the neighbouring Bastar district and Bastar Division.",
+          "bestSeason": "अक्टूबर से मार्च",
+          "safetyInfo": "दूरिहा के जगह म संभल के जाव।",
+          "rules": "प्लास्टिक के उपयोग एकदम मना हे।"
+        },
+        "en": {
+          "name": "Kanker Palace",
+          "description": "Experience the beauty of Kanker Palace",
+          "history": "Uttar Bastar Kanker district is located in the southern region of the state of Chhattisgarh, India within the latitudes 20.6-20.24 and longitudes 80.48-81.48. The total area of the district is 6432 square kilometers. The population is 748,941.\nThe district's headquarters, Kanker town, is situated on the National Highway 30 almost halfway between Chhattisgarh's two major cities - Raipur, the state capital, and Jagdalpur, the second biggest city and headquarters of the neighbouring Bastar district and Bastar Division.",
+          "bestSeason": "October to March is the ideal time to visit.",
+          "safetyInfo": "Maintain caution around remote areas.",
+          "rules": "Zero plastic tolerance zone. Leave no trace."
+        }
+      },
+      "categoryName": "Uncategorized",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "keshkal-valley",
+      "name": "Keshkal Valley",
+      "tagline": "Experience the beauty of Keshkal Valley",
+      "district": "Unknown",
+      "categorySlug": "uncategorized",
+      "categoryName": "Uncategorized",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Keshkal Valley is a beautiful destination in Unknown.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 2"
+    },
+    {
+      "slug": "keshkal-ghat",
+      "name": "Keshkal Ghat",
+      "categorySlug": "uncategorized",
+      "district": "Unknown",
+      "tagline": "Experience the authentic beauty of Keshkal Ghat",
+      "latitude": 20.0847,
+      "longitude": 81.5867,
+      "heroImage": "https://images.unsplash.com/photo-1500256042927?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March is the ideal time to visit.",
+      "safety": "Maintain caution around remote areas and follow local guidelines.",
+      "ecoGuidance": "Zero plastic tolerance zone. Leave no trace and respect local boundaries.",
+      "story": "Keskal is a city in Kondagaon district formerly in Madhya Pradesh and now in Chhattisgarh, India.",
+      "media": [
+        {
+          "url": "/cdn/videos/forest.mp4",
+          "type": "VIDEO"
+        },
+        {
+          "url": "https://images.unsplash.com/photo-1500256042927?auto=format&fit=crop&w=1200&q=80",
+          "type": "IMAGE"
+        }
+      ],
+      "translations": {
+        "hi": {
+          "name": "Keshkal Ghat",
+          "description": "Kondagaon में स्थित एक सुंदर स्थल",
+          "history": "Keskal is a city in Kondagaon district formerly in Madhya Pradesh and now in Chhattisgarh, India.",
+          "bestSeason": "अक्टूबर से मार्च",
+          "safetyInfo": "सुदूर क्षेत्रों में सावधानी बरतें।",
+          "rules": "प्लास्टिक का उपयोग सख्त मना है।"
+        },
+        "cg": {
+          "name": "Keshkal Ghat",
+          "description": "Kondagaon म स्थित एक सुघ्घर जगह",
+          "history": "Keskal is a city in Kondagaon district formerly in Madhya Pradesh and now in Chhattisgarh, India.",
+          "bestSeason": "अक्टूबर से मार्च",
+          "safetyInfo": "दूरिहा के जगह म संभल के जाव।",
+          "rules": "प्लास्टिक के उपयोग एकदम मना हे।"
+        },
+        "en": {
+          "name": "Keshkal Ghat",
+          "description": "Experience the beauty of Keshkal Ghat",
+          "history": "Keskal is a city in Kondagaon district formerly in Madhya Pradesh and now in Chhattisgarh, India.",
+          "bestSeason": "October to March is the ideal time to visit.",
+          "safetyInfo": "Maintain caution around remote areas.",
+          "rules": "Zero plastic tolerance zone. Leave no trace."
+        }
+      },
+      "categoryName": "Uncategorized",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "orchha-eco-tourism-region",
+      "name": "Orchha Eco Tourism Region",
+      "tagline": "Experience the beauty of Orchha Eco Tourism Region",
+      "district": "Unknown",
+      "categorySlug": "uncategorized",
+      "categoryName": "Uncategorized",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Orchha Eco Tourism Region is a beautiful destination in Unknown.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "chandan-mahal",
+      "name": "Chandan Mahal",
+      "tagline": "Experience the beauty of Chandan Mahal",
+      "district": "Unknown",
+      "categorySlug": "uncategorized",
+      "categoryName": "Uncategorized",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Chandan Mahal is a beautiful destination in Unknown.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "kawardha-palace",
+      "name": "Kawardha Palace",
+      "tagline": "Experience the beauty of Kawardha Palace",
+      "district": "Unknown",
+      "categorySlug": "uncategorized",
+      "categoryName": "Uncategorized",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Kawardha Palace is a beautiful destination in Unknown.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "raipur-marine-drive",
+      "name": "Raipur Marine Drive",
+      "tagline": "Experience the beauty of Raipur Marine Drive",
+      "district": "Unknown",
+      "categorySlug": "uncategorized",
+      "categoryName": "Uncategorized",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Raipur Marine Drive is a beautiful destination in Unknown.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "nandan-van-zoo",
+      "name": "Nandan Van Zoo",
+      "tagline": "Experience the beauty of Nandan Van Zoo",
+      "district": "Unknown",
+      "categorySlug": "uncategorized",
+      "categoryName": "Uncategorized",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Nandan Van Zoo is a beautiful destination in Unknown.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "purkhouti-muktangan",
+      "name": "Purkhouti Muktangan",
+      "tagline": "Experience the beauty of Purkhouti Muktangan",
+      "district": "Unknown",
+      "categorySlug": "uncategorized",
+      "categoryName": "Uncategorized",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Purkhouti Muktangan is a beautiful destination in Unknown.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "mahant-ghasidas-museum",
+      "name": "Mahant Ghasidas Museum",
+      "tagline": "Experience the beauty of Mahant Ghasidas Museum",
+      "district": "Unknown",
+      "categorySlug": "uncategorized",
+      "categoryName": "Uncategorized",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Mahant Ghasidas Museum is a beautiful destination in Unknown.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "vivekananda-sarovar",
+      "name": "Vivekananda Sarovar",
+      "tagline": "Experience the beauty of Vivekananda Sarovar",
+      "district": "Unknown",
+      "categorySlug": "uncategorized",
+      "categoryName": "Uncategorized",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Vivekananda Sarovar is a beautiful destination in Unknown.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "energy-park-raipur",
+      "name": "Energy Park Raipur",
+      "tagline": "Experience the beauty of Energy Park Raipur",
+      "district": "Unknown",
+      "categorySlug": "uncategorized",
+      "categoryName": "Uncategorized",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Energy Park Raipur is a beautiful destination in Unknown.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "mm-fun-city",
+      "name": "MM Fun City",
+      "tagline": "Experience the beauty of MM Fun City",
+      "district": "Unknown",
+      "categorySlug": "uncategorized",
+      "categoryName": "Uncategorized",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "MM Fun City is a beautiful destination in Unknown.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "budha-talab",
+      "name": "Budha Talab",
+      "tagline": "Experience the beauty of Budha Talab",
+      "district": "Unknown",
+      "categorySlug": "uncategorized",
+      "categoryName": "Uncategorized",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Budha Talab is a beautiful destination in Unknown.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "champaran",
+      "name": "Champaran",
+      "tagline": "Experience the beauty of Champaran",
+      "district": "Unknown",
+      "categorySlug": "uncategorized",
+      "categoryName": "Uncategorized",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Champaran is a beautiful destination in Unknown.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "deobaloda-temple",
+      "name": "Deobaloda Temple",
+      "tagline": "Experience the beauty of Deobaloda Temple",
+      "district": "Unknown",
+      "categorySlug": "uncategorized",
+      "categoryName": "Uncategorized",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Deobaloda Temple is a beautiful destination in Unknown.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "maitri-bagh",
+      "name": "Maitri Bagh",
+      "tagline": "Experience the beauty of Maitri Bagh",
+      "district": "Unknown",
+      "categorySlug": "uncategorized",
+      "categoryName": "Uncategorized",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Maitri Bagh is a beautiful destination in Unknown.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "tandula-dam",
+      "name": "Tandula Dam",
+      "categorySlug": "uncategorized",
+      "district": "Unknown",
+      "tagline": "Experience the authentic beauty of Tandula Dam",
+      "latitude": 20.703,
+      "longitude": 81.218,
+      "heroImage": "https://placehold.co/1200x800/115e59/ffffff.png?text=CG+Tourism",
+      "bestTime": "October to March is the ideal time to visit.",
+      "safety": "Maintain caution around remote areas and follow local guidelines.",
+      "ecoGuidance": "Zero plastic tolerance zone. Leave no trace and respect local boundaries.",
+      "story": "Tandula Dam is located in Chhattisgarh in India. It is located at about 2 km from Balod Collectorate in Balod district. \nThe dam project was started in 1910 on the confluence of Tandula and Sukha Nala rivers and was completed in 1921. The dam stores water from catchment area of 827.2 square kilometres (319.4 sq mi). The gross storage capacity of the reservoir is 302.31 million cubic metres and the highest flood level is 333.415 metres (1,093.88 ft). Its Designed Area is 25397 Hact. The Dam provide Drinking Water to Durg &amp; Bhilai Nagar Nigam area and caters to industrial requirement of Bhilai Steel Plant.\nTandula river joins the ShivNath river.",
+      "media": [
+        {
+          "url": "/cdn/videos/waterfall.mp4",
+          "type": "VIDEO"
+        },
+        {
+          "url": "https://placehold.co/1200x800/115e59/ffffff.png?text=CG+Tourism",
+          "type": "IMAGE"
+        }
+      ],
+      "translations": {
+        "hi": {
+          "name": "Tandula Dam",
+          "description": "Balod में स्थित एक सुंदर स्थल",
+          "history": "Tandula Dam is located in Chhattisgarh in India. It is located at about 2 km from Balod Collectorate in Balod district. \nThe dam project was started in 1910 on the confluence of Tandula and Sukha Nala rivers and was completed in 1921. The dam stores water from catchment area of 827.2 square kilometres (319.4 sq mi). The gross storage capacity of the reservoir is 302.31 million cubic metres and the highest flood level is 333.415 metres (1,093.88 ft). Its Designed Area is 25397 Hact. The Dam provide Drinking Water to Durg &amp; Bhilai Nagar Nigam area and caters to industrial requirement of Bhilai Steel Plant.\nTandula river joins the ShivNath river.",
+          "bestSeason": "अक्टूबर से मार्च",
+          "safetyInfo": "सुदूर क्षेत्रों में सावधानी बरतें।",
+          "rules": "प्लास्टिक का उपयोग सख्त मना है।"
+        },
+        "cg": {
+          "name": "Tandula Dam",
+          "description": "Balod म स्थित एक सुघ्घर जगह",
+          "history": "Tandula Dam is located in Chhattisgarh in India. It is located at about 2 km from Balod Collectorate in Balod district. \nThe dam project was started in 1910 on the confluence of Tandula and Sukha Nala rivers and was completed in 1921. The dam stores water from catchment area of 827.2 square kilometres (319.4 sq mi). The gross storage capacity of the reservoir is 302.31 million cubic metres and the highest flood level is 333.415 metres (1,093.88 ft). Its Designed Area is 25397 Hact. The Dam provide Drinking Water to Durg &amp; Bhilai Nagar Nigam area and caters to industrial requirement of Bhilai Steel Plant.\nTandula river joins the ShivNath river.",
+          "bestSeason": "अक्टूबर से मार्च",
+          "safetyInfo": "दूरिहा के जगह म संभल के जाव।",
+          "rules": "प्लास्टिक के उपयोग एकदम मना हे।"
+        },
+        "en": {
+          "name": "Tandula Dam",
+          "description": "Experience the beauty of Tandula Dam",
+          "history": "Tandula Dam is located in Chhattisgarh in India. It is located at about 2 km from Balod Collectorate in Balod district. \nThe dam project was started in 1910 on the confluence of Tandula and Sukha Nala rivers and was completed in 1921. The dam stores water from catchment area of 827.2 square kilometres (319.4 sq mi). The gross storage capacity of the reservoir is 302.31 million cubic metres and the highest flood level is 333.415 metres (1,093.88 ft). Its Designed Area is 25397 Hact. The Dam provide Drinking Water to Durg &amp; Bhilai Nagar Nigam area and caters to industrial requirement of Bhilai Steel Plant.\nTandula river joins the ShivNath river.",
+          "bestSeason": "October to March is the ideal time to visit.",
+          "safetyInfo": "Maintain caution around remote areas.",
+          "rules": "Zero plastic tolerance zone. Leave no trace."
+        }
+      },
+      "categoryName": "Uncategorized",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "ganga-maiya-temple",
+      "name": "Ganga Maiya Temple",
+      "tagline": "Experience the beauty of Ganga Maiya Temple",
+      "district": "Unknown",
+      "categorySlug": "uncategorized",
+      "categoryName": "Uncategorized",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Ganga Maiya Temple is a beautiful destination in Unknown.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "rajnandgaon-heritage-circuit",
+      "name": "Rajnandgaon Heritage Circuit",
+      "tagline": "Experience the beauty of Rajnandgaon Heritage Circuit",
+      "district": "Unknown",
+      "categorySlug": "uncategorized",
+      "categoryName": "Uncategorized",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Rajnandgaon Heritage Circuit is a beautiful destination in Unknown.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "khallari-temple",
+      "name": "Khallari Temple",
+      "tagline": "Experience the beauty of Khallari Temple",
+      "district": "Unknown",
+      "categorySlug": "uncategorized",
+      "categoryName": "Uncategorized",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Khallari Temple is a beautiful destination in Unknown.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "pali-temple",
+      "name": "Pali Temple",
+      "tagline": "Experience the beauty of Pali Temple",
+      "district": "Unknown",
+      "categorySlug": "uncategorized",
+      "categoryName": "Uncategorized",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Pali Temple is a beautiful destination in Unknown.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "shivrinarayan",
+      "name": "Shivrinarayan",
+      "categorySlug": "uncategorized",
+      "district": "Unknown",
+      "tagline": "Experience the authentic beauty of Shivrinarayan",
+      "latitude": 21.73,
+      "longitude": 82.58,
+      "heroImage": "https://images.unsplash.com/photo-1507987875802?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March is the ideal time to visit.",
+      "safety": "Maintain caution around remote areas and follow local guidelines.",
+      "ecoGuidance": "Zero plastic tolerance zone. Leave no trace and respect local boundaries.",
+      "story": "Shivrinarayan also known as Sheorinarayan is a town and a nagar panchayat located at the Triveni Dhara of Mahanadi, Shivnath and Jonk River in Janjgir-Champa district in the Indian state of Chhattisgarh.",
+      "media": [
+        {
+          "url": "/cdn/videos/temple.mp4",
+          "type": "VIDEO"
+        },
+        {
+          "url": "https://images.unsplash.com/photo-1507987875802?auto=format&fit=crop&w=1200&q=80",
+          "type": "IMAGE"
+        }
+      ],
+      "translations": {
+        "hi": {
+          "name": "Shivrinarayan",
+          "description": "Janjgir-Champa में स्थित एक सुंदर स्थल",
+          "history": "Shivrinarayan also known as Sheorinarayan is a town and a nagar panchayat located at the Triveni Dhara of Mahanadi, Shivnath and Jonk River in Janjgir-Champa district in the Indian state of Chhattisgarh.",
+          "bestSeason": "अक्टूबर से मार्च",
+          "safetyInfo": "सुदूर क्षेत्रों में सावधानी बरतें।",
+          "rules": "प्लास्टिक का उपयोग सख्त मना है।"
+        },
+        "cg": {
+          "name": "Shivrinarayan",
+          "description": "Janjgir-Champa म स्थित एक सुघ्घर जगह",
+          "history": "Shivrinarayan also known as Sheorinarayan is a town and a nagar panchayat located at the Triveni Dhara of Mahanadi, Shivnath and Jonk River in Janjgir-Champa district in the Indian state of Chhattisgarh.",
+          "bestSeason": "अक्टूबर से मार्च",
+          "safetyInfo": "दूरिहा के जगह म संभल के जाव।",
+          "rules": "प्लास्टिक के उपयोग एकदम मना हे।"
+        },
+        "en": {
+          "name": "Shivrinarayan",
+          "description": "Experience the beauty of Shivrinarayan",
+          "history": "Shivrinarayan also known as Sheorinarayan is a town and a nagar panchayat located at the Triveni Dhara of Mahanadi, Shivnath and Jonk River in Janjgir-Champa district in the Indian state of Chhattisgarh.",
+          "bestSeason": "October to March is the ideal time to visit.",
+          "safetyInfo": "Maintain caution around remote areas.",
+          "rules": "Zero plastic tolerance zone. Leave no trace."
+        }
+      },
+      "categoryName": "Uncategorized",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "arang-temples",
+      "name": "Arang Temples",
+      "tagline": "Experience the beauty of Arang Temples",
+      "district": "Unknown",
+      "categorySlug": "uncategorized",
+      "categoryName": "Uncategorized",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Arang Temples is a beautiful destination in Unknown.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "belpan",
+      "name": "Belpan",
+      "tagline": "Experience the beauty of Belpan",
+      "district": "Unknown",
+      "categorySlug": "uncategorized",
+      "categoryName": "Uncategorized",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Belpan is a beautiful destination in Unknown.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "deorani-jethani-temple",
+      "name": "Deorani-Jethani Temple",
+      "tagline": "Experience the beauty of Deorani-Jethani Temple",
+      "district": "Unknown",
+      "categorySlug": "uncategorized",
+      "categoryName": "Uncategorized",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Deorani-Jethani Temple is a beautiful destination in Unknown.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "turturiya",
+      "name": "Turturiya",
+      "categorySlug": "uncategorized",
+      "district": "Unknown",
+      "tagline": "Experience the authentic beauty of Turturiya",
+      "latitude": 21.67,
+      "longitude": 82.17,
+      "heroImage": "https://placehold.co/1200x800/115e59/ffffff.png?text=CG+Tourism",
+      "bestTime": "October to March is the ideal time to visit.",
+      "safety": "Maintain caution around remote areas and follow local guidelines.",
+      "ecoGuidance": "Zero plastic tolerance zone. Leave no trace and respect local boundaries.",
+      "story": "Baloda Bazar-Bhatapara district is a district in Chhattisgarh state of India with its headquarters at Baloda Bazar. Before its creation, it was a part of Raipur district.  The border of Balodabazar-Bhatapara district shares borders with Bemetara, Mungeli, Bilaspur, Janjgir, Raigarh, Mahasamund and Raipur districts. According to the prevalent tradition in relation to the naming of the Balodabazar in the past, the traders of Gujarat, Haryana, Maharashtra, Orissa, Berar etc. used to gather in the market buffaloes of the city to sell the buffalo, buffalo (Boda). As a result, its name became popular in the name of the bullboda market and in the form of the Baloda Bazar.",
+      "media": [
+        {
+          "url": "/cdn/videos/village.mp4",
+          "type": "VIDEO"
+        },
+        {
+          "url": "https://placehold.co/1200x800/115e59/ffffff.png?text=CG+Tourism",
+          "type": "IMAGE"
+        }
+      ],
+      "translations": {
+        "hi": {
+          "name": "Turturiya",
+          "description": "Baloda Bazar में स्थित एक सुंदर स्थल",
+          "history": "Baloda Bazar-Bhatapara district is a district in Chhattisgarh state of India with its headquarters at Baloda Bazar. Before its creation, it was a part of Raipur district.  The border of Balodabazar-Bhatapara district shares borders with Bemetara, Mungeli, Bilaspur, Janjgir, Raigarh, Mahasamund and Raipur districts. According to the prevalent tradition in relation to the naming of the Balodabazar in the past, the traders of Gujarat, Haryana, Maharashtra, Orissa, Berar etc. used to gather in the market buffaloes of the city to sell the buffalo, buffalo (Boda). As a result, its name became popular in the name of the bullboda market and in the form of the Baloda Bazar.",
+          "bestSeason": "अक्टूबर से मार्च",
+          "safetyInfo": "सुदूर क्षेत्रों में सावधानी बरतें।",
+          "rules": "प्लास्टिक का उपयोग सख्त मना है।"
+        },
+        "cg": {
+          "name": "Turturiya",
+          "description": "Baloda Bazar म स्थित एक सुघ्घर जगह",
+          "history": "Baloda Bazar-Bhatapara district is a district in Chhattisgarh state of India with its headquarters at Baloda Bazar. Before its creation, it was a part of Raipur district.  The border of Balodabazar-Bhatapara district shares borders with Bemetara, Mungeli, Bilaspur, Janjgir, Raigarh, Mahasamund and Raipur districts. According to the prevalent tradition in relation to the naming of the Balodabazar in the past, the traders of Gujarat, Haryana, Maharashtra, Orissa, Berar etc. used to gather in the market buffaloes of the city to sell the buffalo, buffalo (Boda). As a result, its name became popular in the name of the bullboda market and in the form of the Baloda Bazar.",
+          "bestSeason": "अक्टूबर से मार्च",
+          "safetyInfo": "दूरिहा के जगह म संभल के जाव।",
+          "rules": "प्लास्टिक के उपयोग एकदम मना हे।"
+        },
+        "en": {
+          "name": "Turturiya",
+          "description": "Experience the beauty of Turturiya",
+          "history": "Baloda Bazar-Bhatapara district is a district in Chhattisgarh state of India with its headquarters at Baloda Bazar. Before its creation, it was a part of Raipur district.  The border of Balodabazar-Bhatapara district shares borders with Bemetara, Mungeli, Bilaspur, Janjgir, Raigarh, Mahasamund and Raipur districts. According to the prevalent tradition in relation to the naming of the Balodabazar in the past, the traders of Gujarat, Haryana, Maharashtra, Orissa, Berar etc. used to gather in the market buffaloes of the city to sell the buffalo, buffalo (Boda). As a result, its name became popular in the name of the bullboda market and in the form of the Baloda Bazar.",
+          "bestSeason": "October to March is the ideal time to visit.",
+          "safetyInfo": "Maintain caution around remote areas.",
+          "rules": "Zero plastic tolerance zone. Leave no trace."
+        }
+      },
+      "categoryName": "Uncategorized",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "kabir-chabutra",
+      "name": "Kabir Chabutra",
+      "tagline": "Experience the beauty of Kabir Chabutra",
+      "district": "Unknown",
+      "categorySlug": "uncategorized",
+      "categoryName": "Uncategorized",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Kabir Chabutra is a beautiful destination in Unknown.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "amrit-dhara-waterfall",
+      "name": "Amrit Dhara Waterfall",
+      "tagline": "Experience the beauty of Amrit Dhara Waterfall",
+      "district": "Unknown",
+      "categorySlug": "uncategorized",
+      "categoryName": "Uncategorized",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Amrit Dhara Waterfall is a beautiful destination in Unknown.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "ramdaha-waterfall",
+      "name": "Ramdaha Waterfall",
+      "tagline": "Experience the beauty of Ramdaha Waterfall",
+      "district": "Unknown",
+      "categorySlug": "uncategorized",
+      "categoryName": "Uncategorized",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Ramdaha Waterfall is a beautiful destination in Unknown.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "semarsot-wildlife-sanctuary",
+      "name": "Semarsot Wildlife Sanctuary",
+      "categorySlug": "uncategorized",
+      "district": "Unknown",
+      "tagline": "Experience the authentic beauty of Semarsot Wildlife Sanctuary",
+      "latitude": 19.0366,
+      "longitude": 82.3024,
+      "heroImage": "https://images.unsplash.com/photo-1501104122002?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March is the ideal time to visit.",
+      "safety": "Maintain caution around remote areas and follow local guidelines.",
+      "ecoGuidance": "Zero plastic tolerance zone. Leave no trace and respect local boundaries.",
+      "story": "A wildlife sanctuary in India is a protected area of importance for flora, fauna, or features of geological or other interest, which is reserved and managed for conservation and to provide opportunities for study or research. The Wild Life (Protection) Act, 1972 provides for the establishment of protected areas in India.\nWildlife sanctuaries of India, are classified as IUCN Category IV protected areas. As of March 2025, 573 wildlife sanctuaries have been established, covering 123,762.56 km2 (47,784.99 sq mi). Among these, Project Tiger governs 53 tiger reserves, which are of special significance for the conservation of the Bengal tiger. Additionally, there are 33 elephant reserves covering 80,778 km2 (31,189 sq mi) established under the Project Elephant, some of which overlap with the boundaries of declared wildlife sanctuaries and tiger reserves. \nEstablished in 1936, Vedanthangal Bird Sanctuary in Tamil Nadu was the first bird sanctuary in the country and the Mudumalai Wildlife Sanctuary was established later in 1940. Spanning 7,506.22 km2 (2,898.17 sq mi), Kutch Desert Wildlife Sanctuary in Gujarat is the largest wildlife sanctuary in the country and spanning just 2.0 km2 (0.77 sq mi), Kutch Bustard Sanctuary in Gujarat is the smallest wildlife sanctuary in the country. Andaman and Nicobar Islands has the most number of wildlife sanctuaries (97).",
+      "media": [
+        {
+          "url": "/cdn/videos/forest.mp4",
+          "type": "VIDEO"
+        },
+        {
+          "url": "https://images.unsplash.com/photo-1501104122002?auto=format&fit=crop&w=1200&q=80",
+          "type": "IMAGE"
+        }
+      ],
+      "translations": {
+        "hi": {
+          "name": "Semarsot Wildlife Sanctuary",
+          "description": "Balrampur में स्थित एक सुंदर स्थल",
+          "history": "A wildlife sanctuary in India is a protected area of importance for flora, fauna, or features of geological or other interest, which is reserved and managed for conservation and to provide opportunities for study or research. The Wild Life (Protection) Act, 1972 provides for the establishment of protected areas in India.\nWildlife sanctuaries of India, are classified as IUCN Category IV protected areas. As of March 2025, 573 wildlife sanctuaries have been established, covering 123,762.56 km2 (47,784.99 sq mi). Among these, Project Tiger governs 53 tiger reserves, which are of special significance for the conservation of the Bengal tiger. Additionally, there are 33 elephant reserves covering 80,778 km2 (31,189 sq mi) established under the Project Elephant, some of which overlap with the boundaries of declared wildlife sanctuaries and tiger reserves. \nEstablished in 1936, Vedanthangal Bird Sanctuary in Tamil Nadu was the first bird sanctuary in the country and the Mudumalai Wildlife Sanctuary was established later in 1940. Spanning 7,506.22 km2 (2,898.17 sq mi), Kutch Desert Wildlife Sanctuary in Gujarat is the largest wildlife sanctuary in the country and spanning just 2.0 km2 (0.77 sq mi), Kutch Bustard Sanctuary in Gujarat is the smallest wildlife sanctuary in the country. Andaman and Nicobar Islands has the most number of wildlife sanctuaries (97).",
+          "bestSeason": "अक्टूबर से मार्च",
+          "safetyInfo": "सुदूर क्षेत्रों में सावधानी बरतें।",
+          "rules": "प्लास्टिक का उपयोग सख्त मना है।"
+        },
+        "cg": {
+          "name": "Semarsot Wildlife Sanctuary",
+          "description": "Balrampur म स्थित एक सुघ्घर जगह",
+          "history": "A wildlife sanctuary in India is a protected area of importance for flora, fauna, or features of geological or other interest, which is reserved and managed for conservation and to provide opportunities for study or research. The Wild Life (Protection) Act, 1972 provides for the establishment of protected areas in India.\nWildlife sanctuaries of India, are classified as IUCN Category IV protected areas. As of March 2025, 573 wildlife sanctuaries have been established, covering 123,762.56 km2 (47,784.99 sq mi). Among these, Project Tiger governs 53 tiger reserves, which are of special significance for the conservation of the Bengal tiger. Additionally, there are 33 elephant reserves covering 80,778 km2 (31,189 sq mi) established under the Project Elephant, some of which overlap with the boundaries of declared wildlife sanctuaries and tiger reserves. \nEstablished in 1936, Vedanthangal Bird Sanctuary in Tamil Nadu was the first bird sanctuary in the country and the Mudumalai Wildlife Sanctuary was established later in 1940. Spanning 7,506.22 km2 (2,898.17 sq mi), Kutch Desert Wildlife Sanctuary in Gujarat is the largest wildlife sanctuary in the country and spanning just 2.0 km2 (0.77 sq mi), Kutch Bustard Sanctuary in Gujarat is the smallest wildlife sanctuary in the country. Andaman and Nicobar Islands has the most number of wildlife sanctuaries (97).",
+          "bestSeason": "अक्टूबर से मार्च",
+          "safetyInfo": "दूरिहा के जगह म संभल के जाव।",
+          "rules": "प्लास्टिक के उपयोग एकदम मना हे।"
+        },
+        "en": {
+          "name": "Semarsot Wildlife Sanctuary",
+          "description": "Experience the beauty of Semarsot Wildlife Sanctuary",
+          "history": "A wildlife sanctuary in India is a protected area of importance for flora, fauna, or features of geological or other interest, which is reserved and managed for conservation and to provide opportunities for study or research. The Wild Life (Protection) Act, 1972 provides for the establishment of protected areas in India.\nWildlife sanctuaries of India, are classified as IUCN Category IV protected areas. As of March 2025, 573 wildlife sanctuaries have been established, covering 123,762.56 km2 (47,784.99 sq mi). Among these, Project Tiger governs 53 tiger reserves, which are of special significance for the conservation of the Bengal tiger. Additionally, there are 33 elephant reserves covering 80,778 km2 (31,189 sq mi) established under the Project Elephant, some of which overlap with the boundaries of declared wildlife sanctuaries and tiger reserves. \nEstablished in 1936, Vedanthangal Bird Sanctuary in Tamil Nadu was the first bird sanctuary in the country and the Mudumalai Wildlife Sanctuary was established later in 1940. Spanning 7,506.22 km2 (2,898.17 sq mi), Kutch Desert Wildlife Sanctuary in Gujarat is the largest wildlife sanctuary in the country and spanning just 2.0 km2 (0.77 sq mi), Kutch Bustard Sanctuary in Gujarat is the smallest wildlife sanctuary in the country. Andaman and Nicobar Islands has the most number of wildlife sanctuaries (97).",
+          "bestSeason": "October to March is the ideal time to visit.",
+          "safetyInfo": "Maintain caution around remote areas.",
+          "rules": "Zero plastic tolerance zone. Leave no trace."
+        }
+      },
+      "categoryName": "Uncategorized",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "gomarda-wildlife-sanctuary",
+      "name": "Gomarda Wildlife Sanctuary",
+      "categorySlug": "uncategorized",
+      "district": "Unknown",
+      "tagline": "Experience the authentic beauty of Gomarda Wildlife Sanctuary",
+      "latitude": 21.5,
+      "longitude": 83.1333,
+      "heroImage": "https://images.unsplash.com/photo-1501033887874?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March is the ideal time to visit.",
+      "safety": "Maintain caution around remote areas and follow local guidelines.",
+      "ecoGuidance": "Zero plastic tolerance zone. Leave no trace and respect local boundaries.",
+      "story": "Gomardha Wildlife Sanctuary is a protected area and wildlife sanctuary located in Sarangarh-Bilaigarh district of the Indian state of Chhattisgarh.",
+      "media": [
+        {
+          "url": "/cdn/videos/forest.mp4",
+          "type": "VIDEO"
+        },
+        {
+          "url": "https://images.unsplash.com/photo-1501033887874?auto=format&fit=crop&w=1200&q=80",
+          "type": "IMAGE"
+        }
+      ],
+      "translations": {
+        "hi": {
+          "name": "Gomarda Wildlife Sanctuary",
+          "description": "Raigarh में स्थित एक सुंदर स्थल",
+          "history": "Gomardha Wildlife Sanctuary is a protected area and wildlife sanctuary located in Sarangarh-Bilaigarh district of the Indian state of Chhattisgarh.",
+          "bestSeason": "अक्टूबर से मार्च",
+          "safetyInfo": "सुदूर क्षेत्रों में सावधानी बरतें।",
+          "rules": "प्लास्टिक का उपयोग सख्त मना है।"
+        },
+        "cg": {
+          "name": "Gomarda Wildlife Sanctuary",
+          "description": "Raigarh म स्थित एक सुघ्घर जगह",
+          "history": "Gomardha Wildlife Sanctuary is a protected area and wildlife sanctuary located in Sarangarh-Bilaigarh district of the Indian state of Chhattisgarh.",
+          "bestSeason": "अक्टूबर से मार्च",
+          "safetyInfo": "दूरिहा के जगह म संभल के जाव।",
+          "rules": "प्लास्टिक के उपयोग एकदम मना हे।"
+        },
+        "en": {
+          "name": "Gomarda Wildlife Sanctuary",
+          "description": "Experience the beauty of Gomarda Wildlife Sanctuary",
+          "history": "Gomardha Wildlife Sanctuary is a protected area and wildlife sanctuary located in Sarangarh-Bilaigarh district of the Indian state of Chhattisgarh.",
+          "bestSeason": "October to March is the ideal time to visit.",
+          "safetyInfo": "Maintain caution around remote areas.",
+          "rules": "Zero plastic tolerance zone. Leave no trace."
+        }
+      },
+      "categoryName": "Uncategorized",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "badalkhol-sanctuary",
+      "name": "Badalkhol Sanctuary",
+      "tagline": "Experience the beauty of Badalkhol Sanctuary",
+      "district": "Unknown",
+      "categorySlug": "uncategorized",
+      "categoryName": "Uncategorized",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Badalkhol Sanctuary is a beautiful destination in Unknown.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "jashpur-hill-region",
+      "name": "Jashpur Hill Region",
+      "tagline": "Experience the beauty of Jashpur Hill Region",
+      "district": "Unknown",
+      "categorySlug": "uncategorized",
+      "categoryName": "Uncategorized",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Jashpur Hill Region is a beautiful destination in Unknown.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "rani-dah-waterfall",
+      "name": "Rani Dah Waterfall",
+      "tagline": "Experience the beauty of Rani Dah Waterfall",
+      "district": "Unknown",
+      "categorySlug": "uncategorized",
+      "categoryName": "Uncategorized",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Rani Dah Waterfall is a beautiful destination in Unknown.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "kailash-gufa-jashpur",
+      "name": "Kailash Gufa Jashpur",
+      "tagline": "Experience the beauty of Kailash Gufa Jashpur",
+      "district": "Unknown",
+      "categorySlug": "uncategorized",
+      "categoryName": "Uncategorized",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Kailash Gufa Jashpur is a beautiful destination in Unknown.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "gira-waterfalls-region",
+      "name": "Gira Waterfalls Region",
+      "tagline": "Experience the beauty of Gira Waterfalls Region",
+      "district": "Unknown",
+      "categorySlug": "uncategorized",
+      "categoryName": "Uncategorized",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Gira Waterfalls Region is a beautiful destination in Unknown.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "hazar-kund",
+      "name": "Hazar Kund",
+      "tagline": "Experience the beauty of Hazar Kund",
+      "district": "Unknown",
+      "categorySlug": "uncategorized",
+      "categoryName": "Uncategorized",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Hazar Kund is a beautiful destination in Unknown.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "pakhanjur-region",
+      "name": "Pakhanjur Region",
+      "tagline": "Experience the beauty of Pakhanjur Region",
+      "district": "Unknown",
+      "categorySlug": "uncategorized",
+      "categoryName": "Uncategorized",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Pakhanjur Region is a beautiful destination in Unknown.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "abujhmad",
+      "name": "Abujhmad",
+      "tagline": "Experience the beauty of Abujhmad",
+      "district": "Unknown",
+      "categorySlug": "uncategorized",
+      "categoryName": "Uncategorized",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Abujhmad is a beautiful destination in Unknown.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "bango-reservoir",
+      "name": "Bango Reservoir",
+      "tagline": "Experience the beauty of Bango Reservoir",
+      "district": "Unknown",
+      "categorySlug": "uncategorized",
+      "categoryName": "Uncategorized",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Bango Reservoir is a beautiful destination in Unknown.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "korba-eco-region",
+      "name": "Korba Eco Region",
+      "tagline": "Experience the beauty of Korba Eco Region",
+      "district": "Unknown",
+      "categorySlug": "uncategorized",
+      "categoryName": "Uncategorized",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Korba Eco Region is a beautiful destination in Unknown.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "coal-heritage-tourism-circuit",
+      "name": "Coal Heritage Tourism Circuit",
+      "tagline": "Experience the beauty of Coal Heritage Tourism Circuit",
+      "district": "Unknown",
+      "categorySlug": "uncategorized",
+      "categoryName": "Uncategorized",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Coal Heritage Tourism Circuit is a beautiful destination in Unknown.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "sonhat-hills",
+      "name": "Sonhat Hills",
+      "tagline": "Experience the beauty of Sonhat Hills",
+      "district": "Unknown",
+      "categorySlug": "uncategorized",
+      "categoryName": "Uncategorized",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Sonhat Hills is a beautiful destination in Unknown.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "korea-palace-heritage",
+      "name": "Korea Palace Heritage",
+      "tagline": "Experience the beauty of Korea Palace Heritage",
+      "district": "Unknown",
+      "categorySlug": "uncategorized",
+      "categoryName": "Uncategorized",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Korea Palace Heritage is a beautiful destination in Unknown.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "manendragarh-hills",
+      "name": "Manendragarh Hills",
+      "tagline": "Experience the beauty of Manendragarh Hills",
+      "district": "Unknown",
+      "categorySlug": "uncategorized",
+      "categoryName": "Uncategorized",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Manendragarh Hills is a beautiful destination in Unknown.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "sanjay-market-cultural-district",
+      "name": "Sanjay Market Cultural District",
+      "tagline": "Experience the beauty of Sanjay Market Cultural District",
+      "district": "Unknown",
+      "categorySlug": "uncategorized",
+      "categoryName": "Uncategorized",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Sanjay Market Cultural District is a beautiful destination in Unknown.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "bastar-dussehra-festival-circuit",
+      "name": "Bastar Dussehra Festival Circuit",
+      "tagline": "Experience the beauty of Bastar Dussehra Festival Circuit",
+      "district": "Unknown",
+      "categorySlug": "uncategorized",
+      "categoryName": "Uncategorized",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Bastar Dussehra Festival Circuit is a beautiful destination in Unknown.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "bastar-handicraft-villages",
+      "name": "Bastar Handicraft Villages",
+      "tagline": "Experience the beauty of Bastar Handicraft Villages",
+      "district": "Unknown",
+      "categorySlug": "uncategorized",
+      "categoryName": "Uncategorized",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Bastar Handicraft Villages is a beautiful destination in Unknown.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "bell-metal-craft-villages",
+      "name": "Bell Metal Craft Villages",
+      "tagline": "Experience the beauty of Bell Metal Craft Villages",
+      "district": "Unknown",
+      "categorySlug": "uncategorized",
+      "categoryName": "Uncategorized",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Bell Metal Craft Villages is a beautiful destination in Unknown.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "kondagaon-art-cluster",
+      "name": "Kondagaon Art Cluster",
+      "tagline": "Experience the beauty of Kondagaon Art Cluster",
+      "district": "Unknown",
+      "categorySlug": "uncategorized",
+      "categoryName": "Uncategorized",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Kondagaon Art Cluster is a beautiful destination in Unknown.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "tribal-food-tourism-circuit",
+      "name": "Tribal Food Tourism Circuit",
+      "tagline": "Experience the beauty of Tribal Food Tourism Circuit",
+      "district": "Unknown",
+      "categorySlug": "uncategorized",
+      "categoryName": "Uncategorized",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Tribal Food Tourism Circuit is a beautiful destination in Unknown.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "chhattisgarh-rural-homestay-circuit",
+      "name": "Chhattisgarh Rural Homestay Circuit",
+      "tagline": "Experience the beauty of Chhattisgarh Rural Homestay Circuit",
+      "district": "Unknown",
+      "categorySlug": "uncategorized",
+      "categoryName": "Uncategorized",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Chhattisgarh Rural Homestay Circuit is a beautiful destination in Unknown.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "forest-camping-destinations",
+      "name": "Forest Camping Destinations",
+      "tagline": "Experience the beauty of Forest Camping Destinations",
+      "district": "Unknown",
+      "categorySlug": "uncategorized",
+      "categoryName": "Uncategorized",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Forest Camping Destinations is a beautiful destination in Unknown.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "river-eco-tourism-circuit",
+      "name": "River Eco Tourism Circuit",
+      "tagline": "Experience the beauty of River Eco Tourism Circuit",
+      "district": "Unknown",
+      "categorySlug": "uncategorized",
+      "categoryName": "Uncategorized",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "River Eco Tourism Circuit is a beautiful destination in Unknown.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    },
+    {
+      "slug": "tribal-cultural-experience-villages",
+      "name": "Tribal Cultural Experience Villages",
+      "tagline": "Experience the beauty of Tribal Cultural Experience Villages",
+      "district": "Unknown",
+      "categorySlug": "uncategorized",
+      "categoryName": "Uncategorized",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "heroImage": "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1200&q=80",
+      "bestTime": "October to March",
+      "story": "Tribal Cultural Experience Villages is a beautiful destination in Unknown.",
+      "safety": "Follow local guidelines.",
+      "ecoGuidance": "Leave no trace.",
+      "highlights": [],
+      "mediaAssets": [],
+      "experienceTypes": [],
+      "platformFeatures": [],
+      "priorityPhase": "Phase 3"
+    }
+  ],
+  "categories": [
+    {
+      "name": "Waterfall",
+      "slug": "waterfall"
+    },
+    {
+      "name": "National Park",
+      "slug": "national-park"
+    },
+    {
+      "name": "Cave",
+      "slug": "cave"
+    },
+    {
+      "name": "Wildlife Sanctuary",
+      "slug": "wildlife-sanctuary"
+    },
+    {
+      "name": "Tiger Reserve",
+      "slug": "tiger-reserve"
+    },
+    {
+      "name": "Hill Station",
+      "slug": "hill-station"
+    },
+    {
+      "name": "Nature Spot",
+      "slug": "nature-spot"
+    },
+    {
+      "name": "Natural Wonder",
+      "slug": "natural-wonder"
+    },
+    {
+      "name": "Heritage Temple",
+      "slug": "heritage-temple"
+    },
+    {
+      "name": "Pilgrimage",
+      "slug": "pilgrimage"
+    },
+    {
+      "name": "Religious Heritage",
+      "slug": "religious-heritage"
+    },
+    {
+      "name": "Archaeological Site",
+      "slug": "archaeological-site"
+    },
+    {
+      "name": "Ancient Temple",
+      "slug": "ancient-temple"
+    },
+    {
+      "name": "Temple",
+      "slug": "temple"
+    },
+    {
+      "name": "Heritage Town",
+      "slug": "heritage-town"
+    },
+    {
+      "name": "Uncategorized",
+      "slug": "uncategorized"
+    }
+  ]
+}

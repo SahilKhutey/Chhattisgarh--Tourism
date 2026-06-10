@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Mic, MicOff, Volume2, X, RefreshCw, Languages, ChevronDown } from "lucide-react";
 import { useLanguage } from "../context/LanguageContext";
+import { getApiBase } from "../app/data/api-config";
 
 export function VoiceTranslator() {
   const { lang, speakText, stopSpeaking } = useLanguage();
@@ -25,7 +26,7 @@ export function VoiceTranslator() {
     if (!text.trim()) return;
     
     setIsTranslating(true);
-    const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api/v1";
+    const apiBase = getApiBase();
     
     try {
       const res = await fetch(`${apiBase}/translations/live`, {

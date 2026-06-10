@@ -42,7 +42,7 @@ export class PlacesService {
   }
 
   async findAll(categorySlug?: string, district?: string) {
-    return this.prisma.place.findMany({
+    const places = await this.prisma.place.findMany({
       where: {
         verified: true,
         ...(categorySlug ? { category: { slug: categorySlug } } : {}),
@@ -53,6 +53,7 @@ export class PlacesService {
         media: true,
       },
     });
+    return places.map(p => this.formatPlace(p));
   }
 
   async findBySlug(slug: string) {
@@ -61,6 +62,9 @@ export class PlacesService {
       include: {
         category: true,
         media: true,
+        weather: true,
+        transport: true,
+        metadata: true,
         reviews: {
           include: {
             user: {
@@ -76,7 +80,7 @@ export class PlacesService {
       throw new NotFoundException(`Destination with slug '${slug}' not found.`);
     }
 
-    return place;
+    return this.formatPlace(place);
   }
 
   async findNearby(lat: number, lng: number, radiusKm: number) {
@@ -98,7 +102,7 @@ export class PlacesService {
           )
         ORDER BY distance_km ASC;
       `;
-      return places;
+      return places.map(p => this.formatPlace(p));
     } catch (error) {
       console.warn('PostGIS query execution failed. Falling back to local mathematics calculations...', error.message);
       
@@ -113,7 +117,8 @@ export class PlacesService {
           return { ...place, distance_km: distance };
         })
         .filter(place => place.distance_km <= radiusKm)
-        .sort((a, b) => a.distance_km - b.distance_km);
+        .sort((a, b) => a.distance_km - b.distance_km)
+        .map(p => this.formatPlace(p));
     }
   }
 
@@ -151,7 +156,8 @@ export class PlacesService {
           place.name.toLowerCase().includes(query.toLowerCase()) || 
           place.description.toLowerCase().includes(query.toLowerCase())
         )
-        .slice(0, limit);
+        .slice(0, limit)
+        .map(p => this.formatPlace(p));
     }
 
     const matchedPlaces = allPlaces.map(place => {
@@ -176,7 +182,19 @@ export class PlacesService {
     return matchedPlaces
       .filter(place => place.similarity_score > 0)
       .sort((a, b) => b.similarity_score - a.similarity_score)
-      .slice(0, limit);
+      .slice(0, limit)
+      .map(p => this.formatPlace(p));
+  }
+
+  private formatPlace(place: any) {
+    if (!place) return place;
+    return {
+      ...place,
+      highlights: typeof place.highlights === 'string' ? JSON.parse(place.highlights || '[]') : place.highlights,
+      experienceTypes: typeof place.experienceTypes === 'string' ? JSON.parse(place.experienceTypes || '[]') : place.experienceTypes,
+      platformFeatures: typeof place.platformFeatures === 'string' ? JSON.parse(place.platformFeatures || '[]') : place.platformFeatures,
+      recommendedMedia: typeof place.recommendedMedia === 'string' ? JSON.parse(place.recommendedMedia || '[]') : place.recommendedMedia,
+    };
   }
 }
 

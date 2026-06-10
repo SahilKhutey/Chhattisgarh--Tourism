@@ -3,6 +3,7 @@ import { Inter, Space_Grotesk, JetBrains_Mono, Noto_Sans_Devanagari, Mukta, Play
 import { Navbar } from "../components/Navbar";
 import { ToastProvider } from "../components/ToastProvider";
 import { LanguageProvider } from "../context/LanguageContext";
+import "leaflet/dist/leaflet.css";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
@@ -46,6 +47,7 @@ export const metadata: Metadata = {
 };
 
 import { VoiceTranslator } from "../components/VoiceTranslator";
+import MobileBottomNav from "../components/Navigation/MobileBottomNav";
 
 export default function RootLayout({
   children,
@@ -57,7 +59,7 @@ export default function RootLayout({
       lang="en"
       className={`${inter.variable} ${space.variable} ${mono.variable} ${notoDevanagari.variable} ${mukta.variable} ${playfair.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-sand-beige text-charcoal-stone selection:bg-tribal-terracotta selection:text-white">
+      <body className="min-h-full flex flex-col bg-sand-beige text-charcoal-stone selection:bg-tribal-terracotta selection:text-white pb-20 md:pb-0">
         <LanguageProvider>
           <ToastProvider />
 
@@ -69,6 +71,9 @@ export default function RootLayout({
 
           {/* Global Voice Translator */}
           <VoiceTranslator />
+
+          {/* Mobile Bottom Navigation */}
+          <MobileBottomNav />
 
         {/* Global Footer */}
         <footer className="w-full bg-charcoal-stone text-sand-beige/90 py-16 border-t-4 border-tribal-terracotta">

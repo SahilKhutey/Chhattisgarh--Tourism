@@ -3,8 +3,9 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useLanguage } from "../context/LanguageContext";
 import { getCache, setCache } from "./useIndexedDBCache";
+import { getApiBase } from "../app/data/api-config";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api/v1";
+const API_BASE = getApiBase();
 
 interface UseTranslateResult {
   /** The translated text. Falls back to `text` on error or while loading. */

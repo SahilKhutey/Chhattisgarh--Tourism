@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Compass, Mail, Lock, LogIn, ArrowRight } from "lucide-react";
 import { useAuthStore } from "../../store/auth-store";
+import { getApiBase } from "../data/api-config";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -21,7 +22,7 @@ export default function LoginPage() {
     setError("");
 
     try {
-      const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api/v1";
+      const API = getApiBase();
       const res = await fetch(`${API}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

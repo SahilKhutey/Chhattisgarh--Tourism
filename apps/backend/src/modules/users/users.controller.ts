@@ -1,44 +1,53 @@
-import { Controller, Get, Put, Post, Body, Headers, UnauthorizedException, ValidationPipe, Param } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiHeader, ApiBody } from '@nestjs/swagger';
+import { Controller, Get, Put, Post, Body, Headers, UnauthorizedException, ValidationPipe, Param, Query, UseGuards, Request } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiHeader, ApiBody, ApiQuery } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { RegisterCreatorDto } from './dto/register-creator.dto';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @ApiTags('User Profile & Creator Registry')
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @UseGuards(JwtAuthGuard)
   @Get('me')
   @ApiOperation({ summary: 'Retrieve authenticated user profile information' })
-  @ApiHeader({ name: 'x-user-id', required: true, description: 'Simulated authorized User ID' })
-  async getProfile(@Headers('x-user-id') userId: string) {
-    this.checkUserAuth(userId);
-    return this.usersService.getProfile(userId);
+  async getProfile(@Request() req) {
+    return this.usersService.getProfile(req.user.id);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Put('profile')
   @ApiOperation({ summary: 'Update traveler account profile properties' })
-  @ApiHeader({ name: 'x-user-id', required: true, description: 'Simulated authorized User ID' })
   @ApiBody({ type: UpdateProfileDto })
   async updateProfile(
-    @Headers('x-user-id') userId: string,
+    @Request() req,
     @Body(new ValidationPipe()) dto: UpdateProfileDto,
   ) {
-    this.checkUserAuth(userId);
-    return this.usersService.updateProfile(userId, dto);
+    return this.usersService.updateProfile(req.user.id, dto);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post('creator-registry')
   @ApiOperation({ summary: 'Register traveler account as certified regional content creator' })
-  @ApiHeader({ name: 'x-user-id', required: true, description: 'Simulated authorized User ID' })
   @ApiBody({ type: RegisterCreatorDto })
   async registerCreator(
-    @Headers('x-user-id') userId: string,
+    @Request() req,
     @Body(new ValidationPipe()) dto: RegisterCreatorDto,
   ) {
-    this.checkUserAuth(userId);
-    return this.usersService.registerCreator(userId, dto);
+    return this.usersService.registerCreator(req.user.id, dto);
+  }
+
+  @Get('creators/feed')
+  @ApiOperation({ summary: 'Retrieve paginated creator feed' })
+  @ApiQuery({ name: 'page', required: false, type: Number })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  async getCreatorFeed(
+    @Query('page') page: string = '1',
+    @Query('limit') limit: string = '15',
+  ) {
+    return this.usersService.getCreatorFeed(parseInt(page, 10), parseInt(limit, 10));
   }
 
   @Get('creators')
@@ -53,9 +62,13 @@ export class UsersController {
     return this.usersService.getCreatorProfile(id);
   }
 
-  private checkUserAuth(userId: string) {
-    if (!userId) {
-      throw new UnauthorizedException('Authorization header x-user-id is required to access profile APIs.');
-    }
+  @UseGuards(JwtAuthGuard)
+  @Post('creators/videos')
+  @ApiOperation({ summary: 'Publish native creator video or image post' })
+  async createCreatorVideo(
+    @Request() req,
+    @Body() dto: any,
+  ) {
+    return this.usersService.createCreatorVideo(req.user.id, dto);
   }
 }

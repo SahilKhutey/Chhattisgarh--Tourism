@@ -62,3 +62,19 @@ uploads/
 # logs
 *.log
 
+# Windows desktop config
+desktop.ini
+
+# Linter outputs
+lint-results.json
+explore_html.txt
+
+# Backups
+*.backup
+*.backup.*
+
+# AI Agent directories
+.agents/
+**/.agents/
+
+

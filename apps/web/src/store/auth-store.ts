@@ -2,6 +2,7 @@
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { getApiBase } from '../app/data/api-config';
 
 interface User {
   id: string;
@@ -31,7 +32,7 @@ interface AuthState {
   refreshAccessToken: () => Promise<boolean>;
 }
 
-const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1';
+const API = getApiBase();
 
 export const useAuthStore = create<AuthState>()(
   persist(

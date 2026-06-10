@@ -9,6 +9,7 @@ export class ItineraryService {
     district: string,
     durationDays: number,
     pace: 'slow' | 'moderate' | 'active' = 'moderate',
+    interests: string[] = [],
   ) {
     if (durationDays < 1 || durationDays > 7) {
       throw new BadRequestException('Duration must be between 1 and 7 days.');
@@ -21,6 +22,9 @@ export class ItineraryService {
         district: {
           equals: district,
         },
+      },
+      include: {
+        category: true,
       },
     });
 
@@ -39,16 +43,49 @@ export class ItineraryService {
       return [];
     }
 
-    // 3. Sort by priority score (calculate mock rating based on name metrics)
+    // 3. Sort by priority score (calculate mock rating based on name metrics + interests)
     const scoredPlaces = safePlaces.map(place => {
-      const rating = 4.0 + ((place.name.length % 11) / 10);
-      return { ...place, rating };
+      let rating = 4.0 + ((place.name.length % 11) / 10);
+      
+      // Interest Matching Multiplier
+      let primaryCategoryIcon = 'nature';
+      
+      if (place.category && place.category.name) {
+        const categoryName = place.category.name.toLowerCase();
+        
+        // Find if category name intersects with user interests
+        const matchesInterest = interests.some(interest => 
+          categoryName.includes(interest.toLowerCase())
+        );
+        
+        if (matchesInterest) {
+          rating += 1.5; // Significant boost for matching interests
+        }
+
+        // Determine primary category icon for UI
+        if (categoryName.includes('food') || categoryName.includes('culinary')) primaryCategoryIcon = 'food';
+        else if (categoryName.includes('culture') || categoryName.includes('tribe') || categoryName.includes('art')) primaryCategoryIcon = 'culture';
+        else if (categoryName.includes('heritage') || categoryName.includes('history') || categoryName.includes('temple')) primaryCategoryIcon = 'heritage';
+        else primaryCategoryIcon = 'nature';
+      }
+
+      return { ...place, rating, primaryCategoryIcon };
     });
     scoredPlaces.sort((a, b) => b.rating - a.rating);
 
     const itinerary = [];
     const visited = new Set<string>();
-    let currentCoordinates = { lat: 21.2787, lng: 81.8661 }; // Start at Raipur coordinates
+    
+    // Dynamic starting coordinates based on District
+    const districtCoords: Record<string, { lat: number, lng: number }> = {
+      'Bastar': { lat: 19.0760, lng: 82.0253 }, // Jagdalpur
+      'Surguja': { lat: 23.1189, lng: 83.1950 }, // Ambikapur
+      'Raipur': { lat: 21.2514, lng: 81.6296 },
+      'Bilaspur': { lat: 22.0796, lng: 82.1391 },
+      'Dantewada': { lat: 18.8966, lng: 81.3524 }
+    };
+    
+    let currentCoordinates = districtCoords[district] || { lat: 21.2787, lng: 81.8661 }; // Default Raipur
 
     for (let day = 1; day <= durationDays; day++) {
       const dayStops = [];
@@ -79,6 +116,7 @@ export class ItineraryService {
           coordinates: { lat: nextPlace.latitude, lng: nextPlace.longitude },
           bestSeasonInfo: nextPlace.bestSeason,
           safetyRules: nextPlace.rules,
+          categoryIcon: nextPlace.primaryCategoryIcon,
         });
 
         dailyTravelKm += dist;

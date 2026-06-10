@@ -1,133 +1,13 @@
 import { PrismaClient } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
+import * as fs from 'fs';
+import * as path from 'path';
 
 const prisma = new PrismaClient();
 
-const SEED_DESTINATIONS = [
-  {
-    slug: "chitrakote-falls",
-    name: "Chitrakote Waterfalls",
-    categorySlug: "waterfalls",
-    district: "Bastar",
-    tagline: "The Majestic 'Niagara of India'",
-    latitude: 19.2006,
-    longitude: 81.6961,
-    heroImage: "https://images.unsplash.com/photo-1432405972618-c60002a157c5?auto=format&fit=crop&w=1200&q=80",
-    story: "According to ancient Bastar folk belief, the Indravati river is a mother goddess descending from the heavens. Chitrakote is where she showcases her supreme cosmic energy (Shakti). Local tribal elders narrate that during the monsoon, the heavy roar of the waterfall represents the celestial drums of Lord Shiva. The mist rising from the gorge is believed to carry the prayers of the forest spirits directly to the heavens.",
-    bestTime: "July to October (Monsoon flow is jaw-dropping); November to February (Scenic emerald water)",
-    safety: "Stay strictly within designated security railings. Do not attempt swimming in the base whirlpools under any conditions. Watch for wet, slippery stone structures.",
-    ecoGuidance: "Chhattisgarh state environmental protection rules strictly prohibit carrying plastic water bottles or packages down to the river bank. Bring reusable flasks. Ensure zero litter is left behind to safeguard the pristine aquatic life of the Indravati.",
-    audioUrl: "/audio/chitrakote_falls.mp3",
-    audioNarrator: "Aarav Mandavi"
-  },
-  {
-    slug: "sirpur-monuments",
-    name: "Sirpur Heritage Complex",
-    categorySlug: "temples",
-    district: "Raipur",
-    tagline: "Ancient Crimson Brickwork & Lost Dynasties",
-    latitude: 21.3414,
-    longitude: 82.1764,
-    heroImage: "https://images.unsplash.com/photo-1514222134-b57cbb8ce073?auto=format&fit=crop&w=1200&q=80",
-    story: "Sirpur, historically known as Shripura, was the ancient capital of Panduvansh kings in the 6th century. The centerpiece, Laxman Temple, stands as one of the finest surviving brick temples in India. Constructed with intricately carved red clay bricks, it was funded by Queen Vasata in memory of her late husband. Archaeological excavations reveal that Sirpur was a major international center for Buddhist, Hindu, and Jain learning, outdating even the famous Nalanda University.",
-    bestTime: "October to March (Mild weather ideal for outdoor archaeological exploration)",
-    safety: "Do not touch or lean on ancient brick friezes and stone carvings. Keep voice levels low inside the hollow main sanctum to preserve its tranquil energy.",
-    ecoGuidance: "Sirpur is a protected heritage zone. Do not step on ancient moss/lichen growing on brick foundations. Stay strictly on gravel walkways to prevent foundation erosion.",
-    audioUrl: "/audio/sirpur_monuments.mp3",
-    audioNarrator: "Devi Sahu"
-  },
-  {
-    slug: "bhoramdeo-temple",
-    name: "Bhoramdeo Temple",
-    categorySlug: "temples",
-    district: "Kawardha",
-    tagline: "The 'Khajuraho of Chhattisgarh'",
-    latitude: 22.1158,
-    longitude: 81.1542,
-    heroImage: "https://images.unsplash.com/photo-1582555172866-1c863b4a2e55?auto=format&fit=crop&w=1200&q=80",
-    story: "Nestled in the lush Maikal Hills, Bhoramdeo was built by King Ramachandra of the Phani Nagvanshi dynasty in the 11th century. Dedicated to Lord Shiva, its design blends Nagara temple style with local tribal Gond symbolism. The temple walls are carved with incredible depictions of mythological deities, warriors, mythical beasts, and sensual carvings. It gets its name from 'Bhoramdeo', an ancient tribal deity of the Gond community who is worshipped here alongside Shiva.",
-    bestTime: "November to March. The sacred Shivratri festival in March brings vibrant local fairs.",
-    safety: "Monkeys inhabit the temple trees; keep foodstuffs inside zip bags. Maintain respectful attire inside the active inner sanctum.",
-    ecoGuidance: "The nearby Bhoramdeo Wildlife Sanctuary is fragile. Respect quiet zones and throw all organic waste only in designated clay bins to prevent disrupting forest fauna."
-  },
-  {
-    slug: "kanger-valley",
-    name: "Kanger Valley National Park",
-    categorySlug: "forests",
-    district: "Bastar",
-    tagline: "Pristine Sal Canopies & Subterranean Caves",
-    latitude: 18.8789,
-    longitude: 81.8596,
-    heroImage: "https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=1200&q=80",
-    story: "Covering 200 sq km of dense, untouched forest, Kanger Valley is one of the most biodiverse zones in central India. It is famous for the Bastar Hill Myna (the official state bird) which can mimic human speech. The park hides ancient geological limestone formations like the Kutumsar Caves. Deep inside these damp, pitch-black chambers live unique blind and transparent fish species, adapted over millions of years of complete isolation.",
-    bestTime: "November to May (Caves are accessible and wildlife spotting is highly active)",
-    safety: "Never wander off marked forest trails. Kutumsar Caves have narrow crevices and low oxygen levels deep inside; visitors with breathing conditions should remain in the wider cavern halls.",
-    ecoGuidance: "The caves contain delicate stalactite and stalagmite columns formed over thousands of years. Do not touch them, as oils from human skin permanently halt their crystal growth. Flashlights must be handled with care."
-  },
-  {
-    slug: "tirathgarh-falls",
-    name: "Tirathgarh Waterfalls",
-    categorySlug: "waterfalls",
-    district: "Bastar",
-    tagline: "The Milky-White Cascade of Kanger River",
-    latitude: 18.9161,
-    longitude: 81.8654,
-    heroImage: "https://images.unsplash.com/photo-1462206634354-94578051759d?auto=format&fit=crop&w=1200&q=80",
-    story: "Tirathgarh Falls is a block-type waterfall where the Kanger River drops 300 feet in multiple layered steps. The water breaks into countless white streams, giving it a stunning milky appearance, often referred to as 'the forest queen's silk sari.' A small, ancient temple dedicated to Shiva stands on one of the rocky steps of the cascade, where hermits used to meditate amid the roaring water.",
-    bestTime: "September to January (Monsoon runoff transitions to highly detailed, step-wise flows)",
-    safety: "Steps leading down are extremely steep and can become slick with moss. Walk slowly and hold the handrails. Do not cross warning signs placed near deep water drop-offs.",
-    ecoGuidance: "Avoid carrying disposable plastic packages. The waterfall basin is a critical habitat for unique mountain crabs and fish. Do not discard food crumbs into the water."
-  },
-  {
-    slug: "barnawapara",
-    name: "Barnawapara Wildlife Sanctuary",
-    categorySlug: "forests",
-    district: "Raipur",
-    tagline: "Lush Teak Forests & Sanctuary of the Indian Bison",
-    latitude: 21.4012,
-    longitude: 82.4208,
-    heroImage: "https://images.unsplash.com/photo-1561731216-c3a4d99437d5?auto=format&fit=crop&w=1200&q=80",
-    story: "Covering 244 sq km of deciduous forests, Barnawapara is named after twin forest villages: Bar and Nawa Para. Local folklore integrates this forest with the epic Ramayana; it is believed that Sage Valmiki's ashram was located here, where Luv and Kush were born. Today, it is a crucial conservation zone for the Gaur (Indian Bison), Leopards, Sloth Bears, and over 150 species of vibrant tropical birds.",
-    bestTime: "November to April (Optimal foliage for mammal spotting and migratory birds)",
-    safety: "Do not wear bright colors (red, white) during safaris. Remain strictly inside the safari vehicle. Never try to feed or call out to wild animals.",
-    ecoGuidance: "Strict zero-noise policy inside the sanctuary boundary. Keep mobile devices on silent. Avoid flash photography as it can disorient and agitate nocturnal sloth bears."
-  },
-  {
-    slug: "achanakmar",
-    name: "Achanakmar Tiger Reserve",
-    categorySlug: "forests",
-    district: "Bilaspur",
-    tagline: "Lost in the Sal-Teak Heartland of Central India",
-    latitude: 22.5300,
-    longitude: 81.8800,
-    heroImage: "https://images.unsplash.com/photo-1589656966895-2f331719b5d9?auto=format&fit=crop&w=1200&q=80",
-    story: "Achanakmar Tiger Reserve sprawls across the Maikal Hills, a forgotten highland corridor linking Kanha and Pench tiger reserves. Ancient tribal communities have coexisted with the forest's tigers for centuries, developing sacred groves ('Dev Vans') where no trees are ever felled. Local oral tradition holds that the spirit of the forest tiger is the guardian of the tribal boundary — its roar signals both danger and protection.",
-    bestTime: "November to March (Peak wildlife activity and dry-season water pooling)",
-    safety: "Stay inside safari vehicles at all times. Do not use flash photography near wildlife. Maintain strict silence near waterholes and salt licks.",
-    ecoGuidance: "Achanakmar is a UNESCO-recognised biosphere reserve. Carry zero plastic. All biodegradable waste must be packed out. Leave only footprints."
-  },
-  {
-    slug: "gangrel-dam",
-    name: "Gangrel Dam & Reservoir",
-    categorySlug: "waterfalls",
-    district: "Dhamtari",
-    tagline: "The Largest Reservoir of Chhattisgarh",
-    latitude: 20.6667,
-    longitude: 81.4833,
-    heroImage: "https://images.unsplash.com/photo-1476514525535-07fb3b4e0f11?auto=format&fit=crop&w=1200&q=80",
-    story: "Built across the Mahanadi River, the Gangrel (Ravishankar Sagar) Dam is the largest reservoir in Chhattisgarh. It is the birthplace of the Mahanadi water story — this colossal water body feeds the plains of Odisha and sustains 40% of the state's agriculture. During the monsoon overflow discharge, the dam's spillway thunder can be heard from 5 km away, as 36 gates open simultaneously in a breathtaking water spectacle.",
-    bestTime: "August to November (Monsoon overflow discharge is spectacular)",
-    safety: "Do not cross safety barriers near the spillway. Strong undertow currents exist near the dam base. Children must be supervised near water edges at all times.",
-    ecoGuidance: "The reservoir is a Ramsar-nominated migratory bird habitat. Do not litter or discharge cleaning agents near the water. Avoid disturbing waterfowl colonies on the southern shore islands."
-  }
-];
-
-const SEED_CATEGORIES = [
-  { name: "Waterfalls", slug: "waterfalls" },
-  { name: "Forests & Parks", slug: "forests" },
-  { name: "Historic Temples", slug: "temples" },
-  { name: "Tribal Villages", slug: "villages" }
-];
+const MASTER_DATA = JSON.parse(fs.readFileSync(path.join(__dirname, 'data/destinations/master_destinations.json'), 'utf8'));
+const SEED_DESTINATIONS = MASTER_DATA.destinations;
+const SEED_CATEGORIES = MASTER_DATA.categories;
 
 
 const SEED_CREATORS = [
@@ -570,6 +450,84 @@ const PLACE_TRANSLATIONS: Record<string, Record<string, LangTranslation>> = {
       safetyInfo: "Do not cross safety barriers near the spillway. Strong undertow currents exist near the dam base. Children must be supervised near water edges at all times.",
       rules: "The reservoir is a Ramsar-nominated migratory bird habitat. Do not litter or discharge cleaning agents near the water. Avoid disturbing waterfowl colonies on the southern shore islands."
     }
+  },
+  "mainpat-hill-station": {
+    hi: {
+      name: "मैनपाट",
+      description: "छत्तीसगढ़ का शिमला",
+      history: "मैनपाट सरगुजा जिले में 1,000 मीटर की ऊंचाई पर स्थित एक आकर्षक हिल स्टेशन है। इसे 'छत्तीसगढ़ का शिमला' और 'मिनी तिब्बत' भी कहा जाता है। यहाँ 1962 से तिब्बती शरणार्थियों का एक बड़ा समुदाय रहता है। गहरी घाटियों, टाइगर पॉइंट जैसे झरनों और प्रसिद्ध 'बाउंसिंग लैंड' (जलजली) के लिए यह प्रसिद्ध है।",
+      bestSeason: "जुलाई से मार्च। सर्दियों में यह काफी ठंडा होता है।",
+      safetyInfo: "पहाड़ी रास्तों पर सावधानी से ड्राइव करें। कुछ क्षेत्रों में मोबाइल नेटवर्क कमजोर हो सकता है।",
+      rules: "बौद्ध मठों की शांति का सम्मान करें। झरनों और व्यूप्वाइंट्स के पास साफ-सफाई बनाए रखें।"
+    },
+    cg: {
+      name: "मैनपाट",
+      description: "छत्तीसगढ़ के शिमला",
+      history: "मैनपाट सरगुजा जिला म 1,000 मीटर ऊपर एक सुघ्घर हिल स्टेशन ए। एला 'छत्तीसगढ़ के शिमला' अउ 'छोटा तिब्बत' घलो कहे जाथे। इहाँ 1962 ले तिब्बती शरणार्थी मन रहत हें। इहाँ के गहरी घाटी, टाइगर पॉइंट झरना अउ 'जलजली' (जिहाँ भुइयां स्प्रिंग जइसन उछलथे) बहुत प्रसिद्ध हे।",
+      bestSeason: "जुलाई से मार्च। जाड़ के दिन म इहाँ बहुत जाड़ लागथे।",
+      safetyInfo: "पहाड़ के रद्दा म गाड़ी संभल के चलाव। काही-काही जगह म मोबाइल नेटवर्क नइ राहय।",
+      rules: "बौद्ध मठ मन के शांति ला बनाए रखव। झरना अउ देखे के जगह म साफ-सफाई राखव।"
+    },
+    en: {
+      name: "Mainpat",
+      description: "The Shimla of Chhattisgarh",
+      history: "Mainpat is a charming hill station perched at 1,000 meters in the Surguja district. Known as the 'Shimla of Chhattisgarh' and 'Mini Tibet', it is home to a thriving Tibetan refugee settlement since 1962. The landscape features deep valleys, waterfalls like Tiger Point, and the famous 'bouncing land' (Jaljali) where the earth acts like a trampoline. Visitors come to enjoy the cool climate, Buddhist monasteries, and vibrant Tibetan culture.",
+      bestSeason: "July to March. Winters can be quite cold, offering a misty, magical experience.",
+      safetyInfo: "Drive carefully on the winding mountain roads. Mobile network can be patchy in certain areas.",
+      rules: "Respect the tranquility of the Buddhist monasteries. Maintain cleanliness near waterfalls and viewpoints."
+    }
+  },
+  "danteshwari-temple": {
+    hi: {
+      name: "दंतेश्वरी मंदिर",
+      description: "बस्तर का प्राचीन शक्तिपीठ",
+      history: "डंकिनी और शंखिनी नदियों के संगम पर स्थित, दंतेश्वरी मंदिर देवी दंतेश्वरी को समर्पित एक 600 साल पुराना मंदिर है। यह हिंदू पौराणिक कथाओं में 52 पवित्र शक्तिपीठों में से एक है। मंदिर विश्व प्रसिद्ध 75-दिवसीय बस्तर दशहरा उत्सव के दौरान एक केंद्रीय भूमिका निभाता है।",
+      bestSeason: "अक्टूबर से मार्च। बस्तर दशहरा (सितंबर/अक्टूबर) के समय यहाँ की संस्कृति देखने लायक होती है।",
+      safetyInfo: "मंदिर के रीति-रिवाजों और ड्रेस कोड का पालन करें। प्रमुख त्योहारों के दौरान बहुत भीड़ होती है।",
+      rules: "प्रसाद के लिए बायोडिग्रेडेबल सामग्री का उपयोग करें। नदी संगम को प्रदूषित न करें।"
+    },
+    cg: {
+      name: "दंतेश्वरी मंदिर",
+      description: "बस्तर के पुराना शक्तिपीठ",
+      history: "डंकिनी अउ शंखिनी नदी के संगम म स्थित, दंतेश्वरी मंदिर ह दाई दंतेश्वरी ला समर्पित 600 साल पुराना मंदिर ए। ये ह हिंदू धरम के 52 शक्तिपीठ म ले एक ए। 75 दिन तक चले वाला दुनिया के सबले बड़े बस्तर दशहरा म ये मंदिर के भारी महत्व हे।",
+      bestSeason: "अक्टूबर से मार्च। बस्तर दशहरा (सितंबर/अक्टूबर) के समय इहाँ घूमे के अलग मजा हे।",
+      safetyInfo: "मंदिर के नियम अउ कपड़ा पहिरे के तरीका ला मानन। तिहार के समय इहाँ भारी भीड़ रहिथे।",
+      rules: "पूजा के समान बर प्लास्टिक झन चलाव। नदी ला गंदा झन करव।"
+    },
+    en: {
+      name: "Danteshwari Temple",
+      description: "Ancient Shakti Peetha of Bastar",
+      history: "Located at the confluence of the Dankini and Shankini rivers, Danteshwari Temple is a highly revered 600-year-old shrine dedicated to Goddess Danteshwari, the tutelary deity of the Bastar kings. It is one of the 52 sacred Shakti Peethas in Hindu mythology. The temple plays a central role during the world-famous 75-day Bastar Dussehra festival, where tribal communities from across the region gather to pay their respects.",
+      bestSeason: "October to March. Bastar Dussehra (September/October) is a culturally rich time to visit.",
+      safetyInfo: "Follow temple customs and dress codes. The area gets extremely crowded during major festivals.",
+      rules: "Use biodegradable materials for offerings. Do not pollute the river confluence."
+    }
+  },
+  "purkhauti-muktangan": {
+    hi: {
+      name: "पुरखौती मुक्तांगन",
+      description: "आदिवासी संस्कृति का खुला संग्रहालय",
+      history: "राज्य पर्यटन बोर्ड द्वारा विकसित, पुरखौती मुक्तांगन नया रायपुर में एक विशाल खुला संग्रहालय और इको-पार्क है। यह खूबसूरती से छत्तीसगढ़ की समृद्ध आदिवासी विरासत और लोक कला को प्रदर्शित करता है। पार्क में आदिवासी जीवन के मॉडल, झोपड़ियां और मूर्तियां हैं।",
+      bestSeason: "अक्टूबर से मार्च। विशाल बगीचों में घूमने के लिए शाम का समय सुखद होता है।",
+      safetyInfo: "पार्क काफी बड़ा है, इसलिए पानी साथ रखें और चलने में आरामदायक जूते पहनें।",
+      rules: "यह पार्क प्लास्टिक मुक्त क्षेत्र है। कलाकृतियों पर न चढ़ें और उन्हें नुकसान न पहुंचाएं।"
+    },
+    cg: {
+      name: "पुरखौती मुक्तांगन",
+      description: "आदिवासी संस्कृति के खुला म्यूजियम",
+      history: "पर्यटन बोर्ड डहर ले बनाए गे पुरखौती मुक्तांगन ह नवा रायपुर म एक खुला म्यूजियम अउ इको-पार्क ए। इहाँ छत्तीसगढ़ के आदिवासी परंपरा अउ कला ला बहुत सुंदर ढंग ले दिखाए गे हे।",
+      bestSeason: "अक्टूबर से मार्च। संझा के समय इहाँ घूमे म बहुत मजा आथे।",
+      safetyInfo: "पार्क ह बहुत बड़े हे, तेकर सती पानी संग म रखव अउ बढ़िया जूता पहिर के जाव।",
+      rules: "ये पार्क म प्लास्टिक ले जाना मना हे। कलाकृति मन म झन चढ़व।"
+    },
+    en: {
+      name: "Purkhauti Muktangan",
+      description: "Open-Air Museum of Tribal Culture",
+      history: "Developed by the state tourism board, Purkhauti Muktangan is an expansive open-air museum and eco-park in Naya Raipur. It beautifully showcases the rich tribal heritage, folk art, and diverse cultural tapestry of Chhattisgarh. The park features life-sized models of tribal life, traditional painted huts, intricate metalwork (Dhokra) sculptures, and miniature replicas of state landmarks like the Bhoramdeo Temple.",
+      bestSeason: "October to March. Evenings are pleasant for walking through the extensive gardens.",
+      safetyInfo: "Carry water and wear comfortable walking shoes as the park covers a large area.",
+      rules: "The park is a plastic-free zone. Do not climb on or deface the traditional art installations."
+    }
   }
 };
 
@@ -725,6 +683,11 @@ async function main() {
         audioUrl: (destination as any).audioUrl || null,
         audioNarrator: (destination as any).audioNarrator || null,
         verified: true,
+        highlights: JSON.stringify(destination.highlights || []),
+        experienceTypes: JSON.stringify(destination.experienceTypes || []),
+        platformFeatures: JSON.stringify(destination.platformFeatures || []),
+        recommendedMedia: JSON.stringify(destination.mediaAssets || []),
+        priorityPhase: destination.priorityPhase || null,
       }
     });
 
@@ -782,7 +745,7 @@ async function main() {
     }
   }
 
-  console.log('Seeded all 8 landmark destinations and translations successfully.');
+  console.log('Seeded all 11 landmark destinations and translations successfully.');
   console.log('Database seeding successfully finished!');
 }
 

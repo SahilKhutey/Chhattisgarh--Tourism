@@ -17,6 +17,8 @@ export class FolkloreService {
         description: data.description,
         images,
         videos,
+        audioUrl: data.audioUrl || null,
+        audioNarrator: data.audioNarrator || null,
         authorId: userId,
         verified: false,
       },
