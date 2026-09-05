@@ -2,6 +2,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { ConfigService } from '@nestjs/config';
 import * as helmet from 'helmet';
 import * as compression from 'compression';
 import { join } from 'path';
@@ -10,14 +11,15 @@ import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  const configService = app.get(ConfigService);
 
   app.useStaticAssets(join(process.cwd(), 'uploads'), {
     prefix: '/uploads/',
   });
 
-  const corsOrigins = process.env.CORS_ALLOWED_ORIGINS
-    ? process.env.CORS_ALLOWED_ORIGINS.split(',').map(origin => origin.trim())
-    : ['http://localhost:3000', 'http://localhost:3001'];
+  const corsOrigins = configService.get<string[]>('cors.origins') || ['http://localhost:3000'];
+  const port = configService.get<number>('app.port', 4000);
+  const environment = configService.get<string>('app.environment', 'development');
 
   app.use(
     helmet.default({
@@ -62,9 +64,8 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, document);
 
-  const port = process.env.PORT || 4000;
   await app.listen(port);
-  console.log(`Backend Server successfully active on port: ${port}`);
+  console.log(`CG Tourism API running on port ${port} (${environment})`);
 }
 
 bootstrap();

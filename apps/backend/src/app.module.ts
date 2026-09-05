@@ -24,11 +24,20 @@ import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { WeatherModule } from './modules/weather/weather.module';
 import { TransportModule } from './modules/transport/transport.module';
+import configuration from './config/configuration';
+import { envSchema } from './config/env.schema';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      cache: true,
+      load: [configuration],
+      validationSchema: envSchema,
+      validationOptions: {
+        allowUnknown: true,
+        abortEarly: false,
+      },
     }),
     ThrottlerModule.forRoot([{
       ttl: 60000,
