@@ -47,3 +47,27 @@ jobs:
 
       - name: Repository unit tests
         run: node --test tests/repository/repository-governance.test.mjs
+
+      - name: Configuration validation
+        run: pnpm config:check
+
+      - name: Configuration tests
+        run: pnpm test:config
+
+      - name: Lint
+        run: pnpm run lint
+
+      - name: Application tests
+        run: pnpm run test
+
+      - name: Build
+        env:
+          NODE_ENV: test
+          PORT: 4000
+          DATABASE_URL: postgresql://test:test@localhost:5432/cg_tourism
+          JWT_SECRET: test-only-secret-that-is-at-least-32-characters
+          JWT_EXPIRES_IN: 15m
+          JWT_REFRESH_EXPIRES_IN: 7d
+          CORS_ORIGINS: http://localhost:3000
+          LOG_LEVEL: info
+        run: pnpm run build
