@@ -1,0 +1,42 @@
+name: Feature Request
+description: Propose a new CG Tourism capability.
+title: "[Feature]: "
+labels:
+  - enhancement
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: User Problem
+      description: What user problem does this solve?
+    validations:
+      required: true
+
+  - type: textarea
+    id: users
+    attributes:
+      label: Target Users
+      description: Who benefits from this capability?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed Solution
+      description: Describe the proposed product behavior.
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance Criteria
+      description: Define measurable completion criteria.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
