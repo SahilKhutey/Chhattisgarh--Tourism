@@ -44,6 +44,9 @@ logs/
 .env.production.local
 .env.*
 !.env.example
+!.env.local.example
+!.env.staging.example
+!.env.production.example
 
 # Vercel
 .vercel/
