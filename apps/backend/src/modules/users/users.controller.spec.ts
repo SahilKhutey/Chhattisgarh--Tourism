@@ -35,7 +35,7 @@ describe('UsersController Unit Tests', () => {
       const mockProfile = { id: 'user-uuid-1', fullName: 'Devendra Mandavi', email: 'traveler@cg.gov.in' };
       serviceMock.getProfile.mockResolvedValue(mockProfile);
 
-      const result = await controller.getProfile('user-uuid-1');
+      const result = await controller.getProfile({ user: { id: 'user-uuid-1' } } as any);
 
       expect(result).toEqual(mockProfile);
       expect(serviceMock.getProfile).toHaveBeenCalledWith('user-uuid-1');
@@ -48,7 +48,7 @@ describe('UsersController Unit Tests', () => {
       const mockResult = { success: true, profile: { id: 'user-uuid-1', ...updateDto } };
       serviceMock.updateProfile.mockResolvedValue(mockResult);
 
-      const result = await controller.updateProfile('user-uuid-1', updateDto);
+      const result = await controller.updateProfile({ user: { id: 'user-uuid-1' } } as any, updateDto);
 
       expect(result).toEqual(mockResult);
       expect(serviceMock.updateProfile).toHaveBeenCalledWith('user-uuid-1', updateDto);
@@ -61,7 +61,7 @@ describe('UsersController Unit Tests', () => {
       const mockResult = { success: true, message: 'Staged' };
       serviceMock.registerCreator.mockResolvedValue(mockResult);
 
-      const result = await controller.registerCreator('user-uuid-1', creatorDto);
+      const result = await controller.registerCreator({ user: { id: 'user-uuid-1' } } as any, creatorDto);
 
       expect(result).toEqual(mockResult);
       expect(serviceMock.registerCreator).toHaveBeenCalledWith('user-uuid-1', creatorDto);

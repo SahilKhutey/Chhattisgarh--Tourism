@@ -49,7 +49,7 @@ describe('ItineraryController Unit Tests', () => {
       const result = await controller.generate(dto);
 
       expect(result).toEqual(mockItinerary);
-      expect(serviceMock.generateItinerary).toHaveBeenCalledWith('Bastar', 3, 'moderate');
+      expect(serviceMock.generateItinerary).toHaveBeenCalledWith('Bastar', 3, 'moderate', undefined);
     });
   });
 });

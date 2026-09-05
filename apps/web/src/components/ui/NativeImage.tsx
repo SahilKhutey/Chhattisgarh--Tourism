@@ -29,11 +29,14 @@ export default function NativeImage({
     return url;
   };
 
-  const [imgSrc, setImgSrc] = useState(getProxyUrl(src || fallbackSrc));
+  const resolvedUrl = getProxyUrl(src || fallbackSrc);
+  const [imgSrc, setImgSrc] = useState(resolvedUrl);
+  const [prevResolvedUrl, setPrevResolvedUrl] = useState(resolvedUrl);
 
-  useEffect(() => {
-    setImgSrc(getProxyUrl(src || fallbackSrc));
-  }, [src, fallbackSrc]);
+  if (prevResolvedUrl !== resolvedUrl) {
+    setPrevResolvedUrl(resolvedUrl);
+    setImgSrc(resolvedUrl);
+  }
 
   const combinedClassName = fill 
     ? `absolute inset-0 w-full h-full object-cover ${className}`
