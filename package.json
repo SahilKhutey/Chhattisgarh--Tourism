@@ -10,6 +10,8 @@
     "test": "turbo test",
     "format": "prettier --write \"**/*.{ts,tsx,js,json,md}\"",
     "repo:check": "node scripts/repository/check-repository.mjs",
+    "config:check": "node scripts/repository/check-config.mjs",
+    "test:config": "pnpm --filter backend test -- config",
     "prepare": "husky"
   },
   "devDependencies": {
