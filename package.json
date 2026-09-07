@@ -12,6 +12,8 @@
     "repo:check": "node scripts/repository/check-repository.mjs",
     "config:check": "node scripts/repository/check-config.mjs",
     "test:config": "pnpm --filter backend test -- config",
+    "db:verify": "pnpm --filter backend exec ts-node ../../scripts/db/verify.ts",
+    "db:seed": "pnpm --filter backend prisma db seed",
     "prepare": "husky"
   },
   "devDependencies": {

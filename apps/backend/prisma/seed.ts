@@ -535,14 +535,31 @@ async function main() {
   console.log('Starting seed operations for CG Tourism database...');
 
   // 1. Clear existing records to ensure clean slate transitions
+  await prisma.pollVote.deleteMany();
+  await prisma.pollOption.deleteMany();
+  await prisma.poll.deleteMany();
+  await prisma.videoComment.deleteMany();
+  await prisma.savedTrip.deleteMany();
+  await prisma.socialIntegration.deleteMany();
+  await prisma.aggregatedContent.deleteMany();
+  await prisma.booking.deleteMany();
   await prisma.bookmark.deleteMany();
   await prisma.review.deleteMany();
+  await prisma.systemFlag.deleteMany();
+  await prisma.tourismEvent.deleteMany();
+  await prisma.destinationScore.deleteMany();
+  await prisma.placeWeather.deleteMany();
+  await prisma.placeTransport.deleteMany();
+  await prisma.placeMetadata.deleteMany();
   await prisma.media.deleteMany();
   await prisma.translation.deleteMany();
+  await prisma.translationCache.deleteMany();
+  await prisma.folklore.deleteMany();
   await prisma.place.deleteMany();
   await prisma.category.deleteMany();
   await prisma.creatorVideo.deleteMany();
   await prisma.creatorProfile.deleteMany();
+  await prisma.refreshToken.deleteMany();
   await prisma.user.deleteMany();
 
   console.log('Cleaned database tables successfully.');
