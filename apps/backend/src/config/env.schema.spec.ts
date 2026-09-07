@@ -77,4 +77,24 @@ describe('Environment configuration', () => {
     });
     expect(result.error).toBeUndefined();
   });
+
+  it('validates BOOKING_PLATFORM_FEE_BPS within 0-10000 range', () => {
+    const valid = envSchema.validate({
+      ...validEnvironment,
+      BOOKING_PLATFORM_FEE_BPS: 500,
+    });
+    expect(valid.error).toBeUndefined();
+
+    const tooHigh = envSchema.validate({
+      ...validEnvironment,
+      BOOKING_PLATFORM_FEE_BPS: 10001,
+    });
+    expect(tooHigh.error).toBeDefined();
+
+    const negative = envSchema.validate({
+      ...validEnvironment,
+      BOOKING_PLATFORM_FEE_BPS: -1,
+    });
+    expect(negative.error).toBeDefined();
+  });
 });
