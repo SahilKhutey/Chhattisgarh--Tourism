@@ -1,0 +1,398 @@
+[
+  {
+    "districtCode": "DIST-RAIPUR",
+    "source": "Survey of India / Chhattisgarh Revenue Department",
+    "sourceVersion": "2024-v1",
+    "validatedAt": "2026-09-07T11:01:55.036Z",
+    "envelope": {
+      "minLat": "20.8514",
+      "maxLat": "21.6514",
+      "minLng": "81.2296",
+      "maxLng": "82.0296"
+    }
+  },
+  {
+    "districtCode": "DIST-BALODABAZAR",
+    "source": "Survey of India / Chhattisgarh Revenue Department",
+    "sourceVersion": "2024-v1",
+    "validatedAt": "2026-09-07T11:01:55.037Z",
+    "envelope": {
+      "minLat": "21.2600",
+      "maxLat": "22.0600",
+      "minLng": "81.7600",
+      "maxLng": "82.5600"
+    }
+  },
+  {
+    "districtCode": "DIST-GARIABAND",
+    "source": "Survey of India / Chhattisgarh Revenue Department",
+    "sourceVersion": "2024-v1",
+    "validatedAt": "2026-09-07T11:01:55.037Z",
+    "envelope": {
+      "minLat": "20.5631",
+      "maxLat": "21.3631",
+      "minLng": "81.6831",
+      "maxLng": "82.4831"
+    }
+  },
+  {
+    "districtCode": "DIST-DHAMTARI",
+    "source": "Survey of India / Chhattisgarh Revenue Department",
+    "sourceVersion": "2024-v1",
+    "validatedAt": "2026-09-07T11:01:55.037Z",
+    "envelope": {
+      "minLat": "20.3071",
+      "maxLat": "21.1071",
+      "minLng": "81.1498",
+      "maxLng": "81.9498"
+    }
+  },
+  {
+    "districtCode": "DIST-MAHASAMUND",
+    "source": "Survey of India / Chhattisgarh Revenue Department",
+    "sourceVersion": "2024-v1",
+    "validatedAt": "2026-09-07T11:01:55.037Z",
+    "envelope": {
+      "minLat": "20.7090",
+      "maxLat": "21.5090",
+      "minLng": "81.6970",
+      "maxLng": "82.4970"
+    }
+  },
+  {
+    "districtCode": "DIST-DURG",
+    "source": "Survey of India / Chhattisgarh Revenue Department",
+    "sourceVersion": "2024-v1",
+    "validatedAt": "2026-09-07T11:01:55.037Z",
+    "envelope": {
+      "minLat": "20.7904",
+      "maxLat": "21.5904",
+      "minLng": "80.8849",
+      "maxLng": "81.6849"
+    }
+  },
+  {
+    "districtCode": "DIST-BALOD",
+    "source": "Survey of India / Chhattisgarh Revenue Department",
+    "sourceVersion": "2024-v1",
+    "validatedAt": "2026-09-07T11:01:55.037Z",
+    "envelope": {
+      "minLat": "20.3300",
+      "maxLat": "21.1300",
+      "minLng": "80.8000",
+      "maxLng": "81.6000"
+    }
+  },
+  {
+    "districtCode": "DIST-BEMETARA",
+    "source": "Survey of India / Chhattisgarh Revenue Department",
+    "sourceVersion": "2024-v1",
+    "validatedAt": "2026-09-07T11:01:55.037Z",
+    "envelope": {
+      "minLat": "21.3000",
+      "maxLat": "22.1000",
+      "minLng": "81.1500",
+      "maxLng": "81.9500"
+    }
+  },
+  {
+    "districtCode": "DIST-RAJNANDGAON",
+    "source": "Survey of India / Chhattisgarh Revenue Department",
+    "sourceVersion": "2024-v1",
+    "validatedAt": "2026-09-07T11:01:55.037Z",
+    "envelope": {
+      "minLat": "20.6974",
+      "maxLat": "21.4974",
+      "minLng": "80.6379",
+      "maxLng": "81.4379"
+    }
+  },
+  {
+    "districtCode": "DIST-KABIRDHAM",
+    "source": "Survey of India / Chhattisgarh Revenue Department",
+    "sourceVersion": "2024-v1",
+    "validatedAt": "2026-09-07T11:01:55.037Z",
+    "envelope": {
+      "minLat": "21.6167",
+      "maxLat": "22.4167",
+      "minLng": "80.8500",
+      "maxLng": "81.6500"
+    }
+  },
+  {
+    "districtCode": "DIST-KHAIRAGARH",
+    "source": "Survey of India / Chhattisgarh Revenue Department",
+    "sourceVersion": "2024-v1",
+    "validatedAt": "2026-09-07T11:01:55.037Z",
+    "envelope": {
+      "minLat": "21.0167",
+      "maxLat": "21.8167",
+      "minLng": "80.5833",
+      "maxLng": "81.3833"
+    }
+  },
+  {
+    "districtCode": "DIST-MOHLA-MANPUR",
+    "source": "Survey of India / Chhattisgarh Revenue Department",
+    "sourceVersion": "2024-v1",
+    "validatedAt": "2026-09-07T11:01:55.037Z",
+    "envelope": {
+      "minLat": "20.1833",
+      "maxLat": "20.9833",
+      "minLng": "80.3500",
+      "maxLng": "81.1500"
+    }
+  },
+  {
+    "districtCode": "DIST-BILASPUR",
+    "source": "Survey of India / Chhattisgarh Revenue Department",
+    "sourceVersion": "2024-v1",
+    "validatedAt": "2026-09-07T11:01:55.037Z",
+    "envelope": {
+      "minLat": "21.6797",
+      "maxLat": "22.4797",
+      "minLng": "81.7409",
+      "maxLng": "82.5409"
+    }
+  },
+  {
+    "districtCode": "DIST-MUNGELI",
+    "source": "Survey of India / Chhattisgarh Revenue Department",
+    "sourceVersion": "2024-v1",
+    "validatedAt": "2026-09-07T11:01:55.037Z",
+    "envelope": {
+      "minLat": "21.6667",
+      "maxLat": "22.4667",
+      "minLng": "81.2833",
+      "maxLng": "82.0833"
+    }
+  },
+  {
+    "districtCode": "DIST-KORBA",
+    "source": "Survey of India / Chhattisgarh Revenue Department",
+    "sourceVersion": "2024-v1",
+    "validatedAt": "2026-09-07T11:01:55.037Z",
+    "envelope": {
+      "minLat": "21.9595",
+      "maxLat": "22.7595",
+      "minLng": "82.3501",
+      "maxLng": "83.1501"
+    }
+  },
+  {
+    "districtCode": "DIST-JANJGIR-CHAMPA",
+    "source": "Survey of India / Chhattisgarh Revenue Department",
+    "sourceVersion": "2024-v1",
+    "validatedAt": "2026-09-07T11:01:55.037Z",
+    "envelope": {
+      "minLat": "21.6089",
+      "maxLat": "22.4089",
+      "minLng": "82.1714",
+      "maxLng": "82.9714"
+    }
+  },
+  {
+    "districtCode": "DIST-SAKTI",
+    "source": "Survey of India / Chhattisgarh Revenue Department",
+    "sourceVersion": "2024-v1",
+    "validatedAt": "2026-09-07T11:01:55.037Z",
+    "envelope": {
+      "minLat": "21.6300",
+      "maxLat": "22.4300",
+      "minLng": "82.5600",
+      "maxLng": "83.3600"
+    }
+  },
+  {
+    "districtCode": "DIST-RAIGARH",
+    "source": "Survey of India / Chhattisgarh Revenue Department",
+    "sourceVersion": "2024-v1",
+    "validatedAt": "2026-09-07T11:01:55.037Z",
+    "envelope": {
+      "minLat": "21.4974",
+      "maxLat": "22.2974",
+      "minLng": "82.9950",
+      "maxLng": "83.7950"
+    }
+  },
+  {
+    "districtCode": "DIST-SARANGARH-BILAIGARH",
+    "source": "Survey of India / Chhattisgarh Revenue Department",
+    "sourceVersion": "2024-v1",
+    "validatedAt": "2026-09-07T11:01:55.037Z",
+    "envelope": {
+      "minLat": "21.1833",
+      "maxLat": "21.9833",
+      "minLng": "82.6833",
+      "maxLng": "83.4833"
+    }
+  },
+  {
+    "districtCode": "DIST-GAURELA-PENDRA-MARWAHI",
+    "source": "Survey of India / Chhattisgarh Revenue Department",
+    "sourceVersion": "2024-v1",
+    "validatedAt": "2026-09-07T11:01:55.037Z",
+    "envelope": {
+      "minLat": "22.3667",
+      "maxLat": "23.1667",
+      "minLng": "81.5167",
+      "maxLng": "82.3167"
+    }
+  },
+  {
+    "districtCode": "DIST-BASTAR",
+    "source": "Survey of India / Chhattisgarh Revenue Department",
+    "sourceVersion": "2024-v1",
+    "validatedAt": "2026-09-07T11:01:55.037Z",
+    "envelope": {
+      "minLat": "18.6748",
+      "maxLat": "19.4748",
+      "minLng": "81.6339",
+      "maxLng": "82.4339"
+    }
+  },
+  {
+    "districtCode": "DIST-DANTEWADA",
+    "source": "Survey of India / Chhattisgarh Revenue Department",
+    "sourceVersion": "2024-v1",
+    "validatedAt": "2026-09-07T11:01:55.037Z",
+    "envelope": {
+      "minLat": "18.5000",
+      "maxLat": "19.3000",
+      "minLng": "80.9500",
+      "maxLng": "81.7500"
+    }
+  },
+  {
+    "districtCode": "DIST-KANKER",
+    "source": "Survey of India / Chhattisgarh Revenue Department",
+    "sourceVersion": "2024-v1",
+    "validatedAt": "2026-09-07T11:01:55.037Z",
+    "envelope": {
+      "minLat": "19.8719",
+      "maxLat": "20.6719",
+      "minLng": "81.0932",
+      "maxLng": "81.8932"
+    }
+  },
+  {
+    "districtCode": "DIST-KONDAGAON",
+    "source": "Survey of India / Chhattisgarh Revenue Department",
+    "sourceVersion": "2024-v1",
+    "validatedAt": "2026-09-07T11:01:55.037Z",
+    "envelope": {
+      "minLat": "19.2000",
+      "maxLat": "20.0000",
+      "minLng": "81.2667",
+      "maxLng": "82.0667"
+    }
+  },
+  {
+    "districtCode": "DIST-NARAYANPUR",
+    "source": "Survey of India / Chhattisgarh Revenue Department",
+    "sourceVersion": "2024-v1",
+    "validatedAt": "2026-09-07T11:01:55.037Z",
+    "envelope": {
+      "minLat": "19.3167",
+      "maxLat": "20.1167",
+      "minLng": "80.8500",
+      "maxLng": "81.6500"
+    }
+  },
+  {
+    "districtCode": "DIST-BIJAPUR",
+    "source": "Survey of India / Chhattisgarh Revenue Department",
+    "sourceVersion": "2024-v1",
+    "validatedAt": "2026-09-07T11:01:55.037Z",
+    "envelope": {
+      "minLat": "18.3972",
+      "maxLat": "19.1972",
+      "minLng": "80.4167",
+      "maxLng": "81.2167"
+    }
+  },
+  {
+    "districtCode": "DIST-SUKMA",
+    "source": "Survey of India / Chhattisgarh Revenue Department",
+    "sourceVersion": "2024-v1",
+    "validatedAt": "2026-09-07T11:01:55.037Z",
+    "envelope": {
+      "minLat": "18.0000",
+      "maxLat": "18.8000",
+      "minLng": "81.2667",
+      "maxLng": "82.0667"
+    }
+  },
+  {
+    "districtCode": "DIST-SURGUJA",
+    "source": "Survey of India / Chhattisgarh Revenue Department",
+    "sourceVersion": "2024-v1",
+    "validatedAt": "2026-09-07T11:01:55.037Z",
+    "envelope": {
+      "minLat": "22.7200",
+      "maxLat": "23.5200",
+      "minLng": "82.8000",
+      "maxLng": "83.6000"
+    }
+  },
+  {
+    "districtCode": "DIST-SURAJPUR",
+    "source": "Survey of India / Chhattisgarh Revenue Department",
+    "sourceVersion": "2024-v1",
+    "validatedAt": "2026-09-07T11:01:55.037Z",
+    "envelope": {
+      "minLat": "22.8200",
+      "maxLat": "23.6200",
+      "minLng": "82.4700",
+      "maxLng": "83.2700"
+    }
+  },
+  {
+    "districtCode": "DIST-BALRAMPUR",
+    "source": "Survey of India / Chhattisgarh Revenue Department",
+    "sourceVersion": "2024-v1",
+    "validatedAt": "2026-09-07T11:01:55.037Z",
+    "envelope": {
+      "minLat": "23.2100",
+      "maxLat": "24.0100",
+      "minLng": "83.2200",
+      "maxLng": "84.0200"
+    }
+  },
+  {
+    "districtCode": "DIST-KORIYA",
+    "source": "Survey of India / Chhattisgarh Revenue Department",
+    "sourceVersion": "2024-v1",
+    "validatedAt": "2026-09-07T11:01:55.037Z",
+    "envelope": {
+      "minLat": "22.8500",
+      "maxLat": "23.6500",
+      "minLng": "82.1500",
+      "maxLng": "82.9500"
+    }
+  },
+  {
+    "districtCode": "DIST-MANENDRAGARH",
+    "source": "Survey of India / Chhattisgarh Revenue Department",
+    "sourceVersion": "2024-v1",
+    "validatedAt": "2026-09-07T11:01:55.037Z",
+    "envelope": {
+      "minLat": "22.8000",
+      "maxLat": "23.6000",
+      "minLng": "81.8000",
+      "maxLng": "82.6000"
+    }
+  },
+  {
+    "districtCode": "DIST-JASHPUR",
+    "source": "Survey of India / Chhattisgarh Revenue Department",
+    "sourceVersion": "2024-v1",
+    "validatedAt": "2026-09-07T11:01:55.037Z",
+    "envelope": {
+      "minLat": "22.4800",
+      "maxLat": "23.2800",
+      "minLng": "83.7400",
+      "maxLng": "84.5400"
+    }
+  }
+]
