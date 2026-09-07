@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../database/prisma.service';
 
 @Injectable()
@@ -11,16 +11,17 @@ export class FolkloreService {
 
     const result = await this.prisma.folklore.create({
       data: {
-        title: data.title,
-        monument: data.monument,
-        location: data.location,
-        description: data.description,
+        title: data.title.trim(),
+        monument: data.monument.trim(),
+        location: data.location.trim(),
+        description: data.description.trim(),
         images,
         videos,
         audioUrl: data.audioUrl || null,
         audioNarrator: data.audioNarrator || null,
         authorId: userId,
         verified: false,
+        status: 'PENDING',
       },
     });
 
@@ -33,29 +34,40 @@ export class FolkloreService {
 
   async getVerifiedFolklore() {
     const items = await this.prisma.folklore.findMany({
-      where: { verified: true },
+      where: {
+        status: 'APPROVED',
+        verified: true,
+      },
       include: {
         author: {
-          select: { fullName: true, role: true }
-        }
+          select: {
+            fullName: true,
+            role: true,
+          },
+        },
       },
-      orderBy: { createdAt: 'desc' }
+      orderBy: {
+        createdAt: 'desc',
+      },
     });
 
-    return items.map(item => {
-      try {
-        return {
-          ...item,
-          images: JSON.parse(item.images || '[]'),
-          videos: JSON.parse(item.videos || '[]'),
-        };
-      } catch (e) {
-        return {
-          ...item,
-          images: [],
-          videos: [],
-        };
-      }
-    });
+    return items.map((item) => ({
+      ...item,
+      images: this.safeParseArray(item.images),
+      videos: this.safeParseArray(item.videos),
+    }));
+  }
+
+  private safeParseArray(value: string | null | undefined): string[] {
+    if (!value) {
+      return [];
+    }
+
+    try {
+      const parsed = JSON.parse(value);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
   }
 }
