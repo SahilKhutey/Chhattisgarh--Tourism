@@ -1,11 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ModerationService } from './moderation.service';
 import { PrismaService } from '../../database/prisma.service';
+import { PlaceContentService } from '../places/place-content.service';
 import { NotFoundException } from '@nestjs/common';
 
 describe('ModerationService Unit Tests', () => {
   let service: ModerationService;
   let prismaMock: any;
+  let placeContentServiceMock: any;
 
   beforeEach(async () => {
     prismaMock = {
@@ -17,12 +19,20 @@ describe('ModerationService Unit Tests', () => {
       },
     };
 
+    placeContentServiceMock = {
+      verifyPlace: jest.fn(),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         ModerationService,
         {
           provide: PrismaService,
           useValue: prismaMock,
+        },
+        {
+          provide: PlaceContentService,
+          useValue: placeContentServiceMock,
         },
       ],
     }).compile();
@@ -64,6 +74,25 @@ describe('ModerationService Unit Tests', () => {
       expect(result.success).toBe(true);
       expect(result.message).toContain('verified and added to active discovery maps');
       expect(prismaMock.place.update).toHaveBeenCalled();
+    });
+
+    it('should delegate to placeContentService when reviewerId is provided', async () => {
+      prismaMock.place.findUnique.mockResolvedValue({ id: 'valid-place-uuid', name: 'Chitrakote' });
+      placeContentServiceMock.verifyPlace.mockResolvedValue({
+        success: true,
+        placeId: 'valid-place-uuid',
+        status: 'APPROVED',
+        verificationLevel: 'OFFICIAL',
+      });
+
+      const result = await service.approvePlace('valid-place-uuid', 'reviewer-admin-id');
+
+      expect(result.success).toBe(true);
+      expect(placeContentServiceMock.verifyPlace).toHaveBeenCalledWith(
+        'valid-place-uuid',
+        'reviewer-admin-id',
+        { decision: 'APPROVED', verificationLevel: 'OFFICIAL' },
+      );
     });
   });
 

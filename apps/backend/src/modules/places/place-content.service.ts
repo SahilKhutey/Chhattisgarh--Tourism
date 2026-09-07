@@ -96,7 +96,7 @@ export class PlaceContentService {
         data: {
           verified: approved,
           contentStatus: approved ? 'APPROVED' : 'REJECTED',
-          verificationLevel: approved ? dto.verificationLevel : 'UNVERIFIED',
+          verificationLevel: approved ? (dto.verificationLevel || 'OFFICIAL') : 'UNVERIFIED',
           verificationNotes: dto.notes || null,
           verifiedAt: approved ? new Date() : null,
         },
@@ -107,7 +107,7 @@ export class PlaceContentService {
           placeId,
           reviewerId,
           fromLevel: place.verificationLevel,
-          toLevel: approved ? dto.verificationLevel : 'UNVERIFIED',
+          toLevel: approved ? (dto.verificationLevel || 'OFFICIAL') : 'UNVERIFIED',
           decision: dto.decision,
           notes: dto.notes || null,
         },

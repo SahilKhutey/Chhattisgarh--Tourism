@@ -6,9 +6,10 @@ export class VerifyPlaceDto {
   @IsIn(['APPROVED', 'REJECTED', 'REVOKED'])
   decision: string;
 
-  @ApiProperty({ example: 'OFFICIAL', enum: ['COMMUNITY', 'CREATOR_VERIFIED', 'OFFICIAL'] })
+  @ApiPropertyOptional({ example: 'OFFICIAL', enum: ['COMMUNITY', 'CREATOR_VERIFIED', 'OFFICIAL'] })
+  @IsOptional()
   @IsIn(['COMMUNITY', 'CREATOR_VERIFIED', 'OFFICIAL'])
-  verificationLevel: string;
+  verificationLevel?: string;
 
   @ApiPropertyOptional({ example: 'Ground truth confirmed by district authority.', description: 'Review notes' })
   @IsOptional()

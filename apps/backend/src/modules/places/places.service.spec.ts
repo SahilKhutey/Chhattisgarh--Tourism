@@ -161,7 +161,7 @@ describe('PlacesService Unit Tests', () => {
   describe('findAll filtering and search', () => {
     it('should filter by category and district', async () => {
       prismaMock.place.findMany.mockResolvedValue([
-        { id: '1', name: 'Chitrakote Falls', district: 'Bastar', verified: true },
+        { id: '1', name: 'Chitrakote Falls', district: 'Bastar', verified: true, contentStatus: 'APPROVED' },
       ]);
 
       const result = await service.findAll('waterfall', 'Bastar');
@@ -170,17 +170,24 @@ describe('PlacesService Unit Tests', () => {
       expect(prismaMock.place.findMany).toHaveBeenCalledWith({
         where: {
           verified: true,
+          contentStatus: 'APPROVED',
           category: { slug: 'waterfall' },
           district: { equals: 'Bastar', mode: 'insensitive' },
         },
-        include: { category: true, media: true },
+        include: {
+          category: true,
+          media: {
+            where: { status: 'APPROVED' },
+            orderBy: { uploadedAt: 'desc' },
+          },
+        },
         orderBy: { name: 'asc' },
       });
     });
 
     it('should apply text search across name, description, and district', async () => {
       prismaMock.place.findMany.mockResolvedValue([
-        { id: '1', name: 'Chitrakote Falls', district: 'Bastar', verified: true },
+        { id: '1', name: 'Chitrakote Falls', district: 'Bastar', verified: true, contentStatus: 'APPROVED' },
       ]);
 
       await service.findAll(undefined, undefined, 'Chitrakote');
@@ -188,13 +195,20 @@ describe('PlacesService Unit Tests', () => {
       expect(prismaMock.place.findMany).toHaveBeenCalledWith({
         where: {
           verified: true,
+          contentStatus: 'APPROVED',
           OR: [
             { name: { contains: 'Chitrakote', mode: 'insensitive' } },
             { description: { contains: 'Chitrakote', mode: 'insensitive' } },
             { district: { contains: 'Chitrakote', mode: 'insensitive' } },
           ],
         },
-        include: { category: true, media: true },
+        include: {
+          category: true,
+          media: {
+            where: { status: 'APPROVED' },
+            orderBy: { uploadedAt: 'desc' },
+          },
+        },
         orderBy: { name: 'asc' },
       });
     });
