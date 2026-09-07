@@ -1,9 +1,14 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, Optional } from '@nestjs/common';
 import { PrismaService } from '../../database/prisma.service';
+import { PlaceContentService } from '../places/place-content.service';
 
 @Injectable()
 export class ModerationService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    @Optional()
+    private readonly placeContentService?: PlaceContentService,
+  ) {}
 
   async getUsers() {
     return this.prisma.user.findMany({
@@ -72,7 +77,7 @@ export class ModerationService {
     });
   }
 
-  async approvePlace(id: string) {
+  async approvePlace(id: string, reviewerId?: string) {
     const place = await this.prisma.place.findUnique({
       where: { id },
     });
@@ -81,9 +86,28 @@ export class ModerationService {
       throw new NotFoundException(`Destination with ID ${id} does not exist inside pending queues.`);
     }
 
+    if (reviewerId && this.placeContentService) {
+      const auditResult = await this.placeContentService.verifyPlace(id, reviewerId, {
+        decision: 'APPROVED',
+        verificationLevel: 'OFFICIAL',
+      });
+      return {
+        success: true,
+        message: `Destination '${place.name}' has been verified and added to active discovery maps.`,
+        placeId: auditResult.placeId,
+        status: auditResult.status,
+        verificationLevel: auditResult.verificationLevel,
+      };
+    }
+
     const approvedPlace = await this.prisma.place.update({
       where: { id },
-      data: { verified: true },
+      data: {
+        verified: true,
+        contentStatus: 'APPROVED',
+        verificationLevel: 'OFFICIAL',
+        verifiedAt: new Date(),
+      },
     });
 
     return {

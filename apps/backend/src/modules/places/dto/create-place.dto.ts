@@ -1,85 +1,112 @@
-import { IsString, IsNotEmpty, IsNumber, IsOptional, IsUrl, Min, Max, IsArray } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsUrl,
+  Min,
+  Max,
+  IsArray,
+} from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreatePlaceDto {
-  @ApiProperty({ example: 'Chitrakote Falls', description: 'Name of the tourism destination' })
+  @ApiProperty({ example: 'Chitrakote Falls' })
   @IsString()
   @IsNotEmpty({ message: 'Place name is required.' })
   name: string;
 
-  @ApiProperty({ example: 'Widest waterfall in India on the Indravati river.', description: 'Detailed destination overview' })
+  @ApiProperty({ example: 'Widest waterfall in India on the Indravati river.' })
   @IsString()
   @IsNotEmpty({ message: 'Place description is required.' })
   description: string;
 
-  @ApiProperty({ example: 'Bastar', description: 'Official Chhattisgarh district' })
+  @ApiProperty({ example: 'Bastar' })
   @IsString()
   @IsNotEmpty({ message: 'District classification is required.' })
   district: string;
 
-  @ApiProperty({ example: 'waterfalls-category-uuid', description: 'Foreign key ID of the tourism category' })
+  @ApiProperty({ example: 'waterfalls-category-uuid' })
   @IsString()
   @IsNotEmpty({ message: 'Category identifier is required.' })
   categoryId: string;
 
-  @ApiProperty({ example: 19.2006, description: 'Latitude coordinate (17.0 to 25.0 N for Chhattisgarh)' })
+  @ApiProperty({ example: 19.2006 })
   @IsNumber()
-  @Min(17.0, { message: 'Latitude must be within Chhattisgarh geographic region (>= 17.0)' })
-  @Max(25.0, { message: 'Latitude must be within Chhattisgarh geographic region (<= 25.0)' })
+  @Min(-90)
+  @Max(90)
   latitude: number;
 
-  @ApiProperty({ example: 81.6961, description: 'Longitude coordinate (80.0 to 85.0 E for Chhattisgarh)' })
+  @ApiProperty({ example: 81.6961 })
   @IsNumber()
-  @Min(80.0, { message: 'Longitude must be within Chhattisgarh geographic region (>= 80.0)' })
-  @Max(85.0, { message: 'Longitude must be within Chhattisgarh geographic region (<= 85.0)' })
+  @Min(-180)
+  @Max(180)
   longitude: number;
 
-  @ApiProperty({ example: 'https://images.unsplash.com/photo-1628105740446', description: 'Hero banner image URL' })
-  @IsUrl({}, { message: 'Hero image must be a valid URL.' })
-  heroImage: string;
-
-  @ApiPropertyOptional({ example: 'October to March', description: 'Best season to visit' })
-  @IsString()
+  @ApiPropertyOptional({ example: 'https://images.unsplash.com/photo-1' })
   @IsOptional()
+  @IsUrl({}, {
+    message: 'Hero image must be a valid URL when supplied.',
+  })
+  heroImage?: string;
+
+  @ApiPropertyOptional({ example: 'October to March' })
+  @IsOptional()
+  @IsString()
   bestSeason?: string;
 
-  @ApiPropertyOptional({ example: 'Ancient folklore links the falls to Indravati river blessings.', description: 'Cultural lore or historical notes' })
-  @IsString()
+  @ApiPropertyOptional({ example: 'Ancient folklore links the falls to Indravati river blessings.' })
   @IsOptional()
+  @IsString()
   history?: string;
 
-  @ApiPropertyOptional({ example: 'Stay within marked railings during peak monsoon discharge.', description: 'Safety warnings and guidelines' })
-  @IsString()
+  @ApiPropertyOptional({ example: 'Stay within marked railings.' })
   @IsOptional()
+  @IsString()
   safetyInfo?: string;
 
-  @ApiPropertyOptional({ example: 'Plastic-free eco zone. Littering strictly prohibited.', description: 'Environmental and behavioral rules' })
-  @IsString()
+  @ApiPropertyOptional({ example: 'Plastic-free eco zone.' })
   @IsOptional()
+  @IsString()
   rules?: string;
 
-  @ApiPropertyOptional({ example: 'https://cdn.cgtourism.gov.in/audio/chitrakote.mp3', description: 'Narrated audio guide URL' })
-  @IsString()
+  @ApiPropertyOptional({ example: 'INTERNAL' })
   @IsOptional()
+  @IsString()
+  sourceType?: string;
+
+  @ApiPropertyOptional({ example: 'CG Tourism' })
+  @IsOptional()
+  @IsString()
+  sourceName?: string;
+
+  @ApiPropertyOptional({ example: 'https://cgtourism.gov.in' })
+  @IsOptional()
+  @IsUrl()
+  sourceUrl?: string;
+
+  @ApiPropertyOptional({ example: 'https://cdn.cgtourism.gov.in/audio/chitrakote.mp3' })
+  @IsOptional()
+  @IsString()
   audioUrl?: string;
 
-  @ApiPropertyOptional({ example: 'Mangal Ram, Tribal Elder', description: 'Narrator name or elder attribution' })
-  @IsString()
+  @ApiPropertyOptional({ example: 'Mangal Ram, Tribal Elder' })
   @IsOptional()
+  @IsString()
   audioNarrator?: string;
 
-  @ApiPropertyOptional({ example: ['Widest waterfall in India', 'Horseshoe cascade'], description: 'Key bullet points' })
-  @IsArray()
+  @ApiPropertyOptional({ example: ['Widest waterfall in India'] })
   @IsOptional()
+  @IsArray()
   highlights?: string[];
 
-  @ApiPropertyOptional({ example: ['Nature', 'Adventure', 'Photography'], description: 'Experience taxonomy tags' })
-  @IsArray()
+  @ApiPropertyOptional({ example: ['Nature', 'Adventure'] })
   @IsOptional()
+  @IsArray()
   experienceTypes?: string[];
 
-  @ApiPropertyOptional({ example: ['Monsoon travel alerts', 'Viewpoint maps'], description: 'Platform features enabled' })
-  @IsArray()
+  @ApiPropertyOptional({ example: ['Monsoon travel alerts'] })
   @IsOptional()
+  @IsArray()
   platformFeatures?: string[];
 }

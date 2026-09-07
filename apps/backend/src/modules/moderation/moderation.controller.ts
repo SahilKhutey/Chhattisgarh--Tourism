@@ -1,6 +1,6 @@
 import {
   Controller, Get, Patch, Delete,
-  Param, Body, Query, UseGuards,
+  Param, Body, Query, UseGuards, Req,
 } from '@nestjs/common';
 import {
   ApiTags, ApiOperation, ApiParam,
@@ -59,7 +59,10 @@ export class ModerationController {
   @Roles('ADMIN', 'SUPER_ADMIN', 'MODERATOR')
   @ApiOperation({ summary: 'Approve pending destination — sets verified to true' })
   @ApiParam({ name: 'id', type: String, description: 'Pending destination ID' })
-  async approvePlace(@Param('id') id: string) {
+  async approvePlace(@Param('id') id: string, @Req() req?: any) {
+    if (req?.user?.id) {
+      return this.moderationService.approvePlace(id, req.user.id);
+    }
     return this.moderationService.approvePlace(id);
   }
 
