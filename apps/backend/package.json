@@ -8,7 +8,8 @@
     "build": "nest build",
     "start": "nest start",
     "test": "jest",
-    "tunnel": "ngrok http 4000"
+    "tunnel": "ngrok http 4000",
+    "media:backfill": "ts-node scripts/backfill-media.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1053.0",
