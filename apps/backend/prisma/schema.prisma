@@ -12,24 +12,26 @@ datasource db {
 // ─────────────────────────────────────────────────────────────────────────────
 
 model User {
-  id            String          @id @default(uuid())
-  fullName      String
-  email         String          @unique
-  password      String
-  avatar        String?
-  role          String          @default("USER")
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
+  id        String   @id @default(uuid())
+  fullName  String
+  email     String   @unique
+  password  String
+  avatar    String?
+  role      String   @default("USER")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  bookmarks      Bookmark[]
-  reviews        Review[]
-  folklore       Folklore[]
-  bookings       Booking[]
-  creatorProfile CreatorProfile?
-  refreshTokens  RefreshToken[]
-  videoComments  VideoComment[]
-  savedTrips     SavedTrip[]
-  pollVotes      PollVote[]
+  bookmarks                Bookmark[]
+  reviews                  Review[]
+  folklore                 Folklore[]
+  bookings                 Booking[]
+  creatorProfile           CreatorProfile?
+  refreshTokens            RefreshToken[]
+  videoComments            VideoComment[]
+  savedTrips               SavedTrip[]
+  pollVotes                PollVote[]
+  ownedPlaces              Place[]             @relation("PlaceContentOwner")
+  placeVerificationActions PlaceVerification[] @relation("PlaceVerificationReviewer")
 }
 
 model RefreshToken {
@@ -40,7 +42,7 @@ model RefreshToken {
   revoked   Boolean  @default(false)
   createdAt DateTime @default(now())
 
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -62,22 +64,23 @@ model Folklore {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  author        User     @relation(fields: [authorId], references: [id])
+  author User @relation(fields: [authorId], references: [id])
 }
 
 model Place {
-  id            String   @id @default(uuid())
-  name          String
-  slug          String   @unique
-  description   String
-  district      String
-  categoryId    String
+  id          String @id @default(uuid())
+  name        String
+  slug        String @unique
+  description String
 
-  latitude      Float
-  longitude     Float
+  district   String
+  categoryId String
 
-  heroImage     String
-  bestSeason    String?
+  latitude  Float
+  longitude Float
+
+  heroImage  String
+  bestSeason String?
 
   history       String?
   safetyInfo    String?
@@ -85,73 +88,141 @@ model Place {
   audioUrl      String?
   audioNarrator String?
 
-  verified          Boolean  @default(false)
-  verificationLevel String   @default("UNVERIFIED") // UNVERIFIED, AI_ESTIMATED, COMMUNITY, CREATOR_VERIFIED, OFFICIAL
+  // ─────────────────────────────────────────────
+  // CONTENT GOVERNANCE
+  // ─────────────────────────────────────────────
 
-  highlights       String   @default("[]") // JSON array of strings
-  experienceTypes  String   @default("[]") // JSON array of strings
-  platformFeatures String   @default("[]") // JSON array of strings
-  recommendedMedia String   @default("[]") // JSON array of strings
+  verified          Boolean   @default(false)
+  verificationLevel String    @default("UNVERIFIED") // UNVERIFIED, AI_ESTIMATED, COMMUNITY, CREATOR_VERIFIED, OFFICIAL
+  contentStatus     String    @default("DRAFT") // DRAFT, PENDING_REVIEW, APPROVED, REJECTED, ARCHIVED
+  sourceType        String    @default("INTERNAL") // INTERNAL, CREATOR, COMMUNITY, GOVERNMENT, PARTNER, IMPORTED
+  sourceName        String?
+  sourceUrl         String?
+  contentOwnerId    String?
+  verificationNotes String?
+  verifiedAt        DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  // ─────────────────────────────────────────────
+  // EXISTING CONTENT
+  // ─────────────────────────────────────────────
+
+  highlights       String  @default("[]")
+  experienceTypes  String  @default("[]")
+  platformFeatures String  @default("[]")
+  recommendedMedia String  @default("[]")
   priorityPhase    String?
 
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  // ─────────────────────────────────────────────
+  // RELATIONS
+  // ─────────────────────────────────────────────
 
-  category        Category        @relation(fields: [categoryId], references: [id])
-  media           Media[]
-  metadata        PlaceMetadata?
-  weather         PlaceWeather?
-  transport       PlaceTransport?
-  reviews         Review[]
-  bookmarks       Bookmark[]
-  bookings        Booking[]
+  category            Category            @relation(fields: [categoryId], references: [id])
+  contentOwner        User?               @relation("PlaceContentOwner", fields: [contentOwnerId], references: [id], onDelete: SetNull)
+  media               Media[]
+  metadata            PlaceMetadata?
+  weather             PlaceWeather?
+  transport           PlaceTransport?
+  reviews             Review[]
+  bookmarks           Bookmark[]
+  bookings            Booking[]
+  scores              DestinationScore?
+  events              TourismEvent[]
+  systemFlags         SystemFlag[]
+  verificationHistory PlaceVerification[]
 
-  scores          DestinationScore?
-  events          TourismEvent[]
-  systemFlags     SystemFlag[]
+  @@index([contentStatus])
+  @@index([verificationLevel])
+  @@index([contentOwnerId])
+  @@index([verified])
+  @@index([district])
+  @@index([categoryId])
+}
+
+model PlaceVerification {
+  id         String   @id @default(uuid())
+  placeId    String
+  reviewerId String
+  fromLevel  String
+  toLevel    String
+  decision   String // SUBMITTED, APPROVED, REJECTED, REVOKED, UPDATED
+  notes      String?
+  createdAt  DateTime @default(now())
+
+  place    Place @relation(fields: [placeId], references: [id], onDelete: Cascade)
+  reviewer User  @relation("PlaceVerificationReviewer", fields: [reviewerId], references: [id], onDelete: Restrict)
+
+  @@index([placeId])
+  @@index([reviewerId])
+  @@index([decision])
+  @@index([createdAt])
 }
 
 model Category {
-  id     String  @id @default(uuid())
-  name   String
-  slug   String  @unique
+  id   String @id @default(uuid())
+  name String
+  slug String @unique
 
   places Place[]
 }
 
 model Media {
-  id               String   @id @default(uuid())
-  url              String
-  type             String   @default("IMAGE") // IMAGE, VIDEO, REEL, 360, MAP, AUDIO
-  
-  title            String?
-  description      String?
-  photographer     String?
-  creatorHandle    String?
-  camera           String?
-  orientation      String   @default("landscape")
-  season           String?
-  
-  tags             String   @default("[]") // JSON
-  dominantColors   String   @default("[]") // JSON
-  aiLabels         String   @default("[]") // JSON
-  aiSceneType      String?
-  aiWeather        String?
-  aiMood           String?
-  aiTimeOfDay      String?
-  aiCrowdDensity   String?
-  
-  location         String?  // JSON
-  license          String   @default("PLATFORM_LICENSED") // PLATFORM_LICENSED, CREATOR_LICENSED, CC, GOVT_PUBLIC
-  status           String   @default("APPROVED") // PENDING, APPROVED, REJECTED
-  
-  placeId          String
-  place            Place    @relation(fields: [placeId], references: [id], onDelete: Cascade)
-  
-  uploadedAt       DateTime @default(now())
-  updatedAt        DateTime @default(now()) @updatedAt
+  id String @id @default(uuid())
 
-  systemFlags      SystemFlag[]
+  url  String
+  type String @default("IMAGE")
+
+  title         String?
+  description   String?
+  photographer  String?
+  creatorHandle String?
+
+  camera      String?
+  orientation String  @default("landscape")
+  season      String?
+
+  tags           String  @default("[]")
+  dominantColors String  @default("[]")
+  aiLabels       String  @default("[]")
+  aiSceneType    String?
+  aiWeather      String?
+  aiMood         String?
+  aiTimeOfDay    String?
+  aiCrowdDensity String?
+
+  location String?
+  license  String  @default("PLATFORM_LICENSED")
+  status   String  @default("PENDING")
+
+  // ─────────────────────────────────────────────
+  // ASSET STORAGE
+  // ─────────────────────────────────────────────
+
+  objectKey String?
+  mimeType  String?
+  fileSize  Int?
+
+  width  Int?
+  height Int?
+
+  checksumSha256 String?
+
+  sourceUrl  String?
+  sourceName String?
+
+  uploadedAt DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt
+
+  placeId String
+  place   Place  @relation(fields: [placeId], references: [id], onDelete: Cascade)
+
+  systemFlags SystemFlag[]
+
+  @@index([placeId])
+  @@index([type])
+  @@index([status])
+  @@index([checksumSha256])
 }
 
 model PlaceMetadata {
@@ -162,53 +233,53 @@ model PlaceMetadata {
   keywords        String  @default("[]") // JSON array
   schemaOrg       String? // JSON object string
   openGraph       String? // JSON object string
-  
+
   howToReach      String? // JSON or text
   weatherPatterns String  @default("[]") // JSON array
-  
-  place           Place   @relation(fields: [placeId], references: [id], onDelete: Cascade)
+
+  place Place @relation(fields: [placeId], references: [id], onDelete: Cascade)
 }
 
 model PlaceWeather {
-  id              String   @id @default(uuid())
-  placeId         String   @unique
-  currentTemp     Float?
-  condition       String?  // e.g., "Rainy", "Sunny"
-  humidity        Int?
-  windSpeed       Float?
-  alerts          String   @default("[]") // JSON array of active alerts
-  monsoonWarning  Boolean  @default(false)
-  lastFetchedAt   DateTime @default(now())
+  id             String   @id @default(uuid())
+  placeId        String   @unique
+  currentTemp    Float?
+  condition      String? // e.g., "Rainy", "Sunny"
+  humidity       Int?
+  windSpeed      Float?
+  alerts         String   @default("[]") // JSON array of active alerts
+  monsoonWarning Boolean  @default(false)
+  lastFetchedAt  DateTime @default(now())
 
-  place           Place    @relation(fields: [placeId], references: [id], onDelete: Cascade)
+  place Place @relation(fields: [placeId], references: [id], onDelete: Cascade)
 }
 
 model PlaceTransport {
-  id              String   @id @default(uuid())
-  placeId         String   @unique
+  id              String  @id @default(uuid())
+  placeId         String  @unique
   nearestAirport  String?
   airportDistance Float?
   nearestStation  String?
   stationDistance Float?
   busAvailability String?
   roadCondition   String?
-  dynamicRoutes   String   @default("[]") // JSON routing data from Mapbox/Google
+  dynamicRoutes   String  @default("[]") // JSON routing data from Mapbox/Google
 
-  place           Place    @relation(fields: [placeId], references: [id], onDelete: Cascade)
+  place Place @relation(fields: [placeId], references: [id], onDelete: Cascade)
 }
 
 model Review {
-  id        String   @id @default(uuid())
-  rating    Int      // 1–5 stars
-  comment   String
-  lang      String   @default("en") // Language the review was written in
-  helpful   Int      @default(0)    // Helpful votes
+  id      String @id @default(uuid())
+  rating  Int // 1–5 stars
+  comment String
+  lang    String @default("en") // Language the review was written in
+  helpful Int    @default(0) // Helpful votes
 
-  userId    String
-  placeId   String
+  userId  String
+  placeId String
 
-  user      User     @relation(fields: [userId], references: [id])
-  place     Place    @relation(fields: [placeId], references: [id])
+  user  User  @relation(fields: [userId], references: [id])
+  place Place @relation(fields: [placeId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -218,13 +289,13 @@ model Review {
 }
 
 model Bookmark {
-  id      String @id @default(uuid())
+  id String @id @default(uuid())
 
   userId  String
   placeId String
 
-  user    User  @relation(fields: [userId], references: [id])
-  place   Place @relation(fields: [placeId], references: [id])
+  user  User  @relation(fields: [userId], references: [id])
+  place Place @relation(fields: [placeId], references: [id])
 
   @@unique([userId, placeId])
 }
@@ -234,31 +305,30 @@ model Bookmark {
 // ─────────────────────────────────────────────────────────────────────────────
 
 model Booking {
-  id          String   @id @default(uuid())
-  userId      String
-  placeId     String
-  visitDate   DateTime
-  guests      Int      @default(1)
-  totalPrice  Float    @default(0)
-  status      String   @default("CONFIRMED")  // CONFIRMED | CANCELLED | COMPLETED
-  notes       String?
+  id           String   @id @default(uuid())
+  userId       String
+  placeId      String
+  visitDate    DateTime
+  guests       Int      @default(1)
+  totalPrice   Float    @default(0)
+  status       String   @default("CONFIRMED") // CONFIRMED | CANCELLED | COMPLETED
+  notes        String?
   contactPhone String?
 
-  user        User     @relation(fields: [userId], references: [id])
-  place       Place    @relation(fields: [placeId], references: [id])
+  user  User  @relation(fields: [userId], references: [id])
+  place Place @relation(fields: [placeId], references: [id])
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([userId])
   @@index([placeId])
   @@index([visitDate])
 }
 
-
 model CreatorProfile {
-  id       String  @id @default(uuid())
-  userId   String  @unique
+  id     String @id @default(uuid())
+  userId String @unique
 
   verified  Boolean @default(false)
   bio       String?
@@ -266,19 +336,19 @@ model CreatorProfile {
   youtube   String?
 
   // Added from frontend mocks
-  district           String   @default("Unknown")
-  followers          String   @default("0")
-  contentCount       Int      @default(0)
-  engagementScore    Int      @default(0)
-  tourismScore       Int      @default(0)
-  ecoSafeScore       Int      @default(0)
-  categories         String   @default("[]") // JSON string array
-  languages          String   @default("[]") // JSON string array
-  verificationBadges String   @default("[]") // JSON string array
+  district           String @default("Unknown")
+  followers          String @default("0")
+  contentCount       Int    @default(0)
+  engagementScore    Int    @default(0)
+  tourismScore       Int    @default(0)
+  ecoSafeScore       Int    @default(0)
+  categories         String @default("[]") // JSON string array
+  languages          String @default("[]") // JSON string array
+  verificationBadges String @default("[]") // JSON string array
 
-  user      User           @relation(fields: [userId], references: [id])
-  videos    CreatorVideo[]
-  integrations SocialIntegration[]
+  user              User                @relation(fields: [userId], references: [id])
+  videos            CreatorVideo[]
+  integrations      SocialIntegration[]
   aggregatedContent AggregatedContent[]
 }
 
@@ -296,15 +366,15 @@ model CreatorVideo {
   isTrending   Boolean @default(false)
   isHiddenGem  Boolean @default(false)
 
-  creatorId    String
-  creator      CreatorProfile @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  creatorId String
+  creator   CreatorProfile @relation(fields: [creatorId], references: [id], onDelete: Cascade)
 
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  comments       VideoComment[]
-  savedTrips     SavedTrip[]
-  polls          Poll[]
+  comments   VideoComment[]
+  savedTrips SavedTrip[]
+  polls      Poll[]
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -327,10 +397,10 @@ model EmergencyAlert {
 
 model Translation {
   id         String   @id @default(uuid())
-  lang       String   // "en", "hi", "cg", "gondi", "halbi"
-  entityType String   // "Place", "Category", "Folklore"
+  lang       String // "en", "hi", "cg", "gondi", "halbi"
+  entityType String // "Place", "Category", "Folklore"
   entityId   String
-  field      String   // "name", "description", "tagline", "story"
+  field      String // "name", "description", "tagline", "story"
   value      String
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
@@ -366,8 +436,8 @@ model VideoComment {
   videoId   String
   createdAt DateTime @default(now())
 
-  user      User         @relation(fields: [userId], references: [id])
-  video     CreatorVideo @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  user  User         @relation(fields: [userId], references: [id])
+  video CreatorVideo @relation(fields: [videoId], references: [id], onDelete: Cascade)
 }
 
 model SavedTrip {
@@ -376,8 +446,8 @@ model SavedTrip {
   videoId   String
   createdAt DateTime @default(now())
 
-  user      User         @relation(fields: [userId], references: [id])
-  video     CreatorVideo @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  user  User         @relation(fields: [userId], references: [id])
+  video CreatorVideo @relation(fields: [videoId], references: [id], onDelete: Cascade)
 
   @@unique([userId, videoId])
 }
@@ -388,28 +458,28 @@ model Poll {
   videoId   String
   createdAt DateTime @default(now())
 
-  video     CreatorVideo @relation(fields: [videoId], references: [id], onDelete: Cascade)
-  options   PollOption[]
-  votes     PollVote[]
+  video   CreatorVideo @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  options PollOption[]
+  votes   PollVote[]
 }
 
 model PollOption {
-  id        String @id @default(uuid())
-  text      String
-  pollId    String
+  id     String @id @default(uuid())
+  text   String
+  pollId String
 
-  poll      Poll   @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  poll Poll @relation(fields: [pollId], references: [id], onDelete: Cascade)
 }
 
 model PollVote {
-  id        String @id @default(uuid())
-  userId    String
-  pollId    String
-  optionId  String
+  id       String @id @default(uuid())
+  userId   String
+  pollId   String
+  optionId String
 
-  user      User       @relation(fields: [userId], references: [id])
-  poll      Poll       @relation(fields: [pollId], references: [id], onDelete: Cascade)
-  
+  user User @relation(fields: [userId], references: [id])
+  poll Poll @relation(fields: [pollId], references: [id], onDelete: Cascade)
+
   @@unique([userId, pollId])
 }
 
@@ -418,54 +488,54 @@ model PollVote {
 // ─────────────────────────────────────────────────────────────────────────────
 
 model SocialIntegration {
-  id              String   @id @default(uuid())
-  creatorId       String
-  platform        String   // "INSTAGRAM", "YOUTUBE", "FACEBOOK", "TWITTER"
-  platformUserId  String?
-  accessToken     String?
-  refreshToken    String?
-  tokenExpiresAt  DateTime?
-  
-  // Sync Preferences
-  syncEnabled     Boolean  @default(true)
-  syncTravelOnly  Boolean  @default(true)
-  autoApprove     Boolean  @default(false)
-  autoGenerateTags Boolean @default(true)
-  
-  lastSyncedAt    DateTime?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id             String    @id @default(uuid())
+  creatorId      String
+  platform       String // "INSTAGRAM", "YOUTUBE", "FACEBOOK", "TWITTER"
+  platformUserId String?
+  accessToken    String?
+  refreshToken   String?
+  tokenExpiresAt DateTime?
 
-  creator         CreatorProfile @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  // Sync Preferences
+  syncEnabled      Boolean @default(true)
+  syncTravelOnly   Boolean @default(true)
+  autoApprove      Boolean @default(false)
+  autoGenerateTags Boolean @default(true)
+
+  lastSyncedAt DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  creator CreatorProfile @relation(fields: [creatorId], references: [id], onDelete: Cascade)
 
   @@unique([creatorId, platform])
 }
 
 model AggregatedContent {
-  id              String   @id @default(uuid())
-  socialId        String   // Unique ID from the platform (e.g. IG Media ID)
-  platform        String   // "INSTAGRAM", "YOUTUBE"
-  creatorId       String
-  
-  rawMetadata     String   // JSON payload from platform
-  mediaUrl        String
-  thumbnailUrl    String
-  caption         String?
-  
-  creator         CreatorProfile @relation(fields: [creatorId], references: [id], onDelete: Cascade)
-  
+  id        String @id @default(uuid())
+  socialId  String // Unique ID from the platform (e.g. IG Media ID)
+  platform  String // "INSTAGRAM", "YOUTUBE"
+  creatorId String
+
+  rawMetadata  String // JSON payload from platform
+  mediaUrl     String
+  thumbnailUrl String
+  caption      String?
+
+  creator CreatorProfile @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+
   // AI Processed Data
   detectedLocation String?
   detectedCategory String?
-  suggestedTags    String   @default("[]") // JSON array
-  isTravelRelated  Boolean  @default(true)
-  
-  status          String   @default("PENDING") // "PENDING", "APPROVED", "REJECTED"
-  
+  suggestedTags    String  @default("[]") // JSON array
+  isTravelRelated  Boolean @default(true)
+
+  status String @default("PENDING") // "PENDING", "APPROVED", "REJECTED"
+
   publishedVideoId String? // Links to CreatorVideo if published
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([platform, socialId])
 }
@@ -475,46 +545,46 @@ model AggregatedContent {
 // ─────────────────────────────────────────────────────────────────────────────
 
 model DestinationScore {
-  id              String   @id @default(uuid())
-  placeId         String   @unique
-  popularity      Int      @default(50) // 0-100
-  safety          Int      @default(50) // 0-100
-  accessibility   Int      @default(50) // 0-100
-  mediaQuality    Int      @default(50) // 0-100
-  ecoSensitivity  Int      @default(50) // 0-100
-  lastUpdated     DateTime @default(now())
+  id             String   @id @default(uuid())
+  placeId        String   @unique
+  popularity     Int      @default(50) // 0-100
+  safety         Int      @default(50) // 0-100
+  accessibility  Int      @default(50) // 0-100
+  mediaQuality   Int      @default(50) // 0-100
+  ecoSensitivity Int      @default(50) // 0-100
+  lastUpdated    DateTime @default(now())
 
-  place           Place    @relation(fields: [placeId], references: [id], onDelete: Cascade)
+  place Place @relation(fields: [placeId], references: [id], onDelete: Cascade)
 }
 
 model TourismEvent {
-  id              String   @id @default(uuid())
-  placeId         String
-  name            String
-  description     String?
-  startDate       DateTime
-  endDate         DateTime
-  estimatedCrowd  Int?
-  eventType       String   @default("FESTIVAL") // FESTIVAL, MELA, SEASONAL_SPIKE
+  id             String   @id @default(uuid())
+  placeId        String
+  name           String
+  description    String?
+  startDate      DateTime
+  endDate        DateTime
+  estimatedCrowd Int?
+  eventType      String   @default("FESTIVAL") // FESTIVAL, MELA, SEASONAL_SPIKE
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  place           Place    @relation(fields: [placeId], references: [id], onDelete: Cascade)
+  place Place @relation(fields: [placeId], references: [id], onDelete: Cascade)
 }
 
 model SystemFlag {
-  id              String   @id @default(uuid())
-  placeId         String?
-  mediaId         String?
-  flagType        String   // OUTDATED_IMAGE, BROKEN_ROAD, SEASONAL_CLOSURE, CROWD_SURGE, COPYRIGHT_STRIKE, NSFW
-  description     String?
-  status          String   @default("OPEN") // OPEN, RESOLVED, IGNORED
-  aiConfidence    Float?
+  id           String  @id @default(uuid())
+  placeId      String?
+  mediaId      String?
+  flagType     String // OUTDATED_IMAGE, BROKEN_ROAD, SEASONAL_CLOSURE, CROWD_SURGE, COPYRIGHT_STRIKE, NSFW
+  description  String?
+  status       String  @default("OPEN") // OPEN, RESOLVED, IGNORED
+  aiConfidence Float?
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  place           Place?   @relation(fields: [placeId], references: [id], onDelete: Cascade)
-  media           Media?   @relation(fields: [mediaId], references: [id], onDelete: Cascade)
+  place Place? @relation(fields: [placeId], references: [id], onDelete: Cascade)
+  media Media? @relation(fields: [mediaId], references: [id], onDelete: Cascade)
 }
