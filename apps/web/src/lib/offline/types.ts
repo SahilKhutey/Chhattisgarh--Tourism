@@ -27,8 +27,9 @@ export interface OfflinePlace {
   verified?: boolean;
   rating?: number;
   durationMinutes?: number;
-  updatedAt: string;
-  cachedAt: string;
+  updatedAt?: string;
+  cachedAt?: string;
+  [key: string]: unknown;
 }
 
 export interface OfflineDestination {
@@ -43,8 +44,9 @@ export interface OfflineDestination {
   rating?: number;
   category?: string;
   district?: string;
-  updatedAt: string;
-  cachedAt: string;
+  updatedAt?: string;
+  cachedAt?: string;
+  [key: string]: unknown;
 }
 
 export interface OfflineItinerary {

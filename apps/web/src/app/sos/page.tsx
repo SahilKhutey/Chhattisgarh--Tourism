@@ -18,6 +18,7 @@ import {
 import { useLanguage } from "../../context/LanguageContext";
 import { useAuthStore } from "../../store/auth-store";
 import { getApiBase } from "../data/api-config";
+import { triggerSOS } from "@/lib/offline/sos";
 
 interface EmergencyContact {
   department: string;
@@ -48,6 +49,7 @@ interface IncidentReport {
 }
 
 interface SosDispatchDetails {
+  status?: "sent" | "queued";
   referenceId?: string;
   etaMinutes?: number;
   message?: string;
@@ -290,18 +292,22 @@ export default function SOSPage() {
         touristPhone: "9999999999",
         latitude: position?.coords.latitude || 19.0760, // Default Jagdalpur Bastar if blocked
         longitude: position?.coords.longitude || 82.0253,
+        timestamp: new Date().toISOString(),
       };
 
-      const res = await fetch(`${getApiBase()}/emergency/sos`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
+      const result = await triggerSOS(payload);
+      setDispatchDetails({
+        status: result.status,
+        referenceId: result.referenceId,
+        etaMinutes: result.etaMinutes,
+        message: result.message,
       });
-      const data = await res.json();
-      setDispatchDetails(data);
     } catch (err) {
       console.error(err);
-      setDispatchDetails({ message: "Network failure. Calling 112 directly..." });
+      setDispatchDetails({
+        status: "queued",
+        message: "SOS request stored locally — waiting for connection",
+      });
     } finally {
       setIsSosDispatching(false);
     }
@@ -376,13 +382,21 @@ export default function SOSPage() {
             </button>
 
             {sosTriggered && (
-              <div className="p-4 rounded-2xl bg-red-600 text-white flex items-center gap-3 animate-pulse text-left w-full">
+              <div
+                className={`p-4 rounded-2xl text-white flex items-center gap-3 animate-pulse text-left w-full ${
+                  dispatchDetails?.status === "queued" ? "bg-amber-700" : "bg-red-600"
+                }`}
+              >
                 <Activity className="w-6 h-6 shrink-0 text-white" />
                 <div className="flex flex-col">
                   <span className="text-xs font-mono font-bold uppercase">
-                    {isSosDispatching ? t("sos.broadcasting_telemetry") : "Rescue Dispatched"}
+                    {isSosDispatching
+                      ? t("sos.broadcasting_telemetry")
+                      : dispatchDetails?.status === "queued"
+                      ? "SOS Queued Offline"
+                      : "Rescue Dispatched"}
                   </span>
-                  <span className="text-[10px] text-white/80 mt-1">
+                  <span className="text-[10px] text-white/90 mt-1 font-medium">
                     {isSosDispatching ? t("sos.broadcasting_desc") : dispatchDetails?.message}
                   </span>
                 </div>
