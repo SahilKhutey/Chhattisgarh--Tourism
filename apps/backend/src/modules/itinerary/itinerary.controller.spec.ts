@@ -2,14 +2,15 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ItineraryController } from './itinerary.controller';
 import { ItineraryService } from './itinerary.service';
 
-describe('ItineraryController Unit Tests', () => {
+describe('ItineraryController', () => {
   let controller: ItineraryController;
-  let serviceMock: any;
+
+  const serviceMock = {
+    generateItinerary: jest.fn(),
+  };
 
   beforeEach(async () => {
-    serviceMock = {
-      generateItinerary: jest.fn(),
-    };
+    jest.clearAllMocks();
 
     const module: TestingModule = await Test.createTestingModule({
       controllers: [ItineraryController],
@@ -24,32 +25,58 @@ describe('ItineraryController Unit Tests', () => {
     controller = module.get<ItineraryController>(ItineraryController);
   });
 
-  it('should be successfully initialized', () => {
+  it('should initialize', () => {
     expect(controller).toBeDefined();
   });
 
-  describe('generateItinerary API endpoints controls', () => {
-    it('should invoke generateItinerary on service with correct arguments', async () => {
-      const dto = {
-        district: 'Bastar',
-        durationDays: 3,
-        pace: 'moderate' as const,
-      };
+  it('passes all DTO parameters to service', async () => {
+    const dto = {
+      district: 'Bastar',
+      durationDays: 3,
+      pace: 'moderate' as const,
+      interests: ['nature', 'heritage'],
+      travelers: 2,
+    };
 
-      const mockItinerary = [
-        {
-          day: 1,
-          stops: [{ name: 'Chitrakote Falls', slug: 'chitrakote-falls', coordinates: { lat: 19.2006, lng: 81.6961 } }],
-          distanceTraveledKm: 12.5,
-        },
-      ];
+    const expected = [
+      {
+        day: 1,
+        stops: [],
+        distanceTraveledKm: 0,
+        estimatedVisitMinutes: 0,
+        estimatedDayMinutes: 0,
+      },
+    ];
 
-      serviceMock.generateItinerary.mockResolvedValue(mockItinerary);
+    serviceMock.generateItinerary.mockResolvedValue(expected);
 
-      const result = await controller.generate(dto);
+    const result = await controller.generate(dto);
 
-      expect(result).toEqual(mockItinerary);
-      expect(serviceMock.generateItinerary).toHaveBeenCalledWith('Bastar', 3, 'moderate', undefined);
+    expect(result).toEqual(expected);
+    expect(serviceMock.generateItinerary).toHaveBeenCalledWith(
+      'Bastar',
+      3,
+      'moderate',
+      ['nature', 'heritage'],
+      2,
+    );
+  });
+
+  it('defaults interests and travelers', async () => {
+    serviceMock.generateItinerary.mockResolvedValue([]);
+
+    await controller.generate({
+      district: 'Bastar',
+      durationDays: 2,
+      pace: 'slow',
     });
+
+    expect(serviceMock.generateItinerary).toHaveBeenCalledWith(
+      'Bastar',
+      2,
+      'slow',
+      [],
+      1,
+    );
   });
 });
