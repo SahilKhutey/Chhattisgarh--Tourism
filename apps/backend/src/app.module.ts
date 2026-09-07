@@ -24,6 +24,7 @@ import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { WeatherModule } from './modules/weather/weather.module';
 import { TransportModule } from './modules/transport/transport.module';
+import { GeoModule } from './geo/geo.module';
 import configuration from './config/configuration';
 import { envSchema } from './config/env.schema';
 
@@ -66,6 +67,7 @@ import { envSchema } from './config/env.schema';
     AggregationModule,
     WeatherModule,
     TransportModule,
+    GeoModule,
   ],
   providers: [
     PrismaService,
