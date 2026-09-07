@@ -284,7 +284,7 @@ export default function SOSPage() {
     try {
       const position = await new Promise<GeolocationPosition>((resolve, reject) => {
         if (!navigator.geolocation) return reject("No geo");
-        navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 10000 });
+        navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 800, maximumAge: 60000 });
       }).catch(() => null);
 
       const payload = {
@@ -368,6 +368,7 @@ export default function SOSPage() {
 
             {/* Huge Physical Switch Trigger */}
             <button
+              data-testid="sos-switch-button"
               onClick={handleSOSTrigger}
               className={`w-40 h-40 rounded-full flex flex-col items-center justify-center border-8 shadow-2xl transition-all duration-300 cursor-pointer ${
                 sosTriggered
