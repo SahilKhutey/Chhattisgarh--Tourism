@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ReactNode } from "react";
-import { Home, Compass, AlertTriangle, ShieldCheck } from "lucide-react";
+import { Home, Compass, AlertTriangle, ShieldCheck, Siren } from "lucide-react";
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
   return (
@@ -26,6 +26,10 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
           <Link href="/admin/flags" className="flex items-center px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-800/50 hover:text-slate-200 transition-all">
             <AlertTriangle className="w-5 h-5 mr-3 opacity-70" />
             <span className="text-sm font-medium">System Flags</span>
+          </Link>
+          <Link href="/admin/emergency" className="flex items-center px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-800/50 hover:text-slate-200 transition-all">
+            <Siren className="w-5 h-5 mr-3 opacity-70" />
+            <span className="text-sm font-medium">Emergency Network</span>
           </Link>
         </nav>
         
