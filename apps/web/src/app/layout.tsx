@@ -2,6 +2,9 @@ import { SkipToContent } from "../components/accessibility/SkipToContent";
 import { AccessibilityProvider } from "../components/accessibility/AccessibilityProvider";
 import { TranslationProvider } from "../components/language/TranslationProvider";
 import { VoiceProvider } from "../components/voice/VoiceProvider";
+import { ServiceWorkerRegistration } from "../components/offline/ServiceWorkerRegistration";
+import { OfflineIndicator } from "../components/offline/OfflineIndicator";
+import { OfflineSync } from "../components/offline/OfflineSync";
 import type { Metadata } from "next";
 import { Inter, Space_Grotesk, JetBrains_Mono, Noto_Sans_Devanagari, Mukta, Playfair_Display } from "next/font/google";
 import { Navbar } from "../components/Navbar";
@@ -33,7 +36,7 @@ export const metadata: Metadata = {
   title: "हमार Chhattisgarh — Explore the Real Chhattisgarh",
   description:
     "Digitizing Chhattisgarh's rich tribal narratives, natural bio-reserves, and heritage corridors. Built with authenticity for responsible digital discovery.",
-  manifest: "/manifest.json",
+  manifest: "/manifest.webmanifest",
   keywords: [
     "Chhattisgarh tourism",
     "Bastar travel",
@@ -64,6 +67,9 @@ export default function RootLayout({
       className={`${inter.variable} ${space.variable} ${mono.variable} ${notoDevanagari.variable} ${mukta.variable} ${playfair.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-sand-beige text-charcoal-stone selection:bg-tribal-terracotta selection:text-white pb-20 md:pb-0">
+        <ServiceWorkerRegistration />
+        <OfflineIndicator />
+        <OfflineSync />
         <SkipToContent />
         <AccessibilityProvider>
           <TranslationProvider>

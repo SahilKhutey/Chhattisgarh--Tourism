@@ -21,6 +21,7 @@ import {
   Ticket
 } from "lucide-react";
 import { fetchPlaces, type Destination } from "../data/api";
+import { cacheDestination } from "@/lib/offline/places";
 // Default collections for high aesthetic MVP state
 const DEFAULT_COLLECTIONS = [
   {
@@ -108,10 +109,33 @@ export default function BookmarksPage() {
     }
   };
 
-  // Simulate offline download micro-animation
+  // Simulate offline download micro-animation and persist to IndexedDB
   const handleOfflineSync = (colName: string) => {
     setOfflineSyncing(colName);
     setOfflineProgress(10);
+
+    // Cache destination records in IndexedDB
+    const col = collections.find((c) => c.name === colName);
+    if (col) {
+      const placesToCache = destinations.filter((d) => col.places.includes(d.id));
+      placesToCache.forEach((d) => {
+        cacheDestination({
+          id: d.id,
+          name: d.name,
+          slug: d.id,
+          description: d.tagline,
+          heroImageUrl: d.heroImage,
+          category: d.category,
+          district: d.district,
+          rating: d.rating,
+          latitude: d.coordinates?.lat,
+          longitude: d.coordinates?.lng,
+          data: d,
+          updatedAt: new Date().toISOString(),
+          cachedAt: new Date().toISOString(),
+        } as any).catch(() => {});
+      });
+    }
 
     const interval = setInterval(() => {
       setOfflineProgress((prev) => {

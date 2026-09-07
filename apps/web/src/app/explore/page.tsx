@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { getPlaces } from "@/data/api/places";
 import type { Place } from "@/data/api/types";
+import { cachePlaces, getCachedPlaces } from "@/lib/offline/places";
 import type { MapLayer } from "../../components/ChhattisgardhMap";
 
 const ChhattisgardhMap = dynamic(
@@ -92,6 +93,7 @@ export default function ExplorePage() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [creatorSpots, setCreatorSpots] = useState<{ name: string; lat: number; lng: number }[]>([]);
   const [places, setPlaces] = useState<Place[]>([]);
+  const [isOfflineData, setIsOfflineData] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const carouselRef = useRef<HTMLDivElement>(null);
@@ -99,11 +101,30 @@ export default function ExplorePage() {
 
   useEffect(() => {
     getPlaces({ verified: true, limit: 100 })
-      .then((res) => {
+      .then(async (res) => {
         setPlaces(res.data);
         setError(null);
+        setIsOfflineData(false);
+        try {
+          await cachePlaces(res.data as any);
+        } catch {
+          // ignore cache persistence errors
+        }
       })
-      .catch((err) => setError(err instanceof Error ? err.message : "Failed to load destinations"))
+      .catch(async (err) => {
+        try {
+          const cached = await getCachedPlaces();
+          if (cached && cached.length > 0) {
+            setPlaces(cached as unknown as Place[]);
+            setIsOfflineData(true);
+            setError(null);
+            return;
+          }
+        } catch {
+          // ignore cache read failure
+        }
+        setError(err instanceof Error ? err.message : "Failed to load destinations");
+      })
       .finally(() => setIsLoading(false));
   }, []);
 
@@ -163,6 +184,12 @@ export default function ExplorePage() {
             <p className="text-sand-beige/80 max-w-xl text-sm leading-relaxed">
               Discover verified eco-corridors, ancient tribal heritage sites, and breathtaking natural reserves.
             </p>
+            {isOfflineData && (
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/20 text-amber-200 border border-amber-400/30 text-xs font-semibold mt-3">
+                <Leaf className="w-3.5 h-3.5 text-amber-300" />
+                <span>Offline Mode • Showing cached destinations</span>
+              </div>
+            )}
           </div>
           <div className="w-full lg:w-96 relative">
             <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">

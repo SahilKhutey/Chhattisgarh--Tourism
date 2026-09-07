@@ -24,6 +24,8 @@ import {
   X
 } from "lucide-react";
 import { fetchPlaceBySlug, fetchPlaces, type Destination } from "../../data/api";
+import { cacheDestination, getCachedDestination } from "@/lib/offline/places";
+import { formatCacheAge } from "@/lib/offline/cache";
 import { useLanguage } from "../../../context/LanguageContext";
 import BookingWidget from "../../../components/BookingWidget";
 import { ReviewList } from "../../../components/reviews/ReviewList";
@@ -42,6 +44,8 @@ export default function DestinationDetailPage({ params }: PageProps) {
   const [destination, setDestination] = useState<Destination | null>(null);
   const [destinations, setDestinations] = useState<Destination[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isOfflineCached, setIsOfflineCached] = useState(false);
+  const [cachedAgeStr, setCachedAgeStr] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"story" | "travel" | "eco" | "food" | "images">("story");
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
   
@@ -49,11 +53,49 @@ export default function DestinationDetailPage({ params }: PageProps) {
     Promise.all([
       fetchPlaceBySlug(resolvedParams.id),
       fetchPlaces()
-    ]).then(([dest, all]) => {
-      setDestination(dest);
-      setDestinations(all);
-      setIsLoading(false);
-    });
+    ])
+      .then(async ([dest, all]) => {
+        setDestination(dest);
+        setDestinations(all);
+        setIsLoading(false);
+        setIsOfflineCached(false);
+        if (dest) {
+          try {
+            await cacheDestination({
+              id: dest.id,
+              name: dest.name,
+              slug: dest.id,
+              description: dest.tagline,
+              heroImageUrl: dest.heroImage,
+              category: dest.category,
+              district: dest.district,
+              rating: dest.rating,
+              latitude: dest.coordinates?.lat,
+              longitude: dest.coordinates?.lng,
+              data: dest,
+              updatedAt: new Date().toISOString(),
+              cachedAt: new Date().toISOString(),
+            } as any);
+          } catch {
+            // ignore cache write error
+          }
+        }
+      })
+      .catch(async () => {
+        try {
+          const cached = await getCachedDestination(resolvedParams.id);
+          if (cached && (cached as any).data) {
+            setDestination((cached as any).data as Destination);
+            setIsOfflineCached(true);
+            if (cached.cachedAt) {
+              setCachedAgeStr(formatCacheAge(cached.cachedAt));
+            }
+          }
+        } catch {
+          // ignore cache read error
+        }
+        setIsLoading(false);
+      });
   }, [resolvedParams.id]);
 
   const {
@@ -161,6 +203,13 @@ export default function DestinationDetailPage({ params }: PageProps) {
             ★ {destination.rating} {t("detail.rating")} • {t("detail.certified")}
             {destination.priorityPhase && ` • ${destination.priorityPhase}`}
           </span>
+
+          {isOfflineCached && (
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/20 text-amber-200 border border-amber-400/30 text-xs font-semibold w-fit">
+              <Leaf className="w-3.5 h-3.5 text-amber-300" />
+              <span>Available offline • Cached {cachedAgeStr || "recently"}</span>
+            </div>
+          )}
 
           <div className="flex items-center gap-4 flex-wrap">
             <h1 className="text-3xl sm:text-5xl md:text-6xl font-sans font-bold tracking-tight text-white drop-shadow-md">

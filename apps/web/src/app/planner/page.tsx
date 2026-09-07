@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import { useLanguage } from "../../context/LanguageContext";
 import { get, set } from "idb-keyval";
+import { saveOfflineItinerary, getOfflineItineraries } from "@/lib/offline/itinerary";
 import { getApiBase } from "../data/api-config";
 
 interface ItineraryItem {
@@ -63,6 +64,19 @@ export default function PlannerPage() {
   useEffect(() => {
     const loadCache = async () => {
       try {
+        const offlinePlans = await getOfflineItineraries();
+        if (offlinePlans && offlinePlans.length > 0) {
+          const latest = offlinePlans[offlinePlans.length - 1];
+          if (latest && Array.isArray(latest.data)) {
+            setGeneratedItinerary(latest.data as DayPlan[]);
+            setEarnedScore(latest.earnedScore || 100);
+            if (latest.tripDays) setTripDays(latest.tripDays);
+            if (latest.district) setDistrict(latest.district);
+            setIsGenerated(true);
+            return;
+          }
+        }
+
         const cachedPlan = await get("cg_planner_cache");
         if (cachedPlan) {
           setGeneratedItinerary(cachedPlan.itinerary);
@@ -119,12 +133,41 @@ export default function PlannerPage() {
       setEarnedScore(score);
       setIsGenerated(true);
       
-      // Save to IndexedDB
+      // Save to IndexedDB (both stores)
       await set("cg_planner_cache", { itinerary: plans, score, tripDays });
+      try {
+        await saveOfflineItinerary({
+          id: `plan-${district.toLowerCase().replace(/\s+/g, "-")}-${tripDays}d`,
+          title: `${district} ${tripDays}-Day Expedition`,
+          district,
+          tripDays,
+          earnedScore: score,
+          data: plans,
+          updatedAt: new Date().toISOString(),
+          cachedAt: new Date().toISOString(),
+        });
+      } catch (e) {
+        console.debug("Failed saving offline itinerary:", e);
+      }
 
     } catch (error) {
-      console.warn('Backend API unavailable or empty. Using fallback mock.', error);
-      alert('Error connecting to backend API. Ensure server is running.');
+      console.warn("Backend API unavailable. Checking offline cached itineraries.", error);
+      try {
+        const offlinePlans = await getOfflineItineraries();
+        const match =
+          offlinePlans.find((p) => p.district?.toLowerCase() === district.toLowerCase()) ||
+          offlinePlans[0];
+        if (match && Array.isArray(match.data)) {
+          setGeneratedItinerary(match.data as DayPlan[]);
+          setEarnedScore(match.earnedScore || 120);
+          if (match.tripDays) setTripDays(match.tripDays);
+          setIsGenerated(true);
+          return;
+        }
+      } catch {
+        // ignore fallback errors
+      }
+      alert("Error connecting to backend API. Ensure server is running.");
     } finally {
       setIsLoading(false);
     }
