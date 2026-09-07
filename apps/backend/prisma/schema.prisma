@@ -425,18 +425,50 @@ model CreatorVideo {
 // EMERGENCY & SAFETY MODELS
 // ─────────────────────────────────────────────────────────────────────────────
 
+model EmergencyStation {
+  id           String           @id @default(uuid())
+  name         String           @unique
+  phone        String
+  type         String
+  district     String
+  division     String?
+  latitude     Float
+  longitude    Float
+  active       Boolean          @default(true)
+  priority     Int              @default(0)
+  capabilities String           @default("[]")
+  notes        String?
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+  alerts       EmergencyAlert[] @relation("PrimaryEmergencyStation")
+
+  @@index([district])
+  @@index([division])
+  @@index([type])
+  @@index([active])
+  @@index([latitude, longitude])
+}
+
 model EmergencyAlert {
-  id               String    @id @default(uuid())
-  alertId          String    @unique
-  touristName      String
-  touristPhone     String?
-  medicalNotes     String?
-  latitude         Float
-  longitude        Float
-  status           String    @default("DISPATCHED")
-  primaryResponder String
-  createdAt        DateTime  @default(now())
-  resolvedAt       DateTime?
+  id                 String            @id @default(uuid())
+  alertId            String            @unique
+  touristName        String
+  touristPhone       String?
+  medicalNotes       String?
+  latitude           Float
+  longitude          Float
+  status             String            @default("DISPATCHED")
+  primaryResponder   String
+  primaryResponderId String?
+  primaryStation     EmergencyStation? @relation("PrimaryEmergencyStation", fields: [primaryResponderId], references: [id], onDelete: SetNull)
+  backupResponders   String            @default("[]")
+  dispatchMetadata   String            @default("{}")
+  createdAt          DateTime          @default(now())
+  resolvedAt         DateTime?
+
+  @@index([status])
+  @@index([createdAt])
+  @@index([primaryResponderId])
 }
 
 model Translation {
