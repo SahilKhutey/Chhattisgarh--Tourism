@@ -8,6 +8,8 @@ import {
   authenticateTestUser, fetchComments, postComment,
   fetchPolls, voteOnPoll, saveTrip, unsaveTrip, fetchSavedTrips
 } from "../../app/data/api";
+import CreatorFollowButton from "../community/CreatorFollowButton";
+import ReportContentButton from "../community/ReportContentButton";
 
 interface VideoDetailModalProps {
   video: CreatorVideo;
@@ -150,9 +152,7 @@ export default function VideoDetailModal({ video, creator, onClose }: VideoDetai
                 </h3>
                 <p className="text-xs text-charcoal-stone/60">{video.location} • {video.views} views</p>
               </div>
-              <button className="ml-auto bg-forest-emerald text-white text-xs font-bold px-4 py-1.5 rounded-full">
-                Follow
-              </button>
+              <CreatorFollowButton creatorId={creator.id} className="ml-auto" />
             </div>
             <h2 className="text-xl font-serif font-bold text-[#0A2A3B] leading-tight mb-2">
               {video.title}
@@ -164,7 +164,7 @@ export default function VideoDetailModal({ video, creator, onClose }: VideoDetai
             
             {/* Action Bar */}
             <div className="flex items-center justify-between border-t border-charcoal-stone/10 pt-4">
-              <div className="flex gap-4">
+              <div className="flex gap-4 items-center">
                 <button onClick={() => setIsLiked(!isLiked)} className="flex items-center gap-2 text-charcoal-stone hover:text-tribal-terracotta transition-colors">
                   <Heart className={`w-6 h-6 ${isLiked ? 'fill-tribal-terracotta text-tribal-terracotta' : ''}`} />
                   <span className="text-sm font-bold">12.4k</span>
@@ -176,6 +176,7 @@ export default function VideoDetailModal({ video, creator, onClose }: VideoDetai
                 <button className="flex items-center gap-2 text-charcoal-stone hover:text-blue-500 transition-colors">
                   <Share2 className="w-6 h-6" />
                 </button>
+                <ReportContentButton targetType="VIDEO" targetId={video.id} variant="icon" />
               </div>
               <button onClick={handleToggleSave} className="flex items-center gap-2 text-charcoal-stone hover:text-forest-emerald transition-colors">
                  <Bookmark className={`w-6 h-6 ${isSaved ? 'fill-forest-emerald text-forest-emerald' : ''}`} />
@@ -215,9 +216,10 @@ export default function VideoDetailModal({ video, creator, onClose }: VideoDetai
                         <p className="text-xs font-bold text-charcoal-stone mb-1">{comment.user?.fullName || "User"}</p>
                         <p className="text-sm text-charcoal-stone">{comment.text}</p>
                       </div>
-                      <div className="flex gap-4 mt-1 ml-2">
+                      <div className="flex gap-4 items-center mt-1 ml-2">
                         <button className="text-xs font-bold text-charcoal-stone/60 hover:text-forest-emerald">Reply</button>
                         <button className="text-xs font-bold text-charcoal-stone/60 hover:text-tribal-terracotta">Like</button>
+                        <ReportContentButton targetType="COMMENT" targetId={comment.id} variant="icon" className="!p-0 text-charcoal-stone/40 hover:text-red-600" />
                       </div>
                     </div>
                   </div>

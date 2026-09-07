@@ -8,6 +8,8 @@ import { fetchCreators, fetchCreatorFeed, Creator, CreatorVideo } from "../data/
 import CreatorCard from "../../components/creators/CreatorCard";
 import TourismReelCard from "../../components/creators/TourismReelCard";
 import VideoDetailModal from "../../components/creators/VideoDetailModal";
+import CreatorFollowButton from "../../components/community/CreatorFollowButton";
+import CreateCommunityVideo from "../../components/community/CreateCommunityVideo";
 
 interface FeedCreator extends Creator {
   user?: {
@@ -161,14 +163,16 @@ export default function CreatorsFeed() {
                            <Image src={creator.avatarUrl} alt="Creator" width={32} height={32} className="rounded-full border-2 border-white/50 object-cover" />
                          )}
                          <span className="text-white/80 font-medium">@{creator?.handle || creator?.name}</span>
+                         {creator?.id && <CreatorFollowButton creatorId={creator.id} />}
                       </div>
-                      <div className="flex flex-wrap gap-4">
+                      <div className="flex flex-wrap gap-4 items-center">
                         <button 
                           onClick={() => setSelectedVideo({ video, creator: creator! })}
                           className="bg-forest-emerald hover:bg-forest-emerald/90 text-white font-bold py-3.5 px-8 rounded-full flex items-center transition-transform hover:scale-105 shadow-xl border border-forest-emerald/50"
                         >
                           <Play className="w-5 h-5 mr-2 fill-current" /> Watch Story
                         </button>
+                        <CreateCommunityVideo />
                         <Link href="/creator">
                           <button className="bg-white/10 hover:bg-white/20 backdrop-blur-md text-white border border-white/30 font-bold py-3.5 px-8 rounded-full flex items-center transition-all hover:scale-105 shadow-xl hidden md:flex">
                             <UserPlus className="w-5 h-5 mr-2" /> Become a Creator
