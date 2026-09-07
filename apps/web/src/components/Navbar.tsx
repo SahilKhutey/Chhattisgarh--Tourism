@@ -2,6 +2,7 @@
 
 import { FontSizeControl } from "./accessibility/FontSizeControl";
 import { LowLiteracyToggle } from "./accessibility/LowLiteracyToggle";
+import { InstallPWA } from "./offline/InstallPWA";
 
 import Link from "next/link";
 import { LogOut, Menu, X, UserCircle, Globe } from "lucide-react";
@@ -78,6 +79,8 @@ export function Navbar() {
               : (lang === "en" ? "Easy Read" : "सुगम मोड")}
           </span>
         </button>
+
+        <InstallPWA />
 
         {/* User Menu */}
         {user ? (
@@ -245,6 +248,10 @@ export function Navbar() {
                   ? (lang === "en" ? "Disable" : "बंद करें")
                   : (lang === "en" ? "Enable" : "चालू करें")}
               </button>
+            </div>
+
+            <div className="px-4 py-2 border-b border-charcoal-stone/5 mb-2">
+              <InstallPWA className="w-full justify-center py-2 text-sm" />
             </div>
 
             {[...NAV_LINKS, { href: "/admin", key: "nav.govt_portal" }].map(
