@@ -26,6 +26,7 @@ import {
 import { fetchPlaceBySlug, fetchPlaces, type Destination } from "../../data/api";
 import { useLanguage } from "../../../context/LanguageContext";
 import BookingWidget from "../../../components/BookingWidget";
+import { ReviewList } from "../../../components/reviews/ReviewList";
 import { WeatherAlertBanner } from "../../../components/WeatherAlertBanner";
 import { TransitOverviewCard } from "../../../components/TransitOverviewCard";
 import { TrustVerificationBadge } from "../../../components/TrustVerificationBadge";
@@ -532,13 +533,21 @@ export default function DestinationDetailPage({ params }: PageProps) {
             </div>
           )}
 
+          {/* Verified Community Reviews */}
+          <ReviewList placeId={destination.placeId || destination.id} placeName={localizedName} />
+
         </div>
 
         {/* Right Column: Geographic Side Info Panel & Nearby Related Nodes */}
         <div className="flex flex-col gap-8">
           
           {/* Booking Widget */}
-          <BookingWidget placeId={destination.id} placeName={localizedName} />
+          <BookingWidget
+            placeId={destination.placeId || destination.id}
+            placeName={localizedName}
+            pricePerGuestPaise={destination.bookingPricePaise ?? 50000}
+            maxGuests={destination.bookingMaxGuests ?? 20}
+          />
 
           {/* Quick Metrics Panel */}
           <div className="glass-panel p-6 rounded-2xl border border-white/60 shadow-md flex flex-col gap-4">
