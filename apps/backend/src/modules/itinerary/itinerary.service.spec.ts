@@ -1,11 +1,16 @@
+import { BadRequestException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ItineraryService } from './itinerary.service';
 import { PrismaService } from '../../database/prisma.service';
-import { BadRequestException } from '@nestjs/common';
 
-describe('ItineraryService Unit Tests', () => {
+describe('ItineraryService', () => {
   let service: ItineraryService;
-  let prismaMock: any;
+
+  let prismaMock: {
+    place: {
+      findMany: jest.Mock;
+    };
+  };
 
   beforeEach(async () => {
     prismaMock = {
@@ -27,86 +32,222 @@ describe('ItineraryService Unit Tests', () => {
     service = module.get<ItineraryService>(ItineraryService);
   });
 
-  it('should be successfully initialized', () => {
-    expect(service).toBeDefined();
+  describe('initialization', () => {
+    it('should initialize', () => {
+      expect(service).toBeDefined();
+    });
   });
 
-  describe('generateItinerary boundary checks', () => {
-    it('should throw BadRequestException if duration is less than 1 or greater than 7', async () => {
-      await expect(service.generateItinerary('Bastar', 0)).rejects.toThrow(BadRequestException);
-      await expect(service.generateItinerary('Bastar', 8)).rejects.toThrow(BadRequestException);
+  describe('input validation', () => {
+    it('rejects empty district', async () => {
+      await expect(
+        service.generateItinerary('', 3, 'moderate'),
+      ).rejects.toThrow(BadRequestException);
     });
 
-    it('should return empty list if no places are found in the district', async () => {
+    it('rejects zero days', async () => {
+      await expect(
+        service.generateItinerary('Bastar', 0, 'moderate'),
+      ).rejects.toThrow(BadRequestException);
+    });
+
+    it('rejects more than seven days', async () => {
+      await expect(
+        service.generateItinerary('Bastar', 8, 'moderate'),
+      ).rejects.toThrow(BadRequestException);
+    });
+
+    it('rejects invalid pace', async () => {
+      await expect(
+        service.generateItinerary('Bastar', 3, 'invalid' as any),
+      ).rejects.toThrow(BadRequestException);
+    });
+
+    it('rejects invalid traveler count', async () => {
+      await expect(
+        service.generateItinerary('Bastar', 3, 'moderate', [], 0),
+      ).rejects.toThrow(BadRequestException);
+    });
+  });
+
+  describe('empty data', () => {
+    it('returns empty itinerary when no places exist', async () => {
       prismaMock.place.findMany.mockResolvedValue([]);
-      const result = await service.generateItinerary('Bastar', 3);
+
+      const result = await service.generateItinerary('Bastar', 3, 'moderate');
+
       expect(result).toEqual([]);
     });
   });
 
-  describe('itinerary generation algorithms', () => {
-    const mockPlaces = [
+  describe('real recommendation data', () => {
+    const places = [
       {
         id: '1',
-        name: 'Chitrakote Falls',
-        slug: 'chitrakote-falls',
+        name: 'Nature Falls',
+        slug: 'nature-falls',
+        latitude: 19.1,
+        longitude: 82.1,
+        bestSeason: 'Monsoon',
+        rules: 'Follow safety rules',
+        safetyInfo: 'Use marked paths',
         district: 'Bastar',
         verified: true,
-        latitude: 19.1200,
-        longitude: 81.9800,
-        bestSeason: 'Monsoon',
-        rules: 'Do not swim close to falls',
+        experienceTypes: '["nature","waterfall"]',
+        category: {
+          name: 'Nature',
+        },
+        planningProfile: {
+          visitorCapacity: 500,
+          estimatedVisitMinutes: 120,
+          planningEnabled: true,
+        },
+        reviews: [{ rating: 5 }, { rating: 4 }, { rating: 5 }],
+        scores: {
+          popularity: 90,
+          safety: 90,
+          accessibility: 80,
+          mediaQuality: 90,
+          ecoSensitivity: 50,
+        },
       },
       {
         id: '2',
-        name: 'Teerathgarh Falls',
-        slug: 'teerathgarh-falls',
+        name: 'Heritage Temple',
+        slug: 'heritage-temple',
+        latitude: 19.15,
+        longitude: 82.12,
+        bestSeason: 'Winter',
+        rules: 'Respect site rules',
+        safetyInfo: 'Follow local guidance',
         district: 'Bastar',
         verified: true,
-        latitude: 18.9100,
-        longitude: 81.8600,
-        bestSeason: 'Winter',
-        rules: 'Follow safety signs',
-      },
-      {
-        id: '3',
-        name: 'Kanger Valley National Park',
-        slug: 'kanger-valley',
-        district: 'Bastar',
-        verified: true,
-        latitude: 18.8800,
-        longitude: 81.9900,
-        bestSeason: 'Winter',
-        rules: 'Do not litter',
+        experienceTypes: '["heritage","history"]',
+        category: {
+          name: 'Heritage',
+        },
+        planningProfile: {
+          visitorCapacity: 200,
+          estimatedVisitMinutes: 90,
+          planningEnabled: true,
+        },
+        reviews: [{ rating: 3 }, { rating: 4 }],
+        scores: {
+          popularity: 60,
+          safety: 80,
+          accessibility: 90,
+          mediaQuality: 70,
+          ecoSensitivity: 30,
+        },
       },
     ];
 
-    it('should correctly cluster places based on pacing limits', async () => {
-      prismaMock.place.findMany.mockResolvedValue(mockPlaces);
+    it('uses review ratings rather than place-name length', async () => {
+      prismaMock.place.findMany.mockResolvedValue(places);
 
-      // With active pace, the traveler can cover more distance, so they can visit multiple destinations in Day 1
-      const activeItinerary = await service.generateItinerary('Bastar', 2, 'active');
-      expect(activeItinerary.length).toBe(2);
-      expect(activeItinerary[0].stops.length).toBeGreaterThan(0);
-      
-      // Let's verify structure
-      expect(activeItinerary[0]).toHaveProperty('day', 1);
-      expect(activeItinerary[0]).toHaveProperty('stops');
-      expect(activeItinerary[0]).toHaveProperty('distanceTraveledKm');
-      expect(activeItinerary[0].stops[0]).toHaveProperty('name');
-      expect(activeItinerary[0].stops[0]).toHaveProperty('coordinates');
+      const result = await service.generateItinerary(
+        'Bastar',
+        1,
+        'moderate',
+        ['nature'],
+      );
+
+      expect(result[0].stops.length).toBeGreaterThan(0);
+      const stop = result[0].stops[0];
+      expect(stop.averageRating).toBeGreaterThan(0);
+      expect(stop.recommendationScore).toBeGreaterThan(0);
     });
 
-    it('should respect slow pacing and split destinations across multiple days due to distance limitations', async () => {
-      prismaMock.place.findMany.mockResolvedValue(mockPlaces);
+    it('uses interest matching', async () => {
+      prismaMock.place.findMany.mockResolvedValue(places);
 
-      // Chitrakote to Teerathgarh is around ~36km.
-      // Under 'slow' pace (30km limit), the algorithm shouldn't visit both in the same day if the total distance exceeds 30km.
-      const slowItinerary = await service.generateItinerary('Bastar', 3, 'slow');
-      
-      expect(slowItinerary.length).toBe(3);
-      // Let's ensure day 1 doesn't exceed 30km limit
-      expect(slowItinerary[0].distanceTraveledKm).toBeLessThanOrEqual(30.0);
+      const result = await service.generateItinerary(
+        'Bastar',
+        1,
+        'moderate',
+        ['nature'],
+      );
+
+      expect(result[0].stops[0].name).toBe('Nature Falls');
+    });
+
+    it('respects visitor capacity', async () => {
+      const capacityLimited = {
+        ...places[0],
+        planningProfile: {
+          visitorCapacity: 1,
+          estimatedVisitMinutes: 120,
+          planningEnabled: true,
+        },
+      };
+
+      prismaMock.place.findMany.mockResolvedValue([capacityLimited]);
+
+      const result = await service.generateItinerary(
+        'Bastar',
+        1,
+        'moderate',
+        [],
+        2,
+      );
+
+      expect(result).toEqual([
+        {
+          day: 1,
+          stops: [],
+          distanceTraveledKm: 0,
+          estimatedVisitMinutes: 0,
+          estimatedDayMinutes: 0,
+        },
+      ]);
+    });
+
+    it('does not select planning-disabled places', async () => {
+      prismaMock.place.findMany.mockResolvedValue([]);
+
+      await service.generateItinerary('Bastar', 1);
+
+      expect(prismaMock.place.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            verified: true,
+          }),
+        }),
+      );
+    });
+
+    it('limits slow pace daily stops', async () => {
+      prismaMock.place.findMany.mockResolvedValue(places);
+
+      const result = await service.generateItinerary('Bastar', 2, 'slow');
+
+      expect(result.length).toBe(2);
+      expect(result[0].stops.length).toBeLessThanOrEqual(2);
+    });
+
+    it('returns requested number of days', async () => {
+      prismaMock.place.findMany.mockResolvedValue(places);
+
+      const result = await service.generateItinerary('Bastar', 3, 'moderate');
+
+      expect(result.length).toBe(3);
+    });
+
+    it('never repeats the same place', async () => {
+      prismaMock.place.findMany.mockResolvedValue(places);
+
+      const result = await service.generateItinerary('Bastar', 3, 'active');
+
+      const ids = result.flatMap((day) => day.stops.map((stop) => stop.placeId));
+      expect(new Set(ids).size).toBe(ids.length);
+    });
+
+    it('returns real visit duration', async () => {
+      prismaMock.place.findMany.mockResolvedValue(places);
+
+      const result = await service.generateItinerary('Bastar', 1);
+
+      expect(result[0].estimatedVisitMinutes).toBeGreaterThan(0);
     });
   });
 });

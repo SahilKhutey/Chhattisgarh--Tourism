@@ -6,5 +6,6 @@ import { PrismaService } from '../../database/prisma.service';
 @Module({
   controllers: [ItineraryController],
   providers: [ItineraryService, PrismaService],
+  exports: [ItineraryService],
 })
 export class ItineraryModule {}
