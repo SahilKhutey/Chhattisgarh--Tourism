@@ -10,7 +10,9 @@
     "test": "jest",
     "tunnel": "ngrok http 4000",
     "media:backfill": "ts-node scripts/backfill-media.ts",
-    "geo:validate": "ts-node src/scripts/validate-geo-data.ts"
+    "geo:validate": "ts-node src/scripts/validate-geo-data.ts",
+    "itinerary:seed": "ts-node scripts/seed-itinerary-planning.ts",
+    "itinerary:verify": "ts-node scripts/verify-itinerary-data.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1053.0",
