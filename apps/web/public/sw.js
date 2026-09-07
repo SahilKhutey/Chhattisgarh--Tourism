@@ -1,118 +1,111 @@
-const CACHE_NAME = 'cg-tourism-v1';
-const STATIC_ASSETS = [
-  '/',
-  '/sos',
-  '/manifest.json',
-  '/globe.svg',
-  '/file.svg',
-  '/window.svg'
+const CACHE_VERSION = "cg-tourism-v1";
+const STATIC_CACHE = `${CACHE_VERSION}-static`;
+const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
+const OFFLINE_URL = "/offline.html";
+
+const PRECACHE = [
+  "/",
+  "/offline.html",
+  "/manifest.webmanifest",
 ];
 
-// Install Event: Pre-cache core shell pages and icons
-self.addEventListener('install', (event) => {
+self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      console.log('[Service Worker] Pre-caching Core Shell');
-      return cache.addAll(STATIC_ASSETS);
-    })
+    caches
+      .open(STATIC_CACHE)
+      .then((cache) => cache.addAll(PRECACHE))
+      .then(() => self.skipWaiting())
   );
-  self.skipWaiting();
 });
 
-// Activate Event: Cleanup older caches
-self.addEventListener('activate', (event) => {
+self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches.keys().then((keys) => {
-      return Promise.all(
-        keys.map((key) => {
-          if (key !== CACHE_NAME) {
-            console.log('[Service Worker] Cleaning old cache:', key);
-            return caches.delete(key);
+    caches.keys().then((keys) =>
+      Promise.all(
+        keys
+          .filter((key) => !key.startsWith(CACHE_VERSION))
+          .map((key) => caches.delete(key))
+      )
+    ).then(() => self.clients.claim())
+  );
+});
+
+self.addEventListener("fetch", (event) => {
+  const request = event.request;
+
+  if (request.method !== "GET") {
+    return;
+  }
+
+  const url = new URL(request.url);
+
+  // Only handle same-origin requests
+  if (url.origin !== self.location.origin) {
+    return;
+  }
+
+  // Navigation requests: Network-First with Cache and /offline.html fallback
+  if (request.mode === "navigate") {
+    event.respondWith(
+      fetch(request)
+        .then((response) => {
+          if (response && response.status === 200) {
+            const clone = response.clone();
+            caches.open(RUNTIME_CACHE).then((cache) => cache.put(request, clone));
           }
+          return response;
         })
-      );
+        .catch(async () => {
+          const cached = await caches.match(request);
+          if (cached) {
+            return cached;
+          }
+          return (await caches.match(OFFLINE_URL)) || (await caches.match("/"));
+        })
+    );
+    return;
+  }
+
+  // Static / API / Asset requests: Cache-First then Network
+  event.respondWith(
+    caches.match(request).then((cached) => {
+      const networkRequest = fetch(request)
+        .then((response) => {
+          if (response && response.status === 200) {
+            const clone = response.clone();
+            caches.open(RUNTIME_CACHE).then((cache) => cache.put(request, clone));
+          }
+          return response;
+        })
+        .catch(() => cached);
+
+      return cached ?? networkRequest;
     })
   );
-  self.clients.claim();
 });
 
-// Fetch Event: Implement caching strategies
-self.addEventListener('fetch', (event) => {
-  const requestUrl = new URL(event.request.url);
-
-  // Strategy 1: Cache-First then Network-Update for localized API Translations
-  if (requestUrl.pathname.includes('/api/v1/translations')) {
-    event.respondWith(
-      caches.open(CACHE_NAME).then((cache) => {
-        return cache.match(event.request).then((cachedResponse) => {
-          const fetchPromise = fetch(event.request).then((networkResponse) => {
-            if (networkResponse.status === 200) {
-              cache.put(event.request, networkResponse.clone());
-            }
-            return networkResponse;
-          }).catch(() => {
-            // Offline fallback if network fails
-            return cachedResponse;
-          });
-
-          return cachedResponse || fetchPromise;
-        });
-      })
-    );
-    return;
+// Background Sync handler
+self.addEventListener("sync", (event) => {
+  if (event.tag === "cg-tourism-sync") {
+    event.waitUntil(notifyClientsToSync());
   }
+});
 
-  // Strategy 2: Stale-While-Revalidate for other local API routes (e.g. places list)
-  if (requestUrl.pathname.includes('/api/v1/')) {
-    event.respondWith(
-      caches.open(CACHE_NAME).then((cache) => {
-        return cache.match(event.request).then((cachedResponse) => {
-          const fetchPromise = fetch(event.request).then((networkResponse) => {
-            if (networkResponse.status === 200) {
-              cache.put(event.request, networkResponse.clone());
-            }
-            return networkResponse;
-          }).catch(() => {
-            return cachedResponse;
-          });
-          return cachedResponse || fetchPromise;
-        });
-      })
-    );
-    return;
+async function notifyClientsToSync() {
+  const clientsList = await self.clients.matchAll({
+    type: "window",
+    includeUncontrolled: true,
+  });
+
+  for (const client of clientsList) {
+    client.postMessage({
+      type: "OFFLINE_SYNC_REQUIRED",
+    });
   }
+}
 
-  // Strategy 3: HTML Pages and UI assets: Network-First with Cache Fallback
-  event.respondWith(
-    fetch(event.request)
-      .then((networkResponse) => {
-        // Cache successful requests for documents and static assets
-        if (
-          networkResponse.status === 200 &&
-          (event.request.destination === 'document' ||
-            event.request.destination === 'script' ||
-            event.request.destination === 'style' ||
-            event.request.destination === 'image' ||
-            event.request.destination === 'font')
-        ) {
-          const responseClone = networkResponse.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, responseClone);
-          });
-        }
-        return networkResponse;
-      })
-      .catch(() => {
-        // Return cached page when offline
-        return caches.match(event.request).then((cachedResponse) => {
-          if (cachedResponse) {
-            return cachedResponse;
-          }
-          // If a page/document is not cached, return index shell as fallback
-          if (event.request.destination === 'document') {
-            return caches.match('/');
-          }
-        });
-      })
-  );
+self.addEventListener("message", (event) => {
+  if (event.data?.type === "SKIP_WAITING") {
+    self.skipWaiting();
+  }
 });
