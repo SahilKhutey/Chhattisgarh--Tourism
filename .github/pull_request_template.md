@@ -1,61 +1,53 @@
-## Description
+## Summary
 
 <!-- What does this PR change? -->
 
-## Change Type
-
-- [ ] Feature
-- [ ] Bug fix
-- [ ] Refactor
-- [ ] Documentation
-- [ ] Testing
-- [ ] Infrastructure
-- [ ] Security
-- [ ] Data migration
-- [ ] Repository maintenance
-
 ## Product Impact
 
-<!-- What user/system behavior changes? -->
-
-## Technical Changes
-
-<!-- List the important implementation changes. -->
-
-## Files / Modules Changed
-
-<!-- Identify important files or modules. -->
+- [ ] No product behavior change
+- [ ] Tourism discovery
+- [ ] Destination/content
+- [ ] Maps/geography
+- [ ] Itinerary
+- [ ] Community
+- [ ] Bookings
+- [ ] Emergency/SOS
+- [ ] Translation/accessibility
+- [ ] Infrastructure
 
 ## Testing
 
 - [ ] Unit tests
 - [ ] Integration tests
 - [ ] E2E tests
+- [ ] Accessibility tests
 - [ ] Manual verification
-- [ ] Build verification
-- [ ] Lint verification
 
-### Validation Commands
-```bash
-pnpm lint
-pnpm test
-pnpm build
-```
+## Quality Gates
 
-## Risks
+- [ ] pnpm lint
+- [ ] pnpm typecheck
+- [ ] pnpm test:coverage
+- [ ] pnpm build
+- [ ] pnpm --filter web exec playwright test
 
-<!-- What could break? -->
+## Data / Database
 
-## Migration / Rollback
+- [ ] No database change
+- [ ] Migration included
+- [ ] Seed updated
+- [ ] Backward compatibility verified
 
-<!-- Does this require migration, environment changes, or rollback steps? -->
-
-## Checklist
+## Security
 
 - [ ] No secrets committed
-- [ ] No unnecessary generated files committed
-- [ ] Tests added/updated where appropriate
-- [ ] Documentation updated where required
-- [ ] No unrelated changes included
-- [ ] CI passes
-- [ ] Branch is up to date with target branch
+- [ ] No sensitive data logged
+- [ ] Authentication/authorization checked
+- [ ] Input validation checked
+
+## Deployment
+
+- [ ] Local verified
+- [ ] CI verified
+- [ ] Production impact reviewed
+- [ ] Rollback considered

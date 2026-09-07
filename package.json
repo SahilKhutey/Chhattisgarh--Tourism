@@ -8,13 +8,17 @@
     "start": "turbo start",
     "lint": "turbo lint",
     "test": "turbo test",
-    "format": "prettier --write \"**/*.{ts,tsx,js,json,md}\"",
+    "format": "prettier --write \"**/*.{ts,tsx,js,json,md,yml,yaml}\"",
     "repo:check": "node scripts/repository/check-repository.mjs",
     "config:check": "node scripts/repository/check-config.mjs",
     "test:config": "pnpm --filter backend test -- config",
     "db:verify": "pnpm --filter backend exec ts-node ../../scripts/db/verify.ts",
     "db:seed": "pnpm --filter backend prisma db seed",
-    "prepare": "husky"
+    "prepare": "husky",
+    "typecheck": "turbo typecheck",
+    "test:coverage": "turbo test:coverage",
+    "test:e2e": "pnpm --filter web exec playwright test",
+    "ci": "pnpm lint && pnpm typecheck && pnpm test:coverage && pnpm build"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.7.1",
@@ -25,6 +29,7 @@
     "prettier": "^3.2.0"
   },
   "engines": {
-    "node": "20.x"
+    "node": "20.x",
+    "pnpm": "9.14.0"
   }
 }
