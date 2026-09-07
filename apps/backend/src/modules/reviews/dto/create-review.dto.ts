@@ -1,22 +1,54 @@
-import { IsUUID, IsNotEmpty, IsInt, Min, Max, IsString, Length, IsOptional } from 'class-validator';
+import {
+  IsInt,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  IsUUID,
+  Length,
+  Max,
+  Min,
+} from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateReviewDto {
-  @IsUUID('4', { message: 'Place ID must be a valid UUID.' })
-  @IsNotEmpty({ message: 'Place ID is required to leave reviews.' })
-  placeId: string;
+  @ApiProperty({
+    description: 'Place being reviewed',
+  })
+  @IsUUID('4')
+  @IsNotEmpty()
+  placeId!: string;
 
-  @IsInt({ message: 'Rating must be an integer.' })
-  @Min(1, { message: 'Rating must be at least 1 star.' })
-  @Max(5, { message: 'Rating cannot exceed 5 stars.' })
-  rating: number;
+  @ApiProperty({
+    description: 'Completed booking associated with the review',
+  })
+  @IsUUID('4')
+  @IsNotEmpty()
+  bookingId!: string;
 
-  @IsString({ message: 'Review comment must be a string.' })
-  @IsNotEmpty({ message: 'Review comment cannot be empty.' })
-  @Length(10, 500, { message: 'Review comment must be between 10 and 500 characters long.' })
-  comment: string;
+  @ApiProperty({
+    minimum: 1,
+    maximum: 5,
+  })
+  @IsInt()
+  @Min(1)
+  @Max(5)
+  rating!: number;
 
-  @IsString({ message: 'Language code must be a string.' })
-  @Length(2, 5, { message: 'Language code must be 2 to 5 characters long.' })
+  @ApiProperty({
+    minimum: 10,
+    maximum: 500,
+  })
+  @IsString()
+  @IsNotEmpty()
+  @Length(10, 500)
+  comment!: string;
+
+  @ApiPropertyOptional({
+    description: 'Review language',
+    example: 'en',
+  })
   @IsOptional()
+  @IsString()
+  @Length(2, 5)
   lang?: string;
 }
