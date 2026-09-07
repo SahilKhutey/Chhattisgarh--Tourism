@@ -108,12 +108,64 @@ export class ModerationController {
     return this.moderationService.verifyFolklore(id);
   }
 
+  @Patch('folklore/reject/:id')
+  @Roles('ADMIN', 'SUPER_ADMIN', 'MODERATOR')
+  @ApiOperation({ summary: 'Reject a folklore submission by setting status to REJECTED' })
+  @ApiParam({ name: 'id', type: String })
+  async rejectFolklorePatch(@Param('id') id: string) {
+    return this.moderationService.rejectFolklore(id);
+  }
+
   @Delete('folklore/reject/:id')
   @Roles('ADMIN', 'SUPER_ADMIN', 'MODERATOR')
-  @ApiOperation({ summary: 'Reject and permanently delete a folklore submission' })
+  @ApiOperation({ summary: 'Reject a folklore submission' })
   @ApiParam({ name: 'id', type: String })
   async rejectFolklore(@Param('id') id: string) {
     return this.moderationService.rejectFolklore(id);
+  }
+
+  // ── Community Moderation ───────────────────────────────────────────────────
+
+  @Get('community/reports')
+  @Roles('ADMIN', 'SUPER_ADMIN', 'MODERATOR')
+  @ApiOperation({ summary: 'Retrieve backlog list of open community content reports' })
+  async getPendingReports() {
+    return this.moderationService.getPendingReports();
+  }
+
+  @Patch('community/reports/:id')
+  @Roles('ADMIN', 'SUPER_ADMIN', 'MODERATOR')
+  @ApiOperation({ summary: 'Update status of a community content report' })
+  @ApiParam({ name: 'id', type: String })
+  @ApiBody({ schema: { properties: { status: { type: 'string', example: 'RESOLVED' } } } })
+  async updateReport(
+    @Param('id') id: string,
+    @Body('status') status: string,
+  ) {
+    return this.moderationService.updateReport(id, status);
+  }
+
+  @Get('community/videos/pending')
+  @Roles('ADMIN', 'SUPER_ADMIN', 'MODERATOR')
+  @ApiOperation({ summary: 'Retrieve pending creator videos awaiting moderation' })
+  async getPendingVideos() {
+    return this.moderationService.getPendingVideos();
+  }
+
+  @Patch('community/videos/:id/approve')
+  @Roles('ADMIN', 'SUPER_ADMIN', 'MODERATOR')
+  @ApiOperation({ summary: 'Approve and publish a creator video' })
+  @ApiParam({ name: 'id', type: String })
+  async approveVideo(@Param('id') id: string) {
+    return this.moderationService.approveVideo(id);
+  }
+
+  @Patch('community/videos/:id/reject')
+  @Roles('ADMIN', 'SUPER_ADMIN', 'MODERATOR')
+  @ApiOperation({ summary: 'Reject a creator video submission' })
+  @ApiParam({ name: 'id', type: String })
+  async rejectVideo(@Param('id') id: string) {
+    return this.moderationService.rejectVideo(id);
   }
 
   // ── Social Media Aggregation ───────────────────────────────────────────────
