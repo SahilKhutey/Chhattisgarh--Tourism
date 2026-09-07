@@ -6,5 +6,6 @@ import { PrismaService } from '../../database/prisma.service';
 @Module({
   controllers: [CommunityController],
   providers: [CommunityService, PrismaService],
+  exports: [CommunityService],
 })
 export class CommunityModule {}
