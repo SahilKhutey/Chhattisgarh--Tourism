@@ -762,7 +762,7 @@ async function main() {
     }
   }
 
-  console.log('Seeded all 11 landmark destinations and translations successfully.');
+  console.log(`Seeded all ${SEED_DESTINATIONS.length} landmark destinations and translations successfully.`);
   console.log('Database seeding successfully finished!');
 }
 

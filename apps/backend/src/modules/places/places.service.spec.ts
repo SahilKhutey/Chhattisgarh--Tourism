@@ -13,6 +13,11 @@ describe('PlacesService Unit Tests', () => {
         findUnique: jest.fn(),
         create: jest.fn(),
         findMany: jest.fn(),
+        groupBy: jest.fn(),
+      },
+      category: {
+        findMany: jest.fn(),
+        findUnique: jest.fn(),
       },
       $queryRaw: jest.fn(),
     };
@@ -105,6 +110,93 @@ describe('PlacesService Unit Tests', () => {
       expect(result[0].name).toBe('Chitrakote Falls');
       expect(result[0].distance_km).toBeLessThan(1);
       expect(prismaMock.place.findMany).toHaveBeenCalled();
+    });
+  });
+
+  describe('categories and districts retrieval', () => {
+    it('should return categories with place counts', async () => {
+      prismaMock.category.findMany.mockResolvedValue([
+        { id: 'cat-1', name: 'Waterfall', slug: 'waterfall', _count: { places: 12 } },
+        { id: 'cat-2', name: 'Cave', slug: 'cave', _count: { places: 5 } },
+      ]);
+
+      const result = await service.getCategories();
+
+      expect(result).toHaveLength(2);
+      expect(result[0]).toEqual({
+        id: 'cat-1',
+        name: 'Waterfall',
+        slug: 'waterfall',
+        placeCount: 12,
+      });
+      expect(prismaMock.category.findMany).toHaveBeenCalledWith({
+        include: { _count: { select: { places: true } } },
+        orderBy: { name: 'asc' },
+      });
+    });
+
+    it('should return districts with place counts and exclude Unknown', async () => {
+      prismaMock.place.groupBy.mockResolvedValue([
+        { district: 'Bastar', _count: { id: 25 } },
+        { district: 'Surguja', _count: { id: 14 } },
+        { district: 'Unknown', _count: { id: 0 } },
+      ]);
+
+      const result = await service.getDistricts();
+
+      expect(result).toHaveLength(2);
+      expect(result).toEqual([
+        { name: 'Bastar', placeCount: 25 },
+        { name: 'Surguja', placeCount: 14 },
+      ]);
+      expect(prismaMock.place.groupBy).toHaveBeenCalledWith({
+        by: ['district'],
+        where: { verified: true },
+        _count: { id: true },
+        orderBy: { district: 'asc' },
+      });
+    });
+  });
+
+  describe('findAll filtering and search', () => {
+    it('should filter by category and district', async () => {
+      prismaMock.place.findMany.mockResolvedValue([
+        { id: '1', name: 'Chitrakote Falls', district: 'Bastar', verified: true },
+      ]);
+
+      const result = await service.findAll('waterfall', 'Bastar');
+
+      expect(result).toHaveLength(1);
+      expect(prismaMock.place.findMany).toHaveBeenCalledWith({
+        where: {
+          verified: true,
+          category: { slug: 'waterfall' },
+          district: { equals: 'Bastar', mode: 'insensitive' },
+        },
+        include: { category: true, media: true },
+        orderBy: { name: 'asc' },
+      });
+    });
+
+    it('should apply text search across name, description, and district', async () => {
+      prismaMock.place.findMany.mockResolvedValue([
+        { id: '1', name: 'Chitrakote Falls', district: 'Bastar', verified: true },
+      ]);
+
+      await service.findAll(undefined, undefined, 'Chitrakote');
+
+      expect(prismaMock.place.findMany).toHaveBeenCalledWith({
+        where: {
+          verified: true,
+          OR: [
+            { name: { contains: 'Chitrakote', mode: 'insensitive' } },
+            { description: { contains: 'Chitrakote', mode: 'insensitive' } },
+            { district: { contains: 'Chitrakote', mode: 'insensitive' } },
+          ],
+        },
+        include: { category: true, media: true },
+        orderBy: { name: 'asc' },
+      });
     });
   });
 });

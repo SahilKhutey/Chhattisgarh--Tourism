@@ -36,24 +36,81 @@ export class PlacesService {
         history: dto.history || 'Local oral lore preservation stage.',
         safetyInfo: dto.safetyInfo || 'Respect standard forest and water safety guidelines.',
         rules: dto.rules || 'Littering and standard plastics are prohibited.',
+        audioUrl: dto.audioUrl || null,
+        audioNarrator: dto.audioNarrator || null,
+        highlights: JSON.stringify(dto.highlights || []),
+        experienceTypes: JSON.stringify(dto.experienceTypes || []),
+        platformFeatures: JSON.stringify(dto.platformFeatures || []),
         verified: false, // Default to unverified staging queue for Admin moderation review
+        verificationLevel: 'UNVERIFIED',
       },
     });
   }
 
-  async findAll(categorySlug?: string, district?: string) {
+  async findAll(categorySlug?: string, district?: string, search?: string) {
+    const where: any = {
+      verified: true,
+      ...(categorySlug ? { category: { slug: categorySlug } } : {}),
+      ...(district && district !== 'All' ? { district: { equals: district, mode: 'insensitive' } } : {}),
+    };
+
+    if (search && search.trim() !== '') {
+      where.OR = [
+        { name: { contains: search, mode: 'insensitive' } },
+        { description: { contains: search, mode: 'insensitive' } },
+        { district: { contains: search, mode: 'insensitive' } },
+      ];
+    }
+
     const places = await this.prisma.place.findMany({
-      where: {
-        verified: true,
-        ...(categorySlug ? { category: { slug: categorySlug } } : {}),
-        ...(district ? { district } : {}),
-      },
+      where,
       include: {
         category: true,
         media: true,
       },
+      orderBy: {
+        name: 'asc',
+      },
     });
     return places.map(p => this.formatPlace(p));
+  }
+
+  async getCategories() {
+    const categories = await this.prisma.category.findMany({
+      include: {
+        _count: {
+          select: { places: true },
+        },
+      },
+      orderBy: { name: 'asc' },
+    });
+
+    return categories.map(c => ({
+      id: c.id,
+      name: c.name,
+      slug: c.slug,
+      placeCount: c._count.places,
+    }));
+  }
+
+  async getDistricts() {
+    const grouped = await this.prisma.place.groupBy({
+      by: ['district'],
+      where: { verified: true },
+      _count: {
+        id: true,
+      },
+      orderBy: {
+        district: 'asc',
+      },
+    });
+
+    return grouped
+      .filter(g => g.district && g.district.trim() !== '' && g.district !== 'Unknown')
+      .map(g => ({
+        name: g.district,
+        placeCount: g._count.id,
+      }));
   }
 
   async findBySlug(slug: string) {

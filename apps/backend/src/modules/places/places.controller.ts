@@ -19,11 +19,25 @@ export class PlacesController {
   @ApiOperation({ summary: 'Retrieve all verified tourism destinations' })
   @ApiQuery({ name: 'category', type: String, required: false, description: 'Category slug (e.g. waterfalls)' })
   @ApiQuery({ name: 'district', type: String, required: false, description: 'District filtering (e.g. Bastar)' })
+  @ApiQuery({ name: 'search', type: String, required: false, description: 'Text search query matching destination name or description' })
   async getAll(
     @Query('category') categorySlug?: string,
     @Query('district') district?: string,
+    @Query('search') search?: string,
   ) {
-    return this.placesService.findAll(categorySlug, district);
+    return this.placesService.findAll(categorySlug, district, search);
+  }
+
+  @Get('categories')
+  @ApiOperation({ summary: 'Retrieve distinct tourism categories with destination counts' })
+  async getCategories() {
+    return this.placesService.getCategories();
+  }
+
+  @Get('districts')
+  @ApiOperation({ summary: 'Retrieve distinct Chhattisgarh districts with destination counts' })
+  async getDistricts() {
+    return this.placesService.getDistricts();
   }
 
   @Get('nearby')
