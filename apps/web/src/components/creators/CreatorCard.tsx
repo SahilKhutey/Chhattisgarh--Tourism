@@ -7,6 +7,7 @@ import Link from "next/link";
 import { CheckCircle, Leaf, Sparkles, MapPin, ShieldAlert, EyeOff, Trash2 } from "lucide-react";
 import { Creator, VerificationBadge } from "../../app/data/api";
 import { useAuthStore } from "../../store/auth-store";
+import CreatorFollowButton from "../community/CreatorFollowButton";
 
 interface CreatorCardProps {
   creator: Creator;
@@ -85,9 +86,7 @@ export default function CreatorCard({ creator }: CreatorCardProps) {
         </div>
 
         <div className="flex justify-end absolute top-3 right-4">
-          <button className="bg-forest-emerald hover:bg-[#0A2A3B] text-sand-beige text-xs font-bold px-4 py-1.5 rounded-full transition-colors shadow-md hover:shadow-lg">
-            Follow
-          </button>
+          <CreatorFollowButton creatorId={creator.id} />
         </div>
 
         <div className="mt-2">

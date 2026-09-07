@@ -6,5 +6,6 @@ import { PrismaService } from '../../database/prisma.service';
 @Module({
   controllers: [FolkloreController],
   providers: [FolkloreService, PrismaService],
+  exports: [FolkloreService],
 })
 export class FolkloreModule {}

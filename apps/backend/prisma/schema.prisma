@@ -32,6 +32,8 @@ model User {
   pollVotes                PollVote[]
   ownedPlaces              Place[]             @relation("PlaceContentOwner")
   placeVerificationActions PlaceVerification[] @relation("PlaceVerificationReviewer")
+  followingCreators        CreatorFollow[]     @relation("UserCreatorFollows")
+  contentReports           ContentReport[]     @relation("UserContentReports")
 }
 
 model RefreshToken {
@@ -60,6 +62,7 @@ model Folklore {
   audioUrl      String?
   audioNarrator String?
   verified      Boolean  @default(false)
+  status        String   @default("PENDING")
   authorId      String
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
@@ -363,6 +366,7 @@ model CreatorProfile {
   videos            CreatorVideo[]
   integrations      SocialIntegration[]
   aggregatedContent AggregatedContent[]
+  followersRelation CreatorFollow[]     @relation("CreatorFollowers")
 }
 
 model CreatorVideo {
@@ -378,6 +382,7 @@ model CreatorVideo {
   videoUrl     String?
   isTrending   Boolean @default(false)
   isHiddenGem  Boolean @default(false)
+  status       String  @default("PUBLISHED")
 
   creatorId String
   creator   CreatorProfile @relation(fields: [creatorId], references: [id], onDelete: Cascade)
@@ -727,4 +732,41 @@ model GeoPlace {
   @@index([touristZoneId])
   @@index([latitude, longitude])
   @@index([status])
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SOCIAL & COMMUNITY LAYER (PHASE P9)
+// ─────────────────────────────────────────────────────────────────────────────
+
+model CreatorFollow {
+  id        String   @id @default(uuid())
+  userId    String
+  creatorId String
+  createdAt DateTime @default(now())
+
+  user    User           @relation("UserCreatorFollows", fields: [userId], references: [id], onDelete: Cascade)
+  creator CreatorProfile @relation("CreatorFollowers", fields: [creatorId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, creatorId])
+  @@index([creatorId])
+  @@index([userId])
+}
+
+model ContentReport {
+  id            String   @id @default(uuid())
+  reporterId    String
+  targetType    String
+  targetId      String
+  reason        String
+  details       String?
+  status        String   @default("OPEN")
+  moderatorNote String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  reporter User @relation("UserContentReports", fields: [reporterId], references: [id], onDelete: Cascade)
+
+  @@index([targetType, targetId])
+  @@index([status])
+  @@index([reporterId])
 }

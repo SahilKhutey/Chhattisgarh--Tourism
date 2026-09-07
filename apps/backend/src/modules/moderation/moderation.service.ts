@@ -168,7 +168,7 @@ export class ModerationService {
 
     await this.prisma.folklore.update({
       where: { id },
-      data: { verified: true },
+      data: { verified: true, status: 'APPROVED' },
     });
 
     return { success: true, message: 'Folklore verified successfully.' };
@@ -178,11 +178,80 @@ export class ModerationService {
     const folklore = await this.prisma.folklore.findUnique({ where: { id } });
     if (!folklore) throw new NotFoundException('Folklore not found.');
 
-    await this.prisma.folklore.delete({
+    await this.prisma.folklore.update({
       where: { id },
+      data: { verified: false, status: 'REJECTED' },
     });
 
     return { success: true, message: 'Folklore rejected successfully.' };
+  }
+
+  // ── Community Moderation ───────────────────────────────────────────────────
+
+  async getPendingReports() {
+    return this.prisma.contentReport.findMany({
+      where: { status: 'OPEN' },
+      include: {
+        reporter: {
+          select: {
+            id: true,
+            fullName: true,
+            email: true,
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
+  async updateReport(id: string, status: string) {
+    const report = await this.prisma.contentReport.findUnique({ where: { id } });
+    if (!report) throw new NotFoundException('Content report not found.');
+
+    const updated = await this.prisma.contentReport.update({
+      where: { id },
+      data: { status },
+    });
+
+    return { success: true, report: updated };
+  }
+
+  async getPendingVideos() {
+    return this.prisma.creatorVideo.findMany({
+      where: { status: 'PENDING' },
+      include: {
+        creator: {
+          include: {
+            user: { select: { fullName: true, email: true } },
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
+  async approveVideo(id: string) {
+    const video = await this.prisma.creatorVideo.findUnique({ where: { id } });
+    if (!video) throw new NotFoundException('Creator video not found.');
+
+    const updated = await this.prisma.creatorVideo.update({
+      where: { id },
+      data: { status: 'PUBLISHED' },
+    });
+
+    return { success: true, video: updated };
+  }
+
+  async rejectVideo(id: string) {
+    const video = await this.prisma.creatorVideo.findUnique({ where: { id } });
+    if (!video) throw new NotFoundException('Creator video not found.');
+
+    const updated = await this.prisma.creatorVideo.update({
+      where: { id },
+      data: { status: 'REJECTED' },
+    });
+
+    return { success: true, video: updated };
   }
 
   // ── Social Media Aggregation ────────────────────────────────────────────────
