@@ -117,6 +117,10 @@ model Place {
   recommendedMedia String  @default("[]")
   priorityPhase    String?
 
+  bookingEnabled    Boolean @default(true)
+  bookingPricePaise Int     @default(0)
+  bookingMaxGuests  Int     @default(20)
+
   // ─────────────────────────────────────────────
   // RELATIONS
   // ─────────────────────────────────────────────
@@ -286,16 +290,21 @@ model PlaceTransport {
 
 model Review {
   id      String @id @default(uuid())
-  rating  Int // 1–5 stars
+  rating  Int
   comment String
-  lang    String @default("en") // Language the review was written in
-  helpful Int    @default(0) // Helpful votes
+
+  lang    String @default("en")
+  helpful Int    @default(0)
 
   userId  String
   placeId String
 
+  bookingId String? @unique
+
   user  User  @relation(fields: [userId], references: [id])
   place Place @relation(fields: [placeId], references: [id])
+
+  booking Booking? @relation(fields: [bookingId], references: [id], onDelete: SetNull)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -321,18 +330,34 @@ model Bookmark {
 // ─────────────────────────────────────────────────────────────────────────────
 
 model Booking {
-  id           String   @id @default(uuid())
-  userId       String
-  placeId      String
-  visitDate    DateTime
-  guests       Int      @default(1)
-  totalPrice   Float    @default(0)
-  status       String   @default("CONFIRMED") // CONFIRMED | CANCELLED | COMPLETED
+  id String @id @default(uuid())
+
+  userId  String
+  placeId String
+
+  visitDate DateTime
+  guests    Int      @default(1)
+
+  unitPricePaise   Int
+  subtotalPaise    Int
+  platformFeePaise Int
+  totalPricePaise  Int
+
+  currency String @default("INR")
+
+  // Legacy compatibility field.
+  totalPrice Float @default(0)
+
+  status String @default("CONFIRMED")
+  // CONFIRMED | CANCELLED | COMPLETED
+
   notes        String?
   contactPhone String?
 
   user  User  @relation(fields: [userId], references: [id])
   place Place @relation(fields: [placeId], references: [id])
+
+  review Review?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -340,6 +365,7 @@ model Booking {
   @@index([userId])
   @@index([placeId])
   @@index([visitDate])
+  @@index([status])
 }
 
 model CreatorProfile {
@@ -769,4 +795,24 @@ model ContentReport {
   @@index([targetType, targetId])
   @@index([status])
   @@index([reporterId])
+}
+
+model AnalyticsEvent {
+  id String @id @default(uuid())
+
+  name String
+
+  userId    String?
+  placeId   String?
+  bookingId String?
+
+  metadata String @default("{}")
+
+  createdAt DateTime @default(now())
+
+  @@index([name])
+  @@index([userId])
+  @@index([placeId])
+  @@index([bookingId])
+  @@index([createdAt])
 }
