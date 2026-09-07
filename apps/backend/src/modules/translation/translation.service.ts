@@ -15,6 +15,15 @@ import { GlossaryService, GlossaryEntry } from './glossary.service';
  *  4. Cache live API results in SQLite (TranslationCache) to reduce cost.
  *  5. In-memory LRU Map as L1 cache layer above SQLite.
  */
+export interface TranslationResult {
+  text: string;
+  source: string;
+  target: string;
+  translatedText: string;
+  provider: 'memory' | 'sqlite' | 'glossary' | 'google' | 'original' | 'passthrough' | 'fallback';
+  cached: boolean;
+}
+
 @Injectable()
 export class TranslationService {
   private readonly logger = new Logger(TranslationService.name);
@@ -22,6 +31,148 @@ export class TranslationService {
   /** L1 In-memory cache: `${sourceLang}:${targetLang}:${text}` → translated */
   private readonly memCache = new Map<string, string>();
   private readonly MAX_MEM_CACHE = 500;
+
+
+  /**
+   * Complete multi-tier translation pipeline:
+   * Memory (L1) -> SQLite (L2) -> Regional Glossary -> Google Cloud Translation -> Dialect Post-Processing -> Original Text Fallback
+   */
+  async translate(
+    text: string,
+    source: string = 'en',
+    target: string,
+  ): Promise<TranslationResult> {
+    const normalizedSource = (source || 'en').toLowerCase().trim();
+    const normalizedTarget = (target || 'en').toLowerCase().trim();
+
+    // 1. Passthrough on empty string or identical languages
+    if (!text || !text.trim() || normalizedSource === normalizedTarget) {
+      return {
+        text,
+        source: normalizedSource,
+        target: normalizedTarget,
+        translatedText: text || '',
+        provider: 'passthrough',
+        cached: false,
+      };
+    }
+
+    const trimmedText = text.trim();
+    const cacheKey = `${normalizedSource}:${normalizedTarget}:${trimmedText}`;
+
+    // 2. L1: Memory Cache
+    if (this.memCache.has(cacheKey)) {
+      return {
+        text: trimmedText,
+        source: normalizedSource,
+        target: normalizedTarget,
+        translatedText: this.memCache.get(cacheKey)!,
+        provider: 'memory',
+        cached: true,
+      };
+    }
+
+    // 3. L2: Persistent Cache (SQLite/DB)
+    try {
+      const dbCache = await (this.prisma as any).translationCache?.findUnique({
+        where: {
+          sourceText_sourceLang_targetLang: {
+            sourceText: trimmedText,
+            sourceLang: normalizedSource,
+            targetLang: normalizedTarget,
+          },
+        },
+      });
+      if (dbCache) {
+        this.setMemCache(cacheKey, dbCache.translated);
+        return {
+          text: trimmedText,
+          source: normalizedSource,
+          target: normalizedTarget,
+          translatedText: dbCache.translated,
+          provider: 'sqlite',
+          cached: true,
+        };
+      }
+    } catch {
+      // Graceful fallback if schema does not include translationCache
+    }
+
+    // 4. Regional Tourism Glossary Direct Term Lookup
+    const glossaryTerm = this.glossary.findTerm(trimmedText, normalizedTarget);
+    if (glossaryTerm) {
+      this.setMemCache(cacheKey, glossaryTerm);
+      return {
+        text: trimmedText,
+        source: normalizedSource,
+        target: normalizedTarget,
+        translatedText: glossaryTerm,
+        provider: 'glossary',
+        cached: false,
+      };
+    }
+
+    // 5. Google Cloud Translation API (with dialect transformation for cg/hne)
+    if (this.googleTranslate.isAvailable()) {
+      try {
+        let translated = await this.googleTranslate.translateText(trimmedText, normalizedTarget);
+        if (translated && translated !== trimmedText) {
+          if (normalizedTarget === 'cg' || normalizedTarget === 'hne') {
+            translated = this.glossary.applyGlossary(translated, 'cg');
+          }
+          this.setMemCache(cacheKey, translated);
+          try {
+            await (this.prisma as any).translationCache?.upsert({
+              where: {
+                sourceText_sourceLang_targetLang: {
+                  sourceText: trimmedText,
+                  sourceLang: normalizedSource,
+                  targetLang: normalizedTarget,
+                },
+              },
+              update: { translated },
+              create: {
+                sourceText: trimmedText,
+                sourceLang: normalizedSource,
+                targetLang: normalizedTarget,
+                translated,
+                apiProvider: 'google',
+              },
+            });
+          } catch {}
+
+          return {
+            text: trimmedText,
+            source: normalizedSource,
+            target: normalizedTarget,
+            translatedText: translated,
+            provider: 'google',
+            cached: false,
+          };
+        }
+      } catch (err) {
+        this.logger.warn(`Google Translate request failed for "${trimmedText}": ${err?.message ?? err}`);
+      }
+    }
+
+    // 6. Graceful Fallback: Local glossary dialect substitution or original source text
+    let fallbackText = trimmedText;
+    if (normalizedTarget === 'cg' || normalizedTarget === 'hne') {
+      const dialectApplied = this.glossary.applyGlossary(trimmedText, 'cg');
+      if (dialectApplied !== trimmedText) {
+        fallbackText = dialectApplied;
+      }
+    }
+
+    return {
+      text: trimmedText,
+      source: normalizedSource,
+      target: normalizedTarget,
+      translatedText: fallbackText,
+      provider: fallbackText !== trimmedText ? 'glossary' : 'original',
+      cached: false,
+    };
+  }
 
   constructor(
     private readonly prisma: PrismaService,

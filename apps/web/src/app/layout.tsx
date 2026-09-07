@@ -1,3 +1,7 @@
+import { SkipToContent } from "../components/accessibility/SkipToContent";
+import { AccessibilityProvider } from "../components/accessibility/AccessibilityProvider";
+import { TranslationProvider } from "../components/language/TranslationProvider";
+import { VoiceProvider } from "../components/voice/VoiceProvider";
 import type { Metadata } from "next";
 import { Inter, Space_Grotesk, JetBrains_Mono, Noto_Sans_Devanagari, Mukta, Playfair_Display } from "next/font/google";
 import { Navbar } from "../components/Navbar";
@@ -60,14 +64,18 @@ export default function RootLayout({
       className={`${inter.variable} ${space.variable} ${mono.variable} ${notoDevanagari.variable} ${mukta.variable} ${playfair.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-sand-beige text-charcoal-stone selection:bg-tribal-terracotta selection:text-white pb-20 md:pb-0">
-        <LanguageProvider>
+        <SkipToContent />
+        <AccessibilityProvider>
+          <TranslationProvider>
+            <VoiceProvider>
+              <LanguageProvider>
           <ToastProvider />
 
           {/* Global Cinematic Navigation */}
           <Navbar />
 
           {/* Dynamic Page Outlet */}
-          <main className="flex-1 flex flex-col">{children}</main>
+          <main id="main-content" tabIndex={-1} className="flex-1 flex flex-col outline-none">{children}</main>
 
           {/* Global Voice Translator */}
           <VoiceTranslator />
@@ -193,6 +201,9 @@ export default function RootLayout({
           </div>
         </footer>
         </LanguageProvider>
+            </VoiceProvider>
+          </TranslationProvider>
+        </AccessibilityProvider>
       </body>
     </html>
   );

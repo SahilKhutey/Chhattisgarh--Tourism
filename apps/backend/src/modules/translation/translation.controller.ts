@@ -1,3 +1,4 @@
+import { TranslateDto } from './dto/translate.dto';
 import {
   Controller,
   Get,
@@ -67,7 +68,7 @@ class BatchTranslationDto {
 // ─── Controller ──────────────────────────────────────────────────────────────
 
 @ApiTags('translations')
-@Controller('translations')
+@Controller(['translation', 'translations'])
 export class TranslationController {
   constructor(private readonly translationService: TranslationService) {}
 
@@ -99,21 +100,27 @@ export class TranslationController {
   }
 
   @Post()
-  @ApiOperation({ summary: 'Insert or update a static translation record in DB' })
-  @ApiResponse({ status: 201, description: 'Translation saved successfully' })
-  async upsertTranslation(@Body() dto: CreateTranslationDto) {
-    const { lang, entityType, entityId, field, value } = dto;
-    if (!lang || !entityType || !entityId || !field || !value) {
-      throw new BadRequestException(
-        'All fields (lang, entityType, entityId, field, value) are required',
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Translate text or upsert translation record',
+    description: 'Translates text with multi-tier fallback (memory -> cache -> glossary -> google -> original) or saves a static record if entityId is provided.',
+  })
+  @ApiResponse({ status: 200, description: 'Translation or upsert successful' })
+  async handlePost(@Body() body: any) {
+    if (body.text !== undefined && body.target !== undefined) {
+      return this.translationService.translate(body.text, body.source ?? 'en', body.target);
+    }
+    if (body.lang && body.entityType && body.entityId && body.field && body.value) {
+      return this.translationService.upsertTranslation(
+        body.lang,
+        body.entityType,
+        body.entityId,
+        body.field,
+        body.value,
       );
     }
-    return this.translationService.upsertTranslation(
-      lang,
-      entityType,
-      entityId,
-      field,
-      value,
+    throw new BadRequestException(
+      'Invalid payload: provide { text, target, source? } for translation or { lang, entityType, entityId, field, value } for upsert',
     );
   }
 

@@ -310,3 +310,48 @@ body.lang-hi, body.lang-cg {
     color: white !important;
   }
 }
+
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   PHASE P12: WCAG 2.1 AA ACCESSIBILITY & LOW-LITERACY CSS RULES
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* Large Text Mode */
+html.large-text {
+  font-size: 115% !important;
+}
+
+/* High Contrast Mode */
+html.high-contrast {
+  --background: #000000 !important;
+  --foreground: #FFFFFF !important;
+  --primary: #FFD700 !important;
+  --secondary: #FF6600 !important;
+}
+
+html.high-contrast body {
+  background-color: #0b0c10 !important;
+  color: #ffffff !important;
+}
+
+html.high-contrast a,
+html.high-contrast button {
+  outline: 2px solid #FFD700 !important;
+}
+
+/* Reduced Motion Mode */
+html.reduced-motion *,
+html.reduced-motion *::before,
+html.reduced-motion *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* Low Literacy Mode */
+html.low-literacy body {
+  font-size: 1.125rem !important;
+  line-height: 1.8 !important;
+  letter-spacing: 0.02em !important;
+}

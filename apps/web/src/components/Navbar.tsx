@@ -1,5 +1,8 @@
 "use client";
 
+import { FontSizeControl } from "./accessibility/FontSizeControl";
+import { LowLiteracyToggle } from "./accessibility/LowLiteracyToggle";
+
 import Link from "next/link";
 import { LogOut, Menu, X, UserCircle, Globe } from "lucide-react";
 import { useState } from "react";
@@ -56,6 +59,8 @@ export function Navbar() {
           </button>
         </div>
 
+        <FontSizeControl />
+        <LowLiteracyToggle />
         {/* Accessibility Toggle */}
         <button
           onClick={toggleAccessibilityMode}

@@ -22,6 +22,7 @@ export class GoogleTranslateService {
     en: 'en',
     hi: 'hi',
     cg: 'hi', // Route Chhattisgarhi through Hindi; glossary engine handles dialect
+    hne: 'hi', // ISO-639-3 code for Chhattisgarhi
   };
 
   constructor(private readonly config: ConfigService) {
