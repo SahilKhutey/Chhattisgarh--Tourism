@@ -97,7 +97,29 @@ export class GlossaryService {
     return processedText;
   }
 
+  
   /**
+   * Look up a direct term match in the regional tourism glossary.
+   */
+  findTerm(text: string, lang: string): string | null {
+    if (!text) return null;
+    const normalized = text.toLowerCase().trim();
+    const targetField = (lang === 'cg' || lang === 'hne') ? 'cg' : (lang === 'hi' ? 'hi' : null);
+    if (!targetField) return null;
+
+    if (this.glossary[normalized] && this.glossary[normalized][targetField]) {
+      return this.glossary[normalized][targetField];
+    }
+
+    const stripped = normalized.replace(/[^a-zA-Z0-9\s]/g, '').trim();
+    if (this.glossary[stripped] && this.glossary[stripped][targetField]) {
+      return this.glossary[stripped][targetField];
+    }
+
+    return null;
+  }
+
+/**
    * Validate a translation against the glossary.
    * Returns validation status and improvement suggestions.
    */
