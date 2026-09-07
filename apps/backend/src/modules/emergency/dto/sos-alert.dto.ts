@@ -1,21 +1,38 @@
-import { IsNumber, IsString, IsNotEmpty, IsOptional } from 'class-validator';
+import {
+  IsNumber,
+  IsString,
+  IsNotEmpty,
+  IsOptional,
+  Max,
+  MaxLength,
+  Min,
+} from 'class-validator';
 
 export class SosAlertDto {
   @IsNumber()
-  latitude: number;
+  @Min(-90)
+  @Max(90)
+  latitude!: number;
 
   @IsNumber()
-  longitude: number;
+  @Min(-180)
+  @Max(180)
+  longitude!: number;
 
   @IsString()
-  @IsNotEmpty({ message: 'Tourist full name is required for rescue coordination.' })
-  touristName: string;
+  @IsNotEmpty({
+    message: 'Tourist full name is required for rescue coordination.',
+  })
+  @MaxLength(150)
+  touristName!: string;
 
   @IsString()
   @IsOptional()
+  @MaxLength(30)
   touristPhone?: string;
 
   @IsString()
   @IsOptional()
+  @MaxLength(1000)
   medicalNotes?: string;
 }
