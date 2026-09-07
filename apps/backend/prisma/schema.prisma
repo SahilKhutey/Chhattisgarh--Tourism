@@ -118,8 +118,8 @@ model Place {
   // RELATIONS
   // ─────────────────────────────────────────────
 
-  category            Category            @relation(fields: [categoryId], references: [id])
-  contentOwner        User?               @relation("PlaceContentOwner", fields: [contentOwnerId], references: [id], onDelete: SetNull)
+  category            Category              @relation(fields: [categoryId], references: [id])
+  contentOwner        User?                 @relation("PlaceContentOwner", fields: [contentOwnerId], references: [id], onDelete: SetNull)
   media               Media[]
   metadata            PlaceMetadata?
   weather             PlaceWeather?
@@ -128,6 +128,7 @@ model Place {
   bookmarks           Bookmark[]
   bookings            Booking[]
   scores              DestinationScore?
+  planningProfile     PlacePlanningProfile?
   events              TourismEvent[]
   systemFlags         SystemFlag[]
   verificationHistory PlaceVerification[]
@@ -555,6 +556,24 @@ model AggregatedContent {
 // ─────────────────────────────────────────────────────────────────────────────
 // ATIS (AUTONOMOUS TOURISM INTELLIGENCE SYSTEM) MODELS
 // ─────────────────────────────────────────────────────────────────────────────
+
+model PlacePlanningProfile {
+  id      String @id @default(uuid())
+  placeId String @unique
+
+  visitorCapacity       Int?
+  estimatedVisitMinutes Int  @default(90)
+
+  planningEnabled Boolean @default(true)
+
+  seasonalAvailability String?
+  planningNotes        String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  place Place @relation(fields: [placeId], references: [id], onDelete: Cascade)
+}
 
 model DestinationScore {
   id             String   @id @default(uuid())
