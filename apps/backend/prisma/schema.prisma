@@ -132,12 +132,24 @@ model Place {
   systemFlags         SystemFlag[]
   verificationHistory PlaceVerification[]
 
+  // ─────────────────────────────────────────────
+  // GEOSPATIAL HIERARCHY (PHASE P7)
+  // ─────────────────────────────────────────────
+  districtRelId       String?
+  districtRel         District?    @relation(fields: [districtRelId], references: [id], onDelete: SetNull)
+  touristZoneId       String?
+  touristZone         TouristZone? @relation(fields: [touristZoneId], references: [id], onDelete: SetNull)
+  coordinateValidated Boolean      @default(false)
+  boundaryValidated   Boolean      @default(false)
+
   @@index([contentStatus])
   @@index([verificationLevel])
   @@index([contentOwnerId])
   @@index([verified])
   @@index([district])
   @@index([categoryId])
+  @@index([districtRelId])
+  @@index([touristZoneId])
 }
 
 model PlaceVerification {
@@ -587,4 +599,113 @@ model SystemFlag {
 
   place Place? @relation(fields: [placeId], references: [id], onDelete: Cascade)
   media Media? @relation(fields: [mediaId], references: [id], onDelete: Cascade)
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GEOSPATIAL & REGIONAL ADMINISTRATIVE HIERARCHY (PHASE P7)
+// ─────────────────────────────────────────────────────────────────────────────
+
+enum GeoStatus {
+  DRAFT
+  ACTIVE
+  ARCHIVED
+}
+
+model Division {
+  id     String    @id @default(uuid())
+  name   String
+  slug   String    @unique
+  nameHi String?
+  code   String    @unique
+  status GeoStatus @default(ACTIVE)
+
+  districts District[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([slug])
+}
+
+model District {
+  id         String    @id @default(uuid())
+  divisionId String
+  division   Division  @relation(fields: [divisionId], references: [id], onDelete: Restrict)
+  name       String
+  slug       String    @unique
+  nameHi     String?
+  code       String    @unique
+  latitude   Decimal?  @db.Decimal(9, 6)
+  longitude  Decimal?  @db.Decimal(9, 6)
+  status     GeoStatus @default(ACTIVE)
+
+  zones    TouristZone[]
+  places   Place[]
+  boundary DistrictBoundary?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([divisionId])
+  @@index([status])
+  @@index([slug])
+}
+
+model TouristZone {
+  id          String    @id @default(uuid())
+  districtId  String
+  district    District  @relation(fields: [districtId], references: [id], onDelete: Restrict)
+  name        String
+  slug        String    @unique
+  description String?
+  latitude    Decimal?  @db.Decimal(9, 6)
+  longitude   Decimal?  @db.Decimal(9, 6)
+  status      GeoStatus @default(ACTIVE)
+
+  places    Place[]
+  geoPlaces GeoPlace[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([districtId])
+  @@index([status])
+  @@index([slug])
+}
+
+model DistrictBoundary {
+  id            String    @id @default(uuid())
+  districtId    String    @unique
+  district      District  @relation(fields: [districtId], references: [id], onDelete: Cascade)
+  source        String
+  sourceVersion String?
+  validatedAt   DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([districtId])
+}
+
+model GeoPlace {
+  id                  String      @id @default(uuid())
+  touristZoneId       String
+  touristZone         TouristZone @relation(fields: [touristZoneId], references: [id], onDelete: Restrict)
+  externalPlaceId     String?     @unique
+  name                String
+  slug                String      @unique
+  latitude            Decimal     @db.Decimal(9, 6)
+  longitude           Decimal     @db.Decimal(9, 6)
+  elevationM          Decimal?    @db.Decimal(8, 2)
+  status              GeoStatus   @default(ACTIVE)
+  coordinateValidated Boolean     @default(false)
+  boundaryValidated   Boolean     @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([touristZoneId])
+  @@index([latitude, longitude])
+  @@index([status])
 }

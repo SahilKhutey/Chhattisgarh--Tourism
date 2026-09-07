@@ -1,0 +1,299 @@
+[
+  {
+    "code": "DIST-RAIPUR",
+    "name": "Raipur",
+    "nameHi": "रायपुर",
+    "divisionCode": "DIV-RAIPUR",
+    "slug": "raipur",
+    "latitude": 21.2514,
+    "longitude": 81.6296
+  },
+  {
+    "code": "DIST-BALODABAZAR",
+    "name": "Baloda Bazar",
+    "nameHi": "बलौदा बाज़ार - भाटापारा",
+    "divisionCode": "DIV-RAIPUR",
+    "slug": "baloda-bazar",
+    "latitude": 21.66,
+    "longitude": 82.16
+  },
+  {
+    "code": "DIST-GARIABAND",
+    "name": "Gariaband",
+    "nameHi": "गरियाबंद",
+    "divisionCode": "DIV-RAIPUR",
+    "slug": "gariaband",
+    "latitude": 20.9631,
+    "longitude": 82.0831
+  },
+  {
+    "code": "DIST-DHAMTARI",
+    "name": "Dhamtari",
+    "nameHi": "धमतरी",
+    "divisionCode": "DIV-RAIPUR",
+    "slug": "dhamtari",
+    "latitude": 20.7071,
+    "longitude": 81.5498
+  },
+  {
+    "code": "DIST-MAHASAMUND",
+    "name": "Mahasamund",
+    "nameHi": "महासमुंद",
+    "divisionCode": "DIV-RAIPUR",
+    "slug": "mahasamund",
+    "latitude": 21.109,
+    "longitude": 82.097
+  },
+  {
+    "code": "DIST-DURG",
+    "name": "Durg",
+    "nameHi": "दुर्ग",
+    "divisionCode": "DIV-DURG",
+    "slug": "durg",
+    "latitude": 21.1904,
+    "longitude": 81.2849
+  },
+  {
+    "code": "DIST-BALOD",
+    "name": "Balod",
+    "nameHi": "बालोद",
+    "divisionCode": "DIV-DURG",
+    "slug": "balod",
+    "latitude": 20.73,
+    "longitude": 81.2
+  },
+  {
+    "code": "DIST-BEMETARA",
+    "name": "Bemetara",
+    "nameHi": "बेमेतरा",
+    "divisionCode": "DIV-DURG",
+    "slug": "bemetara",
+    "latitude": 21.7,
+    "longitude": 81.55
+  },
+  {
+    "code": "DIST-RAJNANDGAON",
+    "name": "Rajnandgaon",
+    "nameHi": "राजनंदगांव",
+    "divisionCode": "DIV-DURG",
+    "slug": "rajnandgaon",
+    "latitude": 21.0974,
+    "longitude": 81.0379
+  },
+  {
+    "code": "DIST-KABIRDHAM",
+    "name": "Kawardha",
+    "nameHi": "कबीरधाम (कवर्धा)",
+    "divisionCode": "DIV-DURG",
+    "slug": "kawardha",
+    "latitude": 22.0167,
+    "longitude": 81.25
+  },
+  {
+    "code": "DIST-KHAIRAGARH",
+    "name": "Khairagarh-Chhuikhadan-Gandai",
+    "nameHi": "खैरागढ़-छुईखदान-गंडई",
+    "divisionCode": "DIV-DURG",
+    "slug": "khairagarh-chhuikhadan-gandai",
+    "latitude": 21.4167,
+    "longitude": 80.9833
+  },
+  {
+    "code": "DIST-MOHLA-MANPUR",
+    "name": "Mohla-Manpur-Ambagarh Chowki",
+    "nameHi": "मोहला-मानपुर-अंबागढ़ चौकी",
+    "divisionCode": "DIV-DURG",
+    "slug": "mohla-manpur-ambagarh-chowki",
+    "latitude": 20.5833,
+    "longitude": 80.75
+  },
+  {
+    "code": "DIST-BILASPUR",
+    "name": "Bilaspur",
+    "nameHi": "बिलासपुर",
+    "divisionCode": "DIV-BILASPUR",
+    "slug": "bilaspur",
+    "latitude": 22.0797,
+    "longitude": 82.1409
+  },
+  {
+    "code": "DIST-MUNGELI",
+    "name": "Mungeli",
+    "nameHi": "मुंगेली",
+    "divisionCode": "DIV-BILASPUR",
+    "slug": "mungeli",
+    "latitude": 22.0667,
+    "longitude": 81.6833
+  },
+  {
+    "code": "DIST-KORBA",
+    "name": "Korba",
+    "nameHi": "कोरबा",
+    "divisionCode": "DIV-BILASPUR",
+    "slug": "korba",
+    "latitude": 22.3595,
+    "longitude": 82.7501
+  },
+  {
+    "code": "DIST-JANJGIR-CHAMPA",
+    "name": "Janjgir-Champa",
+    "nameHi": "जांजगीर-चांपा",
+    "divisionCode": "DIV-BILASPUR",
+    "slug": "janjgir-champa",
+    "latitude": 22.0089,
+    "longitude": 82.5714
+  },
+  {
+    "code": "DIST-SAKTI",
+    "name": "Sakti",
+    "nameHi": "सक्ती",
+    "divisionCode": "DIV-BILASPUR",
+    "slug": "sakti",
+    "latitude": 22.03,
+    "longitude": 82.96
+  },
+  {
+    "code": "DIST-RAIGARH",
+    "name": "Raigarh",
+    "nameHi": "रायगढ़",
+    "divisionCode": "DIV-BILASPUR",
+    "slug": "raigarh",
+    "latitude": 21.8974,
+    "longitude": 83.395
+  },
+  {
+    "code": "DIST-SARANGARH-BILAIGARH",
+    "name": "Sarangarh-Bilaigarh",
+    "nameHi": "सारंगढ़-बिलाईगढ़",
+    "divisionCode": "DIV-BILASPUR",
+    "slug": "sarangarh-bilaigarh",
+    "latitude": 21.5833,
+    "longitude": 83.0833
+  },
+  {
+    "code": "DIST-GAURELA-PENDRA-MARWAHI",
+    "name": "Gaurela-Pendra-Marwahi",
+    "nameHi": "गौरेला-पेंड्रा-मरवाही",
+    "divisionCode": "DIV-BILASPUR",
+    "slug": "gaurela-pendra-marwahi",
+    "latitude": 22.7667,
+    "longitude": 81.9167
+  },
+  {
+    "code": "DIST-BASTAR",
+    "name": "Bastar",
+    "nameHi": "बस्तर",
+    "divisionCode": "DIV-BASTAR",
+    "slug": "bastar",
+    "latitude": 19.0748,
+    "longitude": 82.0339
+  },
+  {
+    "code": "DIST-DANTEWADA",
+    "name": "Dantewada",
+    "nameHi": "दंतेवाड़ा (दक्षिण बस्तर)",
+    "divisionCode": "DIV-BASTAR",
+    "slug": "dantewada",
+    "latitude": 18.9,
+    "longitude": 81.35
+  },
+  {
+    "code": "DIST-KANKER",
+    "name": "Kanker",
+    "nameHi": "कांकेर (उत्तर बस्तर)",
+    "divisionCode": "DIV-BASTAR",
+    "slug": "kanker",
+    "latitude": 20.2719,
+    "longitude": 81.4932
+  },
+  {
+    "code": "DIST-KONDAGAON",
+    "name": "Kondagaon",
+    "nameHi": "कोंडागांव",
+    "divisionCode": "DIV-BASTAR",
+    "slug": "kondagaon",
+    "latitude": 19.6,
+    "longitude": 81.6667
+  },
+  {
+    "code": "DIST-NARAYANPUR",
+    "name": "Narayanpur",
+    "nameHi": "नारायणपुर",
+    "divisionCode": "DIV-BASTAR",
+    "slug": "narayanpur",
+    "latitude": 19.7167,
+    "longitude": 81.25
+  },
+  {
+    "code": "DIST-BIJAPUR",
+    "name": "Bijapur",
+    "nameHi": "बीजापुर",
+    "divisionCode": "DIV-BASTAR",
+    "slug": "bijapur",
+    "latitude": 18.7972,
+    "longitude": 80.8167
+  },
+  {
+    "code": "DIST-SUKMA",
+    "name": "Sukma",
+    "nameHi": "सुकमा",
+    "divisionCode": "DIV-BASTAR",
+    "slug": "sukma",
+    "latitude": 18.4,
+    "longitude": 81.6667
+  },
+  {
+    "code": "DIST-SURGUJA",
+    "name": "Surguja",
+    "nameHi": "सरगुजा",
+    "divisionCode": "DIV-SURGUJA",
+    "slug": "surguja",
+    "latitude": 23.12,
+    "longitude": 83.2
+  },
+  {
+    "code": "DIST-SURAJPUR",
+    "name": "Surajpur",
+    "nameHi": "सूरजपुर",
+    "divisionCode": "DIV-SURGUJA",
+    "slug": "surajpur",
+    "latitude": 23.22,
+    "longitude": 82.87
+  },
+  {
+    "code": "DIST-BALRAMPUR",
+    "name": "Balrampur",
+    "nameHi": "बलरामपुर-रामानुजगंज",
+    "divisionCode": "DIV-SURGUJA",
+    "slug": "balrampur",
+    "latitude": 23.61,
+    "longitude": 83.62
+  },
+  {
+    "code": "DIST-KORIYA",
+    "name": "Koriya",
+    "nameHi": "कोरिया",
+    "divisionCode": "DIV-SURGUJA",
+    "slug": "koriya",
+    "latitude": 23.25,
+    "longitude": 82.55
+  },
+  {
+    "code": "DIST-MANENDRAGARH",
+    "name": "Manendragarh-Chirmiri-Bharatpur",
+    "nameHi": "मनेंद्रगढ़-चिरमिरी-भरतपुर",
+    "divisionCode": "DIV-SURGUJA",
+    "slug": "manendragarh-chirmiri-bharatpur",
+    "latitude": 23.2,
+    "longitude": 82.2
+  },
+  {
+    "code": "DIST-JASHPUR",
+    "name": "Jashpur",
+    "nameHi": "जशपुर",
+    "divisionCode": "DIV-SURGUJA",
+    "slug": "jashpur",
+    "latitude": 22.88,
+    "longitude": 84.14
+  }
+]

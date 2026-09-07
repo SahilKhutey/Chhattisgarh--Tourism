@@ -1,0 +1,106 @@
+[
+  {
+    "name": "Bastar Heritage & Waterfalls Corridor",
+    "slug": "bastar-heritage-waterfalls",
+    "districtCode": "DIST-BASTAR",
+    "description": "Famous for Chitrakote, Tirathgarh, indigenous art and Dandami Maria culture.",
+    "latitude": 19.2,
+    "longitude": 81.85
+  },
+  {
+    "name": "Kanger Valley Eco Corridor",
+    "slug": "kanger-valley-eco-corridor",
+    "districtCode": "DIST-BASTAR",
+    "description": "Subterranean limestone caves, Sal forests, and endangered Bastar hill myna habitat.",
+    "latitude": 18.88,
+    "longitude": 81.95
+  },
+  {
+    "name": "Sirpur Archaeological Corridor",
+    "slug": "sirpur-archaeological-corridor",
+    "districtCode": "DIST-MAHASAMUND",
+    "description": "Ancient Buddhist monasteries, 7th century Laxman Temple, and Mahanadi river basin.",
+    "latitude": 21.34,
+    "longitude": 82.18
+  },
+  {
+    "name": "Bhoramdeo Heritage Circuit",
+    "slug": "bhoramdeo-heritage-circuit",
+    "districtCode": "DIST-KABIRDHAM",
+    "description": "11th-century Nagara temple architecture and Maikal hill range tribal sanctuaries.",
+    "latitude": 22.12,
+    "longitude": 81.15
+  },
+  {
+    "name": "Mainpat Hill Station Zone",
+    "slug": "mainpat-hill-station-zone",
+    "districtCode": "DIST-SURGUJA",
+    "description": "The Shimla of Chhattisgarh — Tibetan settlements, Jaljali bouncing earth, and Tiger Point falls.",
+    "latitude": 22.82,
+    "longitude": 83.29
+  },
+  {
+    "name": "Raipur Urban & Cultural Corridor",
+    "slug": "raipur-urban-cultural-corridor",
+    "districtCode": "DIST-RAIPUR",
+    "description": "Vivekananda Sarovar, Purkhouti Muktangan open-air tribal museum, and modern heritage hub.",
+    "latitude": 21.25,
+    "longitude": 81.63
+  },
+  {
+    "name": "Hasdeo Forest & Water Corridor",
+    "slug": "hasdeo-forest-corridor",
+    "districtCode": "DIST-KORBA",
+    "description": "Bango Dam, Kendai falls, and ancient dense Sal canopy forest.",
+    "latitude": 22.45,
+    "longitude": 82.6
+  },
+  {
+    "name": "Ratanpur Sacred Temple Circuit",
+    "slug": "ratanpur-sacred-circuit",
+    "districtCode": "DIST-BILASPUR",
+    "description": "Historical capital of Kalachuris with Mahamaya Temple and ancient sacred tanks.",
+    "latitude": 22.3,
+    "longitude": 82.16
+  },
+  {
+    "name": "Danteshwari Spiritual Corridor",
+    "slug": "danteshwari-spiritual-corridor",
+    "districtCode": "DIST-DANTEWADA",
+    "description": "52nd Shakti Peeth at confluence of Shankini and Dankini rivers, and Bailadila hills.",
+    "latitude": 18.9,
+    "longitude": 81.35
+  },
+  {
+    "name": "Barnawapara Wildlife Reserve Zone",
+    "slug": "barnawapara-wildlife-zone",
+    "districtCode": "DIST-BALODABAZAR",
+    "description": "Teak and bamboo sanctuary teeming with Indian bison, leopards, and flying squirrels.",
+    "latitude": 21.4,
+    "longitude": 82.42
+  },
+  {
+    "name": "Champaran Cultural Corridor",
+    "slug": "champaran-cultural-corridor",
+    "districtCode": "DIST-RAIPUR",
+    "description": "Birthplace of saint Vallabhacharya and holy Mahanadi confluence.",
+    "latitude": 20.98,
+    "longitude": 81.85
+  },
+  {
+    "name": "Madku Dweep Pilgrimage Island",
+    "slug": "madku-dweep-island",
+    "districtCode": "DIST-BILASPUR",
+    "description": "Historic river island with excavated 10th-century stone temple ruins on Shivnath river.",
+    "latitude": 21.75,
+    "longitude": 81.83
+  },
+  {
+    "name": "Achanakmar Biosphere Corridor",
+    "slug": "achanakmar-biosphere-corridor",
+    "districtCode": "DIST-GAURELA-PENDRA-MARWAHI",
+    "description": "Pristine tiger reserve, part of Achanakmar-Amarkantak UNESCO biosphere reserve.",
+    "latitude": 22.5,
+    "longitude": 81.75
+  }
+]
