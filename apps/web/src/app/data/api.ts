@@ -262,37 +262,23 @@ function getFallbackDestinations(): Destination[] {
 }
 
 export async function fetchPlaces(categorySlug?: string, district?: string): Promise<Destination[]> {
-  try {
-    const searchParams = new URLSearchParams();
-    if (categorySlug) searchParams.set("category", categorySlug);
-    if (district) searchParams.set("district", district);
+  const searchParams = new URLSearchParams();
+  if (categorySlug) searchParams.set("category", categorySlug);
+  if (district) searchParams.set("district", district);
 
-    const query = searchParams.toString();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const data = await fetchJsonWithRetry<any[]>(
-      `${API_BASE}/places${query ? `?${query}` : ""}`,
-      { next: { revalidate: 10 } },
-    );
-    return data.map(mapBackendPlace);
-  } catch (error) {
-    console.error("[places] Falling back to bundled destinations because the backend is unavailable.", error);
-    return getFallbackDestinations().filter((place) => {
-      const matchesCategory = !categorySlug || place.category === categorySlug;
-      const matchesDistrict = !district || place.district === district;
-      return matchesCategory && matchesDistrict;
-    });
-  }
+  const query = searchParams.toString();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const data = await fetchJsonWithRetry<any[]>(
+    `${API_BASE}/places${query ? `?${query}` : ""}`,
+    { next: { revalidate: 10 } },
+  );
+  return data.map(mapBackendPlace);
 }
 
 export async function fetchPlaceBySlug(slug: string): Promise<Destination | null> {
-  try {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const data = await fetchJsonWithRetry<any>(`${API_BASE}/places/${slug}`, { next: { revalidate: 10 } });
-    return mapBackendPlace(data);
-  } catch (error) {
-    console.error(`[places] Falling back to bundled destination for slug '${slug}'.`, error);
-    return getFallbackDestinations().find((place) => place.id === slug) ?? null;
-  }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const data = await fetchJsonWithRetry<any>(`${API_BASE}/places/${slug}`, { next: { revalidate: 10 } });
+  return mapBackendPlace(data);
 }
 
 export async function fetchCreators(): Promise<{ creators: Creator[]; videos: CreatorVideo[] }> {
