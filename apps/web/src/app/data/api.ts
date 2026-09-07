@@ -87,6 +87,10 @@ export interface Destination {
     nearestStation?: string;
     dynamicRoutes?: any[];
   };
+  placeId?: string;
+  bookingEnabled?: boolean;
+  bookingPricePaise?: number;
+  bookingMaxGuests?: number;
 }
 
 export interface AtisStats {
@@ -223,6 +227,10 @@ function mapBackendPlace(p: any): Destination {
       nearestStation: p.transport.nearestStation,
       dynamicRoutes: typeof p.transport.dynamicRoutes === 'string' ? JSON.parse(p.transport.dynamicRoutes || '[]') : p.transport.dynamicRoutes,
     } : undefined,
+    placeId: p.id,
+    bookingEnabled: p.bookingEnabled ?? true,
+    bookingPricePaise: p.bookingPricePaise ?? 0,
+    bookingMaxGuests: p.bookingMaxGuests ?? 20,
   };
 }
 
@@ -552,4 +560,58 @@ export async function approvePlace(placeId: string, level: string, token?: strin
   if (!res.ok) throw new Error("Failed to approve place");
   return res.json();
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Reviews & Feedback (Phase P10)
+// ─────────────────────────────────────────────────────────────────────────────
+
+export interface PlaceReviewSummary {
+  totalReviews: number;
+  averageRating: number;
+  distribution: Record<number, number>;
+}
+
+export interface PlaceReviewItem {
+  id: string;
+  rating: number;
+  comment: string;
+  lang: string;
+  helpful: number;
+  createdAt: string;
+  reviewer: {
+    fullName: string;
+    avatar?: string | null;
+  };
+}
+
+export interface PlaceReviewsResponse {
+  summary: PlaceReviewSummary;
+  reviews: PlaceReviewItem[];
+}
+
+export async function fetchPlaceReviews(placeId: string): Promise<PlaceReviewsResponse> {
+  const res = await fetch(`${API_BASE}/reviews/place/${placeId}`);
+  if (!res.ok) throw new Error("Failed to fetch destination reviews");
+  return res.json();
+}
+
+export async function submitVerifiedReview(
+  data: { placeId: string; bookingId: string; rating: number; comment: string; lang?: string },
+  token: string
+) {
+  const res = await fetch(`${API_BASE}/reviews`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || "Failed to submit review");
+  }
+  return res.json();
+}
+
 

@@ -18,6 +18,7 @@ import { ItineraryModule } from './modules/itinerary/itinerary.module';
 import { TranslationModule } from './modules/translation/translation.module';
 import { CommunityModule } from './modules/community/community.module';
 import { BookingsModule } from './modules/bookings/bookings.module';
+import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { AggregationModule } from './modules/aggregation/aggregation.module';
 import { PrismaService } from './database/prisma.service';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
@@ -63,6 +64,7 @@ import { envSchema } from './config/env.schema';
     ItineraryModule,
     TranslationModule,
     BookingsModule,
+    AnalyticsModule,
     CommunityModule,
     AggregationModule,
     WeatherModule,

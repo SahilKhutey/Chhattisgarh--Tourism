@@ -1,103 +1,282 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import {
+  BadRequestException,
+  ConflictException,
+  ForbiddenException,
+  NotFoundException,
+} from '@nestjs/common';
 import { ReviewsService } from './reviews.service';
-import { PrismaService } from '../../database/prisma.service';
-import { NotFoundException } from '@nestjs/common';
 
 describe('ReviewsService Unit Tests', () => {
   let service: ReviewsService;
-  let prismaMock: any;
+  let prisma: any;
 
-  beforeEach(async () => {
-    prismaMock = {
-      place: {
+  beforeEach(() => {
+    prisma = {
+      booking: {
         findUnique: jest.fn(),
       },
       review: {
+        findFirst: jest.fn(),
         create: jest.fn(),
         findMany: jest.fn(),
       },
+      place: {
+        findUnique: jest.fn(),
+      },
+      analyticsEvent: {
+        create: jest.fn(),
+      },
+      $transaction: jest.fn(async (callback: (tx: any) => Promise<any>) =>
+        callback(prisma),
+      ),
     };
 
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        ReviewsService,
-        {
-          provide: PrismaService,
-          useValue: prismaMock,
+    service = new ReviewsService(prisma);
+  });
+
+  describe('createReview', () => {
+    it('creates a review for a completed booking and emits analytics event', async () => {
+      prisma.booking.findUnique.mockResolvedValue({
+        id: 'booking-id',
+        userId: 'user-id',
+        placeId: 'place-id',
+        status: 'COMPLETED',
+        review: null,
+        place: {
+          id: 'place-id',
         },
-      ],
-    }).compile();
-
-    service = module.get<ReviewsService>(ReviewsService);
-  });
-
-  it('should be successfully initialized', () => {
-    expect(service).toBeDefined();
-  });
-
-  describe('createReview operations tests', () => {
-    it('should throw NotFoundException if targeted place ID is invalid or missing in PostgreSQL', async () => {
-      const reviewDto = {
-        placeId: 'invalid-place-uuid',
-        rating: 5,
-        comment: 'This is a beautiful regional path cascades.',
-      };
-      prismaMock.place.findUnique.mockResolvedValue(null);
-
-      await expect(service.createReview('user-uuid-1', reviewDto)).rejects.toThrow(NotFoundException);
-    });
-
-    it('should persist new review node and return reviewer metadata successfully', async () => {
-      const reviewDto = {
-        placeId: 'valid-place-uuid',
-        rating: 5,
-        comment: 'Beautiful forest views at Chitrakote Falls!',
-      };
-
-      prismaMock.place.findUnique.mockResolvedValue({ id: 'valid-place-uuid', name: 'Chitrakote Falls' });
-      prismaMock.review.create.mockResolvedValue({
-        id: 'new-review-uuid',
-        rating: 5,
-        comment: 'Beautiful forest views at Chitrakote Falls!',
-        createdAt: new Date(),
-        user: { fullName: 'Aarav Mandavi' },
       });
 
-      const result = await service.createReview('user-uuid-1', reviewDto);
+      prisma.review.findFirst.mockResolvedValue(null);
+
+      prisma.review.create.mockResolvedValue({
+        id: 'review-id',
+        rating: 5,
+        comment: 'Excellent experience visiting the falls',
+        lang: 'en',
+        createdAt: new Date(),
+        user: {
+          fullName: 'Test User',
+          avatar: null,
+        },
+      });
+
+      const result = await service.createReview('user-id', {
+        placeId: 'place-id',
+        bookingId: 'booking-id',
+        rating: 5,
+        comment: 'Excellent experience visiting the falls',
+      });
 
       expect(result.success).toBe(true);
-      expect(result.review.rating).toBe(5);
-      expect(result.review.reviewer).toBe('Aarav Mandavi');
-      expect(prismaMock.review.create).toHaveBeenCalled();
+      expect(prisma.review.create).toHaveBeenCalled();
+      expect(prisma.analyticsEvent.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            name: 'review_submitted',
+            userId: 'user-id',
+            placeId: 'place-id',
+            bookingId: 'booking-id',
+          }),
+        }),
+      );
+    });
+
+    it('rejects unknown booking with NotFoundException', async () => {
+      prisma.booking.findUnique.mockResolvedValue(null);
+
+      await expect(
+        service.createReview('user-id', {
+          placeId: 'place-id',
+          bookingId: 'missing-booking',
+          rating: 5,
+          comment: 'Excellent experience',
+        }),
+      ).rejects.toBeInstanceOf(NotFoundException);
+    });
+
+    it('rejects another user booking with ForbiddenException', async () => {
+      prisma.booking.findUnique.mockResolvedValue({
+        id: 'booking-id',
+        userId: 'other-user',
+        placeId: 'place-id',
+        status: 'COMPLETED',
+        review: null,
+      });
+
+      await expect(
+        service.createReview('user-id', {
+          placeId: 'place-id',
+          bookingId: 'booking-id',
+          rating: 5,
+          comment: 'Excellent experience',
+        }),
+      ).rejects.toBeInstanceOf(ForbiddenException);
+    });
+
+    it('rejects incomplete booking with BadRequestException', async () => {
+      prisma.booking.findUnique.mockResolvedValue({
+        id: 'booking-id',
+        userId: 'user-id',
+        placeId: 'place-id',
+        status: 'CONFIRMED',
+        review: null,
+      });
+
+      await expect(
+        service.createReview('user-id', {
+          placeId: 'place-id',
+          bookingId: 'booking-id',
+          rating: 5,
+          comment: 'Excellent experience',
+        }),
+      ).rejects.toBeInstanceOf(BadRequestException);
+    });
+
+    it('rejects duplicate review via relation with ConflictException', async () => {
+      prisma.booking.findUnique.mockResolvedValue({
+        id: 'booking-id',
+        userId: 'user-id',
+        placeId: 'place-id',
+        status: 'COMPLETED',
+        review: {
+          id: 'existing-review',
+        },
+      });
+
+      await expect(
+        service.createReview('user-id', {
+          placeId: 'place-id',
+          bookingId: 'booking-id',
+          rating: 5,
+          comment: 'Excellent experience',
+        }),
+      ).rejects.toBeInstanceOf(ConflictException);
+    });
+
+    it('rejects duplicate review via existing record query with ConflictException', async () => {
+      prisma.booking.findUnique.mockResolvedValue({
+        id: 'booking-id',
+        userId: 'user-id',
+        placeId: 'place-id',
+        status: 'COMPLETED',
+        review: null,
+      });
+      prisma.review.findFirst.mockResolvedValue({ id: 'existing-review' });
+
+      await expect(
+        service.createReview('user-id', {
+          placeId: 'place-id',
+          bookingId: 'booking-id',
+          rating: 5,
+          comment: 'Excellent experience',
+        }),
+      ).rejects.toBeInstanceOf(ConflictException);
+    });
+
+    it('rejects mismatched place and booking with BadRequestException', async () => {
+      prisma.booking.findUnique.mockResolvedValue({
+        id: 'booking-id',
+        userId: 'user-id',
+        placeId: 'another-place',
+        status: 'COMPLETED',
+        review: null,
+      });
+
+      await expect(
+        service.createReview('user-id', {
+          placeId: 'place-id',
+          bookingId: 'booking-id',
+          rating: 5,
+          comment: 'Excellent experience',
+        }),
+      ).rejects.toBeInstanceOf(BadRequestException);
     });
   });
 
-  describe('getPlaceReviews chronological feeds tests', () => {
-    it('should throw NotFoundException if place ID does not exist in PostgreSQL', async () => {
-      prismaMock.place.findUnique.mockResolvedValue(null);
-      await expect(service.getPlaceReviews('invalid-place-uuid')).rejects.toThrow(NotFoundException);
+  describe('getPlaceReviews & Rating Aggregation', () => {
+    it('throws NotFoundException if destination does not exist', async () => {
+      prisma.place.findUnique.mockResolvedValue(null);
+
+      await expect(
+        service.getPlaceReviews('missing-place'),
+      ).rejects.toBeInstanceOf(NotFoundException);
     });
 
-    it('should return reviews feed mapped with reviewer profile information', async () => {
-      prismaMock.place.findUnique.mockResolvedValue({ id: 'valid-place-uuid' });
+    it('calculates rating distribution and average rating correctly', async () => {
+      prisma.place.findUnique.mockResolvedValue({
+        id: 'place-id',
+      });
 
-      const mockDbReviews = [
+      prisma.review.findMany.mockResolvedValue([
         {
-          id: 'r-1',
+          id: '1',
           rating: 5,
-          comment: 'Perfect local trails!',
+          comment: 'Excellent destination',
+          lang: 'en',
+          helpful: 2,
           createdAt: new Date(),
-          user: { fullName: 'Aarav Mandavi', avatar: 'avatar_url' },
+          user: {
+            fullName: 'A',
+            avatar: null,
+          },
         },
-      ];
-      prismaMock.review.findMany.mockResolvedValue(mockDbReviews);
+        {
+          id: '2',
+          rating: 4,
+          comment: 'Very good destination',
+          lang: 'en',
+          helpful: 1,
+          createdAt: new Date(),
+          user: {
+            fullName: 'B',
+            avatar: null,
+          },
+        },
+        {
+          id: '3',
+          rating: 5,
+          comment: 'Wonderful experience',
+          lang: 'en',
+          helpful: 3,
+          createdAt: new Date(),
+          user: {
+            fullName: 'C',
+            avatar: null,
+          },
+        },
+      ]);
 
-      const result = await service.getPlaceReviews('valid-place-uuid');
+      const result = await service.getPlaceReviews('place-id');
 
-      expect(result.length).toBe(1);
-      expect(result[0].reviewer.fullName).toBe('Aarav Mandavi');
-      expect(result[0].comment).toBe('Perfect local trails!');
-      expect(prismaMock.review.findMany).toHaveBeenCalled();
+      expect(result.summary.totalReviews).toBe(3);
+      expect(result.summary.averageRating).toBe(4.67);
+      expect(result.summary.distribution[5]).toBe(2);
+      expect(result.summary.distribution[4]).toBe(1);
+      expect(result.summary.distribution[3]).toBe(0);
+      expect(result.summary.distribution[2]).toBe(0);
+      expect(result.summary.distribution[1]).toBe(0);
+      expect(result.reviews.length).toBe(3);
+    });
+
+    it('handles destination with zero reviews gracefully', async () => {
+      prisma.place.findUnique.mockResolvedValue({
+        id: 'place-id',
+      });
+      prisma.review.findMany.mockResolvedValue([]);
+
+      const result = await service.getPlaceReviews('place-id');
+
+      expect(result.summary.totalReviews).toBe(0);
+      expect(result.summary.averageRating).toBe(0);
+      expect(result.summary.distribution).toEqual({
+        1: 0,
+        2: 0,
+        3: 0,
+        4: 0,
+        5: 0,
+      });
+      expect(result.reviews).toEqual([]);
     });
   });
 });

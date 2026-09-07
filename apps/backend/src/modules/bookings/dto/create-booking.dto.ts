@@ -1,29 +1,55 @@
-import { IsString, IsNotEmpty, IsNumber, IsDateString, IsOptional, Min } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import {
+  IsDateString,
+  IsInt,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  IsUUID,
+  Length,
+  Max,
+  Min,
+} from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateBookingDto {
-  @ApiProperty({ description: 'ID of the place to book' })
-  @IsString()
+  @ApiProperty({
+    description: 'ID of the destination place',
+  })
+  @IsUUID('4')
   @IsNotEmpty()
-  placeId: string;
+  placeId!: string;
 
-  @ApiProperty({ description: 'Date of the visit' })
+  @ApiProperty({
+    description: 'Requested visit date',
+    example: '2026-12-25T10:00:00.000Z',
+  })
   @IsDateString()
   @IsNotEmpty()
-  visitDate: string;
+  visitDate!: string;
 
-  @ApiProperty({ description: 'Number of guests', default: 1 })
-  @IsNumber()
+  @ApiProperty({
+    description: 'Number of guests',
+    minimum: 1,
+    maximum: 20,
+  })
+  @IsInt()
   @Min(1)
-  guests: number;
+  @Max(20)
+  guests!: number;
 
-  @ApiProperty({ description: 'Optional contact phone number', required: false })
-  @IsString()
+  @ApiPropertyOptional({
+    description: 'Contact phone number',
+  })
   @IsOptional()
+  @IsString()
+  @Length(7, 20)
   contactPhone?: string;
 
-  @ApiProperty({ description: 'Optional special notes', required: false })
-  @IsString()
+  @ApiPropertyOptional({
+    description: 'Special booking notes',
+  })
   @IsOptional()
+  @IsString()
+  @Length(0, 1000)
   notes?: string;
 }
