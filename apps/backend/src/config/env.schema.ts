@@ -86,4 +86,14 @@ export const envSchema = Joi.object({
       'verbose',
     )
     .default('info'),
+
+  BOOKING_PLATFORM_FEE_BPS: Joi.number()
+    .integer()
+    .min(0)
+    .max(10000)
+    .default(500),
+
+  BOOKING_CURRENCY: Joi.string()
+    .min(1)
+    .default('INR'),
 });
