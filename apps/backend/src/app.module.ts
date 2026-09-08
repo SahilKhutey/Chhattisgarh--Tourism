@@ -28,6 +28,10 @@ import { TransportModule } from './modules/transport/transport.module';
 import { GeoModule } from './geo/geo.module';
 import { HealthModule } from './modules/health/health.module';
 import { MobileModule } from './modules/mobile/mobile.module';
+import { GeographyModule } from './modules/geography/geography.module';
+import { ContentHealthModule } from './modules/content-health/content-health.module';
+import { IntelligenceModule } from './modules/intelligence/intelligence.module';
+import { AlertsModule } from './modules/alerts/alerts.module';
 import { StructuredLoggerService } from './common/logger/structured-logger.service';
 import { CorrelationIdMiddleware } from './common/middleware/correlation-id.middleware';
 import { HttpLoggingInterceptor } from './common/interceptors/http-logging.interceptor';
@@ -77,6 +81,10 @@ import { envSchema } from './config/env.schema';
     GeoModule,
     HealthModule,
     MobileModule,
+    GeographyModule,
+    ContentHealthModule,
+    IntelligenceModule,
+    AlertsModule,
   ],
   providers: [
     PrismaService,

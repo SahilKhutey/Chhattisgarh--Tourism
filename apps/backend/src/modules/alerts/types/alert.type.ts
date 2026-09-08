@@ -1,0 +1,16 @@
+export enum AlertSeverity {
+  INFO = 'INFO',
+  WARNING = 'WARNING',
+  CRITICAL = 'CRITICAL',
+}
+
+export type AlertType =
+  | 'CONTENT_STALE'
+  | 'CONTENT_INVALID'
+  | 'GEO_INVALID'
+  | 'HIGH_SOS_ACTIVITY'
+  | 'BOOKING_FAILURE_SPIKE'
+  | 'API_ERROR_SPIKE'
+  | 'DESTINATION_DEMAND_SPIKE'
+  | 'OFFLINE_SYNC_FAILURE'
+  | 'MEDIA_FAILURE';
