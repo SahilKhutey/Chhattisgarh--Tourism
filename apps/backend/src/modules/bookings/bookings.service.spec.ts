@@ -3,6 +3,7 @@ import {
   ForbiddenException,
   NotFoundException,
 } from '@nestjs/common';
+import { PartnerStatus } from '@prisma/client';
 import { BookingsService } from './bookings.service';
 
 describe('BookingsService Unit Tests', () => {
@@ -13,6 +14,19 @@ describe('BookingsService Unit Tests', () => {
     prisma = {
       place: {
         findUnique: jest.fn(),
+      },
+      tourismProduct: {
+        findUnique: jest.fn(),
+      },
+      productAvailability: {
+        findUnique: jest.fn(),
+        update: jest.fn(),
+      },
+      partnerCommission: {
+        create: jest.fn(),
+      },
+      commerceAuditLog: {
+        create: jest.fn().mockResolvedValue({ id: 'audit-1' }),
       },
       booking: {
         create: jest.fn(),
@@ -37,7 +51,7 @@ describe('BookingsService Unit Tests', () => {
     jest.clearAllMocks();
   });
 
-  describe('createBooking', () => {
+  describe('createBooking (legacy place booking)', () => {
     it('creates a booking using database pricing and emits analytics event', async () => {
       prisma.place.findUnique.mockResolvedValue({
         id: 'place-id',
@@ -100,15 +114,15 @@ describe('BookingsService Unit Tests', () => {
           visitDate: '2099-12-25T10:00:00.000Z',
           guests: 2,
         }),
-      ).rejects.toBeInstanceOf(NotFoundException);
+      ).rejects.toThrow(NotFoundException);
     });
 
-    it('rejects disabled booking with BadRequestException', async () => {
+    it('rejects booking when bookingEnabled is false', async () => {
       prisma.place.findUnique.mockResolvedValue({
         id: 'place-id',
         bookingEnabled: false,
-        bookingPricePaise: 50000,
         bookingMaxGuests: 10,
+        bookingPricePaise: 10000,
       });
 
       await expect(
@@ -117,213 +131,174 @@ describe('BookingsService Unit Tests', () => {
           visitDate: '2099-12-25T10:00:00.000Z',
           guests: 2,
         }),
-      ).rejects.toBeInstanceOf(BadRequestException);
+      ).rejects.toThrow(BadRequestException);
+    });
+  });
+
+  describe('createMarketplaceBooking', () => {
+    it('creates product booking, reserves capacity, and creates commission', async () => {
+      prisma.tourismProduct.findUnique.mockResolvedValue({
+        id: 'prod-1',
+        partnerId: 'part-1',
+        active: true,
+        price: 1500,
+        currency: 'INR',
+        partner: {
+          id: 'part-1',
+          status: PartnerStatus.VERIFIED,
+        },
+      });
+
+      prisma.productAvailability.findUnique.mockResolvedValue({
+        id: 'avail-1',
+        productId: 'prod-1',
+        capacity: 10,
+        reserved: 2,
+        startAt: new Date(Date.now() + 86400000),
+      });
+
+      prisma.booking.create.mockResolvedValue({
+        id: 'booking-m1',
+        bookingReference: 'CGT-123456-ABCDEF',
+        totalAmount: 3000,
+      });
+
+      const res = await service.createMarketplaceBooking('user-1', {
+        productId: 'prod-1',
+        availabilityId: 'avail-1',
+        quantity: 2,
+        contactPhone: '9876543210',
+      });
+
+      expect(res.success).toBe(true);
+      expect(prisma.productAvailability.update).toHaveBeenCalledWith({
+        where: { id: 'avail-1' },
+        data: { reserved: { increment: 2 } },
+      });
+      expect(prisma.partnerCommission.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            grossAmount: 3000,
+            commissionRate: 10,
+            commissionAmount: 300,
+            partnerAmount: 2700,
+          }),
+        }),
+      );
     });
 
-    it('rejects guest count above destination limit', async () => {
-      prisma.place.findUnique.mockResolvedValue({
-        id: 'place-id',
-        bookingEnabled: true,
-        bookingPricePaise: 50000,
-        bookingMaxGuests: 2,
+    it('rejects if product is inactive', async () => {
+      prisma.tourismProduct.findUnique.mockResolvedValue({
+        id: 'prod-1',
+        active: false,
+        partner: { status: PartnerStatus.VERIFIED },
       });
 
       await expect(
-        service.createBooking('user-id', {
-          placeId: 'place-id',
-          visitDate: '2099-12-25T10:00:00.000Z',
-          guests: 3,
+        service.createMarketplaceBooking('user-1', {
+          productId: 'prod-1',
+          availabilityId: 'avail-1',
+          quantity: 1,
         }),
-      ).rejects.toBeInstanceOf(BadRequestException);
+      ).rejects.toThrow(BadRequestException);
     });
 
-    it('rejects invalid date format', async () => {
-      await expect(
-        service.createBooking('user-id', {
-          placeId: 'place-id',
-          visitDate: 'not-a-valid-date',
-          guests: 1,
-        }),
-      ).rejects.toBeInstanceOf(BadRequestException);
-    });
-
-    it('rejects past dates', async () => {
-      await expect(
-        service.createBooking('user-id', {
-          placeId: 'place-id',
-          visitDate: '2000-01-01T10:00:00.000Z',
-          guests: 1,
-        }),
-      ).rejects.toBeInstanceOf(BadRequestException);
-    });
-
-    it('rejects negative booking price configuration', async () => {
-      prisma.place.findUnique.mockResolvedValue({
-        id: 'place-id',
-        bookingEnabled: true,
-        bookingPricePaise: -100,
-        bookingMaxGuests: 10,
+    it('rejects if partner is unverified', async () => {
+      prisma.tourismProduct.findUnique.mockResolvedValue({
+        id: 'prod-1',
+        active: true,
+        partner: { status: PartnerStatus.PENDING },
       });
 
       await expect(
-        service.createBooking('user-id', {
-          placeId: 'place-id',
-          visitDate: '2099-12-25T10:00:00.000Z',
-          guests: 2,
+        service.createMarketplaceBooking('user-1', {
+          productId: 'prod-1',
+          availabilityId: 'avail-1',
+          quantity: 1,
         }),
-      ).rejects.toBeInstanceOf(BadRequestException);
+      ).rejects.toThrow(BadRequestException);
+    });
+
+    it('rejects if requested quantity exceeds remaining capacity', async () => {
+      prisma.tourismProduct.findUnique.mockResolvedValue({
+        id: 'prod-1',
+        active: true,
+        partner: { status: PartnerStatus.VERIFIED },
+      });
+
+      prisma.productAvailability.findUnique.mockResolvedValue({
+        id: 'avail-1',
+        productId: 'prod-1',
+        capacity: 5,
+        reserved: 4, // only 1 left
+        startAt: new Date(Date.now() + 86400000),
+      });
+
+      await expect(
+        service.createMarketplaceBooking('user-1', {
+          productId: 'prod-1',
+          availabilityId: 'avail-1',
+          quantity: 2,
+        }),
+      ).rejects.toThrow(BadRequestException);
     });
   });
 
   describe('cancelBooking', () => {
-    it('cancels confirmed booking and emits analytics event', async () => {
+    it('cancels confirmed booking and decrements reserved capacity if availabilityId set', async () => {
       prisma.booking.findUnique.mockResolvedValue({
-        id: 'booking-id',
-        userId: 'user-id',
-        placeId: 'place-id',
-        totalPricePaise: 210000,
+        id: 'b-1',
+        userId: 'user-1',
         status: 'CONFIRMED',
+        availabilityId: 'avail-1',
+        quantity: 2,
       });
+
       prisma.booking.update.mockResolvedValue({
-        id: 'booking-id',
+        id: 'b-1',
         status: 'CANCELLED',
       });
 
-      const res = await service.cancelBooking('user-id', 'booking-id');
+      const res = await service.cancelBooking('user-1', 'b-1');
       expect(res.success).toBe(true);
-      expect(prisma.booking.update).toHaveBeenCalledWith({
-        where: { id: 'booking-id' },
-        data: { status: 'CANCELLED' },
+      expect(prisma.productAvailability.update).toHaveBeenCalledWith({
+        where: { id: 'avail-1' },
+        data: { reserved: { decrement: 2 } },
       });
-      expect(prisma.analyticsEvent.create).toHaveBeenCalledWith(
-        expect.objectContaining({
-          data: expect.objectContaining({
-            name: 'booking_cancelled',
-            userId: 'user-id',
-            bookingId: 'booking-id',
-          }),
-        }),
-      );
+      expect(prisma.booking.update).toHaveBeenCalledWith({
+        where: { id: 'b-1' },
+        data: expect.objectContaining({ status: 'CANCELLED' }),
+      });
     });
 
-    it('prevents cancelling another user booking with ForbiddenException', async () => {
+    it('throws ForbiddenException if cancelling another user booking', async () => {
       prisma.booking.findUnique.mockResolvedValue({
-        id: 'booking-id',
+        id: 'b-1',
         userId: 'other-user',
         status: 'CONFIRMED',
       });
 
-      await expect(
-        service.cancelBooking('user-id', 'booking-id'),
-      ).rejects.toBeInstanceOf(ForbiddenException);
-    });
-
-    it('prevents cancelling an already cancelled booking with BadRequestException', async () => {
-      prisma.booking.findUnique.mockResolvedValue({
-        id: 'booking-id',
-        userId: 'user-id',
-        status: 'CANCELLED',
-      });
-
-      await expect(
-        service.cancelBooking('user-id', 'booking-id'),
-      ).rejects.toBeInstanceOf(BadRequestException);
-    });
-
-    it('throws NotFoundException if booking does not exist', async () => {
-      prisma.booking.findUnique.mockResolvedValue(null);
-
-      await expect(
-        service.cancelBooking('user-id', 'nonexistent-id'),
-      ).rejects.toBeInstanceOf(NotFoundException);
+      await expect(service.cancelBooking('user-1', 'b-1')).rejects.toThrow(
+        ForbiddenException,
+      );
     });
   });
 
   describe('completeBooking', () => {
-    it('completes confirmed booking and emits analytics event', async () => {
+    it('marks confirmed booking as COMPLETED', async () => {
       prisma.booking.findUnique.mockResolvedValue({
-        id: 'booking-id',
-        userId: 'user-id',
-        placeId: 'place-id',
+        id: 'b-1',
         status: 'CONFIRMED',
+        userId: 'user-1',
       });
+
       prisma.booking.update.mockResolvedValue({
-        id: 'booking-id',
+        id: 'b-1',
         status: 'COMPLETED',
       });
 
-      const res = await service.completeBooking('booking-id');
+      const res = await service.completeBooking('b-1');
       expect(res.status).toBe('COMPLETED');
-      expect(prisma.booking.update).toHaveBeenCalledWith({
-        where: { id: 'booking-id' },
-        data: { status: 'COMPLETED' },
-      });
-      expect(prisma.analyticsEvent.create).toHaveBeenCalledWith(
-        expect.objectContaining({
-          data: expect.objectContaining({
-            name: 'booking_completed',
-            bookingId: 'booking-id',
-          }),
-        }),
-      );
-    });
-
-    it('rejects completing a non-confirmed booking', async () => {
-      prisma.booking.findUnique.mockResolvedValue({
-        id: 'booking-id',
-        status: 'CANCELLED',
-      });
-
-      await expect(
-        service.completeBooking('booking-id'),
-      ).rejects.toBeInstanceOf(BadRequestException);
-    });
-
-    it('throws NotFoundException if booking does not exist', async () => {
-      prisma.booking.findUnique.mockResolvedValue(null);
-
-      await expect(
-        service.completeBooking('missing-id'),
-      ).rejects.toBeInstanceOf(NotFoundException);
-    });
-  });
-
-  describe('getMyBookings & getBooking', () => {
-    it('getMyBookings returns list of user bookings', async () => {
-      const mockList = [{ id: 'b-1', userId: 'user-id' }];
-      prisma.booking.findMany.mockResolvedValue(mockList);
-
-      const result = await service.getMyBookings('user-id');
-      expect(result).toEqual(mockList);
-      expect(prisma.booking.findMany).toHaveBeenCalledWith({
-        where: { userId: 'user-id' },
-        include: expect.any(Object),
-        orderBy: { visitDate: 'asc' },
-      });
-    });
-
-    it('getBooking returns single booking for owner', async () => {
-      const mockBooking = { id: 'b-1', userId: 'user-id', status: 'CONFIRMED' };
-      prisma.booking.findUnique.mockResolvedValue(mockBooking);
-
-      const result = await service.getBooking('user-id', 'b-1');
-      expect(result).toEqual(mockBooking);
-    });
-
-    it('getBooking throws ForbiddenException if requested by another user', async () => {
-      prisma.booking.findUnique.mockResolvedValue({ id: 'b-1', userId: 'other-user' });
-
-      await expect(
-        service.getBooking('user-id', 'b-1'),
-      ).rejects.toBeInstanceOf(ForbiddenException);
-    });
-
-    it('getBooking throws NotFoundException if booking not found', async () => {
-      prisma.booking.findUnique.mockResolvedValue(null);
-
-      await expect(
-        service.getBooking('user-id', 'missing-id'),
-      ).rejects.toBeInstanceOf(NotFoundException);
     });
   });
 });

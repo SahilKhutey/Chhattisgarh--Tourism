@@ -334,37 +334,53 @@ model Booking {
   id String @id @default(uuid())
 
   userId  String
-  placeId String
+  placeId String?
 
-  visitDate DateTime
-  guests    Int      @default(1)
+  productId      String?
+  partnerId      String?
+  availabilityId String?
 
-  unitPricePaise   Int
-  subtotalPaise    Int
-  platformFeePaise Int
-  totalPricePaise  Int
+  visitDate DateTime?
+  guests    Int       @default(1)
+  quantity  Int       @default(1)
+
+  unitPricePaise   Int?
+  subtotalPaise    Int?
+  platformFeePaise Int?
+  totalPricePaise  Int?
+
+  unitPrice   Decimal? @db.Decimal(12, 2)
+  totalAmount Decimal? @db.Decimal(12, 2)
 
   currency String @default("INR")
 
   // Legacy compatibility field.
   totalPrice Float @default(0)
 
-  status String @default("CONFIRMED")
-  // CONFIRMED | CANCELLED | COMPLETED
+  status        String        @default("CONFIRMED")
+  paymentStatus PaymentStatus @default(UNPAID)
+
+  bookingReference String? @unique
 
   notes        String?
   contactPhone String?
 
-  user  User  @relation(fields: [userId], references: [id])
-  place Place @relation(fields: [placeId], references: [id])
+  user    User?           @relation(fields: [userId], references: [id])
+  place   Place?          @relation(fields: [placeId], references: [id])
+  product TourismProduct? @relation(fields: [productId], references: [id])
+  partner Partner?        @relation(fields: [partnerId], references: [id])
 
-  review Review?
+  review        Review?
+  commission    PartnerCommission?
+  productReview ProductReview?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([userId])
   @@index([placeId])
+  @@index([partnerId])
+  @@index([productId])
   @@index([visitDate])
   @@index([status])
 }
@@ -983,3 +999,399 @@ model MobileDevice {
   @@index([platform])
   @@index([active])
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// REGIONAL COMMERCE, PARTNER NETWORK & MARKETPLACE (PHASE 18)
+// ─────────────────────────────────────────────────────────────────────────────
+
+enum PartnerStatus {
+  PENDING
+  UNDER_REVIEW
+  VERIFIED
+  SUSPENDED
+  REJECTED
+}
+
+enum InventoryType {
+  HOMESTAY
+  GUIDE
+  EXPERIENCE
+  EVENT
+  TRANSPORT
+  ACTIVITY
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+  EXPIRED
+}
+
+enum PaymentStatus {
+  UNPAID
+  AUTHORIZED
+  PAID
+  REFUND_PENDING
+  REFUNDED
+  FAILED
+}
+
+model Partner {
+  id          String        @id @default(uuid())
+
+  name        String
+  slug        String        @unique
+  description String?
+
+  phone       String?
+  email       String?
+
+  status      PartnerStatus @default(PENDING)
+
+  districtId  String?
+  latitude    Float?
+  longitude   Float?
+
+  logoUrl     String?
+  websiteUrl  String?
+
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  products    TourismProduct[]
+  bookings    Booking[]
+
+  @@index([status])
+  @@index([districtId])
+}
+
+model TourismProduct {
+  id          String        @id @default(uuid())
+
+  partnerId   String
+  partner     Partner       @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+
+  name        String
+  slug        String        @unique
+  description String
+
+  type        InventoryType
+
+  price       Decimal       @db.Decimal(12, 2)
+  currency    String        @default("INR")
+
+  capacity    Int
+  durationMin Int?
+
+  latitude    Float?
+  longitude   Float?
+
+  active      Boolean       @default(false)
+
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  availability ProductAvailability[]
+  bookings     Booking[]
+  reviews      ProductReview[]
+  policy       CancellationPolicy?
+
+  @@index([partnerId])
+  @@index([type])
+  @@index([active])
+}
+
+model ProductAvailability {
+  id          String         @id @default(uuid())
+
+  productId   String
+  product     TourismProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  startAt     DateTime
+  endAt       DateTime
+
+  capacity    Int
+  reserved    Int            @default(0)
+
+  createdAt   DateTime       @default(now())
+
+  @@index([productId])
+  @@index([startAt])
+}
+
+model PartnerCommission {
+  id               String   @id @default(uuid())
+
+  bookingId        String   @unique
+  partnerId        String
+
+  grossAmount      Decimal  @db.Decimal(12, 2)
+  commissionRate   Decimal  @db.Decimal(5, 2)
+  commissionAmount Decimal  @db.Decimal(12, 2)
+  partnerAmount    Decimal  @db.Decimal(12, 2)
+
+  createdAt        DateTime @default(now())
+
+  booking          Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  @@index([partnerId])
+}
+
+model ProductReview {
+  id               String         @id @default(uuid())
+
+  productId        String
+  bookingId        String         @unique
+  userId           String
+
+  rating           Int
+  title            String?
+  body             String?
+
+  verifiedPurchase Boolean        @default(true)
+
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  product          TourismProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+  booking          Booking        @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  @@index([productId])
+  @@index([userId])
+  @@index([rating])
+}
+
+model CancellationPolicy {
+  id                   String         @id @default(uuid())
+
+  productId            String         @unique
+  product              TourismProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  fullRefundHours      Int            @default(48)
+  partialRefundHours   Int            @default(24)
+  partialRefundPercent Decimal        @default(50) @db.Decimal(5, 2)
+
+  createdAt            DateTime       @default(now())
+  updatedAt            DateTime       @updatedAt
+}
+
+model CommerceAuditLog {
+  id          String   @id @default(uuid())
+
+  actorId     String?
+  action      String
+
+  entityType  String
+  entityId    String
+
+  previousState Json?
+  newState      Json?
+
+  createdAt   DateTime @default(now())
+
+  @@index([entityType])
+  @@index([entityId])
+  @@index([actorId])
+  @@index([createdAt])
+}
+
+model IdempotencyKey {
+  id          String   @id @default(uuid())
+
+  key         String   @unique
+  operation   String
+  userId      String?
+
+  response    Json?
+
+  createdAt   DateTime @default(now())
+
+  @@index([userId])
+  @@index([operation])
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GENERIC TOURISM CONTENT TEMPLATE ENGINE (PHASE P1)
+// ─────────────────────────────────────────────────────────────────────────────
+
+enum TemplateStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum TemplateVersionStatus {
+  DRAFT
+  PUBLISHED
+  DEPRECATED
+}
+
+enum EntryStatus {
+  DRAFT
+  PENDING_REVIEW
+  CHANGES_REQUESTED
+  APPROVED
+  PUBLISHED
+  REJECTED
+  ARCHIVED
+}
+
+enum FieldType {
+  // Primitives & Rich Content
+  TEXT
+  RICHTEXT
+  NUMBER
+  BOOLEAN
+  DATE
+  DROPDOWN
+  TAGS
+
+  // Media
+  IMAGE
+  GALLERY
+  VIDEO
+  AUDIO
+
+  // Geographic First-Class Primitives
+  GEO_POINT
+  GEO_REGION
+  ADMINISTRATIVE_REGION
+  GEO_ROUTE
+
+  // Graph / Relations
+  RELATION
+}
+
+model ContentTemplate {
+  id          String   @id @default(cuid())
+
+  name        String
+  slug        String   @unique
+  description String?
+  icon        String?
+
+  status      TemplateStatus @default(DRAFT)
+
+  currentVersionId String?
+
+  versions    TemplateVersion[]
+  entries     ContentEntry[]
+
+  createdBy   String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([status])
+  @@index([slug])
+}
+
+model TemplateVersion {
+  id          String   @id @default(cuid())
+
+  templateId  String
+  template    ContentTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+
+  version     Int
+
+  status      TemplateVersionStatus @default(DRAFT)
+
+  schema      Json
+
+  fields      TemplateField[]
+  entries     ContentEntry[]
+  revisions   EntryRevision[]
+
+  createdBy   String
+  publishedAt DateTime?
+  createdAt   DateTime @default(now())
+
+  @@unique([templateId, version])
+  @@index([templateId])
+  @@index([status])
+}
+
+model TemplateField {
+  id          String   @id @default(cuid())
+
+  versionId   String
+  version     TemplateVersion @relation(fields: [versionId], references: [id], onDelete: Cascade)
+
+  key         String
+  label       String
+  fieldType   FieldType
+
+  required    Boolean @default(false)
+  order       Int
+
+  options     Json?
+
+  translatable Boolean @default(true)
+
+  helpText    String?
+
+  defaultValue Json?
+
+  createdAt   DateTime @default(now())
+
+  @@unique([versionId, key])
+  @@index([versionId, order])
+}
+
+model ContentEntry {
+  id          String   @id @default(cuid())
+
+  templateId  String
+  template    ContentTemplate @relation(fields: [templateId], references: [id], onDelete: Restrict)
+
+  templateVersionId String
+  templateVersion   TemplateVersion @relation(fields: [templateVersionId], references: [id], onDelete: Restrict)
+
+  data        Json
+
+  status      EntryStatus @default(DRAFT)
+
+  authorId    String
+  reviewedBy  String?
+
+  region      String?
+
+  lat         Float?
+  lng         Float?
+
+  revisions   EntryRevision[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([templateId])
+  @@index([templateVersionId])
+  @@index([status])
+  @@index([region])
+  @@index([authorId])
+}
+
+model EntryRevision {
+  id                String          @id @default(cuid())
+
+  entryId           String
+  entry             ContentEntry    @relation(fields: [entryId], references: [id], onDelete: Cascade)
+
+  templateVersionId String
+  templateVersion   TemplateVersion @relation(fields: [templateVersionId], references: [id], onDelete: Restrict)
+
+  data              Json
+  revisionNumber    Int             @default(1)
+
+  createdBy         String
+  notes             String?
+
+  createdAt         DateTime        @default(now())
+
+  @@index([entryId])
+  @@index([templateVersionId])
+  @@index([createdAt])
+}
+
+

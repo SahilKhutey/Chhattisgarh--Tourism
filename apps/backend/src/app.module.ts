@@ -32,6 +32,11 @@ import { GeographyModule } from './modules/geography/geography.module';
 import { ContentHealthModule } from './modules/content-health/content-health.module';
 import { IntelligenceModule } from './modules/intelligence/intelligence.module';
 import { AlertsModule } from './modules/alerts/alerts.module';
+import { PartnersModule } from './modules/partners/partners.module';
+import { MarketplaceModule } from './modules/marketplace/marketplace.module';
+import { PaymentsModule } from './modules/payments/payments.module';
+import { CommerceModule } from './modules/commerce/commerce.module';
+import { RefundsModule } from './modules/refunds/refunds.module';
 import { StructuredLoggerService } from './common/logger/structured-logger.service';
 import { CorrelationIdMiddleware } from './common/middleware/correlation-id.middleware';
 import { HttpLoggingInterceptor } from './common/interceptors/http-logging.interceptor';
@@ -85,6 +90,11 @@ import { envSchema } from './config/env.schema';
     ContentHealthModule,
     IntelligenceModule,
     AlertsModule,
+    PartnersModule,
+    MarketplaceModule,
+    PaymentsModule,
+    CommerceModule,
+    RefundsModule,
   ],
   providers: [
     PrismaService,

@@ -4,13 +4,16 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { PartnerStatus, PaymentStatus } from '@prisma/client';
 import { PrismaService } from '../../database/prisma.service';
 import { CreateBookingDto } from './dto/create-booking.dto';
+import { CreateMarketplaceBookingDto } from './dto/create-marketplace-booking.dto';
 
 const BOOKING_STATUS = {
   CONFIRMED: 'CONFIRMED',
   CANCELLED: 'CANCELLED',
   COMPLETED: 'COMPLETED',
+  PENDING: 'PENDING',
 } as const;
 
 @Injectable()
@@ -150,6 +153,146 @@ export class BookingsService {
     });
   }
 
+  async createMarketplaceBooking(
+    userId: string,
+    dto: CreateMarketplaceBookingDto,
+  ) {
+    return this.prisma.$transaction(async (tx) => {
+      const product = await tx.tourismProduct.findUnique({
+        where: { id: dto.productId },
+        include: {
+          partner: true,
+          policy: true,
+        },
+      });
+
+      if (!product) {
+        throw new NotFoundException('Marketplace product not found');
+      }
+
+      if (!product.active) {
+        throw new BadRequestException('Product is currently inactive');
+      }
+
+      if (product.partner.status !== PartnerStatus.VERIFIED) {
+        throw new BadRequestException('Partner is not verified');
+      }
+
+      const availability = await tx.productAvailability.findUnique({
+        where: { id: dto.availabilityId },
+      });
+
+      if (!availability || availability.productId !== product.id) {
+        throw new NotFoundException('Selected availability slot not found for this product');
+      }
+
+      if (availability.startAt.getTime() < Date.now()) {
+        throw new BadRequestException('Selected slot date is in the past');
+      }
+
+      const remainingCapacity = availability.capacity - availability.reserved;
+      if (remainingCapacity < dto.quantity) {
+        throw new BadRequestException(
+          `Insufficient capacity. Requested: ${dto.quantity}, Available: ${remainingCapacity}`,
+        );
+      }
+
+      // Decrement capacity atomically inside tx
+      await tx.productAvailability.update({
+        where: { id: dto.availabilityId },
+        data: {
+          reserved: { increment: dto.quantity },
+        },
+      });
+
+      const unitPrice = Number(product.price);
+      const totalAmount = unitPrice * dto.quantity;
+      const refSuffix = Math.random().toString(36).substring(2, 8).toUpperCase();
+      const bookingReference = `CGT-${Date.now()}-${refSuffix}`;
+
+      const booking = await tx.booking.create({
+        data: {
+          userId,
+          productId: product.id,
+          partnerId: product.partnerId,
+          availabilityId: dto.availabilityId,
+          visitDate: availability.startAt,
+          guests: dto.quantity,
+          quantity: dto.quantity,
+          unitPrice: product.price,
+          totalAmount,
+          totalPrice: totalAmount,
+          currency: product.currency || 'INR',
+          status: BOOKING_STATUS.CONFIRMED,
+          paymentStatus: PaymentStatus.PAID,
+          bookingReference,
+          contactPhone: dto.contactPhone,
+          notes: dto.notes,
+        },
+        include: {
+          product: {
+            include: {
+              partner: true,
+              policy: true,
+            },
+          },
+        },
+      });
+
+      // Calculate and store partner commission
+      const commissionRate = 10.0; // 10% platform fee
+      const commissionAmount = Number((totalAmount * (commissionRate / 100)).toFixed(2));
+      const partnerAmount = Number((totalAmount - commissionAmount).toFixed(2));
+
+      await tx.partnerCommission.create({
+        data: {
+          bookingId: booking.id,
+          partnerId: product.partnerId,
+          grossAmount: totalAmount,
+          commissionRate,
+          commissionAmount,
+          partnerAmount,
+        },
+      });
+
+      await tx.commerceAuditLog.create({
+        data: {
+          actorId: userId,
+          action: 'MARKETPLACE_BOOKING_CREATED',
+          entityType: 'Booking',
+          entityId: booking.id,
+          newState: {
+            bookingReference,
+            totalAmount,
+            quantity: dto.quantity,
+            productId: product.id,
+            partnerId: product.partnerId,
+          },
+        },
+      });
+
+      await tx.analyticsEvent.create({
+        data: {
+          name: 'marketplace_booking_created',
+          userId,
+          bookingId: booking.id,
+          metadata: JSON.stringify({
+            bookingReference,
+            productId: product.id,
+            partnerId: product.partnerId,
+            quantity: dto.quantity,
+            totalAmount,
+          }),
+        },
+      });
+
+      return {
+        success: true,
+        booking,
+      };
+    });
+  }
+
   async getMyBookings(userId: string) {
     return this.prisma.booking.findMany({
       where: {
@@ -168,15 +311,35 @@ export class BookingsService {
             },
           },
         },
+        product: {
+          include: {
+            partner: {
+              select: {
+                id: true,
+                name: true,
+                slug: true,
+                districtId: true,
+              },
+            },
+            policy: true,
+          },
+        },
         review: {
           select: {
             id: true,
             rating: true,
           },
         },
+        productReview: {
+          select: {
+            id: true,
+            rating: true,
+          },
+        },
+        commission: true,
       },
       orderBy: {
-        visitDate: 'asc',
+        createdAt: 'desc',
       },
     });
   }
@@ -195,6 +358,12 @@ export class BookingsService {
             district: true,
           },
         },
+        product: {
+          include: {
+            partner: true,
+            policy: true,
+          },
+        },
         review: {
           select: {
             id: true,
@@ -202,6 +371,15 @@ export class BookingsService {
             comment: true,
           },
         },
+        productReview: {
+          select: {
+            id: true,
+            rating: true,
+            title: true,
+            body: true,
+          },
+        },
+        commission: true,
       },
     });
 
@@ -236,12 +414,34 @@ export class BookingsService {
     }
 
     const updated = await this.prisma.$transaction(async (tx) => {
+      // If this booking holds availability capacity, release it!
+      if (booking.availabilityId) {
+        await tx.productAvailability.update({
+          where: { id: booking.availabilityId },
+          data: {
+            reserved: { decrement: booking.quantity || booking.guests || 1 },
+          },
+        });
+      }
+
       const result = await tx.booking.update({
         where: {
           id: bookingId,
         },
         data: {
           status: BOOKING_STATUS.CANCELLED,
+          paymentStatus: PaymentStatus.REFUND_PENDING,
+        },
+      });
+
+      await tx.commerceAuditLog.create({
+        data: {
+          actorId: userId,
+          action: 'BOOKING_CANCELLED',
+          entityType: 'Booking',
+          entityId: bookingId,
+          previousState: { status: booking.status },
+          newState: { status: BOOKING_STATUS.CANCELLED },
         },
       });
 
@@ -253,6 +453,7 @@ export class BookingsService {
           bookingId,
           metadata: JSON.stringify({
             totalPricePaise: booking.totalPricePaise,
+            totalAmount: booking.totalAmount,
           }),
         },
       });
@@ -288,6 +489,16 @@ export class BookingsService {
         },
         data: {
           status: BOOKING_STATUS.COMPLETED,
+        },
+      });
+
+      await tx.commerceAuditLog.create({
+        data: {
+          action: 'BOOKING_COMPLETED',
+          entityType: 'Booking',
+          entityId: bookingId,
+          previousState: { status: booking.status },
+          newState: { status: BOOKING_STATUS.COMPLETED },
         },
       });
 
