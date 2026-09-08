@@ -1,6 +1,9 @@
 import { test, expect } from "@playwright/test";
 
 test.describe("PWA and Offline Capabilities", () => {
+  test.afterEach(async ({ context }) => {
+    await context.setOffline(false);
+  });
   test("Loads dynamic translations from cache when offline", async ({
     page,
     context,
@@ -28,6 +31,7 @@ test.describe("PWA and Offline Capabilities", () => {
       localStorage.getItem("preferred_language"),
     );
     expect(savedLang).toBe("cg");
+    await context.setOffline(false);
   });
 
   test("Offline shell page is accessible directly", async ({ page }) => {
@@ -37,6 +41,7 @@ test.describe("PWA and Offline Capabilities", () => {
   });
 
   test("Offline indicator displays when browser goes offline", async ({ page, context }) => {
+    await context.setOffline(false);
     await page.goto("/");
     await page.waitForLoadState("load");
     await page.waitForTimeout(500);
@@ -60,6 +65,7 @@ test.describe("PWA and Offline Capabilities", () => {
   });
 
   test("SOS page queues emergency requests safely when offline", async ({ page, context }) => {
+    await context.setOffline(false);
     await page.goto("/sos");
     await page.waitForLoadState("load");
     await page.waitForTimeout(500);
@@ -76,6 +82,7 @@ test.describe("PWA and Offline Capabilities", () => {
     const statusBox = page.locator("body");
     await expect(statusBox).toContainText(/SOS Queued Offline|stored locally|waiting for connection/i, { timeout: 10000 });
     await expect(statusBox).not.toContainText("Rescue Dispatched");
+    await context.setOffline(false);
   });
 
   test("Web manifest exists and includes PWA configuration", async ({ request }) => {

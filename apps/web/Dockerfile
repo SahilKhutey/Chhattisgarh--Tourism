@@ -1,4 +1,4 @@
-# Multi-stage build for Next.js web client in a pnpm monorepo
+# Multi-stage build for Next.js web client in a pnpm monorepo (Standalone Mode)
 FROM node:20-alpine AS base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
@@ -18,18 +18,23 @@ ARG NEXT_PUBLIC_API_URL="http://localhost:4000/api/v1"
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 RUN pnpm run build
 
-FROM base AS runner
+FROM node:20-alpine AS runner
 WORKDIR /app
 ENV NODE_ENV=production
-COPY --from=builder /app/apps/web/.next ./apps/web/.next
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
+
+# Copy standalone build, static assets, and public directory
 COPY --from=builder /app/apps/web/public ./apps/web/public
-COPY --from=builder /app/apps/web/package.json ./apps/web/package.json
-COPY --from=builder /app/pnpm-lock.yaml ./
-COPY --from=builder /app/package.json ./
-COPY --from=builder /app/pnpm-workspace.yaml ./
+COPY --from=builder /app/apps/web/.next/standalone ./
+COPY --from=builder /app/apps/web/.next/static ./apps/web/.next/static
 
-RUN pnpm install --prod --frozen-lockfile
+RUN chown -R node:node /app
 
-WORKDIR /app/apps/web
+USER node
 EXPOSE 3000
-CMD ["pnpm", "start"]
+
+HEALTHCHECK --interval=15s --timeout=5s --start-period=20s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:3000/ || exit 1
+
+CMD ["node", "apps/web/server.js"]

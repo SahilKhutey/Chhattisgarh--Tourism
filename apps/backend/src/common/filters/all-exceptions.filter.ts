@@ -19,6 +19,9 @@ export class AllExceptionsFilter implements ExceptionFilter {
     let status = HttpStatus.INTERNAL_SERVER_ERROR;
     let message: any = 'Internal server error';
 
+    const requestId =
+      request?.id || request?.headers?.['x-request-id'] || 'req-unknown';
+
     if (exception instanceof HttpException) {
       status = exception.getStatus();
       const res = exception.getResponse();
@@ -26,16 +29,20 @@ export class AllExceptionsFilter implements ExceptionFilter {
     } else if (exception instanceof Error) {
       // For unhandled errors like Prisma constraint errors, we map to 500
       // but we log the actual stack trace on the backend to avoid leaking it.
-      this.logger.error(`Unhandled Exception: ${exception.message}`, exception.stack);
+      this.logger.error(
+        `[${requestId}] Unhandled Exception: ${exception.message}`,
+        exception.stack,
+      );
       message = 'An unexpected error occurred in the CG Tourism Kernel.';
     } else {
-      this.logger.error(`Unknown Error: ${JSON.stringify(exception)}`);
+      this.logger.error(`[${requestId}] Unknown Error: ${JSON.stringify(exception)}`);
     }
 
     response.status(status).json({
       statusCode: status,
       timestamp: new Date().toISOString(),
-      path: request.url,
+      path: request?.url || '',
+      requestId,
       message,
     });
   }

@@ -1,8 +1,8 @@
 export function isOnline(): boolean {
-  if (typeof navigator === "undefined") {
+  if (typeof window === "undefined" || typeof navigator === "undefined") {
     return true;
   }
-  return navigator.onLine;
+  return navigator.onLine ?? true;
 }
 
 export function subscribeToNetwork(callback: (online: boolean) => void): () => void {

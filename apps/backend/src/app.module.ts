@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
@@ -22,10 +22,14 @@ import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { AggregationModule } from './modules/aggregation/aggregation.module';
 import { PrismaService } from './database/prisma.service';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { WeatherModule } from './modules/weather/weather.module';
 import { TransportModule } from './modules/transport/transport.module';
 import { GeoModule } from './geo/geo.module';
+import { HealthModule } from './modules/health/health.module';
+import { StructuredLoggerService } from './common/logger/structured-logger.service';
+import { CorrelationIdMiddleware } from './common/middleware/correlation-id.middleware';
+import { HttpLoggingInterceptor } from './common/interceptors/http-logging.interceptor';
 import configuration from './config/configuration';
 import { envSchema } from './config/env.schema';
 
@@ -70,14 +74,24 @@ import { envSchema } from './config/env.schema';
     WeatherModule,
     TransportModule,
     GeoModule,
+    HealthModule,
   ],
   providers: [
     PrismaService,
+    StructuredLoggerService,
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
-    }
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: HttpLoggingInterceptor,
+    },
   ],
-  exports: [PrismaService],
+  exports: [PrismaService, StructuredLoggerService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(CorrelationIdMiddleware).forRoutes('*');
+  }
+}
