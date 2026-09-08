@@ -830,24 +830,135 @@ model ContentReport {
   @@index([reporterId])
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// REGIONAL INTELLIGENCE, TELEMETRY & OPERATIONS (PHASE 17)
+// ─────────────────────────────────────────────────────────────────────────────
+
+enum AnalyticsEventType {
+  PAGE_VIEW
+  SEARCH
+  PLACE_VIEW
+  DISTRICT_VIEW
+  CATEGORY_VIEW
+  MAP_VIEW
+  ROUTE_REQUEST
+  ITINERARY_CREATED
+  ITINERARY_COMPLETED
+  SAVE_PLACE
+  UNSAVE_PLACE
+  SHARE_PLACE
+  BOOKING_STARTED
+  BOOKING_COMPLETED
+  REVIEW_CREATED
+  CREATOR_VIEW
+  FOLKLORE_VIEW
+  SOS_TRIGGERED
+  LANGUAGE_CHANGED
+  OFFLINE_SESSION
+}
+
 model AnalyticsEvent {
-  id String @id @default(uuid())
+  id         String             @id @default(uuid())
+  type       AnalyticsEventType @default(PAGE_VIEW)
+  name       String?
 
-  name String
+  userId     String?
+  placeId    String?
+  districtId String?
+  bookingId  String?
 
-  userId    String?
-  placeId   String?
-  bookingId String?
+  sessionId  String?
+  latitude   Float?
+  longitude  Float?
+  language   String?
+  platform   String?
 
-  metadata String @default("{}")
+  metadata   Json?
 
-  createdAt DateTime @default(now())
+  createdAt  DateTime           @default(now())
 
+  @@index([type])
   @@index([name])
-  @@index([userId])
-  @@index([placeId])
-  @@index([bookingId])
   @@index([createdAt])
+  @@index([placeId])
+  @@index([districtId])
+  @@index([userId])
+  @@index([sessionId])
+  @@index([bookingId])
+}
+
+model TourismMetric {
+  id          String   @id @default(uuid())
+  metric      String
+  value       Float
+
+  districtId  String?
+  placeId     String?
+
+  periodStart DateTime
+  periodEnd   DateTime
+
+  metadata    Json?
+
+  createdAt   DateTime @default(now())
+
+  @@index([metric])
+  @@index([districtId])
+  @@index([placeId])
+  @@index([periodStart])
+}
+
+enum AlertSeverity {
+  INFO
+  WARNING
+  CRITICAL
+}
+
+model SystemAlert {
+  id          String        @id @default(uuid())
+  type        String
+  severity    AlertSeverity
+
+  title       String
+  description String
+
+  districtId  String?
+  placeId     String?
+
+  resolved    Boolean       @default(false)
+
+  metadata    Json?
+
+  createdAt   DateTime      @default(now())
+  resolvedAt  DateTime?
+
+  @@index([type])
+  @@index([severity])
+  @@index([resolved])
+  @@index([createdAt])
+}
+
+model RecommendationFeedback {
+  id                   String    @id @default(uuid())
+
+  userId               String?
+  placeId              String
+
+  recommendationSource String
+
+  shownAt              DateTime  @default(now())
+  clickedAt            DateTime?
+  savedAt              DateTime?
+  itineraryAddedAt     DateTime?
+  completedAt          DateTime?
+
+  rating               Float?
+
+  metadata             Json?
+
+  @@index([placeId])
+  @@index([userId])
+  @@index([recommendationSource])
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
