@@ -57,6 +57,36 @@ describe("Application Health E2E", () => {
     expect(response.status).toBe(200);
   });
 
+  it("responds to /api/v1/health with liveness metadata", async () => {
+    const response = await request(app.getHttpServer()).get(
+      "/api/v1/health",
+    );
+    expect(response.status).toBe(200);
+    expect(response.body.status).toBe("ok");
+    expect(response.body.version).toBe("1.0.0");
+    expect(typeof response.body.uptime).toBe("number");
+    expect(response.body.timestamp).toBeDefined();
+  });
+
+  it("responds to /api/v1/health/live probe", async () => {
+    const response = await request(app.getHttpServer()).get(
+      "/api/v1/health/live",
+    );
+    expect(response.status).toBe(200);
+    expect(response.body.status).toBe("ok");
+  });
+
+  it("responds to /api/v1/health/ready with operational checks", async () => {
+    mockPrisma.$queryRaw.mockResolvedValueOnce([{ 1: 1 }]);
+    const response = await request(app.getHttpServer()).get(
+      "/api/v1/health/ready",
+    );
+    expect(response.status).toBe(200);
+    expect(response.body.status).toBe("ok");
+    expect(response.body.checks.database.status).toBe("up");
+    expect(response.body.checks.memory.status).toBe("healthy");
+  });
+
   it("responds with 404 for unknown endpoints", async () => {
     const response = await request(app.getHttpServer()).get(
       "/api/v1/non-existent-route-xyz",

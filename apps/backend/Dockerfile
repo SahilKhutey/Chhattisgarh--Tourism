@@ -27,7 +27,15 @@ COPY --from=builder /app/apps/backend/dist ./apps/backend/dist
 COPY --from=builder /app/apps/backend/prisma ./apps/backend/prisma
 COPY --from=builder /app/apps/backend/node_modules/.prisma ./apps/backend/node_modules/.prisma
 
+RUN chown -R node:node /app
+
 WORKDIR /app/apps/backend
 EXPOSE 4000
 ENV NODE_ENV=production
+
+USER node
+
+HEALTHCHECK --interval=15s --timeout=5s --start-period=15s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:4000/api/v1/health || exit 1
+
 CMD ["node", "dist/main"]

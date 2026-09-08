@@ -8,10 +8,17 @@ import * as compression from 'compression';
 import { join } from 'path';
 import { AppModule } from './app.module';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
+import { StructuredLoggerService } from './common/logger/structured-logger.service';
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+    bufferLogs: true,
+  });
   const configService = app.get(ConfigService);
+  const logger = app.get(StructuredLoggerService);
+  app.useLogger(logger);
+
+  app.enableShutdownHooks();
 
   app.useStaticAssets(join(process.cwd(), 'uploads'), {
     prefix: '/uploads/',
@@ -65,7 +72,7 @@ async function bootstrap() {
   SwaggerModule.setup('docs', app, document);
 
   await app.listen(port);
-  console.log(`CG Tourism API running on port ${port} (${environment})`);
+  logger.log(`CG Tourism API running on port ${port} (${environment})`, 'Bootstrap');
 }
 
 bootstrap();

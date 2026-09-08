@@ -5,8 +5,8 @@ import { WifiOff } from "lucide-react";
 
 export function OfflineIndicator() {
   const [online, setOnline] = useState<boolean>(() => {
-    if (typeof navigator !== "undefined") {
-      return navigator.onLine;
+    if (typeof window !== "undefined" && typeof navigator !== "undefined") {
+      return navigator.onLine ?? true;
     }
     return true;
   });
@@ -32,7 +32,7 @@ export function OfflineIndicator() {
     <div
       role="status"
       aria-live="polite"
-      className="fixed inset-x-0 top-0 z-[9999] flex items-center justify-center gap-2 border-b border-amber-300 bg-amber-100 px-4 py-2.5 text-center text-xs sm:text-sm font-semibold text-amber-950 shadow-sm transition-all"
+      className="pointer-events-none fixed inset-x-0 top-0 z-[9999] flex items-center justify-center gap-2 border-b border-amber-300 bg-amber-100 px-4 py-2.5 text-center text-xs sm:text-sm font-semibold text-amber-950 shadow-sm transition-all"
     >
       <WifiOff className="h-4 w-4 shrink-0 text-amber-800" />
       <span>

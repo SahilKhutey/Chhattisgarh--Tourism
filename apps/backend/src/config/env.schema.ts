@@ -22,7 +22,21 @@ export const envSchema = Joi.object({
 
   JWT_SECRET: Joi.string()
     .min(32)
-    .required(),
+    .required()
+    .when('NODE_ENV', {
+      is: 'production',
+      then: Joi.string().invalid(
+        'test_super_secret_jwt_key_at_least_32_characters',
+        'abcdefghijklmnopqrstuvwxyz123456',
+        'default_jwt_secret_must_be_changed_before_production_deployment',
+      ),
+    }),
+
+  REDIS_URL: Joi.string()
+    .uri({
+      scheme: ['redis', 'rediss'],
+    })
+    .default('redis://localhost:6379'),
 
   JWT_EXPIRES_IN: Joi.string()
     .default('15m'),
