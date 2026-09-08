@@ -615,3 +615,167 @@ export async function submitVerifiedReview(
 }
 
 
+
+// ─────────────────────────────────────────────────────────────────────────────
+// REGIONAL COMMERCE & MARKETPLACE (PHASE 18)
+// ─────────────────────────────────────────────────────────────────────────────
+
+export interface CancellationPolicyInfo {
+  fullRefundHours: number;
+  partialRefundHours: number;
+  partialRefundPercent: number;
+}
+
+export interface ProductAvailabilityItem {
+  id: string;
+  productId: string;
+  startAt: string;
+  endAt: string;
+  capacity: number;
+  reserved: number;
+  availableCapacity: number;
+  isSoldOut: boolean;
+}
+
+export interface MarketplaceProductItem {
+  id: string;
+  partnerId: string;
+  name: string;
+  slug: string;
+  description: string;
+  type: "HOMESTAY" | "GUIDE" | "EXPERIENCE" | "EVENT" | "TRANSPORT" | "ACTIVITY";
+  price: number | string;
+  currency: string;
+  capacity: number;
+  durationMin?: number | null;
+  latitude?: number | null;
+  longitude?: number | null;
+  active: boolean;
+  partner: {
+    id: string;
+    name: string;
+    slug: string;
+    districtId?: string | null;
+    status: "PENDING" | "UNDER_REVIEW" | "VERIFIED" | "SUSPENDED" | "REJECTED";
+  };
+  policy?: CancellationPolicyInfo | null;
+  availability?: ProductAvailabilityItem[];
+  _count?: {
+    reviews: number;
+    bookings?: number;
+  };
+}
+
+export interface MarketplaceSearchResult {
+  items: MarketplaceProductItem[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
+export async function fetchMarketplaceProducts(params?: {
+  type?: string;
+  districtId?: string;
+  search?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  page?: number;
+}): Promise<MarketplaceSearchResult> {
+  const query = new URLSearchParams();
+  if (params?.type) query.set("type", params.type);
+  if (params?.districtId) query.set("districtId", params.districtId);
+  if (params?.search) query.set("search", params.search);
+  if (params?.minPrice !== undefined) query.set("minPrice", String(params.minPrice));
+  if (params?.maxPrice !== undefined) query.set("maxPrice", String(params.maxPrice));
+  if (params?.page) query.set("page", String(params.page));
+
+  const res = await fetch(`${API_BASE}/marketplace/products?${query.toString()}`);
+  if (!res.ok) {
+    // Return empty fallback instead of crashing
+    return { items: [], total: 0, page: 1, limit: 20, totalPages: 1 };
+  }
+  return res.json();
+}
+
+export async function fetchMarketplaceProductBySlug(slug: string): Promise<MarketplaceProductItem | null> {
+  const res = await fetch(`${API_BASE}/marketplace/products/slug/${slug}`);
+  if (!res.ok) return null;
+  return res.json();
+}
+
+export async function createMarketplaceBooking(
+  data: {
+    productId: string;
+    availabilityId: string;
+    quantity: number;
+    contactPhone?: string;
+    notes?: string;
+  },
+  token: string
+) {
+  const res = await fetch(`${API_BASE}/bookings/marketplace`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || "Failed to create marketplace booking");
+  }
+  return res.json();
+}
+
+export async function fetchPartnerStats(partnerId: string, token: string) {
+  const res = await fetch(`${API_BASE}/partners/${partnerId}/stats`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error("Failed to fetch partner statistics");
+  return res.json();
+}
+
+export async function registerPartner(data: {
+  name: string;
+  email?: string;
+  phone?: string;
+  districtId?: string;
+  description?: string;
+}) {
+  const res = await fetch(`${API_BASE}/partners`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || "Failed to register partner");
+  }
+  return res.json();
+}
+
+export async function fetchAllPartners(token?: string) {
+  const res = await fetch(`${API_BASE}/partners`, {
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  });
+  if (!res.ok) return { items: [], total: 0 };
+  return res.json();
+}
+
+export async function verifyPartner(partnerId: string, status: string, token: string) {
+  const res = await fetch(`${API_BASE}/partners/${partnerId}/verify`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ status }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || "Failed to update partner verification status");
+  }
+  return res.json();
+}
