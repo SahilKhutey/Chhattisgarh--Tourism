@@ -51,6 +51,9 @@ jobs:
       - name: Unit tests with coverage
         run: pnpm test:coverage
 
+      - name: Backend E2E & Deployment Spec
+        run: pnpm --filter backend test:e2e
+
       - name: Upload coverage
         if: always()
         uses: actions/upload-artifact@v4

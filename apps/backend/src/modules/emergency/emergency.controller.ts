@@ -19,6 +19,7 @@ import {
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
+import { Throttle } from '@nestjs/throttler';
 
 import {
   EmergencyService,
@@ -46,6 +47,7 @@ export class EmergencyController {
   // ===========================================================================
 
   @Post('sos')
+  @Throttle({ default: { limit: 15, ttl: 60000 } })
   @ApiOperation({
     summary: 'Broadcast urgent tourist SOS alert',
   })

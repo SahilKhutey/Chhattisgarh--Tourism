@@ -132,4 +132,50 @@ describe('Production Deployment & Container Configuration Validation', () => {
       expect(content).toContain('NEXT_PUBLIC_API_URL');
     });
   });
+
+  describe('Operational Production Scripts (scripts/)', () => {
+    const backupScript = path.join(rootDir, 'scripts/backup-db.sh');
+    const restoreScript = path.join(rootDir, 'scripts/restore-db.sh');
+    const verifyScript = path.join(rootDir, 'scripts/verify-production.sh');
+    const deployScript = path.join(rootDir, 'scripts/deploy-production.sh');
+
+    it('ensures all 4 operational scripts exist with bash shebang and pipefail', () => {
+      for (const scriptPath of [backupScript, restoreScript, verifyScript, deployScript]) {
+        expect(fs.existsSync(scriptPath)).toBe(true);
+        const content = fs.readFileSync(scriptPath, 'utf8');
+        expect(content).toMatch(/^#!/);
+        expect(content).toContain('set -euo pipefail');
+      }
+    });
+
+    it('validates backup-db.sh configuration and compression format', () => {
+      const content = fs.readFileSync(backupScript, 'utf8');
+      expect(content).toContain('pg_dump');
+      expect(content).toContain('-F c');
+      expect(content).toContain('RETENTION_DAYS');
+    });
+
+    it('validates restore-db.sh safety and confirmation requirements', () => {
+      const content = fs.readFileSync(restoreScript, 'utf8');
+      expect(content).toContain('pg_restore');
+      expect(content).toContain('--confirm');
+      expect(content).toMatch(/DESTRUCTIVE/i);
+    });
+
+    it('validates verify-production.sh probe coverage', () => {
+      const content = fs.readFileSync(verifyScript, 'utf8');
+      expect(content).toContain('/api/v1/health/live');
+      expect(content).toContain('/api/v1/health/ready');
+      expect(content).toContain('/api/v1/health');
+    });
+
+    it('validates deploy-production.sh end-to-end orchestration sequence', () => {
+      const content = fs.readFileSync(deployScript, 'utf8');
+      expect(content).toContain('.env.production');
+      expect(content).toContain('docker compose');
+      expect(content).toContain('prisma migrate deploy');
+      expect(content).toContain('verify-production.sh');
+    });
+  });
 });
+
