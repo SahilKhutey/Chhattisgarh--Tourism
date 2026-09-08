@@ -59,6 +59,16 @@ graph TD
 
 ---
 
+## 2.1 Generic Tourism Content Engine Architecture
+
+The platform fundamentally treats tourism content types as dynamic schemas rather than hardcoded models (`PlaceModule`, `FestivalModule`, `FolkloreModule`, etc.). Any entity (Destinations, Bastar Crafts, Waterfalls, Heritage Trails, Tribal Stories) uses the same unified lifecycle:
+
+$$\text{Template} \longrightarrow \text{Dynamic Form} \longrightarrow \text{Content Entry} \longrightarrow \text{Validation} \longrightarrow \text{Moderation} \longrightarrow \text{Published} \longrightarrow \begin{cases} \text{Discovery Index} \\ \text{Spatial Geo (PostGIS)} \\ \text{Generic Renderer} \end{cases}$$
+
+For complete specifications, see [Generic Tourism Content Template & Render Engine](./Generic_Tourism_Template_Engine.md).
+
+---
+
 ## 3. Core Technology Stack
 
 ### Frontend Monorepo Stack
