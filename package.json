@@ -18,7 +18,12 @@
     "typecheck": "turbo typecheck",
     "test:coverage": "turbo test:coverage",
     "test:e2e": "pnpm --filter web exec playwright test",
-    "ci": "pnpm lint && pnpm typecheck && pnpm test:coverage && pnpm build"
+    "ci": "pnpm lint && pnpm typecheck && pnpm test:coverage && pnpm build",
+    "mobile:typecheck": "pnpm --filter @cg-tourism/mobile typecheck",
+    "mobile:test": "pnpm --filter @cg-tourism/mobile test",
+    "mobile:sync": "pnpm --filter @cg-tourism/mobile cap:sync",
+    "mobile:android": "pnpm --filter @cg-tourism/mobile android",
+    "mobile:ios": "pnpm --filter @cg-tourism/mobile ios"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.7.1",
