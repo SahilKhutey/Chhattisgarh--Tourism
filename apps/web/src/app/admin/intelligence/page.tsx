@@ -70,112 +70,140 @@ export default function IntelligenceDashboard() {
 
   const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
 
-  async function loadData() {
-    setLoading(true);
-    try {
-      const [sumRes, leadRes, healthRes, alertsRes] = await Promise.allSettled([
-        fetch(`${API_URL}/api/v1/intelligence/summary`).then((r) => (r.ok ? r.json() : null)),
-        fetch(`${API_URL}/api/v1/intelligence/destinations/leaderboard`).then((r) => (r.ok ? r.json() : null)),
-        fetch(`${API_URL}/api/v1/content-health/summary`).then((r) => (r.ok ? r.json() : null)),
-        fetch(`${API_URL}/api/v1/alerts`).then((r) => (r.ok ? r.json() : null)),
-      ]);
-
-      if (sumRes.status === "fulfilled" && sumRes.value) {
-        setSummary(sumRes.value);
-      } else {
-        // Fallback demo data matching specifications
-        setSummary({
-          period: { from: new Date().toISOString(), to: new Date().toISOString() },
-          metrics: { visitors: 12430, searches: 8920, bookings: 1240, sos: 7 },
-        });
-      }
-
-      if (leadRes.status === "fulfilled" && Array.isArray(leadRes.value) && leadRes.value.length > 0) {
-        setLeaderboard(leadRes.value);
-      } else {
-        setLeaderboard([
-          {
-            id: "chitrakote-falls",
-            name: "Chitrakote Falls",
-            district: "Bastar",
-            views: 4200,
-            saves: 850,
-            shares: 320,
-            bookings: 140,
-            rating: 4.8,
-            performance: { engagementRate: 0.28, conversionRate: 0.033 },
-          },
-          {
-            id: "tirathgarh-falls",
-            name: "Tirathgarh Falls",
-            district: "Bastar",
-            views: 2900,
-            saves: 410,
-            shares: 180,
-            bookings: 75,
-            rating: 4.6,
-            performance: { engagementRate: 0.20, conversionRate: 0.026 },
-          },
-          {
-            id: "bhoramdeo-temple",
-            name: "Bhoramdeo Temple",
-            district: "Kabirdham",
-            views: 2150,
-            saves: 380,
-            shares: 140,
-            bookings: 45,
-            rating: 4.7,
-            performance: { engagementRate: 0.24, conversionRate: 0.021 },
-          },
-        ]);
-      }
-
-      if (healthRes.status === "fulfilled" && healthRes.value) {
-        setHealth(healthRes.value);
-      } else {
-        setHealth({
-          total: 85,
-          healthy: 70,
-          warning: 10,
-          incomplete: 5,
-          healthyPercentage: 82,
-          warningPercentage: 12,
-          incompletePercentage: 6,
-        });
-      }
-
-      if (alertsRes.status === "fulfilled" && Array.isArray(alertsRes.value) && alertsRes.value.length > 0) {
-        setAlerts(alertsRes.value);
-      } else {
-        setAlerts([
-          {
-            id: "alert-demo-1",
-            type: "CONTENT_STALE",
-            severity: "WARNING",
-            title: "Stale Content: Kanger Valley Caves",
-            description: "No verified updates in 380 days. Seasonal timings may be inaccurate.",
-            resolved: false,
-            createdAt: new Date().toISOString(),
-          },
-          {
-            id: "alert-demo-2",
-            type: "HIGH_SOS_ACTIVITY",
-            severity: "CRITICAL",
-            title: "Unusual SOS Activity in Bastar Forest",
-            description: "3 emergency signals triggered within 2km radius during heavy rainfall.",
-            resolved: false,
-            createdAt: new Date().toISOString(),
-          },
-        ]);
-      }
-    } finally {
-      setLoading(false);
+  function applyData(
+    sumVal: any,
+    leadVal: any,
+    healthVal: any,
+    alertsVal: any,
+  ) {
+    if (sumVal) {
+      setSummary(sumVal);
+    } else {
+      setSummary({
+        period: { from: new Date().toISOString(), to: new Date().toISOString() },
+        metrics: { visitors: 12430, searches: 8920, bookings: 1240, sos: 7 },
+      });
     }
+
+    if (Array.isArray(leadVal) && leadVal.length > 0) {
+      setLeaderboard(leadVal);
+    } else {
+      setLeaderboard([
+        {
+          id: "chitrakote-falls",
+          name: "Chitrakote Falls",
+          district: "Bastar",
+          views: 4200,
+          saves: 850,
+          shares: 320,
+          bookings: 140,
+          rating: 4.8,
+          performance: { engagementRate: 0.28, conversionRate: 0.033 },
+        },
+        {
+          id: "tirathgarh-falls",
+          name: "Tirathgarh Falls",
+          district: "Bastar",
+          views: 2900,
+          saves: 410,
+          shares: 180,
+          bookings: 75,
+          rating: 4.6,
+          performance: { engagementRate: 0.20, conversionRate: 0.026 },
+        },
+        {
+          id: "bhoramdeo-temple",
+          name: "Bhoramdeo Temple",
+          district: "Kabirdham",
+          views: 2150,
+          saves: 380,
+          shares: 140,
+          bookings: 45,
+          rating: 4.7,
+          performance: { engagementRate: 0.24, conversionRate: 0.021 },
+        },
+      ]);
+    }
+
+    if (healthVal) {
+      setHealth(healthVal);
+    } else {
+      setHealth({
+        total: 85,
+        healthy: 70,
+        warning: 10,
+        incomplete: 5,
+        healthyPercentage: 82,
+        warningPercentage: 12,
+        incompletePercentage: 6,
+      });
+    }
+
+    if (Array.isArray(alertsVal) && alertsVal.length > 0) {
+      setAlerts(alertsVal);
+    } else {
+      setAlerts([
+        {
+          id: "alert-demo-1",
+          type: "CONTENT_STALE",
+          severity: "WARNING",
+          title: "Stale Content: Kanger Valley Caves",
+          description: "No verified updates in 380 days. Seasonal timings may be inaccurate.",
+          resolved: false,
+          createdAt: new Date().toISOString(),
+        },
+        {
+          id: "alert-demo-2",
+          type: "HIGH_SOS_ACTIVITY",
+          severity: "CRITICAL",
+          title: "Unusual SOS Activity in Bastar Forest",
+          description: "3 emergency signals triggered within 2km radius during heavy rainfall.",
+          resolved: false,
+          createdAt: new Date().toISOString(),
+        },
+      ]);
+    }
+    setLoading(false);
   }
 
+  const refreshData = React.useCallback(() => {
+    setLoading(true);
+    void Promise.allSettled([
+      fetch(`${API_URL}/api/v1/intelligence/summary`).then((r) => (r.ok ? r.json() : null)),
+      fetch(`${API_URL}/api/v1/intelligence/destinations/leaderboard`).then((r) => (r.ok ? r.json() : null)),
+      fetch(`${API_URL}/api/v1/content-health/summary`).then((r) => (r.ok ? r.json() : null)),
+      fetch(`${API_URL}/api/v1/alerts`).then((r) => (r.ok ? r.json() : null)),
+    ]).then(([sumRes, leadRes, healthRes, alertsRes]) => {
+      applyData(
+        sumRes.status === "fulfilled" ? sumRes.value : null,
+        leadRes.status === "fulfilled" ? leadRes.value : null,
+        healthRes.status === "fulfilled" ? healthRes.value : null,
+        alertsRes.status === "fulfilled" ? alertsRes.value : null,
+      );
+    });
+  }, [API_URL]);
+
   useEffect(() => {
-    loadData();
-  }, []);
+    let active = true;
+    void Promise.allSettled([
+      fetch(`${API_URL}/api/v1/intelligence/summary`).then((r) => (r.ok ? r.json() : null)),
+      fetch(`${API_URL}/api/v1/intelligence/destinations/leaderboard`).then((r) => (r.ok ? r.json() : null)),
+      fetch(`${API_URL}/api/v1/content-health/summary`).then((r) => (r.ok ? r.json() : null)),
+      fetch(`${API_URL}/api/v1/alerts`).then((r) => (r.ok ? r.json() : null)),
+    ]).then(([sumRes, leadRes, healthRes, alertsRes]) => {
+      if (!active) return;
+      applyData(
+        sumRes.status === "fulfilled" ? sumRes.value : null,
+        leadRes.status === "fulfilled" ? leadRes.value : null,
+        healthRes.status === "fulfilled" ? healthRes.value : null,
+        alertsRes.status === "fulfilled" ? alertsRes.value : null,
+      );
+    });
+
+    return () => {
+      active = false;
+    };
+  }, [API_URL]);
 
   async function handleResolve(id: string) {
     setResolvingId(id);
@@ -214,7 +242,7 @@ export default function IntelligenceDashboard() {
         </div>
 
         <button
-          onClick={loadData}
+          onClick={refreshData}
           disabled={loading}
           className="flex items-center px-4 py-2 bg-slate-900 border border-slate-800 hover:border-slate-700 rounded-xl text-slate-300 text-sm font-medium transition-colors"
         >
