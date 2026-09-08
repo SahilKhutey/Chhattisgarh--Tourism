@@ -1,104 +1,239 @@
-/**
- * @cg-tourism/template-engine - Core Schema Types
- * Production contracts for CG Tourism Content Template Engine.
- */
+export const TEMPLATE_SCHEMA_VERSION = 1 as const;
 
-export enum FieldType {
-  // Primitives & Rich Content
-  TEXT = 'TEXT',
-  RICHTEXT = 'RICHTEXT',
-  NUMBER = 'NUMBER',
-  BOOLEAN = 'BOOLEAN',
-  DATE = 'DATE',
-  DROPDOWN = 'DROPDOWN',
-  TAGS = 'TAGS',
+export type TemplateStatus =
+  | "DRAFT"
+  | "PUBLISHED"
+  | "ARCHIVED";
 
-  // Media
-  IMAGE = 'IMAGE',
-  GALLERY = 'GALLERY',
-  VIDEO = 'VIDEO',
-  AUDIO = 'AUDIO',
+export type FieldType =
+  | "TEXT"
+  | "RICHTEXT"
+  | "IMAGE"
+  | "GALLERY"
+  | "GEO_POINT"
+  | "MAP_REGION"
+  | "DROPDOWN"
+  | "TAGS"
+  | "VIDEO"
+  | "AUDIO"
+  | "DATE"
+  | "NUMBER"
+  | "BOOLEAN"
+  | "RELATION";
 
-  // Geographic First-Class Primitives
-  GEO_POINT = 'GEO_POINT',
-  GEO_REGION = 'GEO_REGION',
-  ADMINISTRATIVE_REGION = 'ADMINISTRATIVE_REGION',
-  GEO_ROUTE = 'GEO_ROUTE',
+export type SupportedLocale =
+  | "en"
+  | "hi"
+  | "chg";
 
-  // Graph / Relations
-  RELATION = 'RELATION',
+export interface LocalizedString {
+  en?: string;
+  hi?: string;
+  chg?: string;
 }
 
-export enum TemplateStatus {
-  DRAFT = 'DRAFT',
-  PUBLISHED = 'PUBLISHED',
-  ARCHIVED = 'ARCHIVED',
+export interface TemplateMetadata {
+  name: string;
+  slug: string;
+  description?: string;
+  icon?: string;
+  category?: string;
 }
 
-export enum TemplateVersionStatus {
-  DRAFT = 'DRAFT',
-  PUBLISHED = 'PUBLISHED',
-  DEPRECATED = 'DEPRECATED',
+export interface FieldValidationOptions {
+  minLength?: number;
+  maxLength?: number;
+  min?: number;
+  max?: number;
+  pattern?: string;
 }
 
-export enum EntryStatus {
-  DRAFT = 'DRAFT',
-  PENDING_REVIEW = 'PENDING_REVIEW',
-  CHANGES_REQUESTED = 'CHANGES_REQUESTED',
-  APPROVED = 'APPROVED',
-  PUBLISHED = 'PUBLISHED',
-  REJECTED = 'REJECTED',
-  ARCHIVED = 'ARCHIVED',
+export interface TextFieldOptions {
+  multiline?: boolean;
+  placeholder?: string;
+  validation?: FieldValidationOptions;
 }
 
-/**
- * Structural definition of a single field within a Template Version.
- */
-export interface TemplateFieldDefinition<TOptions = Record<string, unknown>> {
-  id?: string;
+export interface RichTextFieldOptions {
+  allowedFormats?: Array<
+    | "bold"
+    | "italic"
+    | "underline"
+    | "heading"
+    | "link"
+    | "list"
+    | "quote"
+  >;
+}
+
+export interface ImageFieldOptions {
+  maxSizeBytes?: number;
+  acceptedMimeTypes?: string[];
+  requireAltText?: boolean;
+}
+
+export interface GalleryFieldOptions {
+  minItems?: number;
+  maxItems?: number;
+  image?: ImageFieldOptions;
+}
+
+export interface GeoPointFieldOptions {
+  minLatitude?: number;
+  maxLatitude?: number;
+  minLongitude?: number;
+  maxLongitude?: number;
+  requiredAccuracyMeters?: number;
+}
+
+export interface MapRegionFieldOptions {
+  allowedGeometryTypes?: Array<
+    "Polygon" | "MultiPolygon"
+  >;
+}
+
+export interface DropdownOption {
+  value: string;
+  label: LocalizedString | string;
+}
+
+export interface DropdownFieldOptions {
+  options: DropdownOption[];
+  allowMultiple?: boolean;
+}
+
+export interface TagsFieldOptions {
+  minItems?: number;
+  maxItems?: number;
+  allowCustom?: boolean;
+}
+
+export interface VideoFieldOptions {
+  acceptedMimeTypes?: string[];
+  maxSizeBytes?: number;
+  maxDurationSeconds?: number;
+}
+
+export interface AudioFieldOptions {
+  acceptedMimeTypes?: string[];
+  maxSizeBytes?: number;
+  maxDurationSeconds?: number;
+}
+
+export interface DateFieldOptions {
+  includeTime?: boolean;
+  minDate?: string;
+  maxDate?: string;
+}
+
+export interface NumberFieldOptions {
+  min?: number;
+  max?: number;
+  integerOnly?: boolean;
+  unit?: string;
+}
+
+export interface BooleanFieldOptions {
+  trueLabel?: LocalizedString | string;
+  falseLabel?: LocalizedString | string;
+}
+
+export interface RelationFieldOptions {
+  targetTemplateSlug: string;
+  multiple?: boolean;
+  allowSelf?: boolean;
+}
+
+export type FieldOptions =
+  | TextFieldOptions
+  | RichTextFieldOptions
+  | ImageFieldOptions
+  | GalleryFieldOptions
+  | GeoPointFieldOptions
+  | MapRegionFieldOptions
+  | DropdownFieldOptions
+  | TagsFieldOptions
+  | VideoFieldOptions
+  | AudioFieldOptions
+  | DateFieldOptions
+  | NumberFieldOptions
+  | BooleanFieldOptions
+  | RelationFieldOptions
+  | Record<string, unknown>
+  | undefined;
+
+export interface TemplateField {
   key: string;
   label: string;
   fieldType: FieldType;
-  required: boolean;
+
+  required?: boolean;
+
   order: number;
-  options?: TOptions | null;
-  translatable: boolean;
-  helpText?: string | null;
+
+  options?: FieldOptions;
+
+  translatable?: boolean;
+
+  helpText?: string;
+
   defaultValue?: unknown;
 }
 
-/**
- * Immutable schema snapshot stored in TemplateVersion.schema
- */
-export interface TemplateSchema {
-  templateSlug: string;
-  templateName: string;
-  version: number;
-  description?: string | null;
-  icon?: string | null;
-  fields: TemplateFieldDefinition[];
-  createdAt: string;
+export interface TemplateSection {
+  key: string;
+  label: string;
+  order: number;
+  fieldKeys: string[];
 }
 
-/**
- * Content Entry Data payload (key-value pair representation)
- */
-export type ContentEntryData = Record<string, unknown>;
+export interface TemplateSchema {
+  schemaVersion: typeof TEMPLATE_SCHEMA_VERSION;
 
-/**
- * Content Entry instance representation
- */
-export interface ContentEntrySnapshot {
   id: string;
-  templateId: string;
-  templateVersionId: string;
-  data: ContentEntryData;
-  status: EntryStatus;
-  authorId: string;
-  reviewedBy?: string | null;
-  region?: string | null;
-  lat?: number | null;
-  lng?: number | null;
-  createdAt: string;
-  updatedAt: string;
+
+  metadata: TemplateMetadata;
+
+  version: number;
+
+  status: TemplateStatus;
+
+  fields: TemplateField[];
+
+  sections?: TemplateSection[];
+}
+
+export interface SchemaValidationError {
+  path: string;
+  code:
+    | "INVALID_SCHEMA"
+    | "INVALID_TEMPLATE_ID"
+    | "INVALID_TEMPLATE_VERSION"
+    | "INVALID_METADATA"
+    | "INVALID_SLUG"
+    | "DUPLICATE_FIELD_KEY"
+    | "INVALID_FIELD_KEY"
+    | "INVALID_FIELD_LABEL"
+    | "INVALID_FIELD_ORDER"
+    | "INVALID_FIELD_TYPE"
+    | "INVALID_FIELD_OPTIONS"
+    | "INVALID_REQUIRED_CONFIGURATION"
+    | "INVALID_TRANSLATION_CONFIGURATION"
+    | "INVALID_SECTION"
+    | "UNKNOWN_FIELD_REFERENCE"
+    | "DUPLICATE_SECTION_KEY"
+    | "CIRCULAR_RELATION"
+    | "SELF_RELATION"
+    | "INVALID_DEFAULT_VALUE";
+  message: string;
+}
+
+export interface SchemaValidationResult {
+  valid: boolean;
+  errors: SchemaValidationError[];
+}
+
+export interface TemplateSerializationResult {
+  schema: TemplateSchema;
+  json: string;
 }
