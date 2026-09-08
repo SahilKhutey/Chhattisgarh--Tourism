@@ -1,0 +1,69 @@
+name: CG Tourism Mobile CI
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+    paths:
+      - 'apps/mobile/**'
+      - 'apps/web/**'
+      - 'apps/backend/**'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+  pull_request:
+    branches:
+      - main
+      - develop
+    paths:
+      - 'apps/mobile/**'
+      - 'apps/web/**'
+      - 'apps/backend/**'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+
+concurrency:
+  group: mobile-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  mobile-validation:
+    name: Mobile Runtime & Cross-Package Verification
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.14.0
+          run_install: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Mobile Typecheck
+        run: pnpm --filter @cg-tourism/mobile typecheck
+
+      - name: Mobile Unit Tests
+        run: pnpm --filter @cg-tourism/mobile test
+
+      - name: Web Lint
+        run: pnpm --filter web lint
+
+      - name: Web Build
+        run: pnpm --filter web build
+
+      - name: Backend Unit Tests
+        run: pnpm --filter backend test:unit
