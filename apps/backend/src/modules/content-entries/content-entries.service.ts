@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../../database/prisma.service';
 import { TemplateValidatorService } from '../content-templates/template-validator.service';
+import { SpatialService } from '../../infrastructure/database/spatial.service';
 import { CreateEntryDto } from './dto/create-entry.dto';
 import { UpdateEntryDto } from './dto/update-entry.dto';
 import { ReviewEntryDto } from './dto/review-entry.dto';
@@ -17,6 +18,7 @@ export class ContentEntriesService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly validator: TemplateValidatorService,
+    private readonly spatial: SpatialService,
   ) {}
 
   async create(dto: CreateEntryDto, authorId: string) {
@@ -73,7 +75,7 @@ export class ContentEntriesService {
       }
     }
 
-    return this.prisma.contentEntry.create({
+    const entry = await this.prisma.contentEntry.create({
       data: {
         templateId: dto.templateId,
         data: dto.data as any,
@@ -94,6 +96,13 @@ export class ContentEntriesService {
         },
       },
     });
+
+    // Synchronize PostGIS spatial geometry
+    if (lat !== undefined && lng !== undefined) {
+      await this.spatial.setEntryLocation(entry.id, lat, lng);
+    }
+
+    return entry;
   }
 
   async findAll(query: QueryEntriesDto) {
@@ -195,7 +204,7 @@ export class ContentEntriesService {
       }
     }
 
-    return this.prisma.contentEntry.update({
+    const updated = await this.prisma.contentEntry.update({
       where: { id },
       data: {
         ...(dto.data ? { data: dto.data as any } : {}),
@@ -212,6 +221,13 @@ export class ContentEntriesService {
         template: true,
       },
     });
+
+    // Synchronize PostGIS location if coordinates were updated
+    if (dto.lat !== undefined && dto.lng !== undefined) {
+      await this.spatial.setEntryLocation(id, dto.lat, dto.lng);
+    }
+
+    return updated;
   }
 
   async review(id: string, dto: ReviewEntryDto, reviewerId: string) {

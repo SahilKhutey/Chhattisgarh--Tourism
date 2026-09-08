@@ -6,14 +6,26 @@ import { FieldType } from '@prisma/client';
 describe('ContentTemplatesService', () => {
   let service: ContentTemplatesService;
   let prisma: ReturnType<typeof createMockPrisma>;
+  let redis: {
+    get: jest.Mock;
+    set: jest.Mock;
+    delete: jest.Mock;
+    ping: jest.Mock;
+  };
 
   beforeEach(() => {
     prisma = createMockPrisma();
-    service = new ContentTemplatesService(prisma as any);
+    redis = {
+      get: jest.fn().mockResolvedValue(null),
+      set: jest.fn().mockResolvedValue(undefined),
+      delete: jest.fn().mockResolvedValue(undefined),
+      ping: jest.fn().mockResolvedValue('PONG'),
+    };
+    service = new ContentTemplatesService(prisma as any, redis as any);
   });
 
   describe('create', () => {
-    it('creates a new content template with fields', async () => {
+    it('creates a new content template and invalidates cache', async () => {
       prisma.contentTemplate.findUnique.mockResolvedValue(null);
       prisma.contentTemplate.create.mockResolvedValue({
         id: 'tpl-1',
@@ -45,6 +57,7 @@ describe('ContentTemplatesService', () => {
         where: { slug: 'heritage-site' },
       });
       expect(prisma.contentTemplate.create).toHaveBeenCalled();
+      expect(redis.delete).toHaveBeenCalledWith('content:templates:published');
       expect(result.id).toBe('tpl-1');
     });
 
@@ -67,6 +80,36 @@ describe('ContentTemplatesService', () => {
     });
   });
 
+  describe('findPublished with Redis caching', () => {
+    it('returns cached templates on cache hit without querying database', async () => {
+      const cachedTemplates = [{ id: 'tpl-cached', name: 'Cached Waterfalls' }];
+      redis.get.mockResolvedValue(cachedTemplates);
+
+      const res = await service.findPublished();
+      expect(redis.get).toHaveBeenCalledWith('content:templates:published');
+      expect(prisma.contentTemplate.findMany).not.toHaveBeenCalled();
+      expect(res).toEqual(cachedTemplates);
+    });
+
+    it('queries database and populates Redis cache on cache miss', async () => {
+      redis.get.mockResolvedValue(null);
+      const dbTemplates = [{ id: 'tpl-db', name: 'DB Waterfalls' }];
+      prisma.contentTemplate.findMany.mockResolvedValue(dbTemplates);
+
+      const res = await service.findPublished();
+      expect(redis.get).toHaveBeenCalledWith('content:templates:published');
+      expect(prisma.contentTemplate.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({ where: { status: 'PUBLISHED' } }),
+      );
+      expect(redis.set).toHaveBeenCalledWith(
+        'content:templates:published',
+        dbTemplates,
+        300,
+      );
+      expect(res).toEqual(dbTemplates);
+    });
+  });
+
   describe('findById', () => {
     it('returns template when found', async () => {
       const mockTpl = { id: 'tpl-1', name: 'Waterfalls', fields: [] };
@@ -86,7 +129,7 @@ describe('ContentTemplatesService', () => {
   });
 
   describe('publish', () => {
-    it('creates a version snapshot and updates status to PUBLISHED', async () => {
+    it('creates a version snapshot, updates status, and invalidates cache', async () => {
       const mockTpl = {
         id: 'tpl-1',
         name: 'Festivals',
@@ -114,12 +157,13 @@ describe('ContentTemplatesService', () => {
           data: { status: 'PUBLISHED' },
         }),
       );
+      expect(redis.delete).toHaveBeenCalledWith('content:templates:published');
       expect(res).toEqual(mockTpl);
     });
   });
 
   describe('archive', () => {
-    it('updates status to ARCHIVED', async () => {
+    it('updates status to ARCHIVED and invalidates cache', async () => {
       prisma.contentTemplate.findUnique.mockResolvedValue({ id: 'tpl-1' });
       prisma.contentTemplate.update.mockResolvedValue({
         id: 'tpl-1',
@@ -131,6 +175,7 @@ describe('ContentTemplatesService', () => {
         where: { id: 'tpl-1' },
         data: { status: 'ARCHIVED' },
       });
+      expect(redis.delete).toHaveBeenCalledWith('content:templates:published');
       expect(res.status).toBe('ARCHIVED');
     });
   });

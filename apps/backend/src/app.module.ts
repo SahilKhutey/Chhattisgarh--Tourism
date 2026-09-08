@@ -26,7 +26,9 @@ import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { WeatherModule } from './modules/weather/weather.module';
 import { TransportModule } from './modules/transport/transport.module';
 import { GeoModule } from './geo/geo.module';
-import { HealthModule } from './modules/health/health.module';
+import { HealthModule } from './infrastructure/health/health.module';
+import { DatabaseModule } from './infrastructure/database/database.module';
+import { RedisModule } from './infrastructure/redis/redis.module';
 import { MobileModule } from './modules/mobile/mobile.module';
 import { GeographyModule } from './modules/geography/geography.module';
 import { ContentHealthModule } from './modules/content-health/content-health.module';
@@ -99,6 +101,8 @@ import { envSchema } from './config/env.schema';
     RefundsModule,
     ContentTemplatesModule,
     ContentEntriesModule,
+    DatabaseModule,
+    RedisModule,
   ],
   providers: [
     PrismaService,

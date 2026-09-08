@@ -4,33 +4,30 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 
-import { PrismaService } from '../../prisma/prisma.service';
+import { PrismaService } from '../../database/prisma.service';
+import { RedisService } from '../../infrastructure/redis/redis.service';
+import { CacheKeys } from '../../infrastructure/redis/cache.keys';
 import { CreateTemplateDto } from './dto/create-template.dto';
 
 @Injectable()
 export class ContentTemplatesService {
   constructor(
     private readonly prisma: PrismaService,
+    private readonly redis: RedisService,
   ) {}
 
-  async create(
-    dto: CreateTemplateDto,
-    userId: string,
-  ) {
-    const existing =
-      await this.prisma.contentTemplate.findUnique({
-        where: {
-          slug: dto.slug,
-        },
-      });
+  async create(dto: CreateTemplateDto, userId: string) {
+    const existing = await this.prisma.contentTemplate.findUnique({
+      where: {
+        slug: dto.slug,
+      },
+    });
 
     if (existing) {
-      throw new ConflictException(
-        'Template slug already exists',
-      );
+      throw new ConflictException('Template slug already exists');
     }
 
-    return this.prisma.contentTemplate.create({
+    const created = await this.prisma.contentTemplate.create({
       data: {
         name: dto.name,
         slug: dto.slug,
@@ -46,8 +43,7 @@ export class ContentTemplatesService {
             required: field.required ?? false,
             order: field.order,
             options: (field.options ?? null) as any,
-            translatable:
-              field.translatable ?? true,
+            translatable: field.translatable ?? true,
           })),
         },
       },
@@ -60,10 +56,19 @@ export class ContentTemplatesService {
         },
       },
     });
+
+    await this.invalidatePublishedTemplatesCache();
+    return created;
   }
 
   async findPublished() {
-    return this.prisma.contentTemplate.findMany({
+    const key = CacheKeys.publishedTemplates;
+    const cached = await this.redis.get<any[]>(key);
+    if (cached) {
+      return cached;
+    }
+
+    const templates = await this.prisma.contentTemplate.findMany({
       where: {
         status: 'PUBLISHED',
       },
@@ -78,37 +83,33 @@ export class ContentTemplatesService {
         name: 'asc',
       },
     });
+
+    await this.redis.set(key, templates, 300);
+    return templates;
   }
 
   async findById(id: string) {
-    const template =
-      await this.prisma.contentTemplate.findUnique({
-        where: { id },
+    const template = await this.prisma.contentTemplate.findUnique({
+      where: { id },
 
-        include: {
-          fields: {
-            orderBy: {
-              order: 'asc',
-            },
+      include: {
+        fields: {
+          orderBy: {
+            order: 'asc',
           },
         },
-      });
+      },
+    });
 
     if (!template) {
-      throw new NotFoundException(
-        'Template not found',
-      );
+      throw new NotFoundException('Template not found');
     }
 
     return template;
   }
 
-  async publish(
-    id: string,
-    userId: string,
-  ) {
+  async publish(id: string, userId: string) {
     const template = await this.findById(id);
-
     const version = template.version;
 
     await this.prisma.$transaction([
@@ -134,17 +135,25 @@ export class ContentTemplatesService {
       }),
     ]);
 
+    await this.invalidatePublishedTemplatesCache();
     return this.findById(id);
   }
 
   async archive(id: string) {
     await this.findById(id);
 
-    return this.prisma.contentTemplate.update({
+    const updated = await this.prisma.contentTemplate.update({
       where: { id },
       data: {
         status: 'ARCHIVED',
       },
     });
+
+    await this.invalidatePublishedTemplatesCache();
+    return updated;
+  }
+
+  async invalidatePublishedTemplatesCache(): Promise<void> {
+    await this.redis.delete(CacheKeys.publishedTemplates);
   }
 }

@@ -12,11 +12,19 @@ describe('ContentEntriesService', () => {
   let service: ContentEntriesService;
   let prisma: ReturnType<typeof createMockPrisma>;
   let validator: TemplateValidatorService;
+  let spatial: {
+    setEntryLocation: jest.Mock;
+    clearEntryLocation: jest.Mock;
+  };
 
   beforeEach(() => {
     prisma = createMockPrisma();
     validator = new TemplateValidatorService();
-    service = new ContentEntriesService(prisma as any, validator);
+    spatial = {
+      setEntryLocation: jest.fn().mockResolvedValue(undefined),
+      clearEntryLocation: jest.fn().mockResolvedValue(undefined),
+    };
+    service = new ContentEntriesService(prisma as any, validator, spatial as any);
   });
 
   const mockPublishedTemplate = {
@@ -69,7 +77,7 @@ describe('ContentEntriesService', () => {
   };
 
   describe('create', () => {
-    it('creates an entry and auto-extracts lat/lng/region', async () => {
+    it('creates an entry, auto-extracts lat/lng/region, and synchronizes PostGIS location', async () => {
       prisma.contentTemplate.findUnique.mockResolvedValue(mockPublishedTemplate);
       prisma.contentEntry.create.mockImplementation(({ data }) =>
         Promise.resolve({
@@ -108,6 +116,8 @@ describe('ContentEntriesService', () => {
           }),
         }),
       );
+      // Verify PostGIS spatial synchronization
+      expect(spatial.setEntryLocation).toHaveBeenCalledWith('entry-1', 19.201, 81.706);
       expect(result.id).toBe('entry-1');
     });
 
@@ -241,7 +251,7 @@ describe('ContentEntriesService', () => {
   });
 
   describe('permissions (update & delete)', () => {
-    it('allows author to update their draft', async () => {
+    it('allows author to update their draft and synchronizes coordinates', async () => {
       prisma.contentEntry.findUnique.mockResolvedValue({
         id: 'entry-1',
         authorId: 'creator-1',
@@ -254,11 +264,17 @@ describe('ContentEntriesService', () => {
       await expect(
         service.update(
           'entry-1',
-          { data: { title: 'Updated Chitrakote', location: { lat: 19.2, lng: 81.7 } } },
+          {
+            data: { title: 'Updated Chitrakote', location: { lat: 19.2, lng: 81.7 } },
+            lat: 19.2,
+            lng: 81.7,
+          },
           'creator-1',
           'CREATOR',
         ),
       ).resolves.toBeDefined();
+
+      expect(spatial.setEntryLocation).toHaveBeenCalledWith('entry-1', 19.2, 81.7);
     });
 
     it('rejects another user from updating entry', async () => {
