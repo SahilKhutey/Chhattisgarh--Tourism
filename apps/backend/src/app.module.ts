@@ -32,6 +32,7 @@ import { GeographyModule } from './modules/geography/geography.module';
 import { ContentHealthModule } from './modules/content-health/content-health.module';
 import { IntelligenceModule } from './modules/intelligence/intelligence.module';
 import { AlertsModule } from './modules/alerts/alerts.module';
+import { PartnersModule } from './modules/partners/partners.module';
 import { StructuredLoggerService } from './common/logger/structured-logger.service';
 import { CorrelationIdMiddleware } from './common/middleware/correlation-id.middleware';
 import { HttpLoggingInterceptor } from './common/interceptors/http-logging.interceptor';
@@ -85,6 +86,7 @@ import { envSchema } from './config/env.schema';
     ContentHealthModule,
     IntelligenceModule,
     AlertsModule,
+    PartnersModule,
   ],
   providers: [
     PrismaService,
