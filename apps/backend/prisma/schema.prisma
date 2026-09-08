@@ -1291,6 +1291,7 @@ model TemplateField {
   required     Boolean   @default(false)
   order        Int
   options      Json?
+  helpText     String?
   translatable Boolean   @default(true)
 
   createdAt DateTime @default(now())

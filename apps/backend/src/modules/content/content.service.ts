@@ -260,36 +260,51 @@ export class ContentService {
 
     const status = approved ? EntryStatus.PUBLISHED : EntryStatus.REJECTED;
 
-    const updated = await this.prisma.contentEntry.update({
-      where: { id },
-      data: {
-        status,
-        reviewedBy: reviewerId,
-        reviewNote: note ?? null,
-        publishedAt: approved ? new Date() : null,
-      },
-      include: {
-        template: {
-          include: {
-            fields: {
-              orderBy: {
-                order: 'asc',
+    const updated = await this.prisma.$transaction(async (tx) => {
+      const updatedEntry = await tx.contentEntry.update({
+        where: { id },
+        data: {
+          status,
+          reviewedBy: reviewerId,
+          reviewNote: note ?? null,
+          publishedAt: approved ? new Date() : null,
+        },
+        include: {
+          template: {
+            include: {
+              fields: {
+                orderBy: {
+                  order: 'asc',
+                },
               },
             },
           },
         },
-      },
+      });
+
+      await tx.contentAuditLog.create({
+        data: {
+          entryId: id,
+          action: approved ? AuditAction.APPROVED : AuditAction.REJECTED,
+          actorId: reviewerId,
+          metadata: note ? { note } : undefined,
+        },
+      });
+
+      if (approved) {
+        await tx.contentAuditLog.create({
+          data: {
+            entryId: id,
+            action: AuditAction.PUBLISHED,
+            actorId: reviewerId,
+          },
+        });
+      }
+
+      return updatedEntry;
     });
 
-    await this.audit(
-      id,
-      approved ? AuditAction.APPROVED : AuditAction.REJECTED,
-      reviewerId,
-      note ? { note } : undefined,
-    );
-
     if (approved) {
-      await this.audit(id, AuditAction.PUBLISHED, reviewerId);
       if (this.indexer) {
         await this.indexer.indexEntry(id).catch((err) => {
           this.logger.error(`Error indexing published entry ${id}: ${err}`);

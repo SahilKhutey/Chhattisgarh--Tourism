@@ -18,6 +18,7 @@ describe('TemplateValidatorService', () => {
     required: true,
     order: 1,
     options: null,
+    helpText: null,
     translatable: true,
     createdAt: new Date(),
     updatedAt: new Date(),

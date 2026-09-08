@@ -1,6 +1,9 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowLeft, AlertCircle } from 'lucide-react';
-import { GenericEntryRenderer } from '@/components/content/GenericEntryRenderer';
+import { ContentRenderer } from '@/components/renderer/ContentRenderer';
+import { RendererErrorBoundary } from '@/components/renderer/RendererErrorBoundary';
+import { buildMetadata } from '@/lib/rendering/metadata';
 
 interface Props {
   params: Promise<{
@@ -9,35 +12,55 @@ interface Props {
   }>;
 }
 
-export default async function ContentPage({ params }: Props) {
-  const { templateSlug, entrySlug } = await params;
+const getApiUrl = () =>
+  process.env.NEXT_PUBLIC_API_URL ||
+  process.env.API_URL ||
+  'http://localhost:4000/api/v1';
 
-  const apiUrl =
-    process.env.NEXT_PUBLIC_API_URL ||
-    process.env.API_URL ||
-    'http://localhost:4000/api/v1';
-
-  let entry = null;
-  let notFound = false;
-
+async function fetchContentEntry(templateSlug: string, entrySlug: string) {
+  const apiUrl = getApiUrl();
+  // Attempt public content endpoint first
   try {
-    const res = await fetch(`${apiUrl}/content/${templateSlug}/${entrySlug}`, {
-      next: {
-        revalidate: 60,
-      },
+    const res = await fetch(`${apiUrl}/public/content/${templateSlug}/${entrySlug}`, {
+      next: { revalidate: 60 },
     });
-
-    if (res.ok) {
-      entry = await res.json();
-    } else {
-      notFound = true;
-    }
+    if (res.ok) return await res.json();
   } catch (err) {
-    console.warn(`Failed to fetch /content/${templateSlug}/${entrySlug}`, err);
-    notFound = true;
+    // continue to fallback
   }
 
-  if (notFound || !entry) {
+  // Fallback to general content endpoint
+  try {
+    const res = await fetch(`${apiUrl}/content/${templateSlug}/${entrySlug}`, {
+      next: { revalidate: 60 },
+    });
+    if (res.ok) return await res.json();
+  } catch (err) {
+    console.warn(`Failed to fetch content for ${templateSlug}/${entrySlug}`, err);
+  }
+
+  return null;
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { templateSlug, entrySlug } = await params;
+  const entry = await fetchContentEntry(templateSlug, entrySlug);
+
+  if (!entry) {
+    return {
+      title: 'Content Not Found | Chhattisgarh Tourism',
+      description: 'The requested tourism content could not be located.',
+    };
+  }
+
+  return buildMetadata(entry);
+}
+
+export default async function ContentPage({ params }: Props) {
+  const { templateSlug, entrySlug } = await params;
+  const entry = await fetchContentEntry(templateSlug, entrySlug);
+
+  if (!entry) {
     return (
       <main className="min-h-screen bg-stone-50 py-16 px-4">
         <div className="max-w-md mx-auto bg-white p-8 rounded-2xl border border-stone-200 text-center space-y-4 shadow-sm">
@@ -67,10 +90,9 @@ export default async function ContentPage({ params }: Props) {
           <ArrowLeft className="w-4 h-4" /> Back to {entry.template?.name || templateSlug}
         </Link>
 
-        <GenericEntryRenderer
-          template={entry.template}
-          entry={entry}
-        />
+        <RendererErrorBoundary fallbackTitle="Tourism Content Display">
+          <ContentRenderer entry={entry} />
+        </RendererErrorBoundary>
       </div>
     </main>
   );

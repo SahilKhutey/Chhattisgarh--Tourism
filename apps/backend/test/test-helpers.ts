@@ -1,5 +1,5 @@
 export function createMockPrisma() {
-  return {
+  const mock: any = {
     user: {
       findUnique: jest.fn(),
       findFirst: jest.fn(),
@@ -129,13 +129,17 @@ export function createMockPrisma() {
       deleteMany: jest.fn(),
       count: jest.fn(),
     },
-    $transaction: jest.fn((cbOrArray) => {
-      if (typeof cbOrArray === "function") {
-        return cbOrArray(createMockPrisma());
-      }
-      return Promise.all(cbOrArray);
-    }),
-    $queryRaw: jest.fn(),
-    $executeRaw: jest.fn(),
   };
+
+  mock.$transaction = jest.fn((cbOrArray) => {
+    if (typeof cbOrArray === "function") {
+      return cbOrArray(mock);
+    }
+    return Promise.all(cbOrArray);
+  });
+
+  mock.$queryRaw = jest.fn();
+  mock.$executeRaw = jest.fn();
+
+  return mock;
 }
