@@ -41,8 +41,7 @@ export default function AdminMarketplacePage() {
   const loadPartners = async () => {
     try {
       setLoading(true);
-      const token = await authenticateTestUser();
-      const data = await fetchAllPartners(token);
+      const data = await fetchAllPartners();
       setPartners(data.items || []);
     } catch {
       setPartners([]);
