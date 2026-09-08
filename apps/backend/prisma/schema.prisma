@@ -1346,6 +1346,8 @@ model ContentEntry {
 
   auditLogs ContentAuditLog[]
 
+  searchIndex ContentSearchIndex?
+
   @@unique([templateId, slug])
   @@index([templateId, status])
   @@index([region, status])
@@ -1367,4 +1369,37 @@ model ContentAuditLog {
   createdAt DateTime @default(now())
 
   @@index([entryId, createdAt])
+}
+
+model ContentSearchIndex {
+  id String @id @default(cuid())
+
+  entryId String       @unique
+  entry   ContentEntry @relation(fields: [entryId], references: [id], onDelete: Cascade)
+
+  templateId String
+
+  title          String?
+  searchableText String
+
+  region   String?
+  division String?
+  district String?
+
+  lat Float?
+  lng Float?
+
+  tags Json?
+
+  publishedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([templateId])
+  @@index([region])
+  @@index([division])
+  @@index([district])
+  @@index([publishedAt])
+  @@index([lat, lng])
 }

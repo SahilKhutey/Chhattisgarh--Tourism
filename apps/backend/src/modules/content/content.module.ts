@@ -4,9 +4,10 @@ import { ContentService } from './content.service';
 import { EntryValidatorService } from './validators/entry-validator.service';
 import { SlugService } from './slug/slug.service';
 import { DatabaseModule } from '../../infrastructure/database/database.module';
+import { DiscoveryModule } from '../discovery/discovery.module';
 
 @Module({
-  imports: [DatabaseModule],
+  imports: [DatabaseModule, DiscoveryModule],
   controllers: [ContentController],
   providers: [
     ContentService,

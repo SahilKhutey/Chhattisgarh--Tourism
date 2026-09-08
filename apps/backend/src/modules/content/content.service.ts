@@ -2,6 +2,7 @@ import {
   BadRequestException,
   ForbiddenException,
   Injectable,
+  Logger,
   NotFoundException,
   Optional,
 } from '@nestjs/common';
@@ -13,16 +14,20 @@ import {
 
 import { PrismaService } from '../../database/prisma.service';
 import { SpatialService } from '../../infrastructure/database/spatial.service';
+import { DiscoveryIndexerService } from '../discovery/indexer/discovery-indexer.service';
 import { EntryValidatorService } from './validators/entry-validator.service';
 import { SlugService } from './slug/slug.service';
 
 @Injectable()
 export class ContentService {
+  private readonly logger = new Logger(ContentService.name);
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly validator: EntryValidatorService,
     private readonly slugService: SlugService,
     @Optional() private readonly spatial?: SpatialService,
+    @Optional() private readonly indexer?: DiscoveryIndexerService,
   ) {}
 
   async create(
@@ -170,6 +175,12 @@ export class ContentService {
 
     await this.audit(id, AuditAction.UPDATED, authorId);
 
+    if (updated.status === EntryStatus.PUBLISHED && this.indexer) {
+      await this.indexer.indexEntry(id).catch((err) => {
+        this.logger.error(`Error re-indexing updated entry ${id}: ${err}`);
+      });
+    }
+
     return updated;
   }
 
@@ -279,6 +290,17 @@ export class ContentService {
 
     if (approved) {
       await this.audit(id, AuditAction.PUBLISHED, reviewerId);
+      if (this.indexer) {
+        await this.indexer.indexEntry(id).catch((err) => {
+          this.logger.error(`Error indexing published entry ${id}: ${err}`);
+        });
+      }
+    } else {
+      if (this.indexer) {
+        await this.indexer.removeEntry(id).catch((err) => {
+          this.logger.error(`Error removing rejected entry ${id} from index: ${err}`);
+        });
+      }
     }
 
     return updated;

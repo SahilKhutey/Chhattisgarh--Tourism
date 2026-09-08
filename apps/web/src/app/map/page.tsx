@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { Compass, MapPin, Navigation, Search, Filter, AlertCircle } from "lucide-react";
 import { TourismMap } from "@/components/map/MapContainer";
 import { getNearbyPlaces, getDivisions, getDistricts, getRoute } from "@/lib/geo/geo-api";
+import { searchContent } from "@/lib/discovery/api";
 import type { GeoDistrict, GeoDivision, MapPlace, RouteResult } from "@/lib/geo/geo-types";
 
 export default function MapPage() {
@@ -19,15 +20,39 @@ export default function MapPage() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Load initial statewide destinations and administrative hierarchy
+  // Load initial statewide destinations, administrative hierarchy, and generic published entries
   useEffect(() => {
     Promise.all([
-      getNearbyPlaces(21.2514, 81.6296, 250_000, 200),
+      getNearbyPlaces(21.2514, 81.6296, 250_000, 200).catch(() => []),
       getDivisions().catch(() => []),
       getDistricts().catch(() => []),
+      searchContent({ limit: 100 }).catch(() => ({ items: [] })),
     ])
-      .then(([placesData, divisionsData, districtsData]) => {
-        setPlaces(placesData);
+      .then(([placesData, divisionsData, districtsData, discoveryData]) => {
+        const discoveryPlaces: MapPlace[] = ((discoveryData as any)?.items || [])
+          .filter((item: any) => typeof item.lat === 'number' && typeof item.lng === 'number')
+          .map((item: any) => ({
+            id: item.id,
+            name: item.title,
+            slug: item.slug,
+            category: item.templateName,
+            lat: item.lat,
+            lng: item.lng,
+            district: item.district || '',
+            division: item.division || '',
+            rating: 4.8,
+            status: 'PUBLISHED',
+          }));
+
+        // Deduplicate by ID
+        const combined = [...(placesData || [])];
+        discoveryPlaces.forEach((dp) => {
+          if (!combined.some((p) => p.id === dp.id)) {
+            combined.push(dp);
+          }
+        });
+
+        setPlaces(combined);
         setDivisions(divisionsData);
         setDistricts(districtsData);
         setError(null);

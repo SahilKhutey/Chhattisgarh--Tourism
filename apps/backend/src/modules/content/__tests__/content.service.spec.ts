@@ -14,6 +14,7 @@ describe('ContentService (Generic Content Engine)', () => {
   let prisma: ReturnType<typeof createMockPrisma>;
   let validator: EntryValidatorService;
   let slugService: SlugService;
+  let indexer: any;
 
   const mockPublishedTemplate = {
     id: 'tpl-destination',
@@ -43,10 +44,16 @@ describe('ContentService (Generic Content Engine)', () => {
     prisma = createMockPrisma();
     validator = new EntryValidatorService();
     slugService = new SlugService();
+    indexer = {
+      indexEntry: jest.fn().mockResolvedValue(undefined),
+      removeEntry: jest.fn().mockResolvedValue(undefined),
+    };
     service = new ContentService(
       prisma as any,
       validator,
       slugService,
+      undefined,
+      indexer,
     );
   });
 
@@ -289,6 +296,7 @@ describe('ContentService (Generic Content Engine)', () => {
           actorId: 'moderator-1',
         }),
       });
+      expect(indexer.indexEntry).toHaveBeenCalledWith('entry-1');
     });
 
     it('rejects a pending entry with notes', async () => {
@@ -313,6 +321,7 @@ describe('ContentService (Generic Content Engine)', () => {
         }),
         include: expect.any(Object),
       });
+      expect(indexer.removeEntry).toHaveBeenCalledWith('entry-1');
     });
 
     it('throws BadRequestException if entry is not awaiting review', async () => {
