@@ -27,6 +27,7 @@ import { WeatherModule } from './modules/weather/weather.module';
 import { TransportModule } from './modules/transport/transport.module';
 import { GeoModule } from './geo/geo.module';
 import { HealthModule } from './modules/health/health.module';
+import { MobileModule } from './modules/mobile/mobile.module';
 import { StructuredLoggerService } from './common/logger/structured-logger.service';
 import { CorrelationIdMiddleware } from './common/middleware/correlation-id.middleware';
 import { HttpLoggingInterceptor } from './common/interceptors/http-logging.interceptor';
@@ -75,6 +76,7 @@ import { envSchema } from './config/env.schema';
     TransportModule,
     GeoModule,
     HealthModule,
+    MobileModule,
   ],
   providers: [
     PrismaService,
