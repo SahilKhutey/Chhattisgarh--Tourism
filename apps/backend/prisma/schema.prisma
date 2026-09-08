@@ -874,24 +874,24 @@ enum AnalyticsEventType {
 }
 
 model AnalyticsEvent {
-  id         String             @id @default(uuid())
-  type       AnalyticsEventType @default(PAGE_VIEW)
-  name       String?
+  id   String             @id @default(uuid())
+  type AnalyticsEventType @default(PAGE_VIEW)
+  name String?
 
   userId     String?
   placeId    String?
   districtId String?
   bookingId  String?
 
-  sessionId  String?
-  latitude   Float?
-  longitude  Float?
-  language   String?
-  platform   String?
+  sessionId String?
+  latitude  Float?
+  longitude Float?
+  language  String?
+  platform  String?
 
-  metadata   Json?
+  metadata Json?
 
-  createdAt  DateTime           @default(now())
+  createdAt DateTime @default(now())
 
   @@index([type])
   @@index([name])
@@ -904,19 +904,19 @@ model AnalyticsEvent {
 }
 
 model TourismMetric {
-  id          String   @id @default(uuid())
-  metric      String
-  value       Float
+  id     String @id @default(uuid())
+  metric String
+  value  Float
 
-  districtId  String?
-  placeId     String?
+  districtId String?
+  placeId    String?
 
   periodStart DateTime
   periodEnd   DateTime
 
-  metadata    Json?
+  metadata Json?
 
-  createdAt   DateTime @default(now())
+  createdAt DateTime @default(now())
 
   @@index([metric])
   @@index([districtId])
@@ -931,22 +931,22 @@ enum AlertSeverity {
 }
 
 model SystemAlert {
-  id          String        @id @default(uuid())
-  type        String
-  severity    AlertSeverity
+  id       String        @id @default(uuid())
+  type     String
+  severity AlertSeverity
 
   title       String
   description String
 
-  districtId  String?
-  placeId     String?
+  districtId String?
+  placeId    String?
 
-  resolved    Boolean       @default(false)
+  resolved Boolean @default(false)
 
-  metadata    Json?
+  metadata Json?
 
-  createdAt   DateTime      @default(now())
-  resolvedAt  DateTime?
+  createdAt  DateTime  @default(now())
+  resolvedAt DateTime?
 
   @@index([type])
   @@index([severity])
@@ -955,22 +955,22 @@ model SystemAlert {
 }
 
 model RecommendationFeedback {
-  id                   String    @id @default(uuid())
+  id String @id @default(uuid())
 
-  userId               String?
-  placeId              String
+  userId  String?
+  placeId String
 
   recommendationSource String
 
-  shownAt              DateTime  @default(now())
-  clickedAt            DateTime?
-  savedAt              DateTime?
-  itineraryAddedAt     DateTime?
-  completedAt          DateTime?
+  shownAt          DateTime  @default(now())
+  clickedAt        DateTime?
+  savedAt          DateTime?
+  itineraryAddedAt DateTime?
+  completedAt      DateTime?
 
-  rating               Float?
+  rating Float?
 
-  metadata             Json?
+  metadata Json?
 
   @@index([placeId])
   @@index([userId])
@@ -1039,59 +1039,59 @@ enum PaymentStatus {
 }
 
 model Partner {
-  id          String        @id @default(uuid())
+  id String @id @default(uuid())
 
   name        String
-  slug        String        @unique
+  slug        String  @unique
   description String?
 
-  phone       String?
-  email       String?
+  phone String?
+  email String?
 
-  status      PartnerStatus @default(PENDING)
+  status PartnerStatus @default(PENDING)
 
-  districtId  String?
-  latitude    Float?
-  longitude   Float?
+  districtId String?
+  latitude   Float?
+  longitude  Float?
 
-  logoUrl     String?
-  websiteUrl  String?
+  logoUrl    String?
+  websiteUrl String?
 
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  products    TourismProduct[]
-  bookings    Booking[]
+  products TourismProduct[]
+  bookings Booking[]
 
   @@index([status])
   @@index([districtId])
 }
 
 model TourismProduct {
-  id          String        @id @default(uuid())
+  id String @id @default(uuid())
 
-  partnerId   String
-  partner     Partner       @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+  partnerId String
+  partner   Partner @relation(fields: [partnerId], references: [id], onDelete: Cascade)
 
   name        String
-  slug        String        @unique
+  slug        String @unique
   description String
 
-  type        InventoryType
+  type InventoryType
 
-  price       Decimal       @db.Decimal(12, 2)
-  currency    String        @default("INR")
+  price    Decimal @db.Decimal(12, 2)
+  currency String  @default("INR")
 
   capacity    Int
   durationMin Int?
 
-  latitude    Float?
-  longitude   Float?
+  latitude  Float?
+  longitude Float?
 
-  active      Boolean       @default(false)
+  active Boolean @default(false)
 
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   availability ProductAvailability[]
   bookings     Booking[]
@@ -1104,59 +1104,59 @@ model TourismProduct {
 }
 
 model ProductAvailability {
-  id          String         @id @default(uuid())
+  id String @id @default(uuid())
 
-  productId   String
-  product     TourismProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId String
+  product   TourismProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
 
-  startAt     DateTime
-  endAt       DateTime
+  startAt DateTime
+  endAt   DateTime
 
-  capacity    Int
-  reserved    Int            @default(0)
+  capacity Int
+  reserved Int @default(0)
 
-  createdAt   DateTime       @default(now())
+  createdAt DateTime @default(now())
 
   @@index([productId])
   @@index([startAt])
 }
 
 model PartnerCommission {
-  id               String   @id @default(uuid())
+  id String @id @default(uuid())
 
-  bookingId        String   @unique
-  partnerId        String
+  bookingId String @unique
+  partnerId String
 
-  grossAmount      Decimal  @db.Decimal(12, 2)
-  commissionRate   Decimal  @db.Decimal(5, 2)
-  commissionAmount Decimal  @db.Decimal(12, 2)
-  partnerAmount    Decimal  @db.Decimal(12, 2)
+  grossAmount      Decimal @db.Decimal(12, 2)
+  commissionRate   Decimal @db.Decimal(5, 2)
+  commissionAmount Decimal @db.Decimal(12, 2)
+  partnerAmount    Decimal @db.Decimal(12, 2)
 
-  createdAt        DateTime @default(now())
+  createdAt DateTime @default(now())
 
-  booking          Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  booking Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
 
   @@index([partnerId])
 }
 
 model ProductReview {
-  id               String         @id @default(uuid())
+  id String @id @default(uuid())
 
-  productId        String
-  bookingId        String         @unique
-  userId           String
+  productId String
+  bookingId String @unique
+  userId    String
 
-  rating           Int
-  title            String?
-  body             String?
+  rating Int
+  title  String?
+  body   String?
 
-  verifiedPurchase Boolean        @default(true)
+  verifiedPurchase Boolean @default(true)
 
-  createdAt        DateTime       @default(now())
-  updatedAt        DateTime       @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  product          TourismProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
-  booking          Booking        @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  product TourismProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+  booking Booking        @relation(fields: [bookingId], references: [id], onDelete: Cascade)
 
   @@index([productId])
   @@index([userId])
@@ -1164,32 +1164,32 @@ model ProductReview {
 }
 
 model CancellationPolicy {
-  id                   String         @id @default(uuid())
+  id String @id @default(uuid())
 
-  productId            String         @unique
-  product              TourismProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId String         @unique
+  product   TourismProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
 
-  fullRefundHours      Int            @default(48)
-  partialRefundHours   Int            @default(24)
-  partialRefundPercent Decimal        @default(50) @db.Decimal(5, 2)
+  fullRefundHours      Int     @default(48)
+  partialRefundHours   Int     @default(24)
+  partialRefundPercent Decimal @default(50) @db.Decimal(5, 2)
 
-  createdAt            DateTime       @default(now())
-  updatedAt            DateTime       @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model CommerceAuditLog {
-  id          String   @id @default(uuid())
+  id String @id @default(uuid())
 
-  actorId     String?
-  action      String
+  actorId String?
+  action  String
 
-  entityType  String
-  entityId    String
+  entityType String
+  entityId   String
 
   previousState Json?
   newState      Json?
 
-  createdAt   DateTime @default(now())
+  createdAt DateTime @default(now())
 
   @@index([entityType])
   @@index([entityId])
@@ -1198,15 +1198,15 @@ model CommerceAuditLog {
 }
 
 model IdempotencyKey {
-  id          String   @id @default(uuid())
+  id String @id @default(uuid())
 
-  key         String   @unique
-  operation   String
-  userId      String?
+  key       String  @unique
+  operation String
+  userId    String?
 
-  response    Json?
+  response Json?
 
-  createdAt   DateTime @default(now())
+  createdAt DateTime @default(now())
 
   @@index([userId])
   @@index([operation])
@@ -1227,6 +1227,17 @@ enum EntryStatus {
   PENDING_REVIEW
   PUBLISHED
   REJECTED
+}
+
+enum AuditAction {
+  CREATED
+  UPDATED
+  SUBMITTED
+  APPROVED
+  REJECTED
+  PUBLISHED
+  UNPUBLISHED
+  DELETED
 }
 
 enum FieldType {
@@ -1258,79 +1269,102 @@ model ContentTemplate {
   status      TemplateStatus @default(DRAFT)
   version     Int            @default(1)
 
-  fields      TemplateField[]
-  entries     ContentEntry[]
-  versions    TemplateVersion[]
+  fields   TemplateField[]
+  entries  ContentEntry[]
+  versions TemplateVersion[]
 
-  createdBy   String
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
+  createdBy String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([status])
 }
 
 model TemplateField {
-  id           String          @id @default(cuid())
-  templateId   String
-  template     ContentTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  id         String          @id @default(cuid())
+  templateId String
+  template   ContentTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
 
   key          String
   label        String
   fieldType    FieldType
-  required     Boolean         @default(false)
+  required     Boolean   @default(false)
   order        Int
   options      Json?
-  translatable Boolean         @default(true)
+  translatable Boolean   @default(true)
 
-  createdAt    DateTime        @default(now())
-  updatedAt    DateTime        @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([templateId, key])
   @@index([templateId, order])
 }
 
 model TemplateVersion {
-  id          String          @id @default(cuid())
-  templateId  String
-  template    ContentTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  id         String          @id @default(cuid())
+  templateId String
+  template   ContentTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
 
-  version     Int
-  snapshot    Json
-  createdBy   String
-  createdAt   DateTime        @default(now())
+  version   Int
+  snapshot  Json
+  createdBy String
+  createdAt DateTime @default(now())
 
   @@unique([templateId, version])
 }
 
 model ContentEntry {
-  id          String          @id @default(cuid())
+  id String @id @default(cuid())
 
-  templateId  String
-  template    ContentTemplate @relation(fields: [templateId], references: [id])
+  templateId String
+  template   ContentTemplate @relation(fields: [templateId], references: [id])
 
-  data        Json
+  templateVersion Int @default(1)
 
-  status      EntryStatus     @default(DRAFT)
+  slug String @default("entry")
+  data Json
 
-  authorId    String
-  reviewedBy  String?
-  reviewNote  String?
+  status EntryStatus @default(DRAFT)
 
-  region      String?
+  authorId   String
+  reviewedBy String?
+  reviewNote String?
 
-  lat         Float?
-  lng         Float?
+  region   String?
+  district String?
+  division String?
 
-  location    Unsupported("geography(Point, 4326)")?
+  lat Float?
+  lng Float?
 
-  createdAt   DateTime        @default(now())
-  updatedAt   DateTime        @updatedAt
+  publishedAt DateTime?
 
-  @@index([templateId])
-  @@index([status])
-  @@index([region])
+  location Unsupported("geography(Point, 4326)")?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  auditLogs ContentAuditLog[]
+
+  @@unique([templateId, slug])
+  @@index([templateId, status])
+  @@index([region, status])
+  @@index([district, status])
   @@index([lat, lng])
 }
 
+model ContentAuditLog {
+  id String @id @default(cuid())
 
+  entryId String
+  entry   ContentEntry @relation(fields: [entryId], references: [id], onDelete: Cascade)
 
+  action  AuditAction
+  actorId String
+
+  metadata Json?
+
+  createdAt DateTime @default(now())
+
+  @@index([entryId, createdAt])
+}

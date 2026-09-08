@@ -1,0 +1,14 @@
+{
+  "name": "@cg-tourism/content-schema",
+  "version": "0.1.0",
+  "description": "Shared content schema types and validators for CG Tourism generic engine",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0"
+  }
+}

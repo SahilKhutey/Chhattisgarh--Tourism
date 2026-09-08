@@ -109,6 +109,15 @@ export function createMockPrisma() {
       delete: jest.fn(),
       count: jest.fn(),
     },
+    contentAuditLog: {
+      findUnique: jest.fn(),
+      findFirst: jest.fn(),
+      findMany: jest.fn(),
+      create: jest.fn(),
+      update: jest.fn(),
+      delete: jest.fn(),
+      count: jest.fn(),
+    },
     $transaction: jest.fn((cbOrArray) => {
       if (typeof cbOrArray === "function") {
         return cbOrArray(createMockPrisma());

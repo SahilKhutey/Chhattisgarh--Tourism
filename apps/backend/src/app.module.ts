@@ -41,6 +41,7 @@ import { CommerceModule } from './modules/commerce/commerce.module';
 import { RefundsModule } from './modules/refunds/refunds.module';
 import { ContentTemplatesModule } from './modules/content-templates/content-templates.module';
 import { ContentEntriesModule } from './modules/content-entries/content-entries.module';
+import { ContentModule } from './modules/content/content.module';
 import { StructuredLoggerService } from './common/logger/structured-logger.service';
 import { CorrelationIdMiddleware } from './common/middleware/correlation-id.middleware';
 import { HttpLoggingInterceptor } from './common/interceptors/http-logging.interceptor';
@@ -101,6 +102,7 @@ import { envSchema } from './config/env.schema';
     RefundsModule,
     ContentTemplatesModule,
     ContentEntriesModule,
+    ContentModule,
     DatabaseModule,
     RedisModule,
   ],
