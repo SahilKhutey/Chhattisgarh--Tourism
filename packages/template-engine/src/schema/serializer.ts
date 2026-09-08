@@ -1,113 +1,156 @@
-/**
- * @cg-tourism/template-engine - Schema Snapshot Serializer
- * Creates and normalizes canonical, immutable schema snapshots for TemplateVersion.
- */
+import {
+  TEMPLATE_SCHEMA_VERSION,
+  type TemplateSchema,
+  type TemplateSerializationResult
+} from "./types.js";
 
-import { TemplateFieldDefinition, TemplateSchema } from './types';
+import { TemplateSchemaValidator } from "./validator.js";
 
-export interface CreateSchemaSnapshotParams {
-  templateSlug: string;
-  templateName: string;
-  version: number;
-  description?: string | null;
-  icon?: string | null;
-  fields: TemplateFieldDefinition[];
-  createdAt?: string;
-}
+export class TemplateSchemaSerializer {
+  constructor(
+    private readonly validator =
+      new TemplateSchemaValidator()
+  ) {}
 
-/**
- * Creates a normalized, immutable TemplateSchema snapshot.
- */
-export function createTemplateSchemaSnapshot(
-  params: CreateSchemaSnapshotParams,
-): TemplateSchema {
-  if (!params.templateSlug || typeof params.templateSlug !== 'string') {
-    throw new Error('TemplateSchema requires a valid string templateSlug.');
-  }
+  serialize(
+    schema: TemplateSchema
+  ): TemplateSerializationResult {
+    const validation =
+      this.validator.validate(schema);
 
-  if (!params.templateName || typeof params.templateName !== 'string') {
-    throw new Error('TemplateSchema requires a valid string templateName.');
-  }
+    if (!validation.valid) {
+      const message = validation.errors
+        .map(
+          error =>
+            `${error.path}: ${error.message}`
+        )
+        .join("\n");
 
-  if (typeof params.version !== 'number' || params.version < 1) {
-    throw new Error('TemplateSchema requires a positive integer version number.');
-  }
-
-  if (!Array.isArray(params.fields)) {
-    throw new Error('TemplateSchema requires an array of fields.');
-  }
-
-  // Validate duplicate field keys
-  const seenKeys = new Set<string>();
-  for (const field of params.fields) {
-    if (!field.key || typeof field.key !== 'string') {
-      throw new Error('Every TemplateFieldDefinition must possess a valid string key.');
+      throw new Error(
+        `Cannot serialize invalid template schema:\n${message}`
+      );
     }
-    const normalizedKey = field.key.trim().toLowerCase();
-    if (seenKeys.has(normalizedKey)) {
-      throw new Error(`Duplicate field key "${field.key}" detected in template schema.`);
-    }
-    seenKeys.add(normalizedKey);
+
+    const canonical =
+      this.canonicalize(schema);
+
+    return {
+      schema: canonical,
+      json: JSON.stringify(
+        canonical,
+        null,
+        2
+      )
+    };
   }
 
-  // Sort fields deterministically by order, then by key
-  const sortedFields = [...params.fields].sort((a, b) => {
-    if (a.order !== b.order) {
-      return a.order - b.order;
+  deserialize(
+    json: string
+  ): TemplateSchema {
+    let parsed: unknown;
+
+    try {
+      parsed = JSON.parse(json);
+    } catch {
+      throw new Error(
+        "Template schema JSON is invalid"
+      );
     }
-    return a.key.localeCompare(b.key);
-  });
 
-  const snapshot: TemplateSchema = {
-    templateSlug: params.templateSlug.trim(),
-    templateName: params.templateName.trim(),
-    version: Math.floor(params.version),
-    description: params.description ?? null,
-    icon: params.icon ?? null,
-    fields: sortedFields.map((f) => ({
-      key: f.key.trim(),
-      label: f.label.trim(),
-      fieldType: f.fieldType,
-      required: Boolean(f.required),
-      order: f.order,
-      options: f.options ? JSON.parse(JSON.stringify(f.options)) : null,
-      translatable: f.translatable !== false,
-      helpText: f.helpText ?? null,
-      defaultValue: f.defaultValue !== undefined ? f.defaultValue : null,
-    })),
-    createdAt: params.createdAt || new Date().toISOString(),
-  };
+    if (
+      typeof parsed !== "object" ||
+      parsed === null
+    ) {
+      throw new Error(
+        "Template schema must deserialize to an object"
+      );
+    }
 
-  // Deep freeze to guarantee immutability
-  return Object.freeze(JSON.parse(JSON.stringify(snapshot)));
-}
+    const schema =
+      parsed as TemplateSchema;
 
-/**
- * Serializes a TemplateSchema snapshot into a string representation.
- */
-export function serializeTemplateSchema(schema: TemplateSchema): string {
-  return JSON.stringify(schema);
-}
+    if (
+      schema.schemaVersion !==
+      TEMPLATE_SCHEMA_VERSION
+    ) {
+      throw new Error(
+        `Unsupported template schema version: ${String(
+          schema.schemaVersion
+        )}`
+      );
+    }
 
-/**
- * Deserializes an arbitrary JSON or object into a verified TemplateSchema.
- */
-export function deserializeTemplateSchema(raw: unknown): TemplateSchema {
-  const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
+    const validation =
+      this.validator.validate(schema);
 
-  if (!parsed || typeof parsed !== 'object') {
-    throw new Error('Invalid schema: payload must be an object or valid JSON string.');
+    if (!validation.valid) {
+      const message = validation.errors
+        .map(
+          error =>
+            `${error.path}: ${error.message}`
+        )
+        .join("\n");
+
+      throw new Error(
+        `Cannot deserialize invalid template schema:\n${message}`
+      );
+    }
+
+    return this.canonicalize(schema);
   }
 
-  const p = parsed as Partial<TemplateSchema>;
+  private canonicalize(
+    schema: TemplateSchema
+  ): TemplateSchema {
+    const canonical: TemplateSchema = {
+      schemaVersion:
+        TEMPLATE_SCHEMA_VERSION,
 
-  return createTemplateSchemaSnapshot({
-    templateSlug: p.templateSlug ?? '',
-    templateName: p.templateName ?? '',
-    version: p.version ?? 1,
-    description: p.description,
-    icon: p.icon,
-    fields: Array.isArray(p.fields) ? (p.fields as TemplateFieldDefinition[]) : [],
-    createdAt: p.createdAt,
-  });
+      id: schema.id,
+
+      metadata: {
+        name: schema.metadata.name,
+        slug: schema.metadata.slug,
+        ...(schema.metadata.description !== undefined
+          ? {
+              description:
+                schema.metadata.description
+            }
+          : {}),
+        ...(schema.metadata.icon !== undefined
+          ? {
+              icon: schema.metadata.icon
+            }
+          : {}),
+        ...(schema.metadata.category !== undefined
+          ? {
+              category:
+                schema.metadata.category
+            }
+          : {})
+      },
+
+      version: schema.version,
+
+      status: schema.status,
+
+      fields: [...schema.fields]
+        .sort(
+          (a, b) => a.order - b.order
+        )
+        .map(field => ({
+          ...field
+        }))
+    };
+
+    if (schema.sections) {
+      canonical.sections = [
+        ...schema.sections
+      ].sort(
+        (a, b) => a.order - b.order
+      );
+    }
+
+    return canonical;
+  }
 }
