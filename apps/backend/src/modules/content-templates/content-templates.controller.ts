@@ -35,6 +35,25 @@ export class ContentTemplatesController {
     );
   }
 
+  @Get('admin/templates')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN', 'SUPER_ADMIN')
+  findAll() {
+    return this.service.findAll();
+  }
+
+  @Patch('admin/templates/:id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN', 'SUPER_ADMIN')
+  update(
+    @Param('id') id: string,
+    @Body() dto: Partial<CreateTemplateDto>,
+    @Req() req: any,
+  ) {
+    const userId = req.user?.id || 'system';
+    return this.service.update(id, dto, userId);
+  }
+
   @Get('templates')
   findPublished() {
     return this.service.findPublished();

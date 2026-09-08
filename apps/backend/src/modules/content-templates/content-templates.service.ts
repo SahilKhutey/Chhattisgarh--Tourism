@@ -8,6 +8,7 @@ import { PrismaService } from '../../database/prisma.service';
 import { RedisService } from '../../infrastructure/redis/redis.service';
 import { CacheKeys } from '../../infrastructure/redis/cache.keys';
 import { CreateTemplateDto } from './dto/create-template.dto';
+import { TemplateDefinitionValidator } from './template-definition.validator';
 
 @Injectable()
 export class ContentTemplatesService {
@@ -25,6 +26,10 @@ export class ContentTemplatesService {
 
     if (existing) {
       throw new ConflictException('Template slug already exists');
+    }
+
+    if (dto.fields && dto.fields.length > 0) {
+      TemplateDefinitionValidator.validateOrThrow(dto as any);
     }
 
     const created = await this.prisma.contentTemplate.create({
@@ -59,6 +64,91 @@ export class ContentTemplatesService {
 
     await this.invalidatePublishedTemplatesCache();
     return created;
+  }
+
+  async findAll(status?: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED') {
+    return this.prisma.contentTemplate.findMany({
+      where: status ? { status } : undefined,
+      include: {
+        fields: {
+          orderBy: {
+            order: 'asc',
+          },
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+  }
+
+  async update(id: string, dto: Partial<CreateTemplateDto>, userId: string) {
+    const existing = await this.findById(id);
+
+    if (dto.fields && dto.fields.length > 0) {
+      TemplateDefinitionValidator.validateOrThrow({
+        name: dto.name || existing.name,
+        slug: dto.slug || existing.slug,
+        description: dto.description ?? existing.description ?? undefined,
+        icon: dto.icon ?? existing.icon ?? undefined,
+        fields: dto.fields as any,
+      });
+
+      return await this.prisma.$transaction(async (tx) => {
+        await tx.templateField.deleteMany({
+          where: { templateId: id },
+        });
+
+        const updated = await tx.contentTemplate.update({
+          where: { id },
+          data: {
+            name: dto.name ?? existing.name,
+            description: dto.description ?? existing.description,
+            icon: dto.icon ?? existing.icon,
+            fields: {
+              create: dto.fields!.map((field) => ({
+                key: field.key,
+                label: field.label,
+                fieldType: field.fieldType,
+                required: field.required ?? false,
+                order: field.order,
+                options: (field.options ?? null) as any,
+                translatable: field.translatable ?? true,
+              })),
+            },
+          },
+          include: {
+            fields: {
+              orderBy: {
+                order: 'asc',
+              },
+            },
+          },
+        });
+
+        await this.invalidatePublishedTemplatesCache();
+        return updated;
+      });
+    }
+
+    const updated = await this.prisma.contentTemplate.update({
+      where: { id },
+      data: {
+        name: dto.name ?? existing.name,
+        description: dto.description ?? existing.description,
+        icon: dto.icon ?? existing.icon,
+      },
+      include: {
+        fields: {
+          orderBy: {
+            order: 'asc',
+          },
+        },
+      },
+    });
+
+    await this.invalidatePublishedTemplatesCache();
+    return updated;
   }
 
   async findPublished() {
