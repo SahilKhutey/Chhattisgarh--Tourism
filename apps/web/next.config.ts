@@ -41,6 +41,20 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: "/places/:slug",
+        destination: "/content/destination/:slug",
+        permanent: true,
+      },
+      {
+        source: "/folklore/:slug",
+        destination: "/content/folklore/:slug",
+        permanent: true,
+      },
+    ];
+  },
   async rewrites() {
     return [
       {

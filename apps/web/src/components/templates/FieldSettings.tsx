@@ -86,10 +86,13 @@ export const FieldSettings: React.FC<FieldSettingsProps> = ({
             onChange={(e) => {
               const label = e.target.value;
               const key = current.key || label.toLowerCase().replace(/[^a-z0-9]/g, '_');
-              handleChange('label', label);
-              if (!current.id) {
-                handleChange('key', key);
-              }
+              const updated = {
+                ...current,
+                label,
+                ...(!current.id ? { key } : {}),
+              };
+              setCurrent(updated);
+              onUpdate(updated);
             }}
             className="w-full px-3 py-2 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
             placeholder="e.g. Festival Name"
