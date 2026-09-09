@@ -1,19 +1,29 @@
 {
   "name": "@cg-tourism/template-engine",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
-  "description": "Generic schema-driven tourism content template engine",
   "type": "module",
-  "engines": {
-    "node": ">=20"
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./schema": "./dist/schema/index.js",
+    "./validation": "./dist/validation/index.js",
+    "./render": "./dist/render/index.js",
+    "./versioning": "./dist/versioning/index.js",
+    "./i18n": "./dist/i18n/index.js",
+    "./media": "./dist/media/index.js",
+    "./voice": "./dist/voice/index.js",
+    "./accessibility": "./dist/accessibility/index.js",
+    "./extensibility": "./dist/extensibility/index.js"
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "test": "tsx --test tests/**/*.test.ts",
-    "test:watch": "tsx --test --watch tests/**/*.test.ts",
-    "typecheck": "tsc -p tsconfig.json --noEmit",
-    "check": "npm run typecheck && npm test",
-    "clean": "node -e \"import('node:fs').then(fs => fs.rmSync('dist',{recursive:true,force:true}))\""
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "zod": "^3.24.2"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",

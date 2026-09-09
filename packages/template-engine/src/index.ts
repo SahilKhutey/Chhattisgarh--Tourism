@@ -1,9 +1,9 @@
-export * from "./schema/types.js";
-
-export * from "./schema/field-types.js";
-
-export * from "./schema/registry.js";
-
-export * from "./schema/serializer.js";
-
-export * from "./schema/validator.js";
+export * from "./schema/index.js";
+export * from "./validation/index.js";
+export * from "./render/index.js";
+export * from "./versioning/index.js";
+export * from "./i18n/index.js";
+export * from "./media/index.js";
+export * from "./voice/index.js";
+export * from "./accessibility/index.js";
+export * from "./extensibility/index.js";
