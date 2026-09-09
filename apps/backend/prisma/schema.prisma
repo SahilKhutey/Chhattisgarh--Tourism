@@ -35,6 +35,10 @@ model User {
   followingCreators        CreatorFollow[]     @relation("UserCreatorFollows")
   contentReports           ContentReport[]     @relation("UserContentReports")
   mobileDevices            MobileDevice[]
+  createdContentTemplates  ContentTemplate[]   @relation("ContentTemplateCreatedBy")
+  updatedContentTemplates  ContentTemplate[]   @relation("ContentTemplateUpdatedBy")
+  createdTemplateVersions  TemplateVersion[]   @relation("TemplateVersionCreatedBy")
+  contentEntries           ContentEntry[]      @relation("ContentEntryAuthor")
 }
 
 model RefreshToken {
@@ -1261,23 +1265,30 @@ enum FieldType {
 }
 
 model ContentTemplate {
-  id          String         @id @default(cuid())
-  name        String
-  slug        String         @unique
-  description String?
-  icon        String?
-  status      TemplateStatus @default(DRAFT)
-  version     Int            @default(1)
+  id               String         @id @default(cuid())
+  name             String
+  slug             String         @unique
+  description      String?
+  icon             String?
+  status           TemplateStatus @default(DRAFT)
+  version          Int            @default(1)
+  publishedVersion Int?
 
   fields   TemplateField[]
   entries  ContentEntry[]
   versions TemplateVersion[]
 
-  createdBy String
+  createdBy    String
+  createdById  String?
+  updatedById  String?
+  createdByRel User?   @relation("ContentTemplateCreatedBy", fields: [createdById], references: [id])
+  updatedByRel User?   @relation("ContentTemplateUpdatedBy", fields: [updatedById], references: [id])
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([status])
+  @@index([createdById])
 }
 
 model TemplateField {
@@ -1306,12 +1317,16 @@ model TemplateVersion {
   templateId String
   template   ContentTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
 
-  version   Int
-  snapshot  Json
-  createdBy String
-  createdAt DateTime @default(now())
+  version      Int
+  snapshot     Json
+  createdBy    String
+  createdById  String?
+  publishedAt  DateTime?
+  createdByRel User?     @relation("TemplateVersionCreatedBy", fields: [createdById], references: [id])
+  createdAt    DateTime  @default(now())
 
   @@unique([templateId, version])
+  @@index([templateId])
 }
 
 model ContentEntry {
@@ -1328,6 +1343,7 @@ model ContentEntry {
   status EntryStatus @default(DRAFT)
 
   authorId   String
+  author     User?   @relation("ContentEntryAuthor", fields: [authorId], references: [id])
   reviewedBy String?
   reviewNote String?
 
@@ -1335,8 +1351,10 @@ model ContentEntry {
   district String?
   division String?
 
-  lat Float?
-  lng Float?
+  lat       Float?
+  lng       Float?
+  latitude  Float?
+  longitude Float?
 
   publishedAt DateTime?
 
