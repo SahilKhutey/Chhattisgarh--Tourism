@@ -19,7 +19,9 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@cg-tourism/types/*": ["../../packages/types/src/*"],
+      "@cg-tourism/types": ["../../packages/types/src/index.ts"]
     }
   },
   "include": [
