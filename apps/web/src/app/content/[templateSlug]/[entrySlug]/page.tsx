@@ -1,92 +1,50 @@
-import type { Metadata } from 'next';
-import Link from 'next/link';
-import { ArrowLeft, AlertCircle } from 'lucide-react';
-import { ContentRenderer } from '@/components/content/GenericRenderer';
-import { RendererErrorBoundary } from '@/components/content/GenericRenderer';
-import { buildMetadata } from '@/lib/rendering/metadata';
+import React from "react";
+import Link from "next/link";
+import { Metadata } from "next";
+import { getPublicContent } from "@/lib/api/content-entries";
+import { ContentRenderer } from "@/components/content-renderer/ContentRenderer";
 
-interface Props {
+interface PageProps {
   params: Promise<{
     templateSlug: string;
     entrySlug: string;
   }>;
 }
 
-const getApiUrl = () =>
-  process.env.NEXT_PUBLIC_API_URL ||
-  process.env.API_URL ||
-  'http://localhost:4000/api/v1';
-
-async function fetchContentEntry(templateSlug: string, entrySlug: string) {
-  const apiUrl = getApiUrl();
-  // Attempt public content endpoint first
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const resolved = await params;
   try {
-    const res = await fetch(`${apiUrl}/public/content/${templateSlug}/${entrySlug}`, {
-      next: { revalidate: 60 },
-    });
-    if (res.ok) return await res.json();
-  } catch (err) {
-    // continue to fallback
-  }
-
-  // Attempt canonical /entries/:idOrSlug
-  try {
-    const res = await fetch(`${apiUrl}/entries/${entrySlug}`, {
-      next: { revalidate: 60 },
-    });
-    if (res.ok) {
-      const json = await res.json();
-      return json.data || json;
-    }
-  } catch (err) {
-    // continue to fallback
-  }
-
-  // Fallback to general content endpoint
-  try {
-    const res = await fetch(`${apiUrl}/content/${templateSlug}/${entrySlug}`, {
-      next: { revalidate: 60 },
-    });
-    if (res.ok) return await res.json();
-  } catch (err) {
-    console.warn(`Failed to fetch content for ${templateSlug}/${entrySlug}`, err);
-  }
-
-  return null;
-}
-
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { templateSlug, entrySlug } = await params;
-  const entry = await fetchContentEntry(templateSlug, entrySlug);
-
-  if (!entry) {
+    const data = await getPublicContent(resolved.templateSlug, resolved.entrySlug);
     return {
-      title: 'Content Not Found | Chhattisgarh Tourism',
-      description: 'The requested tourism content could not be located.',
+      title: `${data.entry.title} | Chhattisgarh Tourism`,
+      description: `Explore ${data.entry.title} in Chhattisgarh.`,
+    };
+  } catch {
+    return {
+      title: "Content Not Found | Chhattisgarh Tourism",
     };
   }
-
-  return buildMetadata(entry);
 }
 
-export default async function ContentPage({ params }: Props) {
-  const { templateSlug, entrySlug } = await params;
-  const entry = await fetchContentEntry(templateSlug, entrySlug);
+export default async function PublicContentPage({ params }: PageProps) {
+  const resolved = await params;
 
-  if (!entry) {
+  let content;
+  try {
+    content = await getPublicContent(resolved.templateSlug, resolved.entrySlug);
+  } catch {
     return (
       <main className="min-h-screen bg-stone-50 py-16 px-4">
         <div className="max-w-md mx-auto bg-white p-8 rounded-2xl border border-stone-200 text-center space-y-4 shadow-sm">
-          <AlertCircle className="w-10 h-10 text-amber-500 mx-auto" />
           <h1 className="text-xl font-bold text-stone-900">Content Not Found</h1>
           <p className="text-xs text-stone-500">
-            No published tourism content found for &quot;{entrySlug}&quot; under &quot;{templateSlug}&quot;.
+            No published tourism content found for &quot;{resolved.entrySlug}&quot; under &quot;{resolved.templateSlug}&quot;.
           </p>
           <Link
             href="/"
-            className="inline-flex items-center gap-1.5 px-4 py-2 bg-emerald-600 text-white rounded-lg text-xs font-semibold hover:bg-emerald-700 transition-colors"
+            className="inline-flex items-center gap-1.5 px-4 py-2 bg-amber-600 text-white rounded-lg text-xs font-semibold hover:bg-amber-700 transition-colors"
           >
-            <ArrowLeft className="w-4 h-4" /> Explore Chhattisgarh
+            Explore Chhattisgarh
           </Link>
         </div>
       </main>
@@ -94,18 +52,17 @@ export default async function ContentPage({ params }: Props) {
   }
 
   return (
-    <main className="min-h-screen bg-stone-50 py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto space-y-6">
+    <main className="min-h-screen bg-stone-50 py-10 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-4xl mx-auto space-y-4">
         <Link
-          href={`/content/${templateSlug}`}
+          href="/"
           className="inline-flex items-center gap-1.5 text-xs font-semibold text-stone-600 hover:text-stone-900 transition-colors"
         >
-          <ArrowLeft className="w-4 h-4" /> Back to {entry.template?.name || templateSlug}
+          &larr; Back to Explore
         </Link>
-
-        <RendererErrorBoundary fallbackTitle="Tourism Content Display">
-          <ContentRenderer entry={entry} />
-        </RendererErrorBoundary>
+        <div className="bg-white rounded-2xl shadow-sm border border-stone-200 p-6 sm:p-10">
+          <ContentRenderer content={content} />
+        </div>
       </div>
     </main>
   );
