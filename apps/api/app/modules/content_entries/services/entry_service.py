@@ -281,6 +281,12 @@ class ContentEntryService:
         except Exception:
             pass
 
+        try:
+            from app.modules.search.indexer import SearchIndexer
+            SearchIndexer().index_entry(db, entry)
+        except Exception:
+            pass
+
         self.audit_service.record(
             db,
             event_type="CONTENT_ENTRY_PUBLISHED",
@@ -314,6 +320,12 @@ class ContentEntryService:
         try:
             from app.modules.public_content.cache import PublicContentCache
             PublicContentCache().invalidate(entry.slug)
+        except Exception:
+            pass
+
+        try:
+            from app.modules.search.indexer import SearchIndexer
+            SearchIndexer().remove_entry(db, entry.id)
         except Exception:
             pass
 
