@@ -101,8 +101,6 @@ async function migratePlaces(templateId: string) {
           data: data as any,
           latitude: place.latitude,
           longitude: place.longitude,
-          lat: place.latitude,
-          lng: place.longitude,
           region: place.district,
           district: place.district,
         },
@@ -117,8 +115,6 @@ async function migratePlaces(templateId: string) {
           district: place.district,
           latitude: place.latitude,
           longitude: place.longitude,
-          lat: place.latitude,
-          lng: place.longitude,
           publishedAt: place.verified ? new Date() : null,
         },
       });

@@ -1351,8 +1351,6 @@ model ContentEntry {
   district String?
   division String?
 
-  lat       Float?
-  lng       Float?
   latitude  Float?
   longitude Float?
 
@@ -1371,7 +1369,7 @@ model ContentEntry {
   @@index([templateId, status])
   @@index([region, status])
   @@index([district, status])
-  @@index([lat, lng])
+  @@index([latitude, longitude])
 }
 
 model ContentAuditLog {

@@ -260,7 +260,7 @@ export async function seedContentTemplates() {
       where: {
         templateId: destinationTemplate.id,
         region: entryData.district,
-        lat: entryData.location.lat,
+        latitude: entryData.location.lat,
       },
     });
 
@@ -271,8 +271,8 @@ export async function seedContentTemplates() {
           data: entryData,
           status: EntryStatus.PUBLISHED,
           authorId: adminId,
-          lat: entryData.location.lat,
-          lng: entryData.location.lng,
+          latitude: entryData.location.lat,
+          longitude: entryData.location.lng,
           region: entryData.district,
           reviewedBy: adminId,
           reviewNote: 'Auto-seeded canonical tourism destination entry.',

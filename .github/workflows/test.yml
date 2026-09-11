@@ -45,6 +45,9 @@ jobs:
       - name: Lint
         run: pnpm lint
 
+      - name: Prisma Schema Validation
+        run: pnpm --filter backend exec prisma validate
+
       - name: Typecheck
         run: pnpm typecheck
 
