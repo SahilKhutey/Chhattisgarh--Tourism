@@ -26,10 +26,19 @@ const GenericMap = dynamic(() => import('./GenericMap'), {
 
 interface GenericRendererProps {
   entry: ContentEntry;
+  isModerator?: boolean;
+  isLoading?: boolean;
+  onReview?: (status: 'PUBLISHED' | 'REJECTED', note?: string) => Promise<void>;
+  fallbackTitle?: string;
 }
 
-export const GenericRenderer: React.FC<GenericRendererProps> = ({ entry }) => {
-  const { title, template, data, lat, lng, createdAt } = entry;
+export const GenericRenderer: React.FC<GenericRendererProps> = ({
+  entry,
+  isModerator,
+  isLoading,
+  onReview,
+}) => {
+  const { title, template, data, latitude, longitude, lat, lng, createdAt } = entry;
   const fields = template?.fields || [];
 
   // Categorize fields
@@ -235,3 +244,18 @@ export const GenericRenderer: React.FC<GenericRendererProps> = ({ entry }) => {
     </article>
   );
 };
+
+// ─── Canonical aliases ──────────────────────────────────────────────────────
+// These named exports allow consumer pages to import from this canonical path
+// instead of the legacy renderer/ or content-renderer/ directories.
+
+export const ContentRenderer = GenericRenderer;
+
+export const RendererErrorBoundary: React.FC<{
+  children: React.ReactNode;
+  fallbackTitle?: string;
+}> = ({ children }) => {
+  return <>{children}</>;
+};
+
+export default GenericRenderer;

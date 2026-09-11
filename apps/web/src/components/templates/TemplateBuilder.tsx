@@ -437,3 +437,6 @@ export const TemplateBuilder: React.FC<TemplateBuilderProps> = ({
     </div>
   );
 };
+
+// Re-export types so consumers can import directly from this canonical module
+export type { ContentEntry, ContentTemplate, TemplateField } from '../../types/content';

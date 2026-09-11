@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowLeft, AlertCircle } from 'lucide-react';
-import { ContentRenderer } from '@/components/renderer/ContentRenderer';
-import { RendererErrorBoundary } from '@/components/renderer/RendererErrorBoundary';
+import { ContentRenderer } from '@/components/content/GenericRenderer';
+import { RendererErrorBoundary } from '@/components/content/GenericRenderer';
 import { buildMetadata } from '@/lib/rendering/metadata';
 
 interface Props {

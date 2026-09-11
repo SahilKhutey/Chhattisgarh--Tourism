@@ -75,9 +75,17 @@ export interface ContentEntry {
   slug: string;
   status: EntryStatus;
   data: Record<string, any>;
+  /** @deprecated Use latitude instead */
   lat?: number | null;
+  /** @deprecated Use longitude instead */
   lng?: number | null;
-  createdBy: string;
+  latitude?: number | null;
+  longitude?: number | null;
+  region?: string | null;
+  district?: string | null;
+  division?: string | null;
+  publishedAt?: string | null;
+  createdBy?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -103,8 +111,11 @@ export interface CreateEntryInput {
   slug?: string;
   status?: EntryStatus;
   data: Record<string, any>;
-  lat?: number;
-  lng?: number;
+  latitude?: number;
+  longitude?: number;
+  region?: string;
+  district?: string;
+  division?: string;
 }
 
 export interface UpdateEntryInput {
@@ -112,6 +123,9 @@ export interface UpdateEntryInput {
   slug?: string;
   status?: EntryStatus;
   data?: Record<string, any>;
-  lat?: number;
-  lng?: number;
+  latitude?: number;
+  longitude?: number;
+  region?: string;
+  district?: string;
+  division?: string;
 }

@@ -2,8 +2,8 @@
 
 import React, { useEffect, useState, use } from 'react';
 import { getApiBase } from '@/app/data/api-config';
-import { ContentRenderer } from '@/components/content-renderer/ContentRenderer';
-import { ContentEntry } from '@/components/template-builder/types';
+import { ContentRenderer } from '@/components/content/GenericRenderer';
+import type { ContentEntry } from '@/components/templates/TemplateBuilder';
 import { useAuthStore } from '@/store/auth-store';
 import { ArrowLeft, Loader2 } from 'lucide-react';
 import Link from 'next/link';
