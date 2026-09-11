@@ -1,60 +1,70 @@
-import { MetadataRoute } from 'next';
+import type { MetadataRoute } from "next";
+
+const API_BASE =
+  process.env.NEXT_PUBLIC_API_URL ??
+  "http://localhost:8000/api";
+
+const SITE_URL =
+  process.env.SITE_URL ??
+  process.env.NEXT_PUBLIC_SITE_URL ??
+  "http://localhost:3000";
+
+interface SitemapContent {
+  slug: string;
+  updated_at?: string;
+}
+
+async function getPublishedContent(): Promise<SitemapContent[]> {
+  try {
+    const response = await fetch(`${API_BASE}/content/sitemap`, {
+      next: {
+        revalidate: 3600,
+      },
+    });
+
+    if (!response.ok) {
+      return [];
+    }
+
+    return response.json();
+  } catch {
+    return [];
+  }
+}
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl =
-    process.env.NEXT_PUBLIC_SITE_URL || 'https://tourism.cg.gov.in';
+  const items = await getPublishedContent();
+  const locales = ["en", "hi", "chg"];
 
-  const apiUrl =
-    process.env.NEXT_PUBLIC_API_URL ||
-    process.env.API_URL ||
-    'http://localhost:4000/api/v1';
+  const dynamicRoutes = items.flatMap((item) =>
+    locales.map((locale) => ({
+      url: `${SITE_URL}/${locale}/destinations/${item.slug}`,
+      lastModified: item.updated_at ? new Date(item.updated_at) : new Date(),
+      changeFrequency: "weekly" as const,
+      priority: 0.8,
+    })),
+  );
 
-  const staticRoutes: MetadataRoute.Sitemap = [
+  const staticRoutes: MetadataRoute.Sitemap = locales.flatMap((locale) => [
     {
-      url: `${baseUrl}`,
+      url: `${SITE_URL}/${locale}`,
       lastModified: new Date(),
-      changeFrequency: 'daily',
+      changeFrequency: "daily" as const,
       priority: 1.0,
     },
     {
-      url: `${baseUrl}/explore`,
+      url: `${SITE_URL}/${locale}/destinations`,
       lastModified: new Date(),
-      changeFrequency: 'daily',
+      changeFrequency: "daily" as const,
       priority: 0.9,
     },
     {
-      url: `${baseUrl}/map`,
+      url: `${SITE_URL}/${locale}/districts`,
       lastModified: new Date(),
-      changeFrequency: 'weekly',
+      changeFrequency: "weekly" as const,
       priority: 0.8,
     },
-  ];
+  ]);
 
-  try {
-    const res = await fetch(`${apiUrl}/content`, {
-      next: { revalidate: 3600 },
-    });
-
-    if (!res.ok) {
-      return staticRoutes;
-    }
-
-    const entries = await res.json();
-    if (!Array.isArray(entries)) {
-      return staticRoutes;
-    }
-
-    const dynamicRoutes: MetadataRoute.Sitemap = entries
-      .filter((e) => e.slug && e.template?.slug)
-      .map((entry) => ({
-        url: `${baseUrl}/content/${entry.template.slug}/${entry.slug}`,
-        lastModified: entry.publishedAt ? new Date(entry.publishedAt) : new Date(),
-        changeFrequency: 'weekly' as const,
-        priority: 0.7,
-      }));
-
-    return [...staticRoutes, ...dynamicRoutes];
-  } catch {
-    return staticRoutes;
-  }
+  return [...staticRoutes, ...dynamicRoutes];
 }
