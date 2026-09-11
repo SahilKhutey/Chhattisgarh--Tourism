@@ -1,2 +1,18 @@
-class TemplateValidationError(ValueError):
-    """Raised when a template violates the canonical schema."""
+class TemplateError(Exception):
+    pass
+
+
+class TemplateValidationError(TemplateError, ValueError):
+    pass
+
+
+class TemplateNotFoundError(TemplateError):
+    pass
+
+
+class TemplateConflictError(TemplateError):
+    pass
+
+
+class TemplateConcurrencyError(TemplateError):
+    pass
