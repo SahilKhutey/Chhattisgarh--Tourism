@@ -98,3 +98,11 @@ explore_html.txt
 # AI Agent directories
 .agents/
 **/.agents/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+htmlcov/
