@@ -1,6 +1,17 @@
 import Link from "next/link";
 import { ReactNode } from "react";
-import { Home, Compass, AlertTriangle, ShieldCheck, Siren, BarChart2 } from "lucide-react";
+import {
+  Home,
+  Compass,
+  AlertTriangle,
+  ShieldCheck,
+  Siren,
+  BarChart2,
+  BookOpen,
+  Eye,
+  Layout,
+  FileText,
+} from "lucide-react";
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
   return (
@@ -14,25 +25,42 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
           </h1>
         </div>
         
-        <nav className="flex-1 py-6 px-4 space-y-2">
-          <Link href="/admin" className="flex items-center px-4 py-3 rounded-xl bg-teal-500/10 text-teal-400 hover:bg-teal-500/20 transition-all">
-            <Home className="w-5 h-5 mr-3 opacity-70" />
+        <nav className="flex-1 py-6 px-4 space-y-1.5 overflow-y-auto">
+          <Link href="/admin" className="flex items-center px-4 py-2.5 rounded-xl bg-teal-500/10 text-teal-400 hover:bg-teal-500/20 transition-all">
+            <Home className="w-4 h-4 mr-3 opacity-70" />
             <span className="text-sm font-medium">Mission Control</span>
           </Link>
-          <Link href="/admin/intelligence" className="flex items-center px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-800/50 hover:text-slate-200 transition-all">
-            <BarChart2 className="w-5 h-5 mr-3 opacity-70" />
+          <Link href="/admin/templates" className="flex items-center px-4 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/50 hover:text-slate-200 transition-all">
+            <Layout className="w-4 h-4 mr-3 opacity-70" />
+            <span className="text-sm font-medium">Templates</span>
+          </Link>
+          <Link href="/admin/entries" className="flex items-center px-4 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/50 hover:text-slate-200 transition-all">
+            <FileText className="w-4 h-4 mr-3 opacity-70" />
+            <span className="text-sm font-medium">Content Entries</span>
+          </Link>
+          <Link href="/admin/glossary" className="flex items-center px-4 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/50 hover:text-slate-200 transition-all">
+            <BookOpen className="w-4 h-4 mr-3 opacity-70" />
+            <span className="text-sm font-medium">Glossary</span>
+          </Link>
+          <Link href="/admin/accessibility" className="flex items-center px-4 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/50 hover:text-slate-200 transition-all">
+            <Eye className="w-4 h-4 mr-3 opacity-70" />
+            <span className="text-sm font-medium">Accessibility</span>
+          </Link>
+          <div className="my-2 border-t border-slate-800/60" />
+          <Link href="/admin/intelligence" className="flex items-center px-4 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/50 hover:text-slate-200 transition-all">
+            <BarChart2 className="w-4 h-4 mr-3 opacity-70" />
             <span className="text-sm font-medium">Regional Intelligence</span>
           </Link>
-          <Link href="/admin/discoveries" className="flex items-center px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-800/50 hover:text-slate-200 transition-all">
-            <Compass className="w-5 h-5 mr-3 opacity-70" />
+          <Link href="/admin/discoveries" className="flex items-center px-4 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/50 hover:text-slate-200 transition-all">
+            <Compass className="w-4 h-4 mr-3 opacity-70" />
             <span className="text-sm font-medium">AI Discoveries</span>
           </Link>
-          <Link href="/admin/flags" className="flex items-center px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-800/50 hover:text-slate-200 transition-all">
-            <AlertTriangle className="w-5 h-5 mr-3 opacity-70" />
+          <Link href="/admin/flags" className="flex items-center px-4 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/50 hover:text-slate-200 transition-all">
+            <AlertTriangle className="w-4 h-4 mr-3 opacity-70" />
             <span className="text-sm font-medium">System Flags</span>
           </Link>
-          <Link href="/admin/emergency" className="flex items-center px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-800/50 hover:text-slate-200 transition-all">
-            <Siren className="w-5 h-5 mr-3 opacity-70" />
+          <Link href="/admin/emergency" className="flex items-center px-4 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/50 hover:text-slate-200 transition-all">
+            <Siren className="w-4 h-4 mr-3 opacity-70" />
             <span className="text-sm font-medium">Emergency Network</span>
           </Link>
         </nav>

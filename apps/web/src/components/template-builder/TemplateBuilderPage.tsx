@@ -24,6 +24,11 @@ import {
   publishTemplate,
 } from "@/lib/api/templates";
 import { unlockDraft } from "@/lib/api/template-versions";
+import { LocaleSelector } from "@/components/localization/LocaleSelector";
+import {
+  getTemplateLocalizations,
+  updateTemplateLocalization,
+} from "@/lib/api/localization";
 
 
 import {
@@ -163,6 +168,10 @@ function Builder({
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
+  const [activeLocale, setActiveLocale] = useState("en");
+  const [localizedName, setLocalizedName] = useState("");
+  const [localizedDesc, setLocalizedDesc] = useState("");
+  const [locSaving, setLocSaving] = useState(false);
 
   async function save() {
     setSaving(true);
@@ -311,6 +320,12 @@ function Builder({
                 /{builder.template.slug}
               </p>
             </div>
+
+            <LocaleSelector
+              selectedLocale={activeLocale}
+              onChange={(newLoc) => setActiveLocale(newLoc)}
+              className="bg-white/80 border px-2 py-1 rounded-lg text-xs"
+            />
           </div>
 
           <div className="flex items-center gap-3">
@@ -387,6 +402,60 @@ function Builder({
         </div>
       </header>
 
+      {activeLocale !== "en" && (
+        <div className="max-w-7xl mx-auto px-6 pt-4">
+          <div className="rounded-xl border border-teal-500/30 bg-teal-50/50 p-4 text-xs space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="font-semibold text-teal-950">
+                Template Translation: {activeLocale.toUpperCase()}
+              </span>
+              <span className="text-teal-800 text-[11px]">
+                Template structure remains canonical. Translate labels and descriptions below.
+              </span>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <input
+                type="text"
+                placeholder={`Template Name (${activeLocale.toUpperCase()})`}
+                value={localizedName}
+                onChange={(e) => setLocalizedName(e.target.value)}
+                className="rounded-lg border bg-white px-3 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-teal-500"
+              />
+              <input
+                type="text"
+                placeholder={`Description (${activeLocale.toUpperCase()})`}
+                value={localizedDesc}
+                onChange={(e) => setLocalizedDesc(e.target.value)}
+                className="rounded-lg border bg-white px-3 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-teal-500"
+              />
+            </div>
+            <div className="flex justify-end">
+              <button
+                type="button"
+                disabled={locSaving}
+                onClick={async () => {
+                  setLocSaving(true);
+                  try {
+                    await updateTemplateLocalization(templateId, {
+                      locale_code: activeLocale,
+                      name: localizedName.trim() || null,
+                      description: localizedDesc.trim() || null,
+                    });
+                    setMessage(`Saved ${activeLocale.toUpperCase()} labels.`);
+                  } catch (e) {
+                    setMessage(e instanceof Error ? e.message : "Save failed.");
+                  } finally {
+                    setLocSaving(false);
+                  }
+                }}
+                className="rounded bg-teal-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-teal-700 disabled:opacity-50"
+              >
+                {locSaving ? "Saving..." : `Save ${activeLocale.toUpperCase()} Labels`}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="max-w-7xl mx-auto grid gap-6 p-6 xl:grid-cols-[240px_minmax(0,1fr)_360px]">
         {!readOnly && (
