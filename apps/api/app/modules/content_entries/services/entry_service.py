@@ -193,11 +193,12 @@ class ContentEntryService:
         if version is None:
             raise ValueError(f"Template version {vid} not found.")
 
-        # Validate values, locales, relations, and accessibility
+        # Validate values, locales, relations
         self.validator.validate(
             version,
             entry.values,
             entry.locale_values,
+            check_accessibility=False,
         )
 
         self.relation_validator.validate(
@@ -205,6 +206,68 @@ class ContentEntryService:
             version,
             entry.values,
         )
+
+        # Localization gate
+        from app.modules.localization.completeness import calculate_completeness
+        from app.modules.localization.content_models import ContentLocalization
+        from app.modules.localization.models import Locale
+        from app.modules.localization.publication_gate import enforce_localization_gate
+
+        locales = list(db.scalars(select(Locale).where(Locale.enabled.is_(True))))
+        required_locales = {loc.code for loc in locales if loc.is_default} or {"en"}
+
+        content_locs = list(
+            db.scalars(
+                select(ContentLocalization).where(
+                    ContentLocalization.content_entry_id == entry.id
+                )
+            )
+        )
+        translated_locales_map: dict[str, float] = {}
+        for req_loc in required_locales:
+            comp = calculate_completeness(
+                version.fields,
+                content_locs,
+                req_loc,
+                base_values=entry.values,
+            )
+            translated_locales_map[req_loc] = comp["percentage"]
+
+        enforce_localization_gate(
+            default_locale="en",
+            translated_locales=translated_locales_map,
+            required_locales=required_locales,
+        )
+
+        # Glossary gate
+        from app.modules.glossary.validator import (
+            GlossaryPublicationError,
+            GlossaryValidator,
+        )
+        glossary_val = GlossaryValidator()
+        for field_key, field_val in (entry.values or {}).items():
+            if isinstance(field_val, str):
+                viols = glossary_val.validate_text(db, field_val, "en")
+                for viol in viols:
+                    if viol.severity == "BLOCKER":
+                        raise GlossaryPublicationError(
+                            f"Publish blocked: prohibited glossary terminology in field '{field_key}': {viol.message}"
+                        )
+
+        # Accessibility gate
+        from app.modules.accessibility.publication_gate import (
+            enforce_accessibility_gate,
+        )
+        from app.modules.accessibility.service import AccessibilityService
+        acc_service = AccessibilityService()
+        audit_res = acc_service.audit_entry(
+            db=db,
+            entry=entry,
+            template=version,
+            locale_code="en",
+            persist=True,
+        )
+        enforce_accessibility_gate(audit_res)
 
         entry.status = ContentEntryStatus.PUBLISHED.value
         entry.published_at = datetime.now(timezone.utc)

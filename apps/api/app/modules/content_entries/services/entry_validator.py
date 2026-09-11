@@ -15,7 +15,8 @@ class ContentEntryValidator:
         self,
         version: TemplateVersion,
         values: dict[str, Any] | None,
-        locale_values: dict[str, dict[str, Any]] | None = None,
+        locale_values: dict[str, Any] | None = None,
+        check_accessibility: bool = True,
     ) -> None:
         values = values or {}
         locale_values = locale_values or {}
@@ -49,7 +50,7 @@ class ContentEntryValidator:
                 continue
 
             if value is not None:
-                field_error = self._validate_field_value(field, value)
+                field_error = self._validate_field_value(field, value, check_accessibility=check_accessibility)
                 if field_error:
                     errors.append(field_error)
 
@@ -60,7 +61,7 @@ class ContentEntryValidator:
         if errors:
             raise EntryValidationError(errors)
 
-    def _validate_field_value(self, field: Any, value: Any) -> str | None:
+    def _validate_field_value(self, field: Any, value: Any, check_accessibility: bool = True) -> str | None:
         field_type = field.type
         config = field.config or {}
 
@@ -127,19 +128,20 @@ class ContentEntryValidator:
         elif field_type == "IMAGE":
             if not isinstance(value, (str, dict)):
                 return f"{field.key}: invalid media reference."
-            if isinstance(value, dict):
-                alt = value.get("alt")
+            if check_accessibility and isinstance(value, dict):
+                alt = value.get("alt_text") or value.get("alt")
                 if not alt or not isinstance(alt, str) or not alt.strip():
                     return f"{field.key}: alt text is required for image accessibility."
 
         elif field_type == "GALLERY":
             if not isinstance(value, list):
                 return f"{field.key}: expected media array."
-            for idx, item in enumerate(value):
-                if isinstance(item, dict):
-                    alt = item.get("alt")
-                    if not alt or not isinstance(alt, str) or not alt.strip():
-                        return f"{field.key}[{idx}]: alt text is required for gallery accessibility."
+            if check_accessibility:
+                for idx, item in enumerate(value):
+                    if isinstance(item, dict):
+                        alt = item.get("alt_text") or item.get("alt")
+                        if not alt or not isinstance(alt, str) or not alt.strip():
+                            return f"{field.key}[{idx}]: alt text is required for gallery accessibility."
 
         elif field_type in {"VIDEO", "AUDIO"}:
             if not isinstance(value, (str, dict)):
