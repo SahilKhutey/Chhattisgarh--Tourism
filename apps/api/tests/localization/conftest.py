@@ -1,14 +1,16 @@
 import uuid
 import pytest
-from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
-from app.core.database import Base, get_db
-from app.main import app
-from app.modules.admin.dependencies import AdminUser, get_current_user
 from app.modules.content_entries.models import ContentEntry
+from app.modules.content_template.models import (
+    ContentTemplate,
+    TemplateField,
+    TemplateVersion,
+    TemplateVersionField,
+)
 from app.modules.localization.models import Locale
 from app.modules.localization.content_models import (
     ContentLocalization,
@@ -18,12 +20,6 @@ from app.modules.glossary.models import GlossaryTerm, GlossaryTermLocale
 from app.modules.accessibility.models import (
     AccessibilityAudit,
     AccessibilityIssue,
-)
-from app.modules.content_template.models import (
-    ContentTemplate,
-    TemplateField,
-    TemplateVersion,
-    TemplateVersionField,
 )
 
 
@@ -69,80 +65,3 @@ def db_session():
         TemplateField.__table__.drop(bind=engine)
         ContentTemplate.__table__.drop(bind=engine)
         TemplateVersion.__table__.drop(bind=engine)
-
-
-
-
-@pytest.fixture(scope="function")
-def admin_user():
-    return AdminUser(
-        id=uuid.uuid4(),
-        role="ADMIN",
-        active=True,
-    )
-
-
-@pytest.fixture(scope="function")
-def client(db_session, admin_user):
-    def override_get_db():
-        try:
-            yield db_session
-        finally:
-            pass
-
-    def override_get_user():
-        return admin_user
-
-    app.dependency_overrides[get_db] = override_get_db
-    app.dependency_overrides[get_current_user] = override_get_user
-
-    with TestClient(app) as test_client:
-        yield test_client
-
-    app.dependency_overrides.clear()
-
-
-@pytest.fixture(scope="function")
-def template(db_session):
-    t = ContentTemplate(
-        id=uuid.uuid4(),
-        name="Test Destination",
-        slug="test-destination",
-        description="A draft destination template",
-        category="destination",
-        status="DRAFT",
-    )
-    db_session.add(t)
-    db_session.commit()
-    db_session.refresh(t)
-    return t
-
-
-@pytest.fixture(scope="function")
-def published_template(db_session):
-    t = ContentTemplate(
-        id=uuid.uuid4(),
-        name="Published Destination",
-        slug="published-destination",
-        description="A published destination template",
-        category="destination",
-        status="PUBLISHED",
-    )
-    db_session.add(t)
-    db_session.flush()
-
-    f = TemplateField(
-        id=uuid.uuid4(),
-        template_id=t.id,
-        key="name",
-        label="Name",
-        field_type="TEXT",
-        required=True,
-        translatable=True,
-        order=0,
-        config={},
-    )
-    db_session.add(f)
-    db_session.commit()
-    db_session.refresh(t)
-    return t
