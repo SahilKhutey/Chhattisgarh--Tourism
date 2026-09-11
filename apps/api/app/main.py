@@ -11,8 +11,8 @@ from app.modules.admin.api.templates import (
 from app.modules.content_entries.api import (
     admin_content_router,
     admin_schema_router,
-    public_content_router,
 )
+from app.modules.public_content import public_content_router
 from app.modules.admin.api.localization import router as admin_localization_router
 from app.modules.admin.api.glossary import router as admin_glossary_router
 from app.modules.admin.api.accessibility import router as admin_accessibility_router

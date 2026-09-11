@@ -275,6 +275,12 @@ class ContentEntryService:
 
         db.flush()
 
+        try:
+            from app.modules.public_content.cache import PublicContentCache
+            PublicContentCache().invalidate(entry.slug)
+        except Exception:
+            pass
+
         self.audit_service.record(
             db,
             event_type="CONTENT_ENTRY_PUBLISHED",
@@ -304,6 +310,12 @@ class ContentEntryService:
         entry.updated_by = str(user_id)
 
         db.flush()
+
+        try:
+            from app.modules.public_content.cache import PublicContentCache
+            PublicContentCache().invalidate(entry.slug)
+        except Exception:
+            pass
 
         self.audit_service.record(
             db,
