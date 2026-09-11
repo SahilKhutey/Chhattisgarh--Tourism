@@ -4,15 +4,19 @@ import React from 'react';
 import {
   Type,
   AlignLeft,
+  FileText,
   Image as ImageIcon,
   Images,
   MapPin,
   Map,
   ChevronDownSquare,
+  CheckSquare,
   Tags,
   Video,
   Volume2,
   Calendar,
+  Clock,
+  CalendarDays,
   Hash,
   ToggleLeft,
   Link2,
@@ -36,30 +40,37 @@ export const PALETTE_FIELDS: FieldPaletteItem[] = [
     category: 'Text',
   },
   {
+    type: 'TEXTAREA',
+    label: 'Text Area',
+    description: 'Multi-line plain text for notes and summaries',
+    icon: FileText,
+    category: 'Text',
+  },
+  {
     type: 'RICHTEXT',
     label: 'Rich Text',
-    description: 'Multi-line formatted content and narrative descriptions',
+    description: 'Formatted content with headers, quotes, and lists',
     icon: AlignLeft,
     category: 'Text',
   },
   {
     type: 'IMAGE',
     label: 'Image',
-    description: 'Single banner or showcase photograph',
+    description: 'Photograph with compulsory alt text',
     icon: ImageIcon,
     category: 'Media',
   },
   {
     type: 'GALLERY',
     label: 'Gallery',
-    description: 'Multi-image photo collection',
+    description: 'Curated collection of photographs',
     icon: Images,
     category: 'Media',
   },
   {
     type: 'GEO_POINT',
     label: 'Geo Point',
-    description: 'Latitude and Longitude pin for PostGIS indexing',
+    description: 'Latitude & longitude pin within CG extent',
     icon: MapPin,
     category: 'Location',
   },
@@ -73,14 +84,21 @@ export const PALETTE_FIELDS: FieldPaletteItem[] = [
   {
     type: 'DROPDOWN',
     label: 'Dropdown',
-    description: 'Single selection from configured options',
+    description: 'Single selection from configured choices',
     icon: ChevronDownSquare,
+    category: 'Choice',
+  },
+  {
+    type: 'MULTI_SELECT',
+    label: 'Multi Select',
+    description: 'Select multiple items from preset choices',
+    icon: CheckSquare,
     category: 'Choice',
   },
   {
     type: 'TAGS',
     label: 'Tags',
-    description: 'Searchable keyword chips (e.g., eco, tribal, waterfall)',
+    description: 'Searchable keyword chips (e.g., eco, tribal)',
     icon: Tags,
     category: 'Choice',
   },
@@ -101,8 +119,22 @@ export const PALETTE_FIELDS: FieldPaletteItem[] = [
   {
     type: 'DATE',
     label: 'Date',
-    description: 'Date or calendar event reference',
+    description: 'Calendar date reference',
     icon: Calendar,
+    category: 'Data',
+  },
+  {
+    type: 'DATETIME',
+    label: 'Date & Time',
+    description: 'Timestamp for events or departures',
+    icon: CalendarDays,
+    category: 'Data',
+  },
+  {
+    type: 'TIME',
+    label: 'Time',
+    description: 'Opening hour or schedule time',
+    icon: Clock,
     category: 'Data',
   },
   {
@@ -115,7 +147,7 @@ export const PALETTE_FIELDS: FieldPaletteItem[] = [
   {
     type: 'BOOLEAN',
     label: 'Boolean',
-    description: 'Yes/No switch (e.g. guide required, wheelchair access)',
+    description: 'Yes/No switch (guide required, wheelchair access)',
     icon: ToggleLeft,
     category: 'Choice',
   },
@@ -127,6 +159,7 @@ export const PALETTE_FIELDS: FieldPaletteItem[] = [
     category: 'Data',
   },
 ];
+
 
 interface FieldPaletteProps {
   onAddField: (type: FieldType) => void;

@@ -44,9 +44,11 @@ export function DynamicEntryPage({ template, entry }: Props) {
     (field) => field.fieldType === 'TEXT' && /title|name/i.test(field.key),
   );
 
-  const heroField = orderedFields.find(
-    (field) => field.fieldType === 'IMAGE' && typeof entry.data[field.key] === 'string',
-  );
+  const heroField = orderedFields.find((field) => {
+    if (field.fieldType !== 'IMAGE') return false;
+    const val = entry.data[field.key];
+    return typeof val === 'string' || (typeof val === 'object' && val !== null && typeof (val as any).url === 'string');
+  });
 
   const bodyFields = orderedFields.filter(
     (field) => field !== titleField && field !== heroField,
@@ -55,14 +57,24 @@ export function DynamicEntryPage({ template, entry }: Props) {
   const lat = entry.latitude ?? entry.lat ?? null;
   const lng = entry.longitude ?? entry.lng ?? null;
 
+  const heroImageUrl = heroField
+    ? typeof entry.data[heroField.key] === 'string'
+      ? (entry.data[heroField.key] as string)
+      : (entry.data[heroField.key] as any)?.url
+    : null;
+
+  const heroImageAlt = heroField && typeof entry.data[heroField.key] === 'object' && (entry.data[heroField.key] as any)?.altText
+    ? (entry.data[heroField.key] as any).altText
+    : (titleField ? String(entry.data[titleField.key] ?? '') : template.name);
+
   return (
     <article className="mx-auto max-w-5xl px-4 sm:px-6 py-10 space-y-8">
-      {heroField && typeof entry.data[heroField.key] === 'string' && (
+      {heroField && heroImageUrl && (
         <div className="relative w-full h-80 sm:h-96 rounded-2xl overflow-hidden shadow-md border border-stone-200 bg-stone-900">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={entry.data[heroField.key] as string}
-            alt={titleField ? String(entry.data[titleField.key] ?? '') : template.name}
+            src={heroImageUrl}
+            alt={heroImageAlt}
             className="w-full h-full object-cover"
           />
         </div>

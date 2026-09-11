@@ -1,4 +1,9 @@
-import { ConflictException, ForbiddenException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  ForbiddenException,
+  NotFoundException,
+} from '@nestjs/common';
 import { ContentTemplateService } from './content-template.service';
 import { ContentTemplateStatus } from './template-types';
 
@@ -13,9 +18,15 @@ describe('ContentTemplateService', () => {
         findMany: jest.fn(),
         create: jest.fn(),
         update: jest.fn(),
+        count: jest.fn(),
+      },
+      contentEntry: {
+        count: jest.fn(),
       },
       templateVersion: {
         findUnique: jest.fn(),
+        findFirst: jest.fn(),
+        findMany: jest.fn(),
         create: jest.fn(),
       },
       templateField: {
@@ -153,5 +164,111 @@ describe('ContentTemplateService', () => {
 
     const result = await service.rollback('tpl-fest', 1, 'admin-id');
     expect(result.publishedVersion).toBe(1);
+  });
+
+  it('rejects archiving a template when active published entries exist', async () => {
+    mockPrisma.contentTemplate.findUnique.mockResolvedValue({
+      id: 'tpl-fest',
+      name: 'Festival',
+      status: ContentTemplateStatus.PUBLISHED,
+    });
+    mockPrisma.contentEntry.count.mockResolvedValue(5);
+
+    await expect(service.archive('tpl-fest', 'admin-id')).rejects.toThrow(
+      BadRequestException,
+    );
+  });
+
+  it('allows archiving a template when zero published entries exist', async () => {
+    mockPrisma.contentTemplate.findUnique.mockResolvedValue({
+      id: 'tpl-fest',
+      name: 'Festival',
+      status: ContentTemplateStatus.PUBLISHED,
+    });
+    mockPrisma.contentEntry.count.mockResolvedValue(0);
+    mockPrisma.contentTemplate.update.mockResolvedValue({
+      id: 'tpl-fest',
+      status: ContentTemplateStatus.ARCHIVED,
+    });
+
+    const result = await service.archive('tpl-fest', 'admin-id');
+    expect(result.status).toBe(ContentTemplateStatus.ARCHIVED);
+  });
+
+  it('duplicates a template into a new DRAFT with copy slug', async () => {
+    mockPrisma.contentTemplate.findUnique
+      .mockResolvedValueOnce({
+        id: 'tpl-fest',
+        name: 'Festival',
+        slug: 'festival',
+        fields: [
+          {
+            key: 'title',
+            label: 'Festival Name',
+            fieldType: 'TEXT',
+            required: true,
+            order: 0,
+          },
+        ],
+      })
+      .mockResolvedValueOnce(null); // when checking if 'festival-copy' exists
+
+    mockPrisma.contentTemplate.create.mockResolvedValue({
+      id: 'tpl-copy-1',
+      name: 'Festival (Copy)',
+      slug: 'festival-copy',
+      status: ContentTemplateStatus.DRAFT,
+      fields: [
+        {
+          key: 'title',
+          label: 'Festival Name',
+          fieldType: 'TEXT',
+          required: true,
+          order: 0,
+        },
+      ],
+    });
+
+    const duplicated = await service.duplicate('tpl-fest', 'admin-id');
+    expect(duplicated.name).toBe('Festival (Copy)');
+    expect(duplicated.status).toBe(ContentTemplateStatus.DRAFT);
+  });
+
+  it('computes upgrade risk diff between template versions', async () => {
+    mockPrisma.templateVersion.findUnique.mockResolvedValue({
+      id: 'v2',
+      templateId: 'tpl-fest',
+      version: 2,
+      snapshot: {
+        id: 'tpl-fest',
+        name: 'Festival',
+        slug: 'festival',
+        version: 2,
+        fields: [
+          { key: 'title', label: 'Festival Name', fieldType: 'TEXT', required: true, order: 0 },
+          { key: 'district', label: 'District', fieldType: 'TEXT', required: true, order: 1 },
+        ],
+      },
+    });
+
+    mockPrisma.templateVersion.findFirst.mockResolvedValue({
+      id: 'v1',
+      templateId: 'tpl-fest',
+      version: 1,
+      snapshot: {
+        id: 'tpl-fest',
+        name: 'Festival',
+        slug: 'festival',
+        version: 1,
+        fields: [
+          { key: 'title', label: 'Festival Name', fieldType: 'TEXT', required: true, order: 0 },
+        ],
+      },
+    });
+
+    const diff = await service.getVersionDiff('tpl-fest', 2);
+    expect(diff.riskLevel).toBe('BREAKING');
+    expect(diff.breakingChanges.length).toBe(1);
+    expect(diff.breakingChanges[0].key).toBe('district');
   });
 });

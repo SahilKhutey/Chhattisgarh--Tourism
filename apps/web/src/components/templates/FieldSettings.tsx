@@ -143,6 +143,20 @@ export const FieldSettings: React.FC<FieldSettingsProps> = ({
           />
         </div>
 
+        {/* Group / Section */}
+        <div>
+          <label className="block font-semibold text-stone-700 mb-1">
+            Section Group
+          </label>
+          <input
+            type="text"
+            value={current.group || ''}
+            onChange={(e) => handleChange('group', e.target.value)}
+            className="w-full px-3 py-2 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            placeholder="e.g. Overview, Media, Location..."
+          />
+        </div>
+
         {/* Checkbox Flags */}
         <div className="pt-2 border-t border-stone-100 flex flex-wrap gap-4">
           <label className="flex items-center gap-2 cursor-pointer">
@@ -153,6 +167,16 @@ export const FieldSettings: React.FC<FieldSettingsProps> = ({
               className="rounded border-stone-300 text-emerald-600 focus:ring-emerald-500"
             />
             <span className="font-semibold text-stone-700">Required field</span>
+          </label>
+
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={current.translatable ?? true}
+              onChange={(e) => handleChange('translatable', e.target.checked)}
+              className="rounded border-stone-300 text-emerald-600 focus:ring-emerald-500"
+            />
+            <span className="text-stone-700 font-medium">Translatable (EN/HI/CG)</span>
           </label>
 
           <label className="flex items-center gap-2 cursor-pointer">
@@ -176,11 +200,59 @@ export const FieldSettings: React.FC<FieldSettingsProps> = ({
           </label>
         </div>
 
-        {/* Dropdown Options Editor */}
-        {current.type === 'DROPDOWN' && (
+        {/* Image & Gallery Accessibility & Media Constraints */}
+        {(current.type === 'IMAGE' || current.type === 'GALLERY') && (
+          <div className="pt-3 border-t border-stone-100 space-y-3">
+            <span className="block font-semibold text-stone-700">Media & Accessibility Rules</span>
+            <div className="p-2.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-[11px] flex items-center justify-between">
+              <span className="font-semibold">Compulsory Alt Text (WCAG 2.1 AA)</span>
+              <span className="px-2 py-0.5 rounded bg-emerald-200 text-emerald-900 font-bold uppercase text-[9px]">LOCKED ON</span>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-stone-500 mb-1">Max Size (MB)</label>
+                <input
+                  type="number"
+                  value={current.validation?.maxSizeMb ?? 5}
+                  onChange={(e) => handleValidationChange('maxSizeMb', e.target.value ? Number(e.target.value) : undefined)}
+                  className="w-full px-2.5 py-1.5 border border-stone-300 rounded-md"
+                />
+              </div>
+              <div>
+                <label className="block text-stone-500 mb-1">Aspect Ratio</label>
+                <select
+                  value={current.validation?.aspectRatio || '16:9'}
+                  onChange={(e) => handleValidationChange('aspectRatio', e.target.value)}
+                  className="w-full px-2.5 py-1.5 border border-stone-300 rounded-md bg-white"
+                >
+                  <option value="16:9">16:9 (Landscape banner)</option>
+                  <option value="4:3">4:3 (Standard photo)</option>
+                  <option value="1:1">1:1 (Square thumbnail)</option>
+                  <option value="free">Free / Any</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Geo Constraints */}
+        {(current.type === 'GEO_POINT' || current.type === 'MAP_REGION') && (
+          <div className="pt-3 border-t border-stone-100 space-y-2">
+            <span className="block font-semibold text-stone-700">Geographic Spatial Bounds</span>
+            <div className="p-2.5 rounded-lg bg-stone-50 border border-stone-200 text-[11px] space-y-1">
+              <div className="font-semibold text-stone-800">State Extent: Chhattisgarh</div>
+              <div className="text-stone-500 font-mono">Latitude: 17.78° N to 24.11° N</div>
+              <div className="text-stone-500 font-mono">Longitude: 80.24° E to 84.40° E</div>
+              <p className="text-[10px] text-emerald-700 font-medium">Automatic PostGIS ST_Within spatial polygon validation enabled.</p>
+            </div>
+          </div>
+        )}
+
+        {/* Dropdown & MultiSelect Options Editor */}
+        {(current.type === 'DROPDOWN' || current.type === 'MULTI_SELECT') && (
           <div className="pt-3 border-t border-stone-100">
             <div className="flex items-center justify-between mb-2">
-              <span className="font-semibold text-stone-700">Dropdown Options</span>
+              <span className="font-semibold text-stone-700">Options / Choices</span>
               <button
                 type="button"
                 onClick={handleAddOption}
@@ -218,6 +290,7 @@ export const FieldSettings: React.FC<FieldSettingsProps> = ({
             </div>
           </div>
         )}
+
 
         {/* Validation Constraints */}
         {(current.type === 'TEXT' || current.type === 'RICHTEXT') && (

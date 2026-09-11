@@ -1,28 +1,26 @@
-import { TemplateSchema } from "../schema/types.js";
-
-export interface TemplateSnapshotField {
+export interface SnapshotField {
   key: string;
   label: string;
   fieldType: string;
   required: boolean;
   order: number;
-  translatable: boolean;
+  translatable?: boolean;
   helpText?: string | null;
-  options?: unknown;
+  options?: any;
 }
 
-export interface TemplateSnapshot {
+export interface TemplateSnapshotData {
   id: string;
   name: string;
   slug: string;
   version: number;
-  fields: TemplateSnapshotField[];
+  fields: SnapshotField[];
 }
 
 export interface FieldChange {
   key: string;
-  type: "ADDED" | "REMOVED" | "MODIFIED";
-  changeType: "BREAKING" | "SAFE";
+  type: 'ADDED' | 'REMOVED' | 'MODIFIED';
+  changeType: 'BREAKING' | 'SAFE';
   fieldLabel?: string;
   detail: string;
 }
@@ -34,133 +32,91 @@ export interface VersionDiff {
 }
 
 export interface UpgradeRiskSummary {
-  riskLevel: "SAFE" | "BREAKING";
+  riskLevel: 'SAFE' | 'BREAKING';
   breakingChanges: FieldChange[];
   safeChanges: FieldChange[];
   summary: string;
 }
 
-export function createTemplateSnapshot(template: TemplateSchema): TemplateSnapshot {
-  return {
-    id: template.id || template.metadata?.slug || 'template',
-    name: template.metadata?.name ?? '',
-    slug: template.metadata?.slug ?? '',
-    version: template.version,
-    fields: template.fields.map((f) => ({
-      key: f.key,
-      label: f.label,
-      fieldType: f.fieldType,
-      required: Boolean(f.required),
-      order: f.order,
-      translatable: f.translatable ?? true,
-      helpText: f.helpText ?? null,
-      options: f.options,
-    })),
-  };
-}
-
-export function diffTemplateVersions(
-  vOld: TemplateSnapshot,
-  vNew: TemplateSnapshot
+export function diffTemplateSnapshots(
+  vOld: TemplateSnapshotData,
+  vNew: TemplateSnapshotData,
 ): VersionDiff {
-  const oldFieldsMap = new Map<string, TemplateSnapshotField>(
-    vOld.fields.map((f) => [f.key, f])
+  const oldFieldsMap = new Map<string, SnapshotField>(
+    (vOld.fields || []).map((f) => [f.key, f]),
   );
-  const newFieldsMap = new Map<string, TemplateSnapshotField>(
-    vNew.fields.map((f) => [f.key, f])
+  const newFieldsMap = new Map<string, SnapshotField>(
+    (vNew.fields || []).map((f) => [f.key, f]),
   );
 
   const changes: FieldChange[] = [];
 
-  // Check for removed fields or modified fields
   for (const [key, oldField] of oldFieldsMap.entries()) {
     const newField = newFieldsMap.get(key);
     if (!newField) {
       changes.push({
         key,
-        type: "REMOVED",
-        changeType: "BREAKING",
+        type: 'REMOVED',
+        changeType: 'BREAKING',
         fieldLabel: oldField.label,
         detail: `Field "${oldField.label}" (${key}) was removed. Existing entries may contain orphaned data.`,
       });
     } else {
-      // Check for type change (always breaking)
       if (oldField.fieldType !== newField.fieldType) {
         changes.push({
           key,
-          type: "MODIFIED",
-          changeType: "BREAKING",
+          type: 'MODIFIED',
+          changeType: 'BREAKING',
           fieldLabel: newField.label,
           detail: `Field type changed from "${oldField.fieldType}" to "${newField.fieldType}".`,
         });
       }
 
-      // Check for required status change
       if (!oldField.required && newField.required) {
         changes.push({
           key,
-          type: "MODIFIED",
-          changeType: "BREAKING",
+          type: 'MODIFIED',
+          changeType: 'BREAKING',
           fieldLabel: newField.label,
           detail: `Field was changed from optional to required. Existing entries lacking this field will fail validation.`,
         });
       } else if (oldField.required && !newField.required) {
         changes.push({
           key,
-          type: "MODIFIED",
-          changeType: "SAFE",
+          type: 'MODIFIED',
+          changeType: 'SAFE',
           fieldLabel: newField.label,
           detail: `Field requirement relaxed from required to optional.`,
         });
       }
 
-      // Check for label, helpText, translatable or options changes (safe)
       if (oldField.label !== newField.label) {
         changes.push({
           key,
-          type: "MODIFIED",
-          changeType: "SAFE",
+          type: 'MODIFIED',
+          changeType: 'SAFE',
           fieldLabel: newField.label,
           detail: `Field label changed from "${oldField.label}" to "${newField.label}".`,
-        });
-      }
-      if (oldField.helpText !== newField.helpText) {
-        changes.push({
-          key,
-          type: "MODIFIED",
-          changeType: "SAFE",
-          fieldLabel: newField.label,
-          detail: `Field help text updated.`,
-        });
-      }
-      if (oldField.translatable !== newField.translatable) {
-        changes.push({
-          key,
-          type: "MODIFIED",
-          changeType: "SAFE",
-          fieldLabel: newField.label,
-          detail: `Translatable flag changed to ${newField.translatable}.`,
         });
       }
     }
   }
 
-  // Check for added fields
   for (const [key, newField] of newFieldsMap.entries()) {
     if (!oldFieldsMap.has(key)) {
       if (newField.required) {
         changes.push({
           key,
-          type: "ADDED",
-          changeType: "BREAKING",
+          type: 'ADDED',
+          changeType: 'BREAKING',
           fieldLabel: newField.label,
           detail: `New required field "${newField.label}" (${key}) was added. Existing entries do not contain this field.`,
         });
       } else {
         changes.push({
           key,
-          type: "ADDED",
-          changeType: "SAFE",
+          type: 'ADDED',
+          changeType: 'SAFE',
           fieldLabel: newField.label,
           detail: `New optional field "${newField.label}" (${key}) was added.`,
         });
@@ -176,12 +132,12 @@ export function diffTemplateVersions(
 }
 
 export function summarizeUpgradeRisk(diff: VersionDiff): UpgradeRiskSummary {
-  const breakingChanges = diff.changes.filter((c) => c.changeType === "BREAKING");
-  const safeChanges = diff.changes.filter((c) => c.changeType === "SAFE");
+  const breakingChanges = diff.changes.filter((c) => c.changeType === 'BREAKING');
+  const safeChanges = diff.changes.filter((c) => c.changeType === 'SAFE');
 
-  const riskLevel = breakingChanges.length > 0 ? "BREAKING" : "SAFE";
+  const riskLevel = breakingChanges.length > 0 ? 'BREAKING' : 'SAFE';
 
-  let summary = "";
+  let summary = '';
   if (breakingChanges.length === 0 && safeChanges.length === 0) {
     summary = `Version ${diff.toVersion} has no field changes compared to version ${diff.fromVersion}.`;
   } else if (breakingChanges.length > 0) {
@@ -197,3 +153,4 @@ export function summarizeUpgradeRisk(diff: VersionDiff): UpgradeRiskSummary {
     summary,
   };
 }
+

@@ -1,15 +1,19 @@
 export type FieldType =
   | 'TEXT'
+  | 'TEXTAREA'
   | 'RICHTEXT'
   | 'IMAGE'
   | 'GALLERY'
   | 'GEO_POINT'
   | 'MAP_REGION'
   | 'DROPDOWN'
+  | 'MULTI_SELECT'
   | 'TAGS'
   | 'VIDEO'
   | 'AUDIO'
   | 'DATE'
+  | 'DATETIME'
+  | 'TIME'
   | 'NUMBER'
   | 'BOOLEAN'
   | 'RELATION';
@@ -34,8 +38,22 @@ export interface FieldValidationRule {
   maxLength?: number;
   min?: number;
   max?: number;
+  step?: number;
   pattern?: string;
   patternMessage?: string;
+  maxSizeMb?: number;
+  maxSizeMbPerItem?: number;
+  minItems?: number;
+  maxItems?: number;
+  aspectRatio?: string;
+  requireAltText?: boolean;
+  minDate?: string;
+  maxDate?: string;
+  includeTime?: boolean;
+  maxDurationSeconds?: number;
+  allowExternalUrl?: boolean;
+  targetTemplateSlug?: string;
+  allowMultiple?: boolean;
 }
 
 export interface TemplateField {
@@ -47,6 +65,8 @@ export interface TemplateField {
   order: number;
   placeholder?: string;
   helpText?: string;
+  group?: string;
+  translatable?: boolean;
   defaultValue?: any;
   options?: FieldOption[];
   validation?: FieldValidationRule;
@@ -60,7 +80,10 @@ export interface ContentTemplate {
   slug: string;
   description?: string | null;
   icon?: string | null;
+  category?: string | null;
   version: number;
+  publishedVersion?: number | null;
+  entryCount?: number;
   status: TemplateStatus;
   fields: TemplateField[];
   createdAt: string;

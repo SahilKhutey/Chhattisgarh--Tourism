@@ -21,11 +21,12 @@ export default function CreatorNewEntryPage() {
     const load = async () => {
       setLoading(true);
       try {
-        const list = await fetchTemplates('PUBLISHED');
-        setTemplates(list || []);
+        const res = await fetchTemplates('PUBLISHED');
+        const list: ContentTemplate[] = Array.isArray(res) ? res : (res?.items || []);
+        setTemplates(list);
 
         if (templateIdParam) {
-          const match = list.find((t) => t.id === templateIdParam || t.slug === templateIdParam);
+          const match = list.find((t: ContentTemplate) => t.id === templateIdParam || t.slug === templateIdParam);
           if (match) setSelectedTemplate(match);
         } else if (list.length > 0) {
           setSelectedTemplate(list[0]);

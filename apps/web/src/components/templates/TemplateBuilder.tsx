@@ -12,6 +12,7 @@ import {
   Layers,
   CheckCircle2,
   AlertCircle,
+  AlertTriangle,
 } from 'lucide-react';
 import {
   ContentTemplate,
@@ -40,6 +41,7 @@ export const TemplateBuilder: React.FC<TemplateBuilderProps> = ({
   const [slug, setSlug] = useState(initialTemplate?.slug || '');
   const [description, setDescription] = useState(initialTemplate?.description || '');
   const [icon, setIcon] = useState(initialTemplate?.icon || 'Compass');
+  const [category, setCategory] = useState(initialTemplate?.category || '');
   const [fields, setFields] = useState<TemplateField[]>(
     initialTemplate?.fields
       ? initialTemplate.fields.map((f, idx) => ({ ...f, order: idx }))
@@ -50,6 +52,14 @@ export const TemplateBuilder: React.FC<TemplateBuilderProps> = ({
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+
+  // Upgrade Risk Modal State
+  const [showRiskModal, setShowRiskModal] = useState(false);
+  const [riskAssessment, setRiskAssessment] = useState<{
+    breaking: string[];
+    safe: string[];
+  }>({ breaking: [], safe: [] });
+  const [confirmedRisk, setConfirmedRisk] = useState(false);
 
   const handleNameChange = (val: string) => {
     setName(val);
@@ -121,14 +131,14 @@ export const TemplateBuilder: React.FC<TemplateBuilderProps> = ({
     }
   };
 
-  const validateTemplate = (): string | null => {
+  const validateTemplate = (forPublish = false): string | null => {
     if (!name.trim()) return 'Template name is required';
     if (!slug.trim()) return 'Template slug is required';
     if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) {
       return 'Slug must consist of lowercase alphanumeric characters and hyphens only';
     }
-    if (fields.length === 0) {
-      return 'At least one field is required in the template';
+    if (forPublish && fields.length === 0) {
+      return 'At least one field is required in the template to publish';
     }
 
     const keys = new Set<string>();
@@ -144,14 +154,62 @@ export const TemplateBuilder: React.FC<TemplateBuilderProps> = ({
     return null;
   };
 
-  const handleSave = async (publishAfterSave = false) => {
+  const checkUpgradeRisk = () => {
+    if (!initialTemplate?.fields || initialTemplate.fields.length === 0) {
+      return { breaking: [], safe: [] };
+    }
+
+    const oldMap = new Map(initialTemplate.fields.map((f) => [f.key, f]));
+    const newMap = new Map(fields.map((f) => [f.key, f]));
+    const breaking: string[] = [];
+    const safe: string[] = [];
+
+    for (const [key, oldField] of oldMap.entries()) {
+      const newField = newMap.get(key);
+      if (!newField) {
+        breaking.push(`Field "${oldField.label}" (${key}) was removed`);
+      } else {
+        if (oldField.type !== newField.type) {
+          breaking.push(`Field "${key}" type changed from ${oldField.type} to ${newField.type}`);
+        }
+        if (!oldField.required && newField.required) {
+          breaking.push(`Field "${key}" was changed from optional to required`);
+        }
+      }
+    }
+
+    for (const [key, newField] of newMap.entries()) {
+      if (!oldMap.has(key)) {
+        if (newField.required) {
+          breaking.push(`New required field "${newField.label}" (${key}) was added`);
+        } else {
+          safe.push(`New optional field "${newField.label}" (${key}) was added`);
+        }
+      }
+    }
+
+    return { breaking, safe };
+  };
+
+  const handleSave = async (publishAfterSave = false, bypassRiskCheck = false) => {
     setError(null);
     setSuccess(null);
 
-    const validationError = validateTemplate();
+    const validationError = validateTemplate(publishAfterSave);
     if (validationError) {
       setError(validationError);
       return;
+    }
+
+    // Check for breaking changes if publishing an existing template
+    if (publishAfterSave && isEditing && !bypassRiskCheck) {
+      const risk = checkUpgradeRisk();
+      if (risk.breaking.length > 0) {
+        setRiskAssessment(risk);
+        setConfirmedRisk(false);
+        setShowRiskModal(true);
+        return;
+      }
     }
 
     setSaving(true);
@@ -197,8 +255,10 @@ export const TemplateBuilder: React.FC<TemplateBuilderProps> = ({
       setError(err.message || 'Failed to save template. Please check the backend connection.');
     } finally {
       setSaving(false);
+      setShowRiskModal(false);
     }
   };
+
 
   return (
     <div className="space-y-6">
@@ -255,7 +315,7 @@ export const TemplateBuilder: React.FC<TemplateBuilderProps> = ({
       {/* Template Metadata Configuration */}
       <div className="bg-white p-5 rounded-xl border border-stone-200 shadow-sm space-y-4 text-xs">
         <h3 className="font-bold text-stone-800 text-sm">Template Identity</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
           <div>
             <label className="block font-semibold text-stone-700 mb-1">
               Template Name <span className="text-red-500">*</span>
@@ -270,30 +330,68 @@ export const TemplateBuilder: React.FC<TemplateBuilderProps> = ({
           </div>
 
           <div>
-            <label className="block font-semibold text-stone-700 mb-1">
-              URL Slug <span className="text-red-500">*</span>
-            </label>
+            <div className="flex items-center justify-between mb-1">
+              <label className="font-semibold text-stone-700">
+                URL Slug <span className="text-red-500">*</span>
+              </label>
+              {initialTemplate?.status === 'PUBLISHED' && (
+                <span className="text-[10px] text-amber-600 font-medium">Locked (Published)</span>
+              )}
+            </div>
             <input
               type="text"
-              disabled={isEditing}
+              disabled={initialTemplate?.status === 'PUBLISHED'}
               value={slug}
               onChange={(e) => setSlug(e.target.value)}
               placeholder="e.g. traditional-festival"
-              className="w-full px-3 py-2 border border-stone-300 rounded-lg font-mono disabled:bg-stone-50 disabled:text-stone-500"
+              className="w-full px-3 py-2 border border-stone-300 rounded-lg font-mono disabled:bg-stone-100 disabled:text-stone-500 disabled:cursor-not-allowed"
             />
           </div>
 
           <div>
             <label className="block font-semibold text-stone-700 mb-1">
-              Icon Key
+              Category
             </label>
             <input
               type="text"
-              value={icon}
-              onChange={(e) => setIcon(e.target.value)}
-              placeholder="e.g. Sparkles, MapPin, Compass"
+              list="tourism-categories"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              placeholder="e.g. Culture & Heritage"
               className="w-full px-3 py-2 border border-stone-300 rounded-lg"
             />
+            <datalist id="tourism-categories">
+              <option value="Culture & Heritage" />
+              <option value="Eco & Nature" />
+              <option value="Tribal Craft" />
+              <option value="Spiritual & Temples" />
+              <option value="Culinary Tourism" />
+              <option value="Adventure & Wildlife" />
+            </datalist>
+          </div>
+
+          <div>
+            <label className="block font-semibold text-stone-700 mb-1">
+              Icon
+            </label>
+            <select
+              value={icon}
+              onChange={(e) => setIcon(e.target.value)}
+              className="w-full px-3 py-2 border border-stone-300 rounded-lg bg-white"
+            >
+              <option value="Compass">Compass (Explore)</option>
+              <option value="MapPin">MapPin (Location)</option>
+              <option value="Landmark">Landmark (Heritage)</option>
+              <option value="Mountain">Mountain (Nature)</option>
+              <option value="Sparkles">Sparkles (Folklore/Festivals)</option>
+              <option value="Music">Music (Tribal Arts)</option>
+              <option value="Camera">Camera (Scenic Spot)</option>
+              <option value="Trees">Trees (Eco/Forest)</option>
+              <option value="Utensils">Utensils (Culinary)</option>
+              <option value="Award">Award (GI Tag Craft)</option>
+              <option value="BookOpen">BookOpen (Story/History)</option>
+              <option value="Layers">Layers (Generic Schema)</option>
+            </select>
           </div>
         </div>
 
@@ -310,6 +408,7 @@ export const TemplateBuilder: React.FC<TemplateBuilderProps> = ({
           />
         </div>
       </div>
+
 
       {/* Main Builder Grid: Canvas, Palette, Settings, and Preview */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
@@ -434,6 +533,83 @@ export const TemplateBuilder: React.FC<TemplateBuilderProps> = ({
           />
         </div>
       </div>
+
+      {/* Upgrade Risk Modal for Breaking Changes */}
+      {showRiskModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/60 backdrop-blur-xs p-4">
+          <div className="bg-white rounded-2xl shadow-xl max-w-lg w-full p-6 space-y-5 border border-stone-200">
+            <div className="flex items-start gap-3">
+              <div className="p-2.5 rounded-xl bg-amber-100 text-amber-700 shrink-0">
+                <AlertTriangle className="w-6 h-6" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-stone-900">
+                  Breaking Schema Changes Detected
+                </h3>
+                <p className="text-xs text-stone-500 mt-1">
+                  Publishing these modifications introduces backwards-incompatible changes. Existing entries under version {initialTemplate?.version ?? 1} may experience schema drift.
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <div className="p-3 bg-amber-50/70 border border-amber-200 rounded-xl space-y-2">
+                <span className="text-xs font-bold text-amber-900 uppercase tracking-wider block">
+                  Breaking Changes ({riskAssessment.breaking.length})
+                </span>
+                <ul className="list-disc list-inside space-y-1 text-xs text-amber-800">
+                  {riskAssessment.breaking.map((item, idx) => (
+                    <li key={idx}>{item}</li>
+                  ))}
+                </ul>
+              </div>
+
+              {riskAssessment.safe.length > 0 && (
+                <div className="p-3 bg-emerald-50/70 border border-emerald-200 rounded-xl space-y-2">
+                  <span className="text-xs font-bold text-emerald-900 uppercase tracking-wider block">
+                    Safe Additions ({riskAssessment.safe.length})
+                  </span>
+                  <ul className="list-disc list-inside space-y-1 text-xs text-emerald-800">
+                    {riskAssessment.safe.map((item, idx) => (
+                      <li key={idx}>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+
+            <label className="flex items-start gap-2.5 p-3 rounded-xl border border-stone-200 bg-stone-50 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={confirmedRisk}
+                onChange={(e) => setConfirmedRisk(e.target.checked)}
+                className="mt-0.5 rounded border-stone-300 text-emerald-600 focus:ring-emerald-500"
+              />
+              <span className="text-xs text-stone-700 font-medium">
+                I understand this update introduces breaking schema changes and wish to publish version {(initialTemplate?.version || 1) + 1} to live content.
+              </span>
+            </label>
+
+            <div className="flex items-center justify-end gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => setShowRiskModal(false)}
+                className="px-4 py-2 border border-stone-300 rounded-xl text-xs font-semibold text-stone-700 hover:bg-stone-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={!confirmedRisk || saving}
+                onClick={() => handleSave(true, true)}
+                className="px-4 py-2 bg-amber-600 hover:bg-amber-700 disabled:opacity-50 text-white rounded-xl text-xs font-semibold shadow-sm transition-colors"
+              >
+                {saving ? 'Publishing...' : 'Confirm & Publish v' + ((initialTemplate?.version || 1) + 1)}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
