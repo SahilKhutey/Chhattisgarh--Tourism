@@ -1,47 +1,44 @@
 services:
+
   postgres:
     image: postgis/postgis:16-3.4
     container_name: cg-tourism-postgres
     restart: unless-stopped
 
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:-cg_tourism}
-      POSTGRES_USER: ${POSTGRES_USER:-cg_tourism}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-cg_tourism_dev}
+      POSTGRES_DB: cg_tourism
+      POSTGRES_USER: cg_tourism
+      POSTGRES_PASSWORD: cg_tourism_dev
 
     ports:
-      - "${POSTGRES_PORT:-5432}:5432"
+      - "5432:5432"
 
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./docker/postgres/init:/docker-entrypoint-initdb.d:ro
+      - ./infrastructure/docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
 
     healthcheck:
       test:
         [
           "CMD-SHELL",
-          "pg_isready -U ${POSTGRES_USER:-cg_tourism} -d ${POSTGRES_DB:-cg_tourism}"
+          "pg_isready -U cg_tourism -d cg_tourism"
         ]
       interval: 5s
       timeout: 5s
-      retries: 20
+      retries: 10
 
   redis:
-    image: redis:7.4-alpine
+    image: redis:7-alpine
     container_name: cg-tourism-redis
     restart: unless-stopped
 
     command:
-      [
-        "redis-server",
-        "--appendonly",
-        "yes",
-        "--requirepass",
-        "${REDIS_PASSWORD:-cg_tourism_dev}"
-      ]
+      - redis-server
+      - --appendonly
+      - "yes"
 
     ports:
-      - "${REDIS_PORT:-6379}:6379"
+      - "6379:6379"
 
     volumes:
       - redis_data:/data
@@ -49,15 +46,13 @@ services:
     healthcheck:
       test:
         [
-          "CMD-SHELL",
+          "CMD",
           "redis-cli",
-          "-a",
-          "${REDIS_PASSWORD:-cg_tourism_dev}",
           "ping"
         ]
       interval: 5s
-      timeout: 5s
-      retries: 20
+      timeout: 3s
+      retries: 10
 
 volumes:
   postgres_data:

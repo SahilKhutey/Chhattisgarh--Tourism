@@ -1,0 +1,81 @@
+name: Backend
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+
+  pull_request:
+
+jobs:
+  test:
+
+    runs-on: ubuntu-latest
+
+    services:
+
+      postgres:
+        image: postgis/postgis:16-3.4
+
+        env:
+          POSTGRES_DB: cg_tourism
+          POSTGRES_USER: cg_tourism
+          POSTGRES_PASSWORD: cg_tourism_test
+
+        ports:
+          - 5432:5432
+
+        options: >-
+          --health-cmd "pg_isready -U cg_tourism -d cg_tourism"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+      redis:
+        image: redis:7-alpine
+
+        ports:
+          - 6379:6379
+
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          pip install -r apps/api/requirements.txt
+
+      - name: Configure environment
+        run: |
+          echo "APP_ENV=test" >> $GITHUB_ENV
+          echo "DATABASE_URL=postgresql+psycopg://cg_tourism:cg_tourism_test@localhost:5432/cg_tourism" >> $GITHUB_ENV
+          echo "REDIS_URL=redis://localhost:6379/0" >> $GITHUB_ENV
+          echo "JWT_SECRET=test-only-secret" >> $GITHUB_ENV
+
+      - name: Run migrations
+        working-directory: apps/api
+        run: |
+          alembic upgrade head
+
+      - name: Migration check
+        working-directory: apps/api
+        run: |
+          alembic check
+
+      - name: Tests
+        working-directory: apps/api
+        run: |
+          pytest -q
