@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime
 
-from sqlalchemy import DateTime, String, Text, func
+from sqlalchemy import DateTime, ForeignKey, String, Text, func
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -48,6 +48,16 @@ class ContentTemplate(Base):
         String(30),
         nullable=False,
         default="DRAFT",
+        index=True,
+    )
+
+    published_version_id: Mapped[uuid.UUID | None] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey(
+            "template_versions.id",
+            ondelete="SET NULL",
+        ),
+        nullable=True,
         index=True,
     )
 

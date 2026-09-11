@@ -4,9 +4,14 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
-from app.core.database import get_db
+from app.core.database import Base, get_db
 from app.main import app
-from app.modules.content_template.models import ContentTemplate, TemplateField
+from app.modules.content_template.models import (
+    ContentTemplate,
+    TemplateField,
+    TemplateVersion,
+    TemplateVersionField,
+)
 
 
 @pytest.fixture(scope="function")
@@ -16,8 +21,10 @@ def db_session():
         connect_args={"check_same_thread": False},
         poolclass=StaticPool,
     )
+    TemplateVersion.__table__.create(bind=engine)
     ContentTemplate.__table__.create(bind=engine)
     TemplateField.__table__.create(bind=engine)
+    TemplateVersionField.__table__.create(bind=engine)
 
     TestingSessionLocal = sessionmaker(
         autocommit=False,
@@ -29,8 +36,12 @@ def db_session():
         yield session
     finally:
         session.close()
+        TemplateVersionField.__table__.drop(bind=engine)
         TemplateField.__table__.drop(bind=engine)
         ContentTemplate.__table__.drop(bind=engine)
+        TemplateVersion.__table__.drop(bind=engine)
+
+
 
 
 @pytest.fixture(scope="function")
