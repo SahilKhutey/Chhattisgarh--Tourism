@@ -1,36 +1,41 @@
-from uuid import uuid4
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from ..domain.models import ContentTemplate, TemplateStatus
+from ..domain.errors import TemplateConflictError
+from ..domain.validation import validate_slug
+from ..infrastructure.models import ContentTemplateModel
 from ..schemas import TemplateMetadataInput
-from ..infrastructure.repository import TemplateRepository
 
 
-class CreateTemplateService:
+async def create_template(
+    session: AsyncSession,
+    data: TemplateMetadataInput,
+) -> ContentTemplateModel:
 
-    def __init__(self, repository: TemplateRepository):
-        self.repository = repository
+    validate_slug(data.slug)
 
-    async def execute(
-        self,
-        data: TemplateMetadataInput,
-    ) -> ContentTemplate:
+    template = ContentTemplateModel(
+        name=data.name,
+        slug=data.slug,
+        description=data.description,
+        icon=data.icon,
+        category=data.category,
+        status="DRAFT",
+        current_version=None,
+        revision=1,
+    )
 
-        existing = await self.repository.get_by_slug(data.slug)
+    session.add(template)
 
-        if existing:
-            raise ValueError(
-                f"Template slug '{data.slug}' already exists"
-            )
+    try:
+        await session.commit()
+    except IntegrityError as exc:
+        await session.rollback()
 
-        template = ContentTemplate(
-            id=str(uuid4()),
-            name=data.name,
-            slug=data.slug,
-            description=data.description,
-            icon=data.icon,
-            category=data.category,
-            status=TemplateStatus.DRAFT,
-            fields=[],
-        )
+        raise TemplateConflictError(
+            "A template with this slug already exists."
+        ) from exc
 
-        return await self.repository.save(template)
+    await session.refresh(template)
+
+    return template
