@@ -2,6 +2,9 @@ from fastapi import FastAPI
 
 from app.api.health import router as health_router
 from app.core.config import get_settings
+from app.modules.content_template.api.router import (
+    router as template_router,
+)
 
 settings = get_settings()
 
@@ -11,6 +14,7 @@ app = FastAPI(
 )
 
 app.include_router(health_router)
+app.include_router(template_router, prefix="/api")
 
 
 @app.get("/")
