@@ -235,3 +235,106 @@ def require_content_archive(
     return user
 
 
+def require_glossary_read(
+    user: AdminUser = Depends(get_current_user),
+) -> AdminUser:
+    if not user.active:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="User account is inactive.",
+        )
+    allowed_roles = {"CREATOR", "MODERATOR", "ADMIN", "SUPER_ADMIN"}
+    if user.role not in allowed_roles:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Glossary read permission required.",
+        )
+    return user
+
+
+def require_glossary_write(
+    user: AdminUser = Depends(get_current_user),
+) -> AdminUser:
+    if not user.active:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="User account is inactive.",
+        )
+    allowed_roles = {"ADMIN", "SUPER_ADMIN"}
+    if user.role not in allowed_roles:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Glossary write permission required.",
+        )
+    return user
+
+
+def require_accessibility_read(
+    user: AdminUser = Depends(get_current_user),
+) -> AdminUser:
+    if not user.active:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="User account is inactive.",
+        )
+    allowed_roles = {"CREATOR", "MODERATOR", "ADMIN", "SUPER_ADMIN"}
+    if user.role not in allowed_roles:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Accessibility read permission required.",
+        )
+    return user
+
+
+def require_accessibility_write(
+    user: AdminUser = Depends(get_current_user),
+) -> AdminUser:
+    if not user.active:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="User account is inactive.",
+        )
+    allowed_roles = {"CREATOR", "MODERATOR", "ADMIN", "SUPER_ADMIN"}
+    if user.role not in allowed_roles:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Accessibility write permission required.",
+        )
+    return user
+
+
+def require_locale_read(
+    user: AdminUser = Depends(get_current_user),
+) -> AdminUser:
+    if not user.active:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="User account is inactive.",
+        )
+    allowed_roles = {"CREATOR", "MODERATOR", "ADMIN", "SUPER_ADMIN"}
+    if user.role not in allowed_roles:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Locale read permission required.",
+        )
+    return user
+
+
+def require_locale_write(
+    user: AdminUser = Depends(get_current_user),
+) -> AdminUser:
+    if not user.active:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="User account is inactive.",
+        )
+    allowed_roles = {"ADMIN", "SUPER_ADMIN"}
+    if user.role not in allowed_roles:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Locale write permission required.",
+        )
+    return user
+
+
+

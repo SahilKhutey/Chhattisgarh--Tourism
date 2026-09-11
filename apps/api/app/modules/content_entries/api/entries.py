@@ -21,6 +21,9 @@ from app.modules.content_entries.domain.types import (
     EntryNotFoundError,
     EntryValidationError,
 )
+from app.modules.accessibility.publication_gate import AccessibilityPublicationError
+from app.modules.localization.publication_gate import LocalizationPublicationError
+from app.modules.glossary.validator import GlossaryPublicationError
 from app.modules.content_entries.models.content_entry import ContentEntry
 from app.modules.content_entries.repositories.entry_repository import (
     ContentEntryRepository,
@@ -414,6 +417,31 @@ def publish_entry(
             detail={
                 "message": "Invalid content entry.",
                 "errors": exc.errors,
+            },
+        )
+    except AccessibilityPublicationError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail={
+                "code": "ACCESSIBILITY_GATE_FAILED",
+                "message": exc.message,
+                "issues": exc.issues,
+            },
+        )
+    except LocalizationPublicationError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail={
+                "code": "LOCALIZATION_GATE_FAILED",
+                "message": str(exc),
+            },
+        )
+    except GlossaryPublicationError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail={
+                "code": "GLOSSARY_GATE_FAILED",
+                "message": str(exc),
             },
         )
 

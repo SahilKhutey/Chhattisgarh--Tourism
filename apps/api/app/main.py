@@ -13,6 +13,9 @@ from app.modules.content_entries.api import (
     admin_schema_router,
     public_content_router,
 )
+from app.modules.admin.api.localization import router as admin_localization_router
+from app.modules.admin.api.glossary import router as admin_glossary_router
+from app.modules.admin.api.accessibility import router as admin_accessibility_router
 
 settings = get_settings()
 
@@ -27,6 +30,9 @@ app.include_router(admin_template_router, prefix="/api")
 app.include_router(admin_content_router, prefix="/api")
 app.include_router(admin_schema_router, prefix="/api")
 app.include_router(public_content_router, prefix="/api")
+app.include_router(admin_localization_router, prefix="/api")
+app.include_router(admin_glossary_router, prefix="/api")
+app.include_router(admin_accessibility_router, prefix="/api")
 
 
 
