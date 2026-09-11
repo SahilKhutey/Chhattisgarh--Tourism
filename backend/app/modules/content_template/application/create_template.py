@@ -1,6 +1,7 @@
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from .get_template import get_template
 from ..domain.errors import TemplateConflictError
 from ..domain.validation import validate_slug
 from ..infrastructure.models import ContentTemplateModel
@@ -36,6 +37,4 @@ async def create_template(
             "A template with this slug already exists."
         ) from exc
 
-    await session.refresh(template)
-
-    return template
+    return await get_template(session, template.id)

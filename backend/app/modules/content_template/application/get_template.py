@@ -13,6 +13,8 @@ async def get_template(
     template_id: UUID,
 ) -> ContentTemplateModel:
 
+    session.expire_all()
+
     result = await session.execute(
         select(ContentTemplateModel)
         .options(

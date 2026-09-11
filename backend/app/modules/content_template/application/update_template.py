@@ -3,6 +3,7 @@ from uuid import UUID
 from sqlalchemy import update
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from .get_template import get_template
 from ..domain.errors import (
     TemplateConcurrencyError,
     TemplateNotFoundError,
@@ -52,4 +53,4 @@ async def update_template(
 
     await session.commit()
 
-    return template
+    return await get_template(session, template.id)

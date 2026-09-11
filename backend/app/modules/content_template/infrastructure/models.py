@@ -94,12 +94,14 @@ class ContentTemplateModel(Base):
         back_populates="template",
         cascade="all, delete-orphan",
         order_by="TemplateGroupModel.display_order",
+        lazy="selectin",
     )
 
     fields: Mapped[list["TemplateFieldModel"]] = relationship(
         back_populates="template",
         cascade="all, delete-orphan",
         order_by="TemplateFieldModel.display_order",
+        lazy="selectin",
     )
 
 
