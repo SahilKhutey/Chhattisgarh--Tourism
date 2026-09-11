@@ -62,3 +62,49 @@ def client(db_session, admin_user):
         yield test_client
 
     app.dependency_overrides.clear()
+
+
+@pytest.fixture(scope="function")
+def template(db_session):
+    t = ContentTemplate(
+        id=uuid.uuid4(),
+        name="Test Destination",
+        slug="test-destination",
+        description="A draft destination template",
+        category="destination",
+        status="DRAFT",
+    )
+    db_session.add(t)
+    db_session.commit()
+    db_session.refresh(t)
+    return t
+
+
+@pytest.fixture(scope="function")
+def published_template(db_session):
+    t = ContentTemplate(
+        id=uuid.uuid4(),
+        name="Published Destination",
+        slug="published-destination",
+        description="A published destination template",
+        category="destination",
+        status="PUBLISHED",
+    )
+    db_session.add(t)
+    db_session.flush()
+
+    f = TemplateField(
+        id=uuid.uuid4(),
+        template_id=t.id,
+        key="name",
+        label="Name",
+        field_type="TEXT",
+        required=True,
+        translatable=True,
+        order=0,
+        config={},
+    )
+    db_session.add(f)
+    db_session.commit()
+    db_session.refresh(t)
+    return t
