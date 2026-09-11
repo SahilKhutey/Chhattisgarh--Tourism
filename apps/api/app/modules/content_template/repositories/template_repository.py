@@ -174,3 +174,15 @@ class TemplateRepository:
             status: count
             for status, count in rows
         }
+
+    def get_for_update(
+        self,
+        db: Session,
+        template_id: uuid.UUID | str,
+    ) -> ContentTemplate | None:
+        tid = uuid.UUID(str(template_id)) if isinstance(template_id, str) else template_id
+        statement = select(ContentTemplate).where(ContentTemplate.id == tid)
+        if db.bind and db.bind.dialect.name != "sqlite":
+            statement = statement.with_for_update()
+        return db.scalar(statement)
+
