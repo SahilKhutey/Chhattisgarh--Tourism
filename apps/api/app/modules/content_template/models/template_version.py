@@ -117,6 +117,31 @@ class TemplateVersion(Base):
         order_by="TemplateVersionField.order",
     )
 
+    @property
+    def version(self) -> int:
+        return self.version_number
+
+    @property
+    def schema_snapshot(self) -> dict[str, Any]:
+        return {
+            "version": self.version_number,
+            "name": self.name,
+            "slug": self.slug,
+            "fields": [
+                {
+                    "key": f.key,
+                    "label": f.label,
+                    "type": f.type,
+                    "group": f.group,
+                    "order": f.order,
+                    "required": f.required,
+                    "translatable": f.translatable,
+                    "config": f.config or {},
+                }
+                for f in sorted(self.fields, key=lambda item: item.order)
+            ],
+        }
+
 
 class TemplateVersionField(Base):
     __tablename__ = "template_version_fields"

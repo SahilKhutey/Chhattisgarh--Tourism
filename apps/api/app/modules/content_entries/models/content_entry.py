@@ -140,3 +140,7 @@ class ContentEntry(Base):
         foreign_keys=[template_version_id],
         lazy="joined",
     )
+
+    @property
+    def data(self) -> dict[str, Any]:
+        return self.values or {}
