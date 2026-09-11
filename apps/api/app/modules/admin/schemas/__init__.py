@@ -9,13 +9,26 @@ from app.modules.admin.schemas.template_builder import (
     TemplateFieldsUpdate,
     TemplateMetadataUpdate,
 )
+from app.modules.admin.schemas.template_versions import (
+    RollbackRequest,
+    TemplateVersionFieldResponse,
+    TemplateVersionListItem,
+    TemplateVersionListResponse,
+    TemplateVersionResponse,
+)
 
 __all__ = [
     "AdminTemplateItem",
     "AdminTemplateListResponse",
+    "RollbackRequest",
     "TemplateDraftUpdate",
     "TemplateFieldConfig",
     "TemplateFieldInput",
     "TemplateFieldsUpdate",
     "TemplateMetadataUpdate",
+    "TemplateVersionFieldResponse",
+    "TemplateVersionListItem",
+    "TemplateVersionListResponse",
+    "TemplateVersionResponse",
 ]
+

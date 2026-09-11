@@ -11,9 +11,32 @@ from app.modules.admin.schemas.template_builder import (
     TemplateFieldInput,
     TemplateMetadataUpdate,
 )
-from app.modules.content_template.models import ContentTemplate, TemplateField
+from app.modules.content_template.models import (
+    ContentTemplate,
+    TemplateField,
+    TemplateVersion,
+)
 from app.modules.content_template.repositories.template_repository import (
     TemplateRepository,
+)
+from app.modules.content_template.repositories.version_repository import (
+    TemplateVersionRepository,
+)
+from app.modules.content_template.services.audit_service import (
+    TemplateAuditService,
+)
+from app.modules.content_template.services.publish_service import (
+    TemplatePublishService,
+)
+from app.modules.content_template.services.rollback_service import (
+    TemplateRollbackService,
+)
+from app.modules.content_template.services.version_diff import (
+    compare_versions,
+    summarize_diff,
+)
+from app.modules.content_template.services.version_service import (
+    TemplateVersionService,
 )
 from app.modules.content_template.validators.field_validator import (
     validate_fields,
@@ -24,6 +47,12 @@ class AdminTemplateService:
 
     def __init__(self):
         self.repository = TemplateRepository()
+        self.version_repository = TemplateVersionRepository()
+        self.version_service = TemplateVersionService()
+        self.publish_service = TemplatePublishService()
+        self.rollback_service = TemplateRollbackService()
+        self.audit_service = TemplateAuditService()
+
 
     def list_templates(
         self,
@@ -97,8 +126,15 @@ class AdminTemplateService:
     def format_template_for_builder(
         self,
         template: ContentTemplate,
+        db: Session | None = None,
     ) -> dict[str, Any]:
         sorted_fields = sorted(template.fields, key=lambda f: f.order)
+        published_version_number = None
+        if db and template.published_version_id:
+            ver = self.version_repository.get(db, template.published_version_id)
+            if ver:
+                published_version_number = ver.version_number
+
         return {
             "id": str(template.id),
             "name": template.name,
@@ -107,6 +143,12 @@ class AdminTemplateService:
             "icon": template.icon,
             "category": template.category,
             "status": template.status,
+            "published_version_id": (
+                str(template.published_version_id)
+                if template.published_version_id
+                else None
+            ),
+            "published_version_number": published_version_number,
             "fields": [
                 {
                     "key": field.key,
@@ -273,30 +315,170 @@ class AdminTemplateService:
         db: Session,
         template: ContentTemplate,
         actor_id: UUID | None = None,
-    ) -> ContentTemplate:
+    ) -> TemplateVersion:
         if template.status == "PUBLISHED":
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
                 detail="Template is already published.",
             )
 
-        if not template.fields:
-            raise HTTPException(
-                status_code=status.HTTP_409_CONFLICT,
-                detail="A template must contain at least one field to publish.",
-            )
+        return self.publish_service.publish(db, template, user_id=actor_id)
 
-        errors = validate_fields(template.fields)
-        if errors:
+    def rollback_template(
+        self,
+        db: Session,
+        template: ContentTemplate,
+        version_number: int,
+        actor_id: UUID | None = None,
+    ) -> TemplateVersion:
+        target = self.version_repository.get_by_number(db, template.id, version_number)
+        if target is None:
             raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                detail={
-                    "message": "Cannot publish invalid template.",
-                    "errors": errors,
-                },
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Target version not found.",
             )
+        return self.rollback_service.rollback(db, template, target, user_id=actor_id)
 
-        template.status = "PUBLISHED"
+    def unlock_draft(
+        self,
+        db: Session,
+        template: ContentTemplate,
+        actor_id: UUID | None = None,
+    ) -> ContentTemplate:
+        template.status = "DRAFT"
         template.updated_by = actor_id
         db.flush()
         return template
+
+    def list_versions(
+        self,
+        db: Session,
+        template_id: UUID | str,
+    ) -> dict[str, Any]:
+        template = self.get_template(db, template_id)
+        versions = self.version_repository.list_for_template(db, template.id)
+        return {
+            "items": [
+                {
+                    "id": str(v.id),
+                    "version_number": v.version_number,
+                    "schema_hash": v.schema_hash,
+                    "breaking_change": v.breaking_change,
+                    "risk_summary": v.risk_summary or {},
+                    "created_by": str(v.created_by),
+                    "created_at": v.created_at,
+                    "is_published": str(template.published_version_id) == str(v.id),
+                }
+                for v in versions
+            ],
+            "total": len(versions),
+        }
+
+    def get_version_detail(
+        self,
+        db: Session,
+        template_id: UUID | str,
+        version_number: int,
+    ) -> TemplateVersion:
+        template = self.get_template(db, template_id)
+        version = self.version_repository.get_by_number(db, template.id, version_number)
+        if version is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Template version not found.",
+            )
+        return version
+
+    def diff_version(
+        self,
+        db: Session,
+        template_id: UUID | str,
+        version_number: int,
+        against: str = "previous",
+    ) -> dict[str, Any]:
+        template = self.get_template(db, template_id)
+        current = self.version_repository.get_by_number(db, template.id, version_number)
+        if current is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Template version not found.",
+            )
+
+        if against == "previous":
+            if version_number <= 1:
+                return {
+                    "version": version_number,
+                    "against": None,
+                    "diff": None,
+                }
+            previous = self.version_repository.get_by_number(
+                db, template.id, version_number - 1
+            )
+        else:
+            try:
+                against_num = int(against)
+            except ValueError:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Invalid comparison version.",
+                )
+            previous = self.version_repository.get_by_number(
+                db, template.id, against_num
+            )
+
+        if previous is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Comparison version not found.",
+            )
+
+        diff = compare_versions(previous, current)
+        return {
+            "version": current.version_number,
+            "against": previous.version_number,
+            "breaking": diff.breaking,
+            "added": [c.to_dict() for c in diff.added],
+            "removed": [c.to_dict() for c in diff.removed],
+            "changed": [c.to_dict() for c in diff.changed],
+            "reordered": [c.to_dict() for c in diff.reordered],
+            "metadata_changes": diff.metadata_changes,
+            "risk": summarize_diff(diff),
+            "diff": True,
+        }
+
+    def format_version(self, version: TemplateVersion) -> dict[str, Any]:
+        return {
+            "id": str(version.id),
+            "template_id": str(version.template_id),
+            "version_number": version.version_number,
+            "name": version.name,
+            "slug": version.slug,
+            "description": version.description,
+            "icon": version.icon,
+            "category": version.category,
+            "schema_hash": version.schema_hash,
+            "breaking_change": version.breaking_change,
+            "risk_summary": version.risk_summary or {},
+            "created_by": str(version.created_by),
+            "created_at": (
+                version.created_at.isoformat()
+                if version.created_at
+                else None
+            ),
+            "status": "PUBLISHED",
+            "fields": [
+                {
+                    "key": f.key,
+                    "label": f.label,
+                    "type": f.type,
+                    "required": f.required,
+                    "translatable": f.translatable,
+                    "order": f.order,
+                    "group": f.group,
+                    "helpText": f.help_text,
+                    "config": f.config or {},
+                }
+                for f in version.fields
+            ],
+        }
+

@@ -55,6 +55,12 @@ def require_template_admin(
 def require_template_write(
     user: AdminUser = Depends(get_current_user),
 ) -> AdminUser:
+    if not user.active:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="User account is inactive.",
+        )
+
     allowed_roles = {
         "CREATOR",
         "MODERATOR",
@@ -69,3 +75,77 @@ def require_template_write(
         )
 
     return user
+
+
+def require_template_read(
+    user: AdminUser = Depends(get_current_user),
+) -> AdminUser:
+    if not user.active:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="User account is inactive.",
+        )
+
+    allowed_roles = {
+        "CREATOR",
+        "MODERATOR",
+        "ADMIN",
+        "SUPER_ADMIN",
+    }
+
+    if user.role not in allowed_roles:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Insufficient permissions.",
+        )
+
+    return user
+
+
+def require_template_publish(
+    user: AdminUser = Depends(get_current_user),
+) -> AdminUser:
+    if not user.active:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="User account is inactive.",
+        )
+
+    allowed_roles = {
+        "CREATOR",
+        "MODERATOR",
+        "ADMIN",
+        "SUPER_ADMIN",
+    }
+
+    if user.role not in allowed_roles:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Template publish permission required.",
+        )
+
+    return user
+
+
+def require_template_rollback(
+    user: AdminUser = Depends(get_current_user),
+) -> AdminUser:
+    if not user.active:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="User account is inactive.",
+        )
+
+    allowed_roles = {
+        "ADMIN",
+        "SUPER_ADMIN",
+    }
+
+    if user.role not in allowed_roles:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Rollback permission required.",
+        )
+
+    return user
+
