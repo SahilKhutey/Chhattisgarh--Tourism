@@ -14,6 +14,10 @@ from app.core.database import Base
 
 # Import models so metadata is populated.
 from app.db import models  # noqa: F401
+from app.modules.content_template.models import (
+    ContentTemplate,
+    TemplateField,
+)
 
 config = context.config
 
