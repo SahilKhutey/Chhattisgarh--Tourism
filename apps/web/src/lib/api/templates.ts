@@ -1,6 +1,7 @@
 import type {
   ContentTemplate,
-} from "@cg-tourism/types/template";
+  TemplateField,
+} from "@/types/template";
 
 const API_BASE =
   process.env.NEXT_PUBLIC_API_URL ??
@@ -14,9 +15,10 @@ async function request<T>(
     `${API_BASE}${path}`,
     {
       ...options,
+      credentials: "include",
       headers: {
         "Content-Type": "application/json",
-        ...(options?.headers ?? {}),
+        ...options?.headers,
       },
     },
   );
@@ -26,51 +28,62 @@ async function request<T>(
       .json()
       .catch(() => null);
 
-    throw new Error(
-      body?.detail ??
-      `API request failed: ${response.status}`,
-    );
+    const errorMessage =
+      typeof body?.detail === "string"
+        ? body.detail
+        : body?.detail?.message ??
+          body?.message ??
+          `API request failed: ${response.status}`;
+
+    throw new Error(errorMessage);
   }
 
   return response.json();
 }
 
-export function getTemplate(
+export async function getTemplate(
   id: string,
 ): Promise<ContentTemplate> {
   return request<ContentTemplate>(
-    `/templates/${id}`,
+    `/admin/templates/${id}`,
   );
 }
 
-export function createTemplate(
+export async function createTemplate(
   payload: {
     name: string;
     slug: string;
-    description?: string;
-    icon?: string;
     category?: string;
+    description?: string;
   },
 ): Promise<ContentTemplate> {
   return request<ContentTemplate>(
-    "/templates",
+    "/admin/templates",
     {
       method: "POST",
       body: JSON.stringify(payload),
     },
-  );
+  ).catch(async (err) => {
+    // Fallback to /templates if /admin/templates POST returns error
+    if (err.message?.includes("404") || err.message?.includes("405")) {
+      return request<ContentTemplate>(
+        "/templates",
+        {
+          method: "POST",
+          body: JSON.stringify(payload),
+        },
+      );
+    }
+    throw err;
+  });
 }
 
-export function updateTemplateFields(
+export async function updateTemplate(
   id: string,
-  payload: {
-    upsert: unknown[];
-    delete_keys: string[];
-    ordered_keys: string[];
-  },
+  payload: Partial<ContentTemplate>,
 ): Promise<ContentTemplate> {
   return request<ContentTemplate>(
-    `/templates/${id}/fields`,
+    `/admin/templates/${id}`,
     {
       method: "PATCH",
       body: JSON.stringify(payload),
@@ -78,11 +91,45 @@ export function updateTemplateFields(
   );
 }
 
-export function publishTemplate(
+export async function updateTemplateFields(
+  id: string,
+  fields: TemplateField[],
+): Promise<ContentTemplate> {
+  return request<ContentTemplate>(
+    `/admin/templates/${id}/fields`,
+    {
+      method: "PATCH",
+      body: JSON.stringify({
+        fields,
+      }),
+    },
+  );
+}
+
+export async function validateTemplate(
+  id: string,
+): Promise<{
+  valid: boolean;
+  errors: string[];
+  warnings: string[];
+}> {
+  return request<{
+    valid: boolean;
+    errors: string[];
+    warnings: string[];
+  }>(
+    `/admin/templates/${id}/validate`,
+    {
+      method: "POST",
+    },
+  );
+}
+
+export async function publishTemplate(
   id: string,
 ): Promise<ContentTemplate> {
   return request<ContentTemplate>(
-    `/templates/${id}/publish`,
+    `/admin/templates/${id}/publish`,
     {
       method: "POST",
     },
