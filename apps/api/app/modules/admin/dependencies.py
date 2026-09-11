@@ -1,0 +1,71 @@
+from dataclasses import dataclass
+from uuid import UUID
+
+from fastapi import Depends, HTTPException, Request, status
+
+
+@dataclass(frozen=True)
+class AdminUser:
+    id: UUID
+    role: str
+    active: bool = True
+
+
+def get_current_user(request: Request) -> AdminUser:
+    user = getattr(
+        request.state,
+        "user",
+        None,
+    )
+
+    if user is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Authentication required.",
+        )
+
+    return user
+
+
+def require_template_admin(
+    user: AdminUser = Depends(get_current_user),
+) -> AdminUser:
+    if not user.active:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="User account is inactive.",
+        )
+
+    allowed_roles = {
+        "CREATOR",
+        "MODERATOR",
+        "ADMIN",
+        "SUPER_ADMIN",
+    }
+
+    if user.role not in allowed_roles:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Insufficient permissions.",
+        )
+
+    return user
+
+
+def require_template_write(
+    user: AdminUser = Depends(get_current_user),
+) -> AdminUser:
+    allowed_roles = {
+        "CREATOR",
+        "MODERATOR",
+        "ADMIN",
+        "SUPER_ADMIN",
+    }
+
+    if user.role not in allowed_roles:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Template write permission required.",
+        )
+
+    return user
