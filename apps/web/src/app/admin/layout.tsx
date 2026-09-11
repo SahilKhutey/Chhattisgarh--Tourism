@@ -12,6 +12,7 @@ import {
   Layout,
   FileText,
 } from "lucide-react";
+import { AdminQueryProvider } from "@/components/admin/AdminQueryProvider";
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
   return (
@@ -85,7 +86,9 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
           </div>
         </header>
         <div className="flex-1 overflow-y-auto p-8">
-          {children}
+          <AdminQueryProvider>
+            {children}
+          </AdminQueryProvider>
         </div>
       </main>
     </div>
