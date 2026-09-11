@@ -65,6 +65,9 @@ export interface ContentTemplate {
   icon: string | null;
   category: string | null;
   status: "DRAFT" | "PUBLISHED" | "ARCHIVED";
+  published_version_id?: string | null;
+  published_version_number?: number | null;
   fields: TemplateField[];
   updated_at: string;
 }
+

@@ -7,6 +7,7 @@ import {
 import {
   useRouter,
 } from "next/navigation";
+import Link from "next/link";
 
 import {
   QueryClient,
@@ -22,6 +23,8 @@ import {
   validateTemplate,
   publishTemplate,
 } from "@/lib/api/templates";
+import { unlockDraft } from "@/lib/api/template-versions";
+
 
 import {
   useTemplateBuilder,
@@ -247,6 +250,18 @@ function Builder({
     }
   }
 
+  async function handleUnlockDraft() {
+    try {
+      await unlockDraft(templateId);
+      invalidate();
+      setMessage("Draft editing enabled.");
+    } catch (error) {
+      setMessage(
+        error instanceof Error ? error.message : "Unable to edit draft.",
+      );
+    }
+  }
+
   function addField(type: TemplateFieldType) {
     builder.addField(
       createField(
@@ -276,9 +291,18 @@ function Builder({
                 <h1 className="font-bold text-base tracking-tight">
                   {builder.template.name}
                 </h1>
-                {readOnly && (
-                  <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-800">
+                {readOnly ? (
+                  <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-800 border border-emerald-300">
                     PUBLISHED
+                  </span>
+                ) : (
+                  <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-800 border border-amber-300">
+                    DRAFT
+                  </span>
+                )}
+                {builder.template.published_version_number && (
+                  <span className="text-[11px] font-mono font-medium text-muted-foreground bg-muted/60 px-2 py-0.5 rounded">
+                    Live: v{builder.template.published_version_number}
                   </span>
                 )}
               </div>
@@ -305,35 +329,64 @@ function Builder({
               </span>
             )}
 
-            <button
-              type="button"
-              disabled={saving || readOnly}
-              onClick={save}
-              className="rounded-lg border px-4 py-2 text-xs font-semibold hover:bg-muted disabled:opacity-40 transition-colors shadow-xs"
-            >
-              {saving ? "Saving..." : "Save"}
-            </button>
+            {readOnly ? (
+              <>
+                <button
+                  type="button"
+                  onClick={handleUnlockDraft}
+                  className="rounded-lg bg-stone-900 px-4 py-2 text-xs font-semibold text-white hover:bg-stone-800 transition-colors shadow-xs"
+                >
+                  Edit draft
+                </button>
 
-            <button
-              type="button"
-              disabled={saving || readOnly}
-              onClick={validate}
-              className="rounded-lg border px-4 py-2 text-xs font-semibold hover:bg-muted disabled:opacity-40 transition-colors shadow-xs"
-            >
-              Validate
-            </button>
+                <Link
+                  href={`/admin/templates/${templateId}/versions`}
+                  className="rounded-lg border px-4 py-2 text-xs font-semibold hover:bg-muted transition-colors shadow-xs"
+                >
+                  Versions
+                </Link>
+              </>
+            ) : (
+              <>
+                <button
+                  type="button"
+                  disabled={saving}
+                  onClick={save}
+                  className="rounded-lg border px-4 py-2 text-xs font-semibold hover:bg-muted disabled:opacity-40 transition-colors shadow-xs"
+                >
+                  {saving ? "Saving..." : "Save draft"}
+                </button>
 
-            <button
-              type="button"
-              disabled={saving || readOnly}
-              onClick={publish}
-              className="rounded-lg bg-emerald-600 px-4 py-2 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-40 transition-colors shadow-xs"
-            >
-              Publish
-            </button>
+                <button
+                  type="button"
+                  disabled={saving}
+                  onClick={validate}
+                  className="rounded-lg border px-4 py-2 text-xs font-semibold hover:bg-muted disabled:opacity-40 transition-colors shadow-xs"
+                >
+                  Validate draft
+                </button>
+
+                <button
+                  type="button"
+                  disabled={saving}
+                  onClick={publish}
+                  className="rounded-lg bg-emerald-600 px-4 py-2 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-40 transition-colors shadow-xs"
+                >
+                  Publish version
+                </button>
+
+                <Link
+                  href={`/admin/templates/${templateId}/versions`}
+                  className="rounded-lg border px-4 py-2 text-xs font-semibold hover:bg-muted transition-colors shadow-xs"
+                >
+                  Versions
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </header>
+
 
       <div className="max-w-7xl mx-auto grid gap-6 p-6 xl:grid-cols-[240px_minmax(0,1fr)_360px]">
         {!readOnly && (

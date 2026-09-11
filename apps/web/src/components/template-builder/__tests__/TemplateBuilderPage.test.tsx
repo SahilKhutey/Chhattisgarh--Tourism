@@ -137,9 +137,10 @@ describe("TemplateBuilderPage Component", () => {
     // Palette should not be rendered
     expect(screen.queryByLabelText("Template field palette")).toBeNull();
 
-    // Save, Validate, Publish buttons are disabled
-    expect(screen.getByRole("button", { name: /save/i })).toBeDisabled();
-    expect(screen.getByRole("button", { name: /validate/i })).toBeDisabled();
-    expect(screen.getByRole("button", { name: /publish/i })).toBeDisabled();
+    // Edit draft button and Versions link are present
+    expect(screen.getByRole("button", { name: /edit draft/i })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /versions/i })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /save draft/i })).toBeNull();
   });
 });
+
