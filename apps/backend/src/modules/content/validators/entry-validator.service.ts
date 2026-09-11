@@ -123,15 +123,19 @@ export class EntryValidatorService {
 
     const point = value as Record<string, unknown>;
 
-    if (typeof point.lat !== 'number' || typeof point.lng !== 'number') {
+    // Accept both lat/lng (legacy GEO_POINT field data) and latitude/longitude
+    const lat = point.lat ?? point.latitude;
+    const lng = point.lng ?? point.longitude;
+
+    if (typeof lat !== 'number' || typeof lng !== 'number') {
       throw new BadRequestException(`${field.label} requires numeric lat/lng`);
     }
 
-    if (point.lat < -90 || point.lat > 90) {
+    if (lat < -90 || lat > 90) {
       throw new BadRequestException(`${field.label} latitude is invalid`);
     }
 
-    if (point.lng < -180 || point.lng > 180) {
+    if (lng < -180 || lng > 180) {
       throw new BadRequestException(`${field.label} longitude is invalid`);
     }
   }

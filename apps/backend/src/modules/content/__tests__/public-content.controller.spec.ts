@@ -24,8 +24,9 @@ describe('PublicContentController', () => {
       region: 'Bastar',
       division: 'Bastar Division',
       district: 'Bastar',
-      lat: 19.201,
-      lng: 81.701,
+      // Canonical fields (lat/lng removed from schema — replaced with latitude/longitude)
+      latitude: 19.201,
+      longitude: 81.701,
       publishedAt: publishedDate,
       template: {
         id: 'tpl-destination',
@@ -61,8 +62,9 @@ describe('PublicContentController', () => {
       region: 'Bastar',
       division: 'Bastar Division',
       district: 'Bastar',
-      lat: 19.201,
-      lng: 81.701,
+      // Controller now maps latitude/longitude
+      latitude: 19.201,
+      longitude: 81.701,
       publishedAt: publishedDate,
       template: {
         id: 'tpl-destination',

@@ -39,9 +39,7 @@ import { MarketplaceModule } from './modules/marketplace/marketplace.module';
 import { PaymentsModule } from './modules/payments/payments.module';
 import { CommerceModule } from './modules/commerce/commerce.module';
 import { RefundsModule } from './modules/refunds/refunds.module';
-import { ContentTemplatesModule } from './modules/content-templates/content-templates.module';
-import { ContentEntriesModule } from './modules/content-entries/content-entries.module';
-import { ContentModule } from './modules/content/content.module';
+// Canonical Generic Content Template Engine (replaces content-templates, content-entries, content modules)
 import { ContentTemplateModule } from './modules/content-template/content-template.module';
 import { DiscoveryModule } from './modules/discovery/discovery.module';
 import { StructuredLoggerService } from './common/logger/structured-logger.service';
@@ -102,9 +100,6 @@ import { envSchema } from './config/env.schema';
     PaymentsModule,
     CommerceModule,
     RefundsModule,
-    ContentTemplatesModule,
-    ContentEntriesModule,
-    ContentModule,
     ContentTemplateModule,
     DiscoveryModule,
     DatabaseModule,

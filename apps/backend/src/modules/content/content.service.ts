@@ -79,8 +79,8 @@ export class ContentService {
         region: dto.region,
         district: dto.district,
         division: dto.division,
-        lat: geo?.lat,
-        lng: geo?.lng,
+        latitude: geo?.lat,
+        longitude: geo?.lng,
       },
       include: {
         template: {
@@ -153,8 +153,8 @@ export class ContentService {
         region: dto.region ?? entry.region,
         district: dto.district ?? entry.district,
         division: dto.division ?? entry.division,
-        lat: geo?.lat,
-        lng: geo?.lng,
+        latitude: geo?.lat,
+        longitude: geo?.lng,
       },
       include: {
         template: {
@@ -390,11 +390,11 @@ export class ContentService {
     return this.prisma.contentEntry.findMany({
       where: {
         status: EntryStatus.PUBLISHED,
-        lat: {
+        latitude: {
           gte: south,
           lte: north,
         },
-        lng: {
+        longitude: {
           gte: west,
           lte: east,
         },

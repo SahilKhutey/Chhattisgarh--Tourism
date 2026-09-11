@@ -81,8 +81,8 @@ export class ContentEntriesService {
         data: dto.data as any,
         status: dto.status ?? EntryStatus.PENDING_REVIEW,
         authorId,
-        lat,
-        lng,
+        latitude: lat,
+        longitude: lng,
         region,
       },
       include: {
@@ -213,8 +213,8 @@ export class ContentEntriesService {
           : !isAdmin && entry.status === EntryStatus.PUBLISHED
             ? { status: EntryStatus.PENDING_REVIEW }
             : {}),
-        ...(dto.lat !== undefined ? { lat: dto.lat } : {}),
-        ...(dto.lng !== undefined ? { lng: dto.lng } : {}),
+        ...(dto.lat !== undefined ? { latitude: dto.lat } : {}),
+        ...(dto.lng !== undefined ? { longitude: dto.lng } : {}),
         ...(dto.region !== undefined ? { region: dto.region } : {}),
       },
       include: {

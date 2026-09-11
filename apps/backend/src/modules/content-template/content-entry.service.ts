@@ -136,8 +136,6 @@ export class ContentEntryService {
         status: ContentEntryStatus.PENDING_REVIEW,
         authorId,
         region: dto.region,
-        lat,
-        lng,
         latitude: lat,
         longitude: lng,
       },
@@ -268,5 +266,107 @@ export class ContentEntryService {
         publishedAt: action === 'PUBLISH' ? new Date() : null,
       },
     });
+  }
+
+  async getById(id: string) {
+    const row = await this.prisma.contentEntry.findUnique({
+      where: { id },
+      include: {
+        template: {
+          include: { fields: { orderBy: { order: 'asc' } } },
+        },
+        author: { select: { id: true, fullName: true, email: true } },
+      },
+    });
+
+    if (!row) {
+      throw new NotFoundException('Entry not found.');
+    }
+
+    return { ...row, data: this.parseData(row.data) };
+  }
+
+  async submit(entryId: string, authorId: string) {
+    const entry = await this.prisma.contentEntry.findUnique({ where: { id: entryId } });
+
+    if (!entry) throw new NotFoundException('Entry not found.');
+    if (entry.authorId !== authorId) throw new ForbiddenException('You cannot submit this entry.');
+    if (entry.status !== ContentEntryStatus.DRAFT) {
+      throw new BadRequestException('Only draft entries can be submitted for review.');
+    }
+
+    return this.prisma.contentEntry.update({
+      where: { id: entryId },
+      data: { status: ContentEntryStatus.PENDING_REVIEW },
+    });
+  }
+
+  async update(entryId: string, dto: Record<string, unknown>, userId: string) {
+    const entry = await this.prisma.contentEntry.findUnique({ where: { id: entryId } });
+    if (!entry) throw new NotFoundException('Entry not found.');
+
+    if (entry.authorId !== userId) {
+      const user = await this.prisma.user.findUnique({
+        where: { id: userId },
+        select: { role: true },
+      });
+      if (!user || !['ADMIN', 'SUPER_ADMIN', 'MODERATOR'].includes(user.role)) {
+        throw new ForbiddenException('You cannot update this entry.');
+      }
+    }
+
+    const lat = (dto.latitude as number) ?? (dto.lat as number) ?? undefined;
+    const lng = (dto.longitude as number) ?? (dto.lng as number) ?? undefined;
+
+    return this.prisma.contentEntry.update({
+      where: { id: entryId },
+      data: {
+        ...(dto.data ? { data: dto.data as any } : {}),
+        ...(dto.region !== undefined ? { region: dto.region as string } : {}),
+        ...(dto.district !== undefined ? { district: dto.district as string } : {}),
+        ...(dto.division !== undefined ? { division: dto.division as string } : {}),
+        ...(lat !== undefined ? { latitude: lat } : {}),
+        ...(lng !== undefined ? { longitude: lng } : {}),
+      },
+    });
+  }
+
+  async delete(entryId: string, userId: string) {
+    const entry = await this.prisma.contentEntry.findUnique({ where: { id: entryId } });
+    if (!entry) throw new NotFoundException('Entry not found.');
+
+    if (entry.authorId !== userId) {
+      const user = await this.prisma.user.findUnique({
+        where: { id: userId },
+        select: { role: true },
+      });
+      if (!user || !['ADMIN', 'SUPER_ADMIN'].includes(user.role)) {
+        throw new ForbiddenException('You cannot delete this entry.');
+      }
+    }
+
+    return this.prisma.contentEntry.delete({ where: { id: entryId } });
+  }
+
+  async findInBounds(
+    north: number,
+    south: number,
+    east: number,
+    west: number,
+    templateId?: string,
+  ) {
+    const rows = await this.prisma.contentEntry.findMany({
+      where: {
+        status: ContentEntryStatus.PUBLISHED,
+        latitude: { gte: south, lte: north },
+        longitude: { gte: west, lte: east },
+        ...(templateId ? { templateId } : {}),
+      },
+      include: { template: { select: { id: true, name: true, slug: true } } },
+      orderBy: { publishedAt: 'desc' },
+      take: 200,
+    });
+
+    return rows.map((row) => ({ ...row, data: this.parseData(row.data) }));
   }
 }

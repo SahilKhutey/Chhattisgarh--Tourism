@@ -365,8 +365,8 @@ describe('ContentService (Generic Content Engine)', () => {
       expect(prisma.contentEntry.findMany).toHaveBeenCalledWith({
         where: {
           status: EntryStatus.PUBLISHED,
-          lat: { gte: 17.5, lte: 24.0 },
-          lng: { gte: 80.0, lte: 84.5 },
+          latitude: { gte: 17.5, lte: 24.0 },
+          longitude: { gte: 80.0, lte: 84.5 },
         },
         include: { template: true },
       });

@@ -32,8 +32,8 @@ export class PublicContentController {
       region: entry.region,
       division: entry.division,
       district: entry.district,
-      lat: entry.lat,
-      lng: entry.lng,
+      latitude: entry.latitude,
+      longitude: entry.longitude,
       publishedAt: entry.publishedAt,
       template: {
         id: entry.template.id,

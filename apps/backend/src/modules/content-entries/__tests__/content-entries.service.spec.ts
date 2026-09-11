@@ -109,8 +109,8 @@ describe('ContentEntriesService', () => {
           data: expect.objectContaining({
             templateId: 'tpl-destination',
             authorId: 'creator-1',
-            lat: 19.201,
-            lng: 81.706,
+            latitude: 19.201,
+            longitude: 81.706,
             region: 'Bastar',
             status: EntryStatus.PENDING_REVIEW,
           }),

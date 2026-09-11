@@ -105,15 +105,45 @@ export class ContentTemplateService {
     });
   }
 
-  async findPublished(slug: string) {
-    const template = await this.prisma.contentTemplate.findUnique({
-      where: { slug },
+  async findAll(status?: string) {
+    const filter = status ? { status: status as ContentTemplateStatus } : undefined;
+    return this.prisma.contentTemplate.findMany({
+      where: filter,
+      include: {
+        fields: {
+          orderBy: { order: 'asc' },
+        },
+        versions: {
+          orderBy: { version: 'desc' },
+          take: 1,
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+  }
+
+  async findPublished(idOrSlug: string) {
+    let template = await this.prisma.contentTemplate.findUnique({
+      where: { slug: idOrSlug },
       include: {
         fields: {
           orderBy: { order: 'asc' },
         },
       },
     });
+
+    if (!template) {
+      template = await this.prisma.contentTemplate.findUnique({
+        where: { id: idOrSlug },
+        include: {
+          fields: {
+            orderBy: { order: 'asc' },
+          },
+        },
+      });
+    }
 
     if (!template || template.status !== ContentTemplateStatus.PUBLISHED) {
       throw new NotFoundException('Template not found.');
@@ -122,9 +152,9 @@ export class ContentTemplateService {
     return template;
   }
 
-  async findById(id: string) {
-    const template = await this.prisma.contentTemplate.findUnique({
-      where: { id },
+  async findById(idOrSlug: string) {
+    let template = await this.prisma.contentTemplate.findUnique({
+      where: { id: idOrSlug },
       include: {
         fields: {
           orderBy: { order: 'asc' },
@@ -136,10 +166,47 @@ export class ContentTemplateService {
     });
 
     if (!template) {
+      template = await this.prisma.contentTemplate.findUnique({
+        where: { slug: idOrSlug },
+        include: {
+          fields: {
+            orderBy: { order: 'asc' },
+          },
+          versions: {
+            orderBy: { version: 'desc' },
+          },
+        },
+      });
+    }
+
+    if (!template) {
       throw new NotFoundException('Template not found.');
     }
 
     return template;
+  }
+
+  async archive(id: string, userId?: string) {
+    const template = await this.prisma.contentTemplate.findUnique({
+      where: { id },
+    });
+
+    if (!template) {
+      throw new NotFoundException('Template not found.');
+    }
+
+    return this.prisma.contentTemplate.update({
+      where: { id },
+      data: {
+        status: ContentTemplateStatus.ARCHIVED,
+        ...(userId ? { updatedById: userId } : {}),
+      },
+      include: {
+        fields: {
+          orderBy: { order: 'asc' },
+        },
+      },
+    });
   }
 
   async publish(templateId: string, userId: string) {
