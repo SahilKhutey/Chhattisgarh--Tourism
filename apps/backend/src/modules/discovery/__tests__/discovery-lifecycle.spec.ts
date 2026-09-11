@@ -1,6 +1,4 @@
-import { ContentService } from '../../content/content.service';
-import { EntryValidatorService } from '../../content/validators/entry-validator.service';
-import { SlugService } from '../../content/slug/slug.service';
+import { ContentEntryService } from '../../content-template/content-entry.service';
 import { DiscoveryIndexerService } from '../indexer/discovery-indexer.service';
 import { DiscoveryRepository } from '../discovery.repository';
 import { DiscoveryService } from '../discovery.service';
@@ -11,7 +9,7 @@ import { EntryStatus, FieldType } from '@prisma/client';
 
 describe('Discovery Lifecycle Integration', () => {
   let prisma: ReturnType<typeof createMockPrisma>;
-  let contentService: ContentService;
+  let contentEntryService: ContentEntryService;
   let indexerService: DiscoveryIndexerService;
   let discoveryService: DiscoveryService;
   let repository: DiscoveryRepository;
@@ -39,11 +37,8 @@ describe('Discovery Lifecycle Integration', () => {
     suggestions = new SuggestionService(prisma as any);
     discoveryService = new DiscoveryService(repository, indexerService, ranking, suggestions);
 
-    contentService = new ContentService(
+    contentEntryService = new ContentEntryService(
       prisma as any,
-      new EntryValidatorService(),
-      new SlugService(),
-      undefined,
       indexerService,
     );
   });
@@ -75,7 +70,9 @@ describe('Discovery Lifecycle Integration', () => {
       publishedAt: new Date(),
     };
 
-    // First call is in contentService.review to check status (PENDING_REVIEW)
+    prisma.user.findUnique.mockResolvedValue({ role: 'MODERATOR' });
+
+    // First call is in contentEntryService.review to check status
     // Second call is in indexerService.indexEntry to get the published entry
     prisma.contentEntry.findUnique
       .mockResolvedValueOnce(pendingEntry)
@@ -85,7 +82,7 @@ describe('Discovery Lifecycle Integration', () => {
     prisma.contentSearchIndex.upsert.mockResolvedValue({ id: 'idx-1' });
 
     // 2. Moderator approves
-    await contentService.review('entry-bastar-dussehra', 'mod-1', true, 'Approved for publishing');
+    await contentEntryService.review('entry-bastar-dussehra', 'mod-1', 'PUBLISH', 'Approved for publishing');
 
     // Verify indexer was called and search index upsert occurred
     expect(prisma.contentSearchIndex.upsert).toHaveBeenCalledWith(
@@ -111,7 +108,7 @@ describe('Discovery Lifecycle Integration', () => {
     });
     prisma.contentSearchIndex.deleteMany.mockResolvedValue({ count: 1 });
 
-    await contentService.review('entry-bastar-dussehra', 'mod-1', false, 'Violates guidelines');
+    await contentEntryService.review('entry-bastar-dussehra', 'mod-1', 'REJECT', 'Violates guidelines');
 
     // Verify search index was purged
     expect(prisma.contentSearchIndex.deleteMany).toHaveBeenCalledWith({

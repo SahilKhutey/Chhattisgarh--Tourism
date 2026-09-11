@@ -39,7 +39,7 @@ import { MarketplaceModule } from './modules/marketplace/marketplace.module';
 import { PaymentsModule } from './modules/payments/payments.module';
 import { CommerceModule } from './modules/commerce/commerce.module';
 import { RefundsModule } from './modules/refunds/refunds.module';
-// Canonical Generic Content Template Engine (replaces content-templates, content-entries, content modules)
+// Canonical Generic Content Template Engine
 import { ContentTemplateModule } from './modules/content-template/content-template.module';
 import { DiscoveryModule } from './modules/discovery/discovery.module';
 import { StructuredLoggerService } from './common/logger/structured-logger.service';

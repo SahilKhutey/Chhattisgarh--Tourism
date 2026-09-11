@@ -199,7 +199,7 @@ export default function CreatorEntriesPage() {
 
                 <div className="flex items-center gap-2">
                   <Link
-                    href={`/content/${entry.id}`}
+                    href={`/content/${entry.template?.slug || 'entry'}/${entry.slug || entry.id}`}
                     className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-stone-200 hover:border-emerald-500 text-stone-700 hover:text-emerald-700 text-xs font-semibold bg-white transition-all"
                   >
                     <Eye className="w-3.5 h-3.5" /> View Entry

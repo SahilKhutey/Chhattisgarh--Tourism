@@ -3,8 +3,10 @@ import {
   ForbiddenException,
   Injectable,
   NotFoundException,
+  Optional,
 } from '@nestjs/common';
 import { PrismaService } from '../../database/prisma.service';
+import { DiscoveryIndexerService } from '../discovery/indexer/discovery-indexer.service';
 import {
   ContentEntryStatus,
   ContentTemplateStatus,
@@ -13,7 +15,10 @@ import { CreateEntryDto } from './dto/create-entry.dto';
 
 @Injectable()
 export class ContentEntryService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    @Optional() private readonly indexer?: DiscoveryIndexerService,
+  ) {}
 
   private parseData(data: unknown): Record<string, unknown> {
     if (typeof data === 'string') {
@@ -257,7 +262,7 @@ export class ContentEntryService {
         ? ContentEntryStatus.PUBLISHED
         : ContentEntryStatus.REJECTED;
 
-    return this.prisma.contentEntry.update({
+    const updated = await this.prisma.contentEntry.update({
       where: { id: entryId },
       data: {
         status,
@@ -266,6 +271,14 @@ export class ContentEntryService {
         publishedAt: action === 'PUBLISH' ? new Date() : null,
       },
     });
+
+    if (action === 'PUBLISH' && this.indexer) {
+      await this.indexer.indexEntry(entryId).catch(() => {});
+    } else if (action === 'REJECT' && this.indexer) {
+      await this.indexer.removeEntry(entryId).catch(() => {});
+    }
+
+    return updated;
   }
 
   async getById(id: string) {

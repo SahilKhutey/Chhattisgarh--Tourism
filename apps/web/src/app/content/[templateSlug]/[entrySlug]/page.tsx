@@ -29,6 +29,19 @@ async function fetchContentEntry(templateSlug: string, entrySlug: string) {
     // continue to fallback
   }
 
+  // Attempt canonical /entries/:idOrSlug
+  try {
+    const res = await fetch(`${apiUrl}/entries/${entrySlug}`, {
+      next: { revalidate: 60 },
+    });
+    if (res.ok) {
+      const json = await res.json();
+      return json.data || json;
+    }
+  } catch (err) {
+    // continue to fallback
+  }
+
   // Fallback to general content endpoint
   try {
     const res = await fetch(`${apiUrl}/content/${templateSlug}/${entrySlug}`, {

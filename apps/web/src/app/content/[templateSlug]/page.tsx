@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, use } from 'react';
 import { getApiBase } from '@/app/data/api-config';
-import { ContentEntry, ContentTemplate } from '@/components/template-builder/types';
+import { ContentEntry, ContentTemplate } from '@/types/content';
 import { MapPin, Sparkles, Layers, ArrowRight, Calendar } from 'lucide-react';
 import Link from 'next/link';
 
