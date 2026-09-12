@@ -2,11 +2,12 @@ from __future__ import annotations
 
 import uuid
 from typing import Any
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, Header, HTTPException, Query, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
 from app.core.database import get_db
+from app.modules.content_entries.publish import publish_entry as transactional_publish
 from app.modules.admin.dependencies import (
     AdminUser,
     require_content_archive,
@@ -329,6 +330,24 @@ def create_entry(
     return entry_to_response(entry, db)
 
 
+@admin_content_router.post(
+    "",
+    response_model=ContentEntryResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+def create_content_entry(
+    payload: ContentEntryCreate,
+    db: Session = Depends(get_db),
+    user: AdminUser = Depends(require_content_create),
+) -> ContentEntryResponse:
+    if not payload.template_id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="template_id is required.",
+        )
+    return create_entry(template_id=payload.template_id, payload=payload, db=db, user=user)
+
+
 @admin_content_router.patch(
     "/{entry_id}",
     response_model=ContentEntryResponse,
@@ -336,6 +355,7 @@ def create_entry(
 def update_entry(
     entry_id: str,
     payload: ContentEntryUpdate,
+    if_match: str | None = Header(default=None, alias="If-Match"),
     db: Session = Depends(get_db),
     user: AdminUser = Depends(require_content_update),
 ) -> ContentEntryResponse:
@@ -346,6 +366,27 @@ def update_entry(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Content entry not found.",
         )
+
+    current = entry_repository.get_by_id(db, eid)
+    if current is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Content entry not found.",
+        )
+
+    if if_match is not None:
+        try:
+            expected_rev = int(if_match.strip("\"'"))
+            if current.revision != expected_rev:
+                raise HTTPException(
+                    status_code=status.HTTP_412_PRECONDITION_FAILED,
+                    detail="Content entry has changed.",
+                )
+        except ValueError:
+            pass
+
+    if payload.revision is None:
+        payload.revision = current.revision
 
     try:
         entry = entry_service.update(
@@ -378,6 +419,39 @@ def update_entry(
             },
         )
 
+    return entry_to_response(entry, db)
+
+
+@admin_content_router.post(
+    "/{entry_id}/submit-review",
+    response_model=ContentEntryResponse,
+)
+def submit_review(
+    entry_id: str,
+    db: Session = Depends(get_db),
+    user: AdminUser = Depends(require_content_update),
+) -> ContentEntryResponse:
+    try:
+        eid = uuid.UUID(str(entry_id))
+    except (ValueError, TypeError):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Content entry not found.",
+        )
+
+    entry = entry_repository.get_by_id(db, eid)
+    if entry is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Content entry not found.",
+        )
+
+    from datetime import datetime, timezone
+    entry.status = ContentEntryStatus.IN_REVIEW.value
+    entry.updated_by = str(user.id)
+    entry.updated_at = datetime.now(timezone.utc)
+    db.commit()
+    db.refresh(entry)
     return entry_to_response(entry, db)
 
 
@@ -526,6 +600,50 @@ def get_public_content(
             detail="Bound template version missing.",
         )
 
+    return runtime_renderer.render(
+        version=version,
+        entry=entry,
+        locale=locale,
+    )
+
+
+@public_content_router.get(
+    "/entries/{entry_id}",
+    response_model=PublicContentResponse,
+)
+def get_public_content_by_id(
+    entry_id: str,
+    locale: str = Query(default="en"),
+    db: Session = Depends(get_db),
+) -> dict[str, Any]:
+    try:
+        eid = uuid.UUID(str(entry_id))
+    except (ValueError, TypeError):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Content entry not found.",
+        )
+    entry = db.scalar(
+        select(ContentEntry).where(
+            ContentEntry.id == eid,
+            ContentEntry.status == ContentEntryStatus.PUBLISHED.value,
+        )
+    )
+    if not entry:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Content entry not found.",
+        )
+    version = db.scalar(
+        select(TemplateVersion)
+        .options(selectinload(TemplateVersion.fields))
+        .where(TemplateVersion.id == entry.template_version_id)
+    )
+    if not version:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Bound template version missing.",
+        )
     return runtime_renderer.render(
         version=version,
         entry=entry,

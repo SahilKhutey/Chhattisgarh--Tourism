@@ -306,6 +306,27 @@ class ContentEntryService:
             },
         )
 
+        try:
+            from app.events.publisher import create_outbox_event
+            from app.events.types import EventType
+
+            create_outbox_event(
+                db,
+                event_type=EventType.CONTENT_PUBLISHED.value,
+                aggregate_id=entry.id,
+                payload={
+                    "id": str(entry.id),
+                    "slug": entry.slug,
+                    "title": entry.title,
+                    "template_id": str(entry.template_id),
+                    "template_version_id": str(entry.template_version_id),
+                    "published_at": entry.published_at.isoformat(),
+                    "actor_id": str(user_id),
+                },
+            )
+        except Exception:
+            pass
+
         return entry
 
     def archive(

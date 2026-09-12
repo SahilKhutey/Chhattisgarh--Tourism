@@ -1,0 +1,116 @@
+name: CG Tourism Integration CI
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+      - 'phase/**'
+  pull_request:
+    branches:
+      - main
+      - develop
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    name: Backend Test & Lint
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgis/postgis:16-3.4
+        env:
+          POSTGRES_DB: cg_tourism_test
+          POSTGRES_USER: cg_tourism
+          POSTGRES_PASSWORD: cg_tourism_dev
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install backend dependencies
+        run: |
+          cd apps/api
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest pytest-cov
+
+      - name: Python Compile Check
+        run: |
+          cd apps/api
+          python -m compileall app
+
+      - name: Check Database Migrations
+        env:
+          DATABASE_URL: postgresql://cg_tourism:cg_tourism_dev@localhost:5432/cg_tourism_test
+        run: |
+          cd apps/api
+          python -m alembic heads
+
+      - name: Run Backend Integration & Security Tests
+        env:
+          DATABASE_URL: postgresql://cg_tourism:cg_tourism_dev@localhost:5432/cg_tourism_test
+          REDIS_URL: redis://localhost:6379/0
+          SECRET_KEY: test-secret-key-12345
+        run: |
+          cd apps/api
+          python -m pytest -q
+
+  frontend:
+    name: Frontend Typecheck & Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.14.0
+          run_install: false
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Frontend Typecheck
+        run: pnpm --filter web run typecheck
+
+      - name: Frontend Unit Tests
+        run: pnpm --filter web run test:unit --if-present
+
+      - name: Frontend Production Build
+        run: pnpm --filter web run build

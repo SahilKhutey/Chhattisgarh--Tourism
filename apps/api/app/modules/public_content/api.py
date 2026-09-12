@@ -73,6 +73,44 @@ def get_preview_content(
 
 
 @router.get(
+    "/entries/{entry_id}",
+    response_model=PublicContentResponse,
+    summary="Get public content by entry id",
+)
+def get_public_content_by_id(
+    entry_id: uuid.UUID,
+    locale: str = Query(default="en"),
+    db: Session = Depends(get_db),
+) -> dict[str, Any]:
+    entry = db.scalar(
+        select(ContentEntry).where(
+            ContentEntry.id == entry_id,
+            ContentEntry.status == ContentEntryStatus.PUBLISHED.value,
+        )
+    )
+    if not entry:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Content entry not found.",
+        )
+    version = db.scalar(
+        select(TemplateVersion)
+        .options(selectinload(TemplateVersion.fields))
+        .where(TemplateVersion.id == entry.template_version_id)
+    )
+    if not version:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Bound template version missing.",
+        )
+    return runtime_renderer.render(
+        version=version,
+        entry=entry,
+        locale=locale,
+    )
+
+
+@router.get(
     "/{slug}",
     response_model=PublicContent,
     summary="Get published tourism content by slug",

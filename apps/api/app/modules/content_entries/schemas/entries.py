@@ -6,18 +6,52 @@ from pydantic import BaseModel, ConfigDict, Field
 
 
 class ContentEntryCreate(BaseModel):
-    title: str = Field(min_length=1, max_length=300)
+    title: str | None = Field(default=None, max_length=300)
     slug: str | None = Field(default=None, max_length=220)
+    template_id: str | None = None
     values: dict[str, Any] = Field(default_factory=dict)
+    data: dict[str, Any] | None = None
     locale_values: dict[str, dict[str, Any]] = Field(default_factory=dict)
+
+    def model_post_init(self, __context: Any) -> None:
+        if self.data and not self.values:
+            # Flatten multilingual dictionaries like {"name": {"en": "Value"}} -> {"name": "Value"}
+            flat_vals = {}
+            for k, v in self.data.items():
+                if isinstance(v, dict) and "en" in v:
+                    flat_vals[k] = v["en"]
+                else:
+                    flat_vals[k] = v
+            self.values = flat_vals
+
+        if not self.title:
+            if "name" in self.values:
+                self.title = str(self.values["name"])
+            elif "title" in self.values:
+                self.title = str(self.values["title"])
+            elif self.slug:
+                self.title = self.slug.replace("-", " ").title()
+            else:
+                self.title = "Untitled Entry"
 
 
 class ContentEntryUpdate(BaseModel):
     title: str | None = Field(default=None, max_length=300)
     slug: str | None = Field(default=None, max_length=220)
     values: dict[str, Any] | None = None
+    data: dict[str, Any] | None = None
     locale_values: dict[str, dict[str, Any]] | None = None
-    revision: int = Field(ge=1)
+    revision: int | None = Field(default=None, ge=1)
+
+    def model_post_init(self, __context: Any) -> None:
+        if self.data and not self.values:
+            flat_vals = {}
+            for k, v in self.data.items():
+                if isinstance(v, dict) and "en" in v:
+                    flat_vals[k] = v["en"]
+                else:
+                    flat_vals[k] = v
+            self.values = flat_vals
 
 
 class ContentEntryResponse(BaseModel):

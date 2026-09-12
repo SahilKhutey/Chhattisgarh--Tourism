@@ -19,6 +19,8 @@ class ContentEntryRepository:
             select(ContentEntry).where(ContentEntry.id == eid)
         )
 
+    get_by_id = get
+
     def get_for_update(
         self,
         db: Session,

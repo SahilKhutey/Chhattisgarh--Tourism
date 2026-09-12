@@ -10,6 +10,7 @@ import { Inter, Space_Grotesk, JetBrains_Mono, Noto_Sans_Devanagari, Mukta, Play
 import { Navbar } from "../components/Navbar";
 import { ToastProvider } from "../components/ToastProvider";
 import { LanguageProvider } from "../context/LanguageContext";
+import { AppProviders } from "../providers/AppProviders";
 import "leaflet/dist/leaflet.css";
 import "./globals.css";
 
@@ -71,11 +72,12 @@ export default function RootLayout({
         <OfflineIndicator />
         <OfflineSync />
         <SkipToContent />
-        <AccessibilityProvider>
-          <TranslationProvider>
-            <VoiceProvider>
-              <LanguageProvider>
-          <ToastProvider />
+        <AppProviders>
+          <AccessibilityProvider>
+            <TranslationProvider>
+              <VoiceProvider>
+                <LanguageProvider>
+            <ToastProvider />
 
           {/* Global Cinematic Navigation */}
           <Navbar />
@@ -206,10 +208,11 @@ export default function RootLayout({
             </div>
           </div>
         </footer>
-        </LanguageProvider>
-            </VoiceProvider>
-          </TranslationProvider>
-        </AccessibilityProvider>
+                </LanguageProvider>
+              </VoiceProvider>
+            </TranslationProvider>
+          </AccessibilityProvider>
+        </AppProviders>
       </body>
     </html>
   );

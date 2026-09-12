@@ -1,4 +1,4 @@
-.PHONY: up down logs db-migrate db-revision db-seed db-reset test test-unit test-integration health
+.PHONY: up down api web migrate test verify seed smoke logs health
 
 up:
 	docker compose up -d
@@ -6,33 +6,32 @@ up:
 down:
 	docker compose down
 
+api:
+	cd apps/api && uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+
+web:
+	pnpm --filter web dev
+
+migrate:
+	cd apps/api && alembic upgrade head
+
+test:
+	cd apps/api && pytest -q
+	pnpm --filter web test --if-present
+
+verify:
+	bash scripts/verify.sh
+
+seed:
+	python scripts/seed.py
+
+smoke:
+	bash scripts/smoke.sh
+
 logs:
 	docker compose logs -f
 
-db-migrate:
-	alembic upgrade head
-
-db-revision:
-	alembic revision --autogenerate -m "$(message)"
-
-db-seed:
-	PYTHONPATH=. python -m app.db.seeds.seed
-
-db-reset:
-	docker compose down -v
-	docker compose up -d postgres redis
-	sleep 5
-	alembic upgrade head
-	PYTHONPATH=. python -m app.db.seeds.seed
-
-test:
-	pytest -q
-
-test-unit:
-	pytest tests/unit -q
-
-test-integration:
-	pytest tests/integration -q
-
 health:
-	curl http://localhost:8000/health
+	curl http://localhost:8000/health/live
+	curl http://localhost:8000/health/ready
+	curl http://localhost:8000/api/admin/health

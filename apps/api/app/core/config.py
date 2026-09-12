@@ -31,9 +31,13 @@ class Settings(BaseSettings):
     app_name: str = "CG Tourism API"
     app_env: str = Field(default="development")
     app_debug: bool = False
+    api_prefix: str = "/api"
 
     database_url: str
     redis_url: str
+
+    frontend_url: str = "http://localhost:3000"
+    secret_key: str = "CHANGE_ME_IN_PRODUCTION"
 
     jwt_secret: str
     jwt_algorithm: str = "HS256"
@@ -41,7 +45,9 @@ class Settings(BaseSettings):
     jwt_access_token_expire_minutes: int = 30
     jwt_refresh_token_expire_days: int = 30
 
-    cors_origins: str = ""
+    cache_ttl_seconds: int = 300
+
+    cors_origins: str = "http://localhost:3000"
 
     default_locale: str = "en"
     supported_locales: str = "en,hi,chg"
