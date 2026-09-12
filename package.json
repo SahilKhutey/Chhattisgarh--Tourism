@@ -26,12 +26,12 @@
     "mobile:ios": "pnpm --filter @cg-tourism/mobile ios"
   },
   "devDependencies": {
-    "@commitlint/cli": "^19.7.1",
-    "@commitlint/config-conventional": "^19.7.1",
+    "@commitlint/cli": "^21.2.2",
+    "@commitlint/config-conventional": "^21.2.2",
     "husky": "^9.1.7",
-    "turbo": "^2.0.0",
-    "typescript": "^5.4.0",
-    "prettier": "^3.2.0"
+    "turbo": "^2.10.12",
+    "typescript": "^7.0.2",
+    "prettier": "^3.9.6"
   },
   "engines": {
     "node": "20.x",
