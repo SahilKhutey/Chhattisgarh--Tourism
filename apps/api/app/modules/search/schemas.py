@@ -16,6 +16,9 @@ class SearchResult(BaseModel):
     tags: list[str] = Field(default_factory=list)
     distance_km: float | None = None
     score: float = 0.0
+    semantic_score: float | None = None
+    lexical_score: float | None = None
+    match_reason: str | None = None
 
 
 class SearchFacet(BaseModel):
@@ -33,6 +36,8 @@ class SearchResponse(BaseModel):
     content_types: list[SearchFacet] = Field(default_factory=list)
     districts: list[SearchFacet] = Field(default_factory=list)
     categories: list[SearchFacet] = Field(default_factory=list)
+    mode: str = "hybrid"
+    semantic_enabled: bool = True
 
 
 class SearchRequest(BaseModel):

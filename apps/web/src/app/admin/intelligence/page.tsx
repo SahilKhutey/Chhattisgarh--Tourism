@@ -14,6 +14,7 @@ import {
   ShieldAlert,
   Users,
 } from "lucide-react";
+import { IntelligenceSubsystemsPanel } from "@/components/admin/IntelligenceSubsystemsPanel";
 
 interface IntelligenceSummary {
   period: { from: string; to: string };
@@ -250,6 +251,9 @@ export default function IntelligenceDashboard() {
           Refresh Metrics
         </button>
       </div>
+
+      {/* AI Intelligence & Knowledge Graph Subsystems */}
+      <IntelligenceSubsystemsPanel />
 
       {/* Top Metric Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">

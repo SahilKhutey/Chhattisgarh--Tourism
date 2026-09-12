@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 
@@ -18,6 +19,7 @@ router = APIRouter(
     tags=["search"],
 )
 
+logger = logging.getLogger(__name__)
 search_service = SearchService()
 
 
@@ -82,12 +84,70 @@ def search(
         le=50,
         description="Results per page",
     ),
+    mode: str = Query(
+        default="hybrid",
+        pattern="^(hybrid|lexical)$",
+        description="Search mode: hybrid (lexical + semantic) or lexical",
+    ),
     db: Session = Depends(get_db),
 ) -> SearchResponse:
     """
     Search and discovery endpoint for published tourism content.
-    Supports full-text search, trigram matching, taxonomy filters, and geographic proximity.
+    Supports hybrid (lexical + semantic) search, taxonomy filters, and geographic proximity.
     """
+    if mode == "hybrid" and q.strip():
+        try:
+            from app.modules.intelligence.semantic_search.service import SemanticSearchService
+            sem_service = SemanticSearchService()
+            hybrid_resp = sem_service.search(
+                db=db,
+                query=q,
+                locale=locale,
+                content_type=content_type,
+                district=district,
+                category=category,
+                tag=tag,
+                latitude=latitude,
+                longitude=longitude,
+                radius_km=radius_km,
+                page=page,
+                page_size=page_size,
+                mode="hybrid",
+            )
+            # Fetch facets from lexical repository
+            facets = search_service.repository.get_facets(db=db, locale=locale)
+            return SearchResponse(
+                query=hybrid_resp.query,
+                locale=locale,
+                page=hybrid_resp.page,
+                page_size=hybrid_resp.page_size,
+                total=hybrid_resp.total,
+                results=[
+                    SearchResult(
+                        id=it.id,
+                        slug=it.slug,
+                        title=it.title,
+                        description=it.description,
+                        content_type=it.content_type,
+                        district=it.district,
+                        categories=it.categories,
+                        tags=it.tags,
+                        score=it.score,
+                        semantic_score=it.semantic_score,
+                        lexical_score=it.lexical_score,
+                        match_reason=it.match_reason,
+                    )
+                    for it in hybrid_resp.items
+                ],
+                content_types=facets.get("content_types", []),
+                districts=facets.get("districts", []),
+                categories=facets.get("categories", []),
+                mode="hybrid",
+                semantic_enabled=hybrid_resp.semantic_enabled,
+            )
+        except Exception as e:
+            logger.warning("Hybrid search delegation failed; falling back to lexical search: %s", e)
+
     request = SearchRequest(
         q=q,
         locale=locale,
@@ -102,7 +162,9 @@ def search(
         page_size=page_size,
     )
 
-    return search_service.search(db=db, request=request)
+    resp = search_service.search(db=db, request=request)
+    resp.mode = "lexical"
+    return resp
 
 
 @router.get("/suggestions", response_model=SearchSuggestionsResponse)

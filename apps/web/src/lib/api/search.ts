@@ -9,6 +9,9 @@ export interface SearchResult {
   tags: string[];
   distance_km: number | null;
   score: number;
+  semantic_score?: number | null;
+  lexical_score?: number | null;
+  match_reason?: string | null;
 }
 
 export interface SearchFacet {
@@ -22,6 +25,7 @@ export interface SearchResponse {
   page: number;
   page_size: number;
   total: number;
+  mode?: "hybrid" | "lexical";
   results: SearchResult[];
   content_types: SearchFacet[];
   districts: SearchFacet[];

@@ -287,6 +287,12 @@ class ContentEntryService:
         except Exception:
             pass
 
+        try:
+            from app.modules.intelligence.workers import on_content_published
+            on_content_published(db, entry)
+        except Exception:
+            pass
+
         self.audit_service.record(
             db,
             event_type="CONTENT_ENTRY_PUBLISHED",
@@ -326,6 +332,12 @@ class ContentEntryService:
         try:
             from app.modules.search.indexer import SearchIndexer
             SearchIndexer().remove_entry(db, entry.id)
+        except Exception:
+            pass
+
+        try:
+            from app.modules.intelligence.workers import on_content_archived
+            on_content_archived(db, entry.id)
         except Exception:
             pass
 

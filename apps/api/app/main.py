@@ -17,6 +17,7 @@ from app.modules.admin.api.localization import router as admin_localization_rout
 from app.modules.admin.api.glossary import router as admin_glossary_router
 from app.modules.admin.api.accessibility import router as admin_accessibility_router
 from app.modules.search import search_router
+from app.modules.intelligence import intelligence_router, admin_intelligence_router
 
 settings = get_settings()
 
@@ -30,6 +31,8 @@ app.include_router(template_router, prefix="/api")
 app.include_router(admin_template_router, prefix="/api")
 app.include_router(admin_content_router, prefix="/api")
 app.include_router(admin_schema_router, prefix="/api")
+app.include_router(intelligence_router, prefix="/api")
+app.include_router(admin_intelligence_router, prefix="/api")
 app.include_router(public_content_router, prefix="/api")
 app.include_router(search_router, prefix="/api")
 app.include_router(admin_localization_router, prefix="/api")
