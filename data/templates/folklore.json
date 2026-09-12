@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "name": "Tribal Folklore & Heritage",
+  "slug": "folklore",
+  "category": "folklore",
+  "description": "Indigenous tribal narratives, oral legends, sacred groves, and ritual traditions",
+  "icon": "book-open",
+  "version": "1.0.0",
+  "fields": [
+    {
+      "key": "title",
+      "label": "Folklore Title",
+      "type": "text",
+      "order": 1,
+      "required": true,
+      "translatable": true,
+      "validation": { "min_length": 2, "max_length": 150 }
+    },
+    {
+      "key": "story",
+      "label": "Narrative Text",
+      "type": "rich_text",
+      "order": 2,
+      "required": true,
+      "translatable": true
+    },
+    {
+      "key": "tribe",
+      "label": "Tribe / Community Origin",
+      "type": "text",
+      "order": 3,
+      "required": true,
+      "translatable": false
+    },
+    {
+      "key": "district",
+      "label": "District",
+      "type": "text",
+      "order": 4,
+      "required": true,
+      "translatable": false
+    },
+    {
+      "key": "audio_url",
+      "label": "Audio Recording URL",
+      "type": "audio",
+      "order": 5,
+      "required": false,
+      "translatable": false
+    },
+    {
+      "key": "tags",
+      "label": "Themes & Cultural Tags",
+      "type": "tags",
+      "order": 6,
+      "required": false,
+      "translatable": false
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+[
+  {
+    "code": "DIV-RAIPUR",
+    "name": "Raipur",
+    "nameHi": "रायपुर",
+    "slug": "raipur"
+  },
+  {
+    "code": "DIV-BILASPUR",
+    "name": "Bilaspur",
+    "nameHi": "बिलासपुर",
+    "slug": "bilaspur"
+  },
+  {
+    "code": "DIV-DURG",
+    "name": "Durg",
+    "nameHi": "दुर्ग",
+    "slug": "durg"
+  },
+  {
+    "code": "DIV-BASTAR",
+    "name": "Bastar",
+    "nameHi": "बस्तर",
+    "slug": "bastar"
+  },
+  {
+    "code": "DIV-SURGUJA",
+    "name": "Surguja",
+    "nameHi": "सरगुजा",
+    "slug": "surguja"
+  }
+]

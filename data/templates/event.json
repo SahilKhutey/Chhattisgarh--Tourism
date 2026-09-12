@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "name": "Event & Festival",
+  "slug": "event",
+  "category": "events",
+  "description": "Cultural, tribal, and spiritual events and festivals across Chhattisgarh",
+  "icon": "calendar",
+  "version": "1.0.0",
+  "fields": [
+    {
+      "key": "name",
+      "label": "Event Name",
+      "type": "text",
+      "order": 1,
+      "required": true,
+      "translatable": true,
+      "validation": { "min_length": 2, "max_length": 150 }
+    },
+    {
+      "key": "description",
+      "label": "Event Description",
+      "type": "rich_text",
+      "order": 2,
+      "required": true,
+      "translatable": true
+    },
+    {
+      "key": "district",
+      "label": "District",
+      "type": "text",
+      "order": 3,
+      "required": true,
+      "translatable": false
+    },
+    {
+      "key": "start_date",
+      "label": "Start Date",
+      "type": "text",
+      "order": 4,
+      "required": false,
+      "translatable": false
+    },
+    {
+      "key": "end_date",
+      "label": "End Date",
+      "type": "text",
+      "order": 5,
+      "required": false,
+      "translatable": false
+    },
+    {
+      "key": "tags",
+      "label": "Tags & Themes",
+      "type": "tags",
+      "order": 6,
+      "required": false,
+      "translatable": false
+    }
+  ]
+}
