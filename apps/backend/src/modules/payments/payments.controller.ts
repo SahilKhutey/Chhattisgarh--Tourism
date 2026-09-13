@@ -34,4 +34,17 @@ export class PaymentsController {
   ) {
     return this.paymentsService.handleWebhook(payload, signature);
   }
+
+  @Post('client-report')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Report client payment status (ignored without gateway webhook)' })
+  reportClientPayment(
+    @Request() req: any,
+    @Body('bookingId') bookingId: string,
+    @Body('status') status: string,
+  ) {
+    const userId = req.user?.id || req.user?.userId;
+    return this.paymentsService.reportClientPayment(userId, bookingId, status);
+  }
 }

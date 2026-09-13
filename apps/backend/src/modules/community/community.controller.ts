@@ -14,6 +14,10 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { CreateReportDto } from './dto/create-report.dto';
 import { CreateVideoDto } from './dto/create-video.dto';
+import { ApplyCreatorDto } from './dto/apply-creator.dto';
+import { CreateContentDto } from './dto/create-content.dto';
+import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from '../auth/roles.decorator';
 
 @ApiTags('Community & Social Interactions')
 @Controller('community')
@@ -164,6 +168,44 @@ export class CommunityController {
   @ApiOperation({ summary: 'Submit creator travel video for moderation review' })
   async createVideo(@Body() dto: CreateVideoDto, @Request() req: any) {
     return this.communityService.createVideo(req.user.id, dto);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @Post('creators/apply')
+  @ApiOperation({ summary: 'Apply for a creator profile' })
+  async applyCreator(@Body() dto: ApplyCreatorDto, @Request() req: any) {
+    return this.communityService.applyCreator(req.user.id, dto);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN', 'SUPER_ADMIN')
+  @ApiBearerAuth()
+  @Post('creators/:creatorId/verify')
+  @ApiOperation({ summary: 'Verify a creator profile (Admin only)' })
+  async verifyCreator(@Param('creatorId') creatorId: string, @Request() req: any) {
+    return this.communityService.verifyCreator(creatorId, req.user.id);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN', 'SUPER_ADMIN')
+  @ApiBearerAuth()
+  @Post('creators/:creatorId/suspend')
+  @ApiOperation({ summary: 'Suspend a creator profile (Admin only)' })
+  async suspendCreator(
+    @Param('creatorId') creatorId: string,
+    @Body('reason') reason: string,
+    @Request() req: any,
+  ) {
+    return this.communityService.suspendCreator(creatorId, reason || 'Policy violation', req.user.id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @Post('content')
+  @ApiOperation({ summary: 'Submit creator content for moderation review' })
+  async submitContent(@Body() dto: CreateContentDto, @Request() req: any) {
+    return this.communityService.submitContent(req.user.id, dto);
   }
 
   // ---------------------------------------------------------------------------

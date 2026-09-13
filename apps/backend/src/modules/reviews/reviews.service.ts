@@ -13,6 +13,16 @@ export class ReviewsService {
   constructor(private readonly prisma: PrismaService) {}
 
   async createReview(userId: string, dto: CreateReviewDto) {
+    if (
+      dto.rating === undefined ||
+      dto.rating === null ||
+      !Number.isInteger(dto.rating) ||
+      dto.rating < 1 ||
+      dto.rating > 5
+    ) {
+      throw new BadRequestException('Rating must be an integer between 1 and 5');
+    }
+
     const booking = await this.prisma.booking.findUnique({
       where: {
         id: dto.bookingId,
@@ -66,6 +76,8 @@ export class ReviewsService {
           rating: dto.rating,
           comment: dto.comment.trim(),
           lang: dto.lang ?? 'en',
+          verifiedVisit: true,
+          reviewStatus: 'PUBLISHED',
         },
         include: {
           user: {

@@ -46,6 +46,8 @@ import { PublishingModule } from './modules/publishing/publishing.module';
 import { ExperiencesModule } from './modules/experiences/experiences.module';
 import { RoutesModule } from './modules/routes/routes.module';
 import { TourismServicesModule } from './modules/tourism-services/tourism-services.module';
+import { OutboxModule } from './modules/outbox/outbox.module';
+import { AuditModule } from './modules/audit/audit.module';
 import { StructuredLoggerService } from './common/logger/structured-logger.service';
 import { CorrelationIdMiddleware } from './common/middleware/correlation-id.middleware';
 import { HttpLoggingInterceptor } from './common/interceptors/http-logging.interceptor';
@@ -112,6 +114,8 @@ import { envSchema } from './config/env.schema';
     ExperiencesModule,
     RoutesModule,
     TourismServicesModule,
+    OutboxModule,
+    AuditModule,
   ],
   providers: [
     PrismaService,

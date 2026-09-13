@@ -1,15 +1,21 @@
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
   Logger,
   NotFoundException,
+  Optional,
 } from '@nestjs/common';
+import { EmergencySeverity, IncidentStatus } from '@prisma/client';
 
 import { PrismaService } from '../../database/prisma.service';
+import { OutboxService } from '../outbox/outbox.service';
+import { AuditService } from '../audit/audit.service';
 
 import { SosAlertDto } from './dto/sos-alert.dto';
 import { CreateEmergencyStationDto } from './dto/create-emergency-station.dto';
 import { UpdateEmergencyStationDto } from './dto/update-emergency-station.dto';
+import { CreateIncidentDto } from './dto/create-incident.dto';
 import { EmergencyDispatcher } from './emergency.dispatcher';
 
 export interface RescueStation {
@@ -28,6 +34,16 @@ export interface RescueStation {
   distanceKm?: number;
 }
 
+const VALID_INCIDENT_TRANSITIONS: Record<IncidentStatus, IncidentStatus[]> = {
+  TRIGGERED: [IncidentStatus.ACKNOWLEDGED, IncidentStatus.DISPATCHED, IncidentStatus.ESCALATED],
+  ACKNOWLEDGED: [IncidentStatus.DISPATCHED, IncidentStatus.RESPONDING, IncidentStatus.ESCALATED],
+  DISPATCHED: [IncidentStatus.RESPONDING, IncidentStatus.ON_SCENE, IncidentStatus.ESCALATED],
+  RESPONDING: [IncidentStatus.ON_SCENE, IncidentStatus.RESOLVED, IncidentStatus.ESCALATED],
+  ON_SCENE: [IncidentStatus.RESOLVED, IncidentStatus.ESCALATED],
+  RESOLVED: [],
+  ESCALATED: [IncidentStatus.DISPATCHED, IncidentStatus.RESPONDING, IncidentStatus.ON_SCENE, IncidentStatus.RESOLVED],
+};
+
 @Injectable()
 export class EmergencyService {
   private readonly logger = new Logger(EmergencyService.name);
@@ -37,6 +53,8 @@ export class EmergencyService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly dispatcher: EmergencyDispatcher,
+    @Optional() private readonly outboxService?: OutboxService,
+    @Optional() private readonly auditService?: AuditService,
   ) {}
 
   // ---------------------------------------------------------------------------
@@ -503,6 +521,170 @@ export class EmergencyService {
       success: true,
       id,
     };
+  }
+
+  // ---------------------------------------------------------------------------
+  // EMERGENCY INCIDENTS & STATE MACHINE
+  // ---------------------------------------------------------------------------
+
+  async createIncident(userId: string | undefined, dto: CreateIncidentDto) {
+    this.validateCoordinates(dto.latitude, dto.longitude);
+
+    const incidentNumber = `INC-${Date.now()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
+
+    let primaryResponder = 'District Emergency Operations Center';
+    let primaryResponderId: string | null = null;
+
+    try {
+      const nearestStations = await this.prisma.emergencyStation.findMany({
+        where: { active: true },
+      });
+      if (nearestStations.length > 0) {
+        let minDist = Infinity;
+        for (const s of nearestStations) {
+          const dist = this.calculateDistance(dto.latitude, dto.longitude, s.latitude, s.longitude);
+          if (dist < minDist) {
+            minDist = dist;
+            primaryResponder = s.name;
+            primaryResponderId = s.id;
+          }
+        }
+      }
+    } catch {
+      // station lookup failure fallback
+    }
+
+    const incident = await this.prisma.emergencyIncident.create({
+      data: {
+        incidentNumber,
+        userId: userId || null,
+        tripId: dto.tripId || null,
+        latitude: dto.latitude,
+        longitude: dto.longitude,
+        type: dto.type || 'MEDICAL',
+        severity: dto.severity || EmergencySeverity.HIGH,
+        status: IncidentStatus.TRIGGERED,
+        description: dto.description?.trim() || null,
+        primaryResponder,
+        primaryResponderId,
+      },
+    });
+
+    if (this.outboxService) {
+      await this.outboxService.recordEvent('EmergencyIncident', incident.id, 'EMERGENCY_INCIDENT_TRIGGERED', {
+        incidentId: incident.id,
+        incidentNumber: incident.incidentNumber,
+        latitude: incident.latitude,
+        longitude: incident.longitude,
+        severity: incident.severity,
+        userId: incident.userId,
+      });
+    }
+
+    if (this.auditService) {
+      await this.auditService.log('EMERGENCY_INCIDENT_TRIGGERED', 'EmergencyIncident', incident.id, userId, {
+        incidentNumber: incident.incidentNumber,
+        severity: incident.severity,
+      });
+    }
+
+    return incident;
+  }
+
+  async getIncidents(query?: { status?: IncidentStatus; userId?: string; limit?: number }) {
+    const where: any = {};
+    if (query?.status) where.status = query.status;
+    if (query?.userId) where.userId = query.userId;
+
+    return this.prisma.emergencyIncident.findMany({
+      where,
+      take: query?.limit ?? 50,
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
+  async getIncident(id: string) {
+    const incident = await this.prisma.emergencyIncident.findUnique({
+      where: { id },
+    });
+    if (!incident) {
+      throw new NotFoundException('Emergency incident not found');
+    }
+    return incident;
+  }
+
+  async transitionIncidentStatus(
+    incidentId: string,
+    targetStatus: IncidentStatus,
+    user: { id: string; role?: string; roles?: string[] },
+  ) {
+    const incident = await this.getIncident(incidentId);
+
+    if (incident.status === IncidentStatus.RESOLVED) {
+      throw new BadRequestException('Resolved emergency incident cannot be modified');
+    }
+
+    if (targetStatus === IncidentStatus.RESOLVED) {
+      const isAuthorized =
+        user.role === 'RESPONDER' ||
+        user.role === 'ADMIN' ||
+        user.role === 'SUPER_ADMIN' ||
+        (user.roles &&
+          (user.roles.includes('RESPONDER') ||
+            user.roles.includes('ADMIN') ||
+            user.roles.includes('SUPER_ADMIN')));
+
+      if (!isAuthorized) {
+        throw new ForbiddenException(
+          'Only authorized emergency responders or administrators can resolve emergency incidents',
+        );
+      }
+    }
+
+    const allowed = VALID_INCIDENT_TRANSITIONS[incident.status] || [];
+    if (!allowed.includes(targetStatus)) {
+      throw new BadRequestException(
+        `Invalid status transition from ${incident.status} to ${targetStatus}`,
+      );
+    }
+
+    const data: any = { status: targetStatus };
+    if (targetStatus === IncidentStatus.ACKNOWLEDGED && !incident.acknowledgedAt) {
+      data.acknowledgedAt = new Date();
+    }
+    if (targetStatus === IncidentStatus.RESOLVED) {
+      data.resolvedAt = new Date();
+    }
+
+    const updated = await this.prisma.emergencyIncident.update({
+      where: { id: incidentId },
+      data,
+    });
+
+    if (this.outboxService) {
+      await this.outboxService.recordEvent('EmergencyIncident', incidentId, `INCIDENT_STATUS_${targetStatus}`, {
+        incidentId,
+        fromStatus: incident.status,
+        toStatus: targetStatus,
+        actorId: user.id,
+      });
+    }
+
+    if (this.auditService) {
+      await this.auditService.log(`INCIDENT_STATUS_${targetStatus}`, 'EmergencyIncident', incidentId, user.id, {
+        fromStatus: incident.status,
+        toStatus: targetStatus,
+      });
+    }
+
+    return updated;
+  }
+
+  async resolveIncident(
+    incidentId: string,
+    user: { id: string; role?: string; roles?: string[] },
+  ) {
+    return this.transitionIncidentStatus(incidentId, IncidentStatus.RESOLVED, user);
   }
 
   // ---------------------------------------------------------------------------

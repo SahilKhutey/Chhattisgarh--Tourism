@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   ForbiddenException,
   Injectable,
   NotFoundException,
@@ -192,18 +193,35 @@ export class BookingsService {
 
       const remainingCapacity = availability.capacity - availability.reserved;
       if (remainingCapacity < dto.quantity) {
-        throw new BadRequestException(
+        throw new ConflictException(
           `Insufficient capacity. Requested: ${dto.quantity}, Available: ${remainingCapacity}`,
         );
       }
 
-      // Decrement capacity atomically inside tx
-      await tx.productAvailability.update({
-        where: { id: dto.availabilityId },
-        data: {
-          reserved: { increment: dto.quantity },
-        },
-      });
+      // Decrement capacity atomically inside tx with concurrency guard
+      if (typeof (tx.productAvailability as any).updateMany === 'function') {
+        const updateRes = await (tx.productAvailability as any).updateMany({
+          where: {
+            id: dto.availabilityId,
+            reserved: { lte: availability.capacity - dto.quantity },
+          },
+          data: {
+            reserved: { increment: dto.quantity },
+          },
+        });
+        if (updateRes.count === 0) {
+          throw new ConflictException(
+            'Inventory capacity is no longer available for the requested slot.',
+          );
+        }
+      } else {
+        await tx.productAvailability.update({
+          where: { id: dto.availabilityId },
+          data: {
+            reserved: { increment: dto.quantity },
+          },
+        });
+      }
 
       const unitPrice = Number(product.price);
       const totalAmount = unitPrice * dto.quantity;
@@ -223,8 +241,8 @@ export class BookingsService {
           totalAmount,
           totalPrice: totalAmount,
           currency: product.currency || 'INR',
-          status: BOOKING_STATUS.CONFIRMED,
-          paymentStatus: PaymentStatus.PAID,
+          status: 'PAYMENT_PENDING',
+          paymentStatus: PaymentStatus.UNPAID,
           bookingReference,
           contactPhone: dto.contactPhone,
           notes: dto.notes,

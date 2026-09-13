@@ -1,17 +1,28 @@
 import {
+  BadRequestException,
   ConflictException,
   ForbiddenException,
   Injectable,
   NotFoundException,
+  Optional,
 } from '@nestjs/common';
+import { CreatorStatus } from '@prisma/client';
 import { PrismaService } from '../../database/prisma.service';
+import { OutboxService } from '../outbox/outbox.service';
+import { AuditService } from '../audit/audit.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { CreateReportDto } from './dto/create-report.dto';
 import { CreateVideoDto } from './dto/create-video.dto';
+import { ApplyCreatorDto } from './dto/apply-creator.dto';
+import { CreateContentDto } from './dto/create-content.dto';
 
 @Injectable()
 export class CommunityService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    @Optional() private readonly outboxService?: OutboxService,
+    @Optional() private readonly auditService?: AuditService,
+  ) {}
 
   // ---------------------------------------------------------------------------
   // COMMENTS
@@ -327,15 +338,104 @@ export class CommunityService {
   }
 
   // ---------------------------------------------------------------------------
-  // CREATOR VIDEO SUBMISSION
+  // CREATOR LIFECYCLE & CONTENT SUBMISSION
   // ---------------------------------------------------------------------------
+
+  async applyCreator(userId: string, dto: ApplyCreatorDto) {
+    const existing = await this.prisma.creatorProfile.findUnique({
+      where: { userId },
+    });
+
+    if (existing) {
+      throw new ConflictException('Creator profile already exists for this user');
+    }
+
+    const creator = await this.prisma.creatorProfile.create({
+      data: {
+        userId,
+        bio: dto.bio?.trim() || null,
+        district: dto.district?.trim() || 'Unknown',
+        categories: dto.specialty ? JSON.stringify([dto.specialty.trim()]) : '[]',
+        creatorStatus: 'PENDING',
+        verified: false,
+      },
+    });
+
+    if (this.outboxService) {
+      await this.outboxService.recordEvent('CreatorProfile', creator.id, 'CREATOR_APPLIED', {
+        userId,
+        creatorId: creator.id,
+      });
+    }
+
+    return creator;
+  }
+
+  async verifyCreator(creatorId: string, adminId?: string) {
+    const creator = await this.prisma.creatorProfile.findUnique({
+      where: { id: creatorId },
+    });
+
+    if (!creator) {
+      throw new NotFoundException('Creator profile not found');
+    }
+
+    const updated = await this.prisma.creatorProfile.update({
+      where: { id: creatorId },
+      data: {
+        creatorStatus: 'VERIFIED',
+        verified: true,
+      },
+    });
+
+    if (this.outboxService) {
+      await this.outboxService.recordEvent('CreatorProfile', creatorId, 'CREATOR_VERIFIED', {
+        creatorId,
+        adminId,
+      });
+    }
+    if (this.auditService) {
+      await this.auditService.log('CREATOR_VERIFIED', 'CreatorProfile', creatorId, adminId);
+    }
+
+    return updated;
+  }
+
+  async suspendCreator(creatorId: string, reason: string, adminId?: string) {
+    const creator = await this.prisma.creatorProfile.findUnique({
+      where: { id: creatorId },
+    });
+
+    if (!creator) {
+      throw new NotFoundException('Creator profile not found');
+    }
+
+    const updated = await this.prisma.creatorProfile.update({
+      where: { id: creatorId },
+      data: {
+        creatorStatus: 'SUSPENDED',
+        verified: false,
+      },
+    });
+
+    if (this.auditService) {
+      await this.auditService.log('CREATOR_SUSPENDED', 'CreatorProfile', creatorId, adminId, { reason });
+    }
+
+    return updated;
+  }
 
   async createVideo(userId: string, dto: CreateVideoDto) {
     const creator = await this.prisma.creatorProfile.findUnique({
       where: { userId },
     });
 
-    if (!creator || !creator.verified) {
+    const isVerified =
+      creator &&
+      creator.verified === true &&
+      ((creator as any).creatorStatus ? (creator as any).creatorStatus === 'VERIFIED' : true);
+
+    if (!isVerified) {
       throw new ForbiddenException(
         'A verified creator profile is required to submit content',
       );
@@ -343,7 +443,7 @@ export class CommunityService {
 
     return this.prisma.creatorVideo.create({
       data: {
-        creatorId: creator.id,
+        creatorId: creator!.id,
         title: dto.title.trim(),
         location: dto.location.trim(),
         district: dto.district.trim(),
@@ -354,6 +454,47 @@ export class CommunityService {
         status: 'PENDING',
       },
     });
+  }
+
+  async submitContent(userId: string, dto: CreateContentDto) {
+    const creator = await this.prisma.creatorProfile.findUnique({
+      where: { userId },
+    });
+
+    const isVerified =
+      creator &&
+      creator.verified === true &&
+      ((creator as any).creatorStatus ? (creator as any).creatorStatus === 'VERIFIED' : true);
+
+    if (!isVerified) {
+      throw new ForbiddenException(
+        'A verified creator profile is required to submit content',
+      );
+    }
+
+    const content = await this.prisma.creatorContent.create({
+      data: {
+        creatorId: creator.id,
+        type: dto.type,
+        title: dto.title.trim(),
+        description: dto.description?.trim() || null,
+        mediaUrl: dto.mediaUrl || null,
+        location: dto.location?.trim() || null,
+        placeId: dto.placeId || null,
+        language: dto.language ?? 'en',
+        status: 'MODERATION',
+        moderationStatus: 'PENDING',
+      },
+    });
+
+    if (this.outboxService) {
+      await this.outboxService.recordEvent('CreatorContent', content.id, 'CREATOR_CONTENT_SUBMITTED', {
+        contentId: content.id,
+        creatorId: creator.id,
+      });
+    }
+
+    return content;
   }
 
   // ---------------------------------------------------------------------------
