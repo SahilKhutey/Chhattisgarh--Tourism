@@ -99,4 +99,44 @@ describe('IntelligenceService', () => {
     expect(summary.metrics.sos).toBe(7);
     expect(summary.events).toHaveLength(4);
   });
+
+  it('computes regional demand indices by district', async () => {
+    prisma.analyticsEvent.groupBy.mockResolvedValue([
+      { districtId: 'Bastar', type: 'PLACE_VIEW', _count: { _all: 300 } },
+      { districtId: 'Bastar', type: 'SEARCH', _count: { _all: 100 } },
+      { districtId: 'Bastar', type: 'BOOKING_COMPLETED', _count: { _all: 50 } },
+      { districtId: 'Raipur', type: 'PLACE_VIEW', _count: { _all: 50 } },
+    ]);
+
+    const demand = await service.getRegionalDemand(14);
+    expect(demand).toHaveLength(2);
+    expect(demand[0].district).toBe('Bastar');
+    expect(demand[0].views).toBe(300);
+    expect(demand[0].searches).toBe(100);
+    expect(demand[0].bookings).toBe(50);
+    expect(demand[0].demandIndex).toBeGreaterThan(0.5);
+    expect(demand[0].demandLevel).toBe('SURGING');
+  });
+
+  it('computes emerging destinations based on search velocity', async () => {
+    prisma.analyticsEvent.groupBy
+      .mockResolvedValueOnce([
+        { placeId: 'place-bastar', _count: { _all: 120 } },
+      ])
+      .mockResolvedValueOnce([
+        { placeId: 'place-bastar', _count: { _all: 40 } },
+      ]);
+
+    prisma.place.findMany.mockResolvedValue([
+      { id: 'place-bastar', name: 'Tirathgarh Falls', district: 'Bastar' },
+    ]);
+
+    const emerging = await service.getEmergingDestinations(5);
+    expect(emerging).toHaveLength(1);
+    expect(emerging[0].name).toBe('Tirathgarh Falls');
+    expect(emerging[0].currentViews).toBe(120);
+    expect(emerging[0].priorViews).toBe(40);
+    expect(emerging[0].velocityPercent).toBe(200.0);
+  });
 });
+

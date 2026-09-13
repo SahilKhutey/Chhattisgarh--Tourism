@@ -42,3 +42,22 @@ export interface IntelligenceSummaryResult {
     };
   }>;
 }
+
+export interface RegionalDemandItem {
+  district: string;
+  views: number;
+  searches: number;
+  bookings: number;
+  demandIndex: number;
+  demandLevel: 'LOW' | 'MODERATE' | 'HIGH' | 'SURGING';
+}
+
+export interface EmergingDestinationItem {
+  placeId: string;
+  name: string;
+  district: string;
+  currentViews: number;
+  priorViews: number;
+  velocityPercent: number;
+}
+

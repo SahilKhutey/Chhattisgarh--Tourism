@@ -5,7 +5,10 @@ import {
   DestinationPerformanceInput,
   DestinationPerformanceResult,
   IntelligenceSummaryResult,
+  RegionalDemandItem,
+  EmergingDestinationItem,
 } from './intelligence.types';
+
 
 export function calculateDestinationPerformance(
   input: DestinationPerformanceInput,
@@ -183,4 +186,125 @@ export class IntelligenceService {
 
     return items;
   }
+
+  async getRegionalDemand(days = 14): Promise<RegionalDemandItem[]> {
+    const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+
+    const grouped = await this.prisma.analyticsEvent.groupBy({
+      by: ['districtId', 'type'],
+      where: {
+        districtId: { not: null },
+        createdAt: { gte: since },
+      },
+      _count: { _all: true },
+    });
+
+    const districtMap: Record<string, { views: number; searches: number; bookings: number }> = {};
+
+    for (const row of grouped) {
+      const dist = row.districtId!;
+      if (!districtMap[dist]) {
+        districtMap[dist] = { views: 0, searches: 0, bookings: 0 };
+      }
+
+      if (row.type === 'PLACE_VIEW' || row.type === 'PAGE_VIEW') {
+        districtMap[dist].views += row._count._all;
+      } else if (row.type === 'SEARCH') {
+        districtMap[dist].searches += row._count._all;
+      } else if (row.type === 'BOOKING_COMPLETED' || row.type === 'BOOKING_STARTED') {
+        districtMap[dist].bookings += row._count._all;
+      }
+    }
+
+    const items: RegionalDemandItem[] = [];
+
+    for (const [district, stats] of Object.entries(districtMap)) {
+      const rawScore = (stats.views * 0.2 + stats.searches * 0.3 + stats.bookings * 0.5) / 100;
+      const demandIndex = Number(Math.max(0.0, Math.min(1.0, rawScore)).toFixed(4));
+
+      let demandLevel: 'LOW' | 'MODERATE' | 'HIGH' | 'SURGING' = 'LOW';
+      if (demandIndex >= 0.8) demandLevel = 'SURGING';
+      else if (demandIndex >= 0.5) demandLevel = 'HIGH';
+      else if (demandIndex >= 0.2) demandLevel = 'MODERATE';
+
+      items.push({
+        district,
+        views: stats.views,
+        searches: stats.searches,
+        bookings: stats.bookings,
+        demandIndex,
+        demandLevel,
+      });
+    }
+
+    return items.sort((a, b) => b.demandIndex - a.demandIndex);
+  }
+
+  async getEmergingDestinations(limit = 5): Promise<EmergingDestinationItem[]> {
+    const now = Date.now();
+    const currentWindowStart = new Date(now - 7 * 24 * 60 * 60 * 1000);
+    const priorWindowStart = new Date(now - 14 * 24 * 60 * 60 * 1000);
+
+    const [currentGrouped, priorGrouped, places] = await Promise.all([
+      this.prisma.analyticsEvent.groupBy({
+        by: ['placeId'],
+        where: {
+          placeId: { not: null },
+          type: 'PLACE_VIEW',
+          createdAt: { gte: currentWindowStart },
+        },
+        _count: { _all: true },
+      }),
+      this.prisma.analyticsEvent.groupBy({
+        by: ['placeId'],
+        where: {
+          placeId: { not: null },
+          type: 'PLACE_VIEW',
+          createdAt: { gte: priorWindowStart, lt: currentWindowStart },
+        },
+        _count: { _all: true },
+      }),
+      this.prisma.place.findMany({
+        where: { status: 'PUBLISHED' },
+        select: { id: true, name: true, district: true },
+      }),
+    ]);
+
+    const priorMap = new Map<string, number>();
+    for (const row of priorGrouped) {
+      if (row.placeId) priorMap.set(row.placeId, row._count._all);
+    }
+
+    const placeMap = new Map(places.map((p) => [p.id, p]));
+    const items: EmergingDestinationItem[] = [];
+
+    for (const row of currentGrouped) {
+      const placeId = row.placeId!;
+      const currentViews = row._count._all;
+      const priorViews = priorMap.get(placeId) ?? 0;
+
+      const velocityPercent =
+        priorViews > 0
+          ? Number((((currentViews - priorViews) / priorViews) * 100).toFixed(1))
+          : currentViews > 10
+            ? 100.0
+            : 0.0;
+
+      const place = placeMap.get(placeId);
+
+      items.push({
+        placeId,
+        name: place?.name ?? 'Unknown Destination',
+        district: place?.district ?? 'Chhattisgarh',
+        currentViews,
+        priorViews,
+        velocityPercent,
+      });
+    }
+
+    return items
+      .sort((a, b) => b.velocityPercent - a.velocityPercent)
+      .slice(0, limit);
+  }
 }
+
