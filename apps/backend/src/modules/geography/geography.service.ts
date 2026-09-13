@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../database/prisma.service';
 import { Coordinates, GeoValidationResult, HierarchyValidationReport } from './geography.types';
 
@@ -28,6 +28,88 @@ export function isInsideChhattisgarhBounds(coordinates: Coordinates): boolean {
 @Injectable()
 export class GeographyService {
   constructor(private readonly prisma: PrismaService) {}
+
+  async listDivisions() {
+    return this.prisma.division.findMany({
+      orderBy: {
+        name: 'asc',
+      },
+      include: {
+        districts: {
+          orderBy: {
+            name: 'asc',
+          },
+        },
+      },
+    });
+  }
+
+  async listDistricts() {
+    return this.prisma.district.findMany({
+      orderBy: {
+        name: 'asc',
+      },
+      include: {
+        division: true,
+        zones: true,
+      },
+    });
+  }
+
+  async getDistrict(slug: string) {
+    const district = await this.prisma.district.findUnique({
+      where: { slug },
+      include: {
+        division: true,
+        zones: {
+          orderBy: {
+            name: 'asc',
+          },
+        },
+        places: {
+          where: {
+            status: 'PUBLISHED',
+            visibility: 'PUBLIC',
+          },
+          orderBy: {
+            name: 'asc',
+          },
+        },
+      },
+    });
+
+    if (!district) {
+      throw new NotFoundException('District not found');
+    }
+
+    return district;
+  }
+
+  async getZone(slug: string) {
+    const zone = await this.prisma.touristZone.findUnique({
+      where: { slug },
+      include: {
+        district: {
+          include: {
+            division: true,
+          },
+        },
+        places: {
+          where: {
+            status: 'PUBLISHED',
+            visibility: 'PUBLIC',
+          },
+        },
+        routes: true,
+      },
+    });
+
+    if (!zone) {
+      throw new NotFoundException('Tourism zone not found');
+    }
+
+    return zone;
+  }
 
   validateCoordinates(coordinates: Coordinates): boolean {
     return isValidCoordinates(coordinates);

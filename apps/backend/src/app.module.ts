@@ -42,6 +42,10 @@ import { RefundsModule } from './modules/refunds/refunds.module';
 // Canonical Generic Content Template Engine
 import { ContentTemplateModule } from './modules/content-template/content-template.module';
 import { DiscoveryModule } from './modules/discovery/discovery.module';
+import { PublishingModule } from './modules/publishing/publishing.module';
+import { ExperiencesModule } from './modules/experiences/experiences.module';
+import { RoutesModule } from './modules/routes/routes.module';
+import { TourismServicesModule } from './modules/tourism-services/tourism-services.module';
 import { StructuredLoggerService } from './common/logger/structured-logger.service';
 import { CorrelationIdMiddleware } from './common/middleware/correlation-id.middleware';
 import { HttpLoggingInterceptor } from './common/interceptors/http-logging.interceptor';
@@ -104,6 +108,10 @@ import { envSchema } from './config/env.schema';
     DiscoveryModule,
     DatabaseModule,
     RedisModule,
+    PublishingModule,
+    ExperiencesModule,
+    RoutesModule,
+    TourismServicesModule,
   ],
   providers: [
     PrismaService,

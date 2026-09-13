@@ -122,4 +122,65 @@ describe('GeographyService', () => {
     expect(report.validPlaces).toBe(1);
     expect(report.invalidPlaces).toBe(1);
   });
+
+  it('lists divisions with nested districts', async () => {
+    prisma.division = {
+      findMany: jest.fn().mockResolvedValue([
+        { id: 'div-1', name: 'Bastar Division', slug: 'bastar-division', districts: [] },
+      ]),
+    };
+
+    const result = await service.listDivisions();
+    expect(result).toHaveLength(1);
+    expect(result[0].name).toBe('Bastar Division');
+  });
+
+  it('retrieves district by slug with published places', async () => {
+    prisma.district = {
+      findUnique: jest.fn().mockResolvedValue({
+        id: 'dist-1',
+        slug: 'bastar',
+        name: 'Bastar',
+        division: { name: 'Bastar Division' },
+        zones: [],
+        places: [],
+      }),
+    };
+
+    const result = await service.getDistrict('bastar');
+    expect(result.slug).toBe('bastar');
+    expect(result.name).toBe('Bastar');
+  });
+
+  it('throws NotFoundException when district slug is not found', async () => {
+    prisma.district = {
+      findUnique: jest.fn().mockResolvedValue(null),
+    };
+
+    await expect(service.getDistrict('non-existent')).rejects.toThrow('District not found');
+  });
+
+  it('retrieves tourism zone by slug', async () => {
+    prisma.touristZone = {
+      findUnique: jest.fn().mockResolvedValue({
+        id: 'zone-1',
+        slug: 'kanger-valley',
+        name: 'Kanger Valley',
+        district: { name: 'Bastar' },
+        places: [],
+      }),
+    };
+
+    const result = await service.getZone('kanger-valley');
+    expect(result.slug).toBe('kanger-valley');
+    expect(result.name).toBe('Kanger Valley');
+  });
+
+  it('throws NotFoundException when zone slug is not found', async () => {
+    prisma.touristZone = {
+      findUnique: jest.fn().mockResolvedValue(null),
+    };
+
+    await expect(service.getZone('non-existent-zone')).rejects.toThrow('Tourism zone not found');
+  });
 });

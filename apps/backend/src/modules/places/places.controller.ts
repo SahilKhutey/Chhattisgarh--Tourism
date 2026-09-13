@@ -116,6 +116,26 @@ export class PlacesController {
     return this.placesService.findBySlug(slug);
   }
 
+  @Get(':slug/experiences')
+  @ApiOperation({
+    summary: 'Retrieve experiences for a destination',
+  })
+  @ApiParam({ name: 'slug' })
+  async getExperiences(@Param('slug') slug: string) {
+    const data = await this.placesService.findExperiences(slug);
+    return { data };
+  }
+
+  @Get(':slug/services')
+  @ApiOperation({
+    summary: 'Retrieve services available at a destination',
+  })
+  @ApiParam({ name: 'slug' })
+  async getServices(@Param('slug') slug: string) {
+    const data = await this.placesService.findServices(slug);
+    return { data };
+  }
+
   @Post('semantic-search')
   @ApiOperation({
     summary: 'Search verified tourism destinations',

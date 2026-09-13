@@ -205,6 +205,92 @@ export class PlacesService {
     return this.formatPlace(place);
   }
 
+  async findPublishedBySlug(slug: string) {
+    const place = await this.prisma.place.findFirst({
+      where: {
+        slug,
+        OR: [
+          { status: 'PUBLISHED', visibility: 'PUBLIC' },
+          { contentStatus: 'APPROVED', verified: true },
+        ],
+      },
+      include: {
+        districtRel: {
+          include: {
+            division: true,
+          },
+        },
+        touristZone: true,
+        category: true,
+        placeCategories: {
+          include: {
+            category: true,
+          },
+        },
+        placeMedia: {
+          orderBy: {
+            sortOrder: 'asc',
+          },
+        },
+        media: {
+          where: { status: 'APPROVED' },
+          orderBy: { uploadedAt: 'desc' },
+        },
+        experiences: {
+          where: {
+            isActive: true,
+          },
+        },
+        services: {
+          where: {
+            isActive: true,
+          },
+        },
+        safety: true,
+      },
+    });
+
+    if (!place) {
+      throw new NotFoundException(`Place with slug '${slug}' not found`);
+    }
+
+    return place;
+  }
+
+  async findExperiences(slug: string) {
+    const place = await this.prisma.place.findUnique({
+      where: { slug },
+      include: {
+        experiences: {
+          where: { isActive: true },
+        },
+      },
+    });
+
+    if (!place) {
+      throw new NotFoundException(`Place with slug '${slug}' not found`);
+    }
+
+    return place.experiences;
+  }
+
+  async findServices(slug: string) {
+    const place = await this.prisma.place.findUnique({
+      where: { slug },
+      include: {
+        services: {
+          where: { isActive: true },
+        },
+      },
+    });
+
+    if (!place) {
+      throw new NotFoundException(`Place with slug '${slug}' not found`);
+    }
+
+    return place.services;
+  }
+
   async findById(id: string) {
     const place = await this.prisma.place.findUnique({
       where: { id },
