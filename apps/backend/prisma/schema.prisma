@@ -162,6 +162,7 @@ model Place {
   status              PlaceStatus           @default(DRAFT)
   visibility          Visibility            @default(PRIVATE)
   publishedAt         DateTime?
+  location            Unsupported("geography(Point, 4326)")?
 
   placeCategories     PlaceCategory[]
   placeMedia          PlaceMedia[]

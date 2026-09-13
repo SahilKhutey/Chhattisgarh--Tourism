@@ -5,12 +5,14 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../../database/prisma.service';
 import { PublishingValidatorService } from './publishing-validator.service';
+import { RedisService } from '../../infrastructure/redis/redis.service';
 
 @Injectable()
 export class PublishingService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly validator: PublishingValidatorService,
+    private readonly redis?: RedisService,
   ) {}
 
   async submit(placeId: string) {
@@ -68,7 +70,7 @@ export class PublishingService {
       description: place.description,
     });
 
-    return this.prisma.place.update({
+    const updated = await this.prisma.place.update({
       where: { id: placeId },
       data: {
         status: 'PUBLISHED',
@@ -78,6 +80,10 @@ export class PublishingService {
         publishedAt: new Date(),
       },
     });
+
+    await this.redis?.deletePattern('discovery:*');
+
+    return updated;
   }
 
   async archive(placeId: string) {
@@ -89,7 +95,7 @@ export class PublishingService {
       throw new NotFoundException('Place not found');
     }
 
-    return this.prisma.place.update({
+    const updated = await this.prisma.place.update({
       where: { id: placeId },
       data: {
         status: 'ARCHIVED',
@@ -97,5 +103,9 @@ export class PublishingService {
         contentStatus: 'ARCHIVED',
       },
     });
+
+    await this.redis?.deletePattern('discovery:*');
+
+    return updated;
   }
 }
