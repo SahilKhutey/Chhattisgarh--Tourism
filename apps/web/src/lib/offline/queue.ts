@@ -10,10 +10,20 @@ function createId(): string {
 
 export async function enqueue(
   action: SyncActionType,
-  payload: Record<string, unknown>
+  payload: Record<string, unknown>,
+  operationId?: string
 ): Promise<SyncQueueItem> {
+  if (operationId) {
+    const existing = await getPendingQueue();
+    const duplicate = existing.find((item) => item.operationId === operationId);
+    if (duplicate) {
+      return duplicate;
+    }
+  }
+
   const item: SyncQueueItem = {
     id: createId(),
+    operationId: operationId || createId(),
     action,
     payload,
     createdAt: new Date().toISOString(),
@@ -25,13 +35,20 @@ export async function enqueue(
   return item;
 }
 
+
 export async function getPendingQueue(): Promise<SyncQueueItem[]> {
   const items = await getAll<SyncQueueItem>(STORES.syncQueue);
 
   return items
-    .filter((item) => item.status === "pending" || item.status === "failed")
+    .filter(
+      (item) =>
+        item.status === "pending" ||
+        item.status === "failed" ||
+        item.status === "conflicted"
+    )
     .sort((a, b) => a.createdAt.localeCompare(b.createdAt));
 }
+
 
 export async function updateQueueItem(item: SyncQueueItem): Promise<void> {
   await put(STORES.syncQueue, item);

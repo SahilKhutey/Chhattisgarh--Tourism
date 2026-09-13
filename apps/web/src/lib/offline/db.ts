@@ -1,11 +1,13 @@
 const DB_NAME = "cg-tourism-offline";
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 
 export const STORES = {
   places: "places",
   destinations: "destinations",
   itineraries: "itineraries",
   syncQueue: "syncQueue",
+  savedPlaces: "savedPlaces",
+  safetyResources: "safetyResources",
   meta: "meta",
 } as const;
 
@@ -54,12 +56,25 @@ export function openDatabase(): Promise<IDBDatabase> {
         store.createIndex("status", "status", { unique: false });
       }
 
+      if (!db.objectStoreNames.contains(STORES.savedPlaces)) {
+        db.createObjectStore(STORES.savedPlaces, {
+          keyPath: "id",
+        });
+      }
+
+      if (!db.objectStoreNames.contains(STORES.safetyResources)) {
+        db.createObjectStore(STORES.safetyResources, {
+          keyPath: "id",
+        });
+      }
+
       if (!db.objectStoreNames.contains(STORES.meta)) {
         db.createObjectStore(STORES.meta, {
           keyPath: "key",
         });
       }
     };
+
 
     request.onsuccess = () => resolve(request.result);
 

@@ -43,6 +43,12 @@ export async function sendAction(item: SyncQueueItem): Promise<void> {
     body: method === "DELETE" ? undefined : JSON.stringify(item.payload),
   });
 
+  if (response.status === 409) {
+    const err = new Error("Sync conflict detected on server (HTTP 409)");
+    (err as any).status = 409;
+    throw err;
+  }
+
   if (!response.ok) {
     throw new Error(`Sync failed with HTTP ${response.status}`);
   }
@@ -73,13 +79,16 @@ export async function syncOfflineQueue(): Promise<{
       await sendAction(item);
       await removeQueueItem(item.id);
       synced += 1;
-    } catch (error) {
+    } catch (error: any) {
       failed += 1;
       const attempts = item.attempts + 1;
+      const isConflict =
+        error?.status === 409 ||
+        (error instanceof Error && error.message.includes("409"));
 
       await updateQueueItem({
         ...item,
-        status: "failed",
+        status: isConflict ? "conflicted" : "failed",
         attempts,
         lastError: error instanceof Error ? error.message : "Unknown synchronization error",
       });
@@ -94,12 +103,21 @@ export async function syncOfflineQueue(): Promise<{
 
 export async function queueAction(
   action: SyncActionType,
-  payload: Record<string, unknown>
+  payload: Record<string, unknown>,
+  operationId?: string
 ): Promise<SyncQueueItem> {
-  const item = await enqueue(action, payload);
+  // Enforce Network-Only boundary: Bookings and Payments are strictly forbidden offline
+  if ((action as string).includes("BOOKING_CREATE") || (action as string).includes("PAYMENT")) {
+    throw new Error(
+      "Transactional operations (Bookings and Payments) require an active internet connection and cannot be queued offline."
+    );
+  }
+
+  const item = await enqueue(action, payload, operationId);
   await requestBackgroundSync();
   return item;
 }
+
 
 export async function requestBackgroundSync(): Promise<void> {
   if (typeof navigator === "undefined" || !("serviceWorker" in navigator)) {

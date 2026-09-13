@@ -12,7 +12,9 @@ export type SyncActionType =
 export type SyncStatus =
   | "pending"
   | "processing"
-  | "failed";
+  | "failed"
+  | "conflicted";
+
 
 export interface OfflinePlace {
   id: string;
@@ -65,6 +67,7 @@ export interface OfflineItinerary {
 
 export interface SyncQueueItem {
   id: string;
+  operationId?: string;
   action: SyncActionType;
   payload: Record<string, unknown>;
   createdAt: string;
@@ -73,8 +76,18 @@ export interface SyncQueueItem {
   lastError?: string;
 }
 
+export interface OfflineSafetyResource {
+  id: string;
+  title: string;
+  category: string;
+  phoneNumber: string;
+  district?: string;
+  updatedAt: string;
+}
+
 export interface OfflineMeta {
   key: string;
   value: unknown;
   updatedAt: string;
 }
+

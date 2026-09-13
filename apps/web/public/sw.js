@@ -44,6 +44,40 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
+  // Network-Only: Bookings, Payments, Emergency SOS, and Auth must NEVER be cached
+  if (
+    url.pathname.startsWith('/api/v1/bookings') ||
+    url.pathname.startsWith('/api/v1/payments') ||
+    url.pathname.startsWith('/api/v1/emergency/sos') ||
+    url.pathname.startsWith('/api/v1/auth')
+  ) {
+    event.respondWith(fetch(request));
+    return;
+  }
+
+  // Places and Discovery: Stale-While-Revalidate
+  if (
+    url.pathname.startsWith('/api/v1/places') ||
+    url.pathname.startsWith('/api/v1/discovery')
+  ) {
+    event.respondWith(
+      caches.open(RUNTIME_CACHE).then(async (cache) => {
+        const cachedResponse = await cache.match(request);
+        const fetchPromise = fetch(request)
+          .then((networkResponse) => {
+            if (networkResponse && networkResponse.status === 200) {
+              cache.put(request, networkResponse.clone());
+            }
+            return networkResponse;
+          })
+          .catch(() => cachedResponse);
+
+        return cachedResponse || fetchPromise;
+      })
+    );
+    return;
+  }
+
   // Navigation requests: Network-First with Cache and /offline.html fallback
   if (request.mode === "navigate") {
     event.respondWith(
@@ -65,6 +99,7 @@ self.addEventListener("fetch", (event) => {
     );
     return;
   }
+
 
   // Static / API / Asset requests: Cache-First then Network
   event.respondWith(
