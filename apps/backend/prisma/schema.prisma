@@ -171,6 +171,7 @@ model Place {
   safety              SafetyProfile?
   routePlaces         RoutePlace[]          @relation("RoutePlacePlace")
   itineraryStops      ItineraryStop[]
+  creatorContents     CreatorContent[]
 
   @@index([status])
   @@index([visibility])
@@ -332,6 +333,9 @@ model Review {
 
   bookingId String? @unique
 
+  verifiedVisit Boolean      @default(false)
+  reviewStatus  ReviewStatus @default(PUBLISHED)
+
   user  User  @relation(fields: [userId], references: [id])
   place Place @relation(fields: [placeId], references: [id])
 
@@ -403,6 +407,7 @@ model Booking {
   review        Review?
   commission    PartnerCommission?
   productReview ProductReview?
+  webhookEvents PaymentWebhookEvent[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -436,6 +441,10 @@ model CreatorProfile {
   verificationBadges String @default("[]") // JSON string array
 
   user              User                @relation(fields: [userId], references: [id])
+  creatorStatus     CreatorStatus       @default(PENDING)
+  followersCount    Int                 @default(0)
+  viewsCount        Int                 @default(0)
+  contents          CreatorContent[]
   videos            CreatorVideo[]
   integrations      SocialIntegration[]
   aggregatedContent AggregatedContent[]
@@ -1733,4 +1742,148 @@ model ItineraryStop {
   @@unique([dayId, sequence])
   @@index([placeId])
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PHASE 5: COMMUNITY, CREATOR, COMMERCE, BOOKINGS, REVIEWS & SAFETY DOMAIN
+// ─────────────────────────────────────────────────────────────────────────────
+
+enum CreatorStatus {
+  PENDING
+  VERIFIED
+  SUSPENDED
+  REJECTED
+}
+
+enum ReviewStatus {
+  PENDING
+  PUBLISHED
+  FLAGGED
+  REMOVED
+}
+
+enum BookingLifecycleStatus {
+  PENDING
+  PAYMENT_PENDING
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+}
+
+enum EmergencySeverity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum IncidentStatus {
+  TRIGGERED
+  ACKNOWLEDGED
+  DISPATCHED
+  RESPONDING
+  ON_SCENE
+  RESOLVED
+  ESCALATED
+}
+
+model CreatorContent {
+  id               String         @id @default(cuid())
+  creatorId        String
+  type             String         @default("STORY") // VIDEO, PHOTO, STORY, GUIDE, FOLKLORE, EXPERIENCE
+  title            String
+  description      String?
+  mediaUrl         String?
+  location         String?
+  placeId          String?
+  language         String         @default("en")
+  status           String         @default("DRAFT") // DRAFT, SUBMITTED, MODERATION, PUBLISHED, ARCHIVED
+  moderationStatus String         @default("PENDING") // PENDING, APPROVED, REJECTED
+  moderationReason String?
+  moderatedBy      String?
+  moderatedAt      DateTime?
+  publishedAt      DateTime?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  creator          CreatorProfile @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  place            Place?         @relation(fields: [placeId], references: [id], onDelete: SetNull)
+
+  @@index([creatorId])
+  @@index([status])
+  @@index([moderationStatus])
+  @@index([placeId])
+}
+
+model EmergencyIncident {
+  id                 String            @id @default(cuid())
+  incidentNumber     String            @unique
+  userId             String?
+  tripId             String?
+  latitude           Float
+  longitude          Float
+  type               String            @default("MEDICAL") // MEDICAL, ACCIDENT, LOST, FIRE, WILDLIFE, WEATHER, CRIME, VEHICLE, OTHER
+  severity           EmergencySeverity @default(HIGH)
+  status             IncidentStatus    @default(TRIGGERED)
+  description        String?
+  primaryResponder   String?
+  primaryResponderId String?
+  createdAt          DateTime          @default(now())
+  acknowledgedAt     DateTime?
+  resolvedAt         DateTime?
+
+  @@index([status])
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model OutboxEvent {
+  id            String    @id @default(uuid())
+  eventType     String
+  aggregateType String
+  aggregateId   String
+  payload       Json
+  status        String    @default("PENDING") // PENDING, PROCESSED, DEAD_LETTER
+  attempts      Int       @default(0)
+  availableAt   DateTime  @default(now())
+  processedAt   DateTime?
+  createdAt     DateTime  @default(now())
+
+  @@index([status, availableAt])
+  @@index([aggregateType, aggregateId])
+}
+
+model AuditLog {
+  id           String   @id @default(uuid())
+  actorId      String?
+  action       String
+  resourceType String
+  resourceId   String
+  metadata     Json?
+  ip           String?
+  userAgent    String?
+  createdAt    DateTime @default(now())
+
+  @@index([resourceType, resourceId])
+  @@index([actorId])
+  @@index([action])
+  @@index([createdAt])
+}
+
+model PaymentWebhookEvent {
+  id          String    @id @default(uuid())
+  provider    String    // e.g. "RAZORPAY", "STRIPE", "MOCK"
+  eventId     String
+  bookingId   String?
+  payload     Json?
+  status      String    @default("PROCESSED")
+  receivedAt  DateTime  @default(now())
+  processedAt DateTime?
+
+  booking     Booking?  @relation(fields: [bookingId], references: [id], onDelete: SetNull)
+
+  @@unique([provider, eventId])
+  @@index([bookingId])
+  @@index([receivedAt])
+}
+
 
