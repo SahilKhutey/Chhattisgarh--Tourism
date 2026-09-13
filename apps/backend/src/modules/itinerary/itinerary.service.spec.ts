@@ -250,4 +250,101 @@ describe('ItineraryService', () => {
       expect(result[0].estimatedVisitMinutes).toBeGreaterThan(0);
     });
   });
+
+  describe('Phase 4: Canonical Trip Planning', () => {
+    let repoMock: any;
+    let engineMock: any;
+    let cacheMock: any;
+    let serviceWithDeps: ItineraryService;
+
+    beforeEach(() => {
+      repoMock = {
+        createTrip: jest.fn().mockResolvedValue({ id: 'trip-1', title: 'Trip 1' }),
+        getTrip: jest.fn(),
+        findCandidates: jest.fn().mockResolvedValue([]),
+        saveGeneratedItinerary: jest.fn().mockResolvedValue({ id: 'itin-1', days: [] }),
+        reorderStop: jest.fn().mockResolvedValue({ id: 'trip-1' }),
+        getUserTrips: jest.fn().mockResolvedValue([{ id: 'trip-1' }]),
+        deleteTrip: jest.fn().mockResolvedValue({ id: 'trip-1', status: 'ARCHIVED' }),
+      };
+
+      engineMock = {
+        generate: jest.fn().mockReturnValue({
+          status: 'READY',
+          totalDistanceKm: 120,
+          totalDurationMin: 360,
+          estimatedCost: 800,
+          days: [],
+        }),
+      };
+
+      cacheMock = {
+        get: jest.fn().mockResolvedValue(null),
+        set: jest.fn().mockResolvedValue(undefined),
+        invalidateTrip: jest.fn().mockResolvedValue(undefined),
+      };
+
+      serviceWithDeps = new ItineraryService(
+        prismaMock as any,
+        repoMock,
+        engineMock,
+        cacheMock,
+      );
+    });
+
+    it('creates a new trip container', async () => {
+      const trip = await serviceWithDeps.createTrip({
+        title: 'Bastar Exploration',
+        startDate: '2026-10-01',
+        endDate: '2026-10-03',
+        travelers: 2,
+      });
+
+      expect(trip.id).toBe('trip-1');
+      expect(repoMock.createTrip).toHaveBeenCalled();
+    });
+
+    it('retrieves an existing trip with ownership validation', async () => {
+      repoMock.getTrip.mockResolvedValue({ id: 'trip-1', userId: 'user-1' });
+
+      const trip = await serviceWithDeps.getTrip('trip-1', 'user-1');
+      expect(trip.id).toBe('trip-1');
+
+      // Rejects non-owner
+      await expect(serviceWithDeps.getTrip('trip-1', 'user-2')).rejects.toThrow();
+    });
+
+    it('generates an itinerary for trip and saves versioned result', async () => {
+      repoMock.getTrip.mockResolvedValue({
+        id: 'trip-1',
+        startDate: new Date('2026-10-01'),
+        endDate: new Date('2026-10-03'),
+        travelers: 2,
+        preferences: { pace: 'BALANCED' },
+      });
+
+      const itinerary = await serviceWithDeps.generateForTrip('trip-1');
+      expect(itinerary.id).toBe('itin-1');
+      expect(engineMock.generate).toHaveBeenCalled();
+      expect(repoMock.saveGeneratedItinerary).toHaveBeenCalled();
+      expect(cacheMock.invalidateTrip).toHaveBeenCalledWith('trip-1');
+    });
+
+    it('reorders stops within itinerary', async () => {
+      repoMock.getTrip.mockResolvedValue({
+        id: 'trip-1',
+        itineraries: [{ id: 'itin-1', days: [] }],
+      });
+
+      await serviceWithDeps.reorderStop('trip-1', {
+        stopId: 'stop-1',
+        targetDaySequence: 2,
+        targetStopSequence: 1,
+      });
+
+      expect(repoMock.reorderStop).toHaveBeenCalled();
+      expect(cacheMock.invalidateTrip).toHaveBeenCalledWith('trip-1');
+    });
+  });
 });
+
