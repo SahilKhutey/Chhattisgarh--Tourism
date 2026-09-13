@@ -153,10 +153,25 @@ model Place {
   districtRelId       String?
   districtRel         District?    @relation(fields: [districtRelId], references: [id], onDelete: SetNull)
   touristZoneId       String?
-  touristZone         TouristZone? @relation(fields: [touristZoneId], references: [id], onDelete: SetNull)
-  coordinateValidated Boolean      @default(false)
-  boundaryValidated   Boolean      @default(false)
+  touristZone         TouristZone?          @relation(fields: [touristZoneId], references: [id], onDelete: SetNull)
+  coordinateValidated Boolean               @default(false)
+  boundaryValidated   Boolean               @default(false)
 
+  shortDescription    String?
+  altitudeMeters      Decimal?              @db.Decimal(10, 2)
+  status              PlaceStatus           @default(DRAFT)
+  visibility          Visibility            @default(PRIVATE)
+  publishedAt         DateTime?
+
+  placeCategories     PlaceCategory[]
+  placeMedia          PlaceMedia[]
+  experiences         Experience[]
+  services            TourismService[]
+  safety              SafetyProfile?
+  routePlaces         RoutePlace[]          @relation("RoutePlacePlace")
+
+  @@index([status])
+  @@index([visibility])
   @@index([contentStatus])
   @@index([verificationLevel])
   @@index([contentOwnerId])
@@ -187,11 +202,18 @@ model PlaceVerification {
 }
 
 model Category {
-  id   String @id @default(uuid())
-  name String
-  slug String @unique
+  id          String          @id @default(uuid())
+  name        String
+  slug        String          @unique
+  description String?
+  icon        String?
+  isActive    Boolean         @default(true)
 
-  places Place[]
+  places          Place[]
+  placeCategories PlaceCategory[]
+
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @default(now()) @updatedAt
 }
 
 model Media {
@@ -770,6 +792,7 @@ model TouristZone {
 
   places    Place[]
   geoPlaces GeoPlace[]
+  routes    Route[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -778,6 +801,155 @@ model TouristZone {
   @@index([status])
   @@index([slug])
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PHASE 2 — REGIONAL TOURISM DATA & CONTENT KERNEL
+// ─────────────────────────────────────────────────────────────────────────────
+
+enum PlaceStatus {
+  DRAFT
+  REVIEW
+  PUBLISHED
+  ARCHIVED
+}
+
+enum Visibility {
+  PRIVATE
+  PUBLIC
+}
+
+enum Difficulty {
+  EASY
+  MODERATE
+  HARD
+  EXPERT
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
+  AUDIO
+}
+
+enum ServiceType {
+  FOOD
+  STAY
+  TRANSPORT
+  GUIDE
+  PARKING
+  MEDICAL
+  TOILET
+  ATM
+  INFORMATION
+  OTHER
+}
+
+model PlaceCategory {
+  placeId    String
+  categoryId String
+
+  place    Place    @relation(fields: [placeId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([placeId, categoryId])
+  @@index([categoryId])
+}
+
+model Experience {
+  id          String     @id @default(cuid())
+  placeId     String
+  slug        String     @unique
+  title       String
+  description String?
+  durationMin Int?
+  difficulty  Difficulty @default(EASY)
+  isActive    Boolean    @default(true)
+
+  place Place @relation(fields: [placeId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([placeId])
+}
+
+model TourismService {
+  id          String      @id @default(cuid())
+  placeId     String
+  type        ServiceType
+  name        String
+  description String?
+  phone       String?
+  website     String?
+  isActive    Boolean     @default(true)
+
+  place Place @relation(fields: [placeId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([placeId])
+}
+
+model PlaceMedia {
+  id        String    @id @default(cuid())
+  placeId   String
+  url       String
+  type      MediaType
+  altText   String?
+  caption   String?
+  sortOrder Int       @default(0)
+
+  place Place @relation(fields: [placeId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([placeId])
+}
+
+model SafetyProfile {
+  id              String   @id @default(cuid())
+  placeId         String   @unique
+  emergencyNotes  String?
+  accessibility   String?
+  seasonalWarning String?
+  medicalNotes    String?
+
+  place Place @relation(fields: [placeId], references: [id], onDelete: Cascade)
+
+  updatedAt DateTime @updatedAt
+}
+
+model Route {
+  id          String       @id @default(cuid())
+  zoneId      String?
+  slug        String       @unique
+  name        String
+  description String?
+  distanceKm  Decimal?     @db.Decimal(10, 2)
+  durationMin Int?
+
+  zone   TouristZone? @relation(fields: [zoneId], references: [id], onDelete: SetNull)
+  places RoutePlace[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([zoneId])
+}
+
+model RoutePlace {
+  routeId  String
+  placeId  String
+  sequence Int
+
+  route Route @relation(fields: [routeId], references: [id], onDelete: Cascade)
+  place Place @relation("RoutePlacePlace", fields: [placeId], references: [id], onDelete: Cascade)
+
+  @@id([routeId, placeId])
+  @@unique([routeId, sequence])
+}
+
 
 model DistrictBoundary {
   id            String    @id @default(uuid())

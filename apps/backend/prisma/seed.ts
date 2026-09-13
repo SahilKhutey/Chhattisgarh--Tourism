@@ -3,6 +3,7 @@ import * as bcrypt from 'bcrypt';
 import * as fs from 'fs';
 import * as path from 'path';
 import { seedContentTemplates } from './seed-content-template';
+import { runCanonicalSeed } from './seed/index';
 
 const prisma = new PrismaClient();
 
@@ -765,6 +766,8 @@ async function main() {
 
   console.log(`Seeded all ${SEED_DESTINATIONS.length} landmark destinations and translations successfully.`);
   await seedContentTemplates();
+  console.log('Seeding canonical regional tourism kernel (geography, places, safety, experiences, services)...');
+  await runCanonicalSeed(prisma);
   console.log('Database seeding successfully finished!');
 }
 
