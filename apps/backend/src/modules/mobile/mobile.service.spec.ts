@@ -124,4 +124,37 @@ describe('MobileService', () => {
       NotFoundException,
     );
   });
+
+  it('formats push notification payloads for cross-platform delivery', () => {
+    const payload = service.formatPushPayload({
+      title: 'Monsoon Alert: Bastar',
+      body: 'Heavy rainfall expected near Chitrakote falls today.',
+      data: { alertId: 'alert-1', severity: 'WARNING' },
+    });
+
+    expect(payload.notification.title).toBe('Monsoon Alert: Bastar');
+    expect(payload.notification.body).toBe('Heavy rainfall expected near Chitrakote falls today.');
+    expect(payload.android.priority).toBe('high');
+    expect(payload.android.notification.channelId).toBe('cg_tourism_alerts');
+    expect(payload.apns.payload.aps.alert.title).toBe('Monsoon Alert: Bastar');
+    expect(payload.data.alertId).toBe('alert-1');
+  });
+
+  it('dispatches notification to all active devices of a user', async () => {
+    prismaMock.mobileDevice.findMany.mockResolvedValue([
+      { id: 'd-1', deviceToken: 'token-android-1', platform: 'android', appVersion: '1.0.0', lastSeenAt: new Date() },
+      { id: 'd-2', deviceToken: 'token-ios-1', platform: 'ios', appVersion: '1.0.0', lastSeenAt: new Date() },
+    ]);
+
+    const result = await service.dispatchNotificationToUser('user-1', {
+      title: 'Booking Confirmed',
+      body: 'Your Bastar homestay booking is confirmed!',
+      data: { bookingId: 'bk-123' },
+    });
+
+    expect(result.dispatchedCount).toBe(2);
+    expect(result.deviceTokens).toEqual(['token-android-1', 'token-ios-1']);
+    expect(result.payload.notification.title).toBe('Booking Confirmed');
+  });
 });
+

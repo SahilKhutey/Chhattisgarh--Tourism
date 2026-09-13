@@ -94,4 +94,61 @@ export class MobileService {
       },
     });
   }
+
+  formatPushPayload(notification: {
+    title: string;
+    body: string;
+    data?: Record<string, unknown>;
+  }): {
+    notification: { title: string; body: string };
+    data: Record<string, unknown>;
+    android: { priority: string; notification: { channelId: string; sound: string } };
+    apns: { payload: { aps: { alert: { title: string; body: string }; sound: string; badge: number } } };
+  } {
+    return {
+      notification: {
+        title: notification.title,
+        body: notification.body,
+      },
+      data: {
+        ...(notification.data ?? {}),
+        timestamp: new Date().toISOString(),
+      },
+
+      android: {
+        priority: 'high',
+        notification: {
+          channelId: 'cg_tourism_alerts',
+          sound: 'default',
+        },
+      },
+      apns: {
+        payload: {
+          aps: {
+            alert: {
+              title: notification.title,
+              body: notification.body,
+            },
+            sound: 'default',
+            badge: 1,
+          },
+        },
+      },
+    };
+  }
+
+  async dispatchNotificationToUser(
+    userId: string,
+    notification: { title: string; body: string; data?: Record<string, unknown> },
+  ) {
+    const devices = await this.getActiveUserDevices(userId);
+    const payload = this.formatPushPayload(notification);
+
+    return {
+      dispatchedCount: devices.length,
+      deviceTokens: devices.map((d) => d.deviceToken),
+      payload,
+    };
+  }
 }
+
