@@ -170,6 +170,7 @@ model Place {
   services            TourismService[]
   safety              SafetyProfile?
   routePlaces         RoutePlace[]          @relation("RoutePlacePlace")
+  itineraryStops      ItineraryStop[]
 
   @@index([status])
   @@index([visibility])
@@ -867,6 +868,7 @@ model Experience {
   isActive    Boolean    @default(true)
 
   place Place @relation(fields: [placeId], references: [id], onDelete: Cascade)
+  itineraryStops ItineraryStop[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1595,3 +1597,140 @@ model ContentSearchIndex {
   @@index([publishedAt])
   @@index([lat, lng])
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PHASE 4: TRIP PLANNING & ITINERARY DOMAIN
+// ─────────────────────────────────────────────────────────────────────────────
+
+enum TripStatus {
+  DRAFT
+  PLANNING
+  READY
+  ARCHIVED
+}
+
+enum TripPace {
+  RELAXED
+  BALANCED
+  FAST
+}
+
+enum ItineraryStatus {
+  DRAFT
+  READY
+  ARCHIVED
+}
+
+enum ItineraryGenerator {
+  MANUAL
+  RULE_ENGINE
+  AI_ASSISTED
+}
+
+model Trip {
+  id              String          @id @default(cuid())
+  userId          String?
+  title           String
+  startDate       DateTime
+  endDate         DateTime
+  originLatitude  Decimal?        @db.Decimal(10, 7)
+  originLongitude Decimal?        @db.Decimal(10, 7)
+  travelers       Int             @default(1)
+  status          TripStatus      @default(DRAFT)
+
+  itineraries     Itinerary[]
+  preferences     TripPreference?
+  constraints     TripConstraint?
+
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  @@index([userId])
+  @@index([startDate, endDate])
+}
+
+model TripPreference {
+  id             String   @id @default(cuid())
+  tripId         String   @unique
+
+  categories     Json?
+  pace           TripPace @default(BALANCED)
+  accessibility  Boolean  @default(false)
+  preferredStart String?
+  preferredEnd   String?
+
+  trip           Trip     @relation(fields: [tripId], references: [id], onDelete: Cascade)
+}
+
+model TripConstraint {
+  id                 String   @id @default(cuid())
+  tripId             String   @unique
+
+  maxDailyDistanceKm Decimal? @db.Decimal(10, 2)
+  maxDailyTravelMin  Int?
+  budgetAmount       Decimal? @db.Decimal(12, 2)
+  requiredPlaceIds   Json?
+  excludedPlaceIds   Json?
+
+  trip               Trip     @relation(fields: [tripId], references: [id], onDelete: Cascade)
+}
+
+model Itinerary {
+  id               String             @id @default(cuid())
+  tripId           String
+  version          Int                @default(1)
+  status           ItineraryStatus    @default(DRAFT)
+  generatedBy      ItineraryGenerator @default(MANUAL)
+
+  totalDistanceKm  Decimal?           @db.Decimal(12, 2)
+  totalDurationMin Int?
+  estimatedCost    Decimal?           @db.Decimal(12, 2)
+
+  trip             Trip               @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  days             ItineraryDay[]
+
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+
+  @@index([tripId])
+  @@index([status])
+}
+
+model ItineraryDay {
+  id          String          @id @default(cuid())
+  itineraryId String
+  date        DateTime
+  sequence    Int
+  startTime   String?
+  endTime     String?
+
+  itinerary   Itinerary       @relation(fields: [itineraryId], references: [id], onDelete: Cascade)
+  stops       ItineraryStop[]
+
+  @@unique([itineraryId, sequence])
+  @@unique([itineraryId, date])
+}
+
+model ItineraryStop {
+  id                    String       @id @default(cuid())
+  dayId                 String
+  placeId               String
+  experienceId          String?
+  sequence              Int
+
+  arrivalTime           String?
+  departureTime         String?
+  travelFromPreviousMin Int?
+  visitDurationMin      Int?
+  estimatedCost         Decimal?     @db.Decimal(12, 2)
+  reason                String?
+  isLocked              Boolean      @default(false)
+
+  day                   ItineraryDay @relation(fields: [dayId], references: [id], onDelete: Cascade)
+  place                 Place        @relation(fields: [placeId], references: [id], onDelete: Restrict)
+  experience            Experience?  @relation(fields: [experienceId], references: [id], onDelete: SetNull)
+
+  @@unique([dayId, sequence])
+  @@index([placeId])
+}
+
