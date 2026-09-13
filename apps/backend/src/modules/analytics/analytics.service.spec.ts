@@ -109,4 +109,63 @@ describe('AnalyticsService', () => {
     expect(result.grossBookingValuePaise).toBe(5000000);
     expect(result.platformRevenuePaise).toBe(250000);
   });
+
+  it('sanitizes sensitive fields from metadata before persisting', async () => {
+    const event = await service.track({
+      type: AnalyticsEventType.PAGE_VIEW,
+      metadata: {
+        page: '/places/chitrakote',
+        password: 'superSecretPassword123',
+        authToken: 'jwt-token-xyz',
+        apiKey: 'gemini-key-123',
+        nested: {
+          authorization: 'Bearer secret-jwt',
+          normalKey: 'safe-value',
+        },
+      },
+    });
+
+    expect(event.metadata).toEqual({
+      page: '/places/chitrakote',
+      password: '[REDACTED]',
+      authToken: '[REDACTED]',
+      apiKey: '[REDACTED]',
+      nested: {
+        authorization: '[REDACTED]',
+        normalKey: 'safe-value',
+      },
+    });
+  });
+
+  it('aggregates district trends sorted descending by event count', async () => {
+    prisma.analyticsEvent.groupBy.mockResolvedValue([
+      { districtId: 'bastar', _count: { _all: 120 } },
+      { districtId: 'raipur', _count: { _all: 85 } },
+    ]);
+
+    const trends = await service.getDistrictTrends(30);
+
+    expect(trends).toEqual([
+      { districtId: 'bastar', count: 120 },
+      { districtId: 'raipur', count: 85 },
+    ]);
+  });
+
+  it('returns place engagement metrics across views, saves, and shares', async () => {
+    prisma.analyticsEvent.count
+      .mockResolvedValueOnce(300) // views
+      .mockResolvedValueOnce(45)  // saves
+      .mockResolvedValueOnce(12); // shares
+
+    const engagement = await service.getPlaceEngagement('place-123', 14);
+
+    expect(engagement).toEqual({
+      placeId: 'place-123',
+      periodDays: 14,
+      views: 300,
+      saves: 45,
+      shares: 12,
+    });
+  });
 });
+
