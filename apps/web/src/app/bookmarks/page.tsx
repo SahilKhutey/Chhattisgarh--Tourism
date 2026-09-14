@@ -392,7 +392,7 @@ export default function BookmarksPage() {
                       <MapPin className="w-3.5 h-3.5" /> GIS Georeferenced
                     </span>
                     <Link
-                      href={`/destination/${place.id}`}
+                      href={`/destinations/${place.id}`}
                       className="ml-auto text-xs font-bold text-tribal-terracotta hover:underline inline-flex items-center gap-0.5"
                     >
                       Insights <Eye className="w-3 h-3" />

@@ -377,7 +377,7 @@ export default function Home() {
                       </div>
                       <div className="flex flex-col items-end">
                         <span className="text-xs font-mono font-bold text-warm-orange">~{place.computedDistance} km</span>
-                        <Link href={`/destination/${place.id}`} className="text-[10px] hover:underline text-emerald-400 font-bold inline-flex items-center gap-0.5">
+                        <Link href={`/destinations/${place.id}`} className="text-[10px] hover:underline text-emerald-400 font-bold inline-flex items-center gap-0.5">
                           Details <ChevronRight className="w-3 h-3" />
                         </Link>
                       </div>
@@ -492,7 +492,7 @@ export default function Home() {
                       {t("home.biodiversity")}: {dest.biodiversityScore}%
                     </span>
                     <Link
-                      href={`/destination/${dest.id}`}
+                      href={`/destinations/${dest.id}`}
                       className="inline-flex items-center gap-1 text-xs font-bold text-tribal-terracotta hover:text-forest-emerald font-mukta"
                     >
                       {t("home.view_details")} <Eye className="w-3.5 h-3.5" />

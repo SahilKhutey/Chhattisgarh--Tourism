@@ -250,7 +250,7 @@ export default function EarthMap({
                       <strong>🍽 Local Food:</strong> {dest.localFood.split(",")[0]}
                     </div>
                     <div style={{ display: "flex", gap: 8 }}>
-                      <a href={`/destination/${dest.id}`} style={{ flex: 1, display: "block", textAlign: "center", background: bg, color: "#fff", fontSize: 11, fontWeight: 700, padding: 9, borderRadius: 9, textDecoration: "none" }}>Full Details →</a>
+                      <a href={`/destinations/${dest.id}`} style={{ flex: 1, display: "block", textAlign: "center", background: bg, color: "#fff", fontSize: 11, fontWeight: 700, padding: 9, borderRadius: 9, textDecoration: "none" }}>Full Details →</a>
                     </div>
                   </div>
                 </div>

@@ -405,7 +405,7 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       command.includes("झरना")
     ) {
       speakText(lang === "en" ? "Opening Chitrakote Falls" : lang === "cg" ? "चित्रकोट जलप्रपात ला खोलत हंव" : "चित्रकोट जलप्रपात खोल रहा हूँ");
-      router.push("/destination/chitrakote-falls");
+      router.push("/destinations/chitrakote-falls");
       return;
     }
 
@@ -415,7 +415,7 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       command.includes("धरोहर")
     ) {
       speakText(lang === "en" ? "Opening Sirpur Monuments" : lang === "cg" ? "सिरपुर धरोहर ला खोलत हंव" : "सिरपुर धरोहर स्थल खोल रहा हूँ");
-      router.push("/destination/sirpur-monuments");
+      router.push("/destinations/sirpur-monuments");
       return;
     }
 
@@ -425,7 +425,7 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       command.includes("मंदिर")
     ) {
       speakText(lang === "en" ? "Opening Bhoramdeo Temple" : lang === "cg" ? "भोरमदेव मंदिर ला खोलत हंव" : "भोरमदेव मंदिर खोल रहा हूँ");
-      router.push("/destination/bhoramdeo-temple");
+      router.push("/destinations/bhoramdeo-temple");
       return;
     }
 
@@ -437,7 +437,7 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       command.includes("गुफा")
     ) {
       speakText(lang === "en" ? "Opening Kanger Valley National Park" : lang === "cg" ? "कांगेर घाटी राष्ट्रीय उद्यान ला खोलत हंव" : "कांगेर घाटी राष्ट्रीय उद्यान खोल रहा हूँ");
-      router.push("/destination/kanger-valley");
+      router.push("/destinations/kanger-valley");
       return;
     }
 
@@ -446,7 +446,7 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       command.includes("tirathgarh")
     ) {
       speakText(lang === "en" ? "Opening Tirathgarh Waterfalls" : lang === "cg" ? "तीरथगढ़ जलप्रपात ला खोलत हंव" : "तीरथगढ़ जलप्रपात खोल रहा हूँ");
-      router.push("/destination/tirathgarh-falls");
+      router.push("/destinations/tirathgarh-falls");
       return;
     }
 
@@ -456,7 +456,7 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       command.includes("अभयारण्य")
     ) {
       speakText(lang === "en" ? "Opening Barnawapara Sanctuary" : lang === "cg" ? "बारनवापारा वन्यजीव अभयारण्य ला खोलत हंव" : "बारनवापारा वन्यजीव अभयारण्य खोल रहा हूँ");
-      router.push("/destination/barnawapara");
+      router.push("/destinations/barnawapara");
       return;
     }
 
@@ -466,7 +466,7 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       command.includes("टाइगर")
     ) {
       speakText(lang === "en" ? "Opening Achanakmar Tiger Reserve" : lang === "cg" ? "अचानकमार टाइगर रिजर्व ला खोलत हंव" : "अचानकमार टाइगर रिजर्व खोल रहा हूँ");
-      router.push("/destination/achanakmar");
+      router.push("/destinations/achanakmar");
       return;
     }
 
@@ -476,7 +476,7 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       command.includes("बांध")
     ) {
       speakText(lang === "en" ? "Opening Gangrel Dam" : lang === "cg" ? "गंगरेल बांध ला खोलत हंव" : "गंगरेल बांध खोल रहा हूँ");
-      router.push("/destination/gangrel-dam");
+      router.push("/destinations/gangrel-dam");
       return;
     }
 
