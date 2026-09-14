@@ -11,7 +11,11 @@ import { FolkloreService } from './folklore.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreateFolkloreDto } from '../community/dto/create-folklore.dto';
 
-@ApiTags('Folklore')
+/**
+ * @deprecated Legacy folklore controller. Superseded by canonical generic content templates
+ * under /api/v1/content/folklore/* with JSON Schema validation and version pinning.
+ */
+@ApiTags('Folklore (Deprecated)')
 @Controller('folklore')
 export class FolkloreController {
   constructor(private readonly folkloreService: FolkloreService) {}

@@ -20,7 +20,6 @@ import { CommunityModule } from './modules/community/community.module';
 import { BookingsModule } from './modules/bookings/bookings.module';
 import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { AggregationModule } from './modules/aggregation/aggregation.module';
-import { PrismaService } from './database/prisma.service';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { WeatherModule } from './modules/weather/weather.module';
@@ -78,12 +77,14 @@ import { envSchema } from './config/env.schema';
     ScheduleModule.forRoot(),
     EventEmitterModule.forRoot(),
     AtisModule,
+    // Core Domain & Transactional Entity Services
     PlacesModule,
     EmergencyModule,
     BookmarksModule,
     ReviewsModule,
     ModerationModule,
     UsersModule,
+    // Deprecated: Folklore prototype module, superseded by generic content templates
     FolkloreModule,
     StorageModule,
     ItineraryModule,
@@ -106,6 +107,7 @@ import { envSchema } from './config/env.schema';
     PaymentsModule,
     CommerceModule,
     RefundsModule,
+    // Canonical Generic Content Template Engine & Discovery
     ContentTemplateModule,
     DiscoveryModule,
     DatabaseModule,
@@ -118,7 +120,6 @@ import { envSchema } from './config/env.schema';
     AuditModule,
   ],
   providers: [
-    PrismaService,
     StructuredLoggerService,
     {
       provide: APP_GUARD,
@@ -129,7 +130,7 @@ import { envSchema } from './config/env.schema';
       useClass: HttpLoggingInterceptor,
     },
   ],
-  exports: [PrismaService, StructuredLoggerService],
+  exports: [StructuredLoggerService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
