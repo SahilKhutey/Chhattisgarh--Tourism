@@ -1,14 +1,16 @@
 'use client';
 
 import React from 'react';
-import { Eye, MapPin, Images, Calendar, Hash, Tags, Link2 } from 'lucide-react';
-import { TemplateField } from '../../types/content';
+import { Eye } from 'lucide-react';
+import { TemplateField as ContentTemplateField } from '../../types/content';
+import { TemplatePreview as CanonicalTemplatePreview } from '../template-builder/TemplatePreview';
+import type { TemplateField } from '@/types/template';
 
 interface TemplatePreviewProps {
   name: string;
   slug: string;
   description?: string;
-  fields: TemplateField[];
+  fields: ContentTemplateField[];
 }
 
 export const TemplatePreview: React.FC<TemplatePreviewProps> = ({
@@ -17,7 +19,17 @@ export const TemplatePreview: React.FC<TemplatePreviewProps> = ({
   description,
   fields,
 }) => {
-  const sortedFields = [...fields].sort((a, b) => a.order - b.order);
+  const canonicalFields: TemplateField[] = (fields || []).map((f, idx) => ({
+    key: f.key,
+    label: f.label,
+    type: ((f as any).fieldType || f.type || 'TEXT') as any,
+    required: Boolean(f.required),
+    translatable: Boolean(f.translatable),
+    order: f.order ?? idx,
+    group: f.group ?? 'General',
+    helpText: f.helpText ?? null,
+    config: (f as any).config || (f.options ? { options: typeof f.options === 'string' ? JSON.parse(f.options as any) : f.options } : {}),
+  }));
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-stone-200 p-6">
@@ -49,141 +61,9 @@ export const TemplatePreview: React.FC<TemplatePreviewProps> = ({
         )}
       </div>
 
-      {sortedFields.length === 0 ? (
-        <div className="py-12 text-center text-stone-400 border border-dashed border-stone-200 rounded-lg text-xs">
-          No fields added yet. Add fields from the palette to see the live form.
-        </div>
-      ) : (
-        <div className="space-y-4">
-          {sortedFields.map((field) => (
-            <div key={field.key || field.order} className="text-xs">
-              <label className="block font-semibold text-stone-700 mb-1">
-                {field.label || 'Untitled Field'}
-                {field.required && <span className="text-red-500 ml-1">*</span>}
-              </label>
-
-              {/* Mock field input based on field.type */}
-              {field.type === 'TEXT' && (
-                <input
-                  type="text"
-                  disabled
-                  placeholder={field.placeholder || `Enter ${field.label}...`}
-                  className="w-full px-3 py-2 border border-stone-200 rounded-lg bg-stone-50 text-stone-500 cursor-not-allowed"
-                />
-              )}
-
-              {field.type === 'RICHTEXT' && (
-                <textarea
-                  disabled
-                  rows={3}
-                  placeholder={field.placeholder || `Write detailed markdown content...`}
-                  className="w-full px-3 py-2 border border-stone-200 rounded-lg bg-stone-50 text-stone-500 cursor-not-allowed resize-none"
-                />
-              )}
-
-              {field.type === 'IMAGE' && (
-                <div className="flex items-center gap-3 p-3 border border-stone-200 rounded-lg bg-stone-50 text-stone-500">
-                  <div className="w-10 h-10 rounded bg-stone-200 flex items-center justify-center text-stone-400">
-                    <Eye className="w-5 h-5" />
-                  </div>
-                  <div className="text-[11px]">
-                    <span className="font-semibold text-stone-700">Image Upload / URL</span>
-                    <p className="text-stone-400">Preview will render here upon upload</p>
-                  </div>
-                </div>
-              )}
-
-              {field.type === 'GALLERY' && (
-                <div className="p-4 border border-dashed border-stone-300 rounded-lg bg-stone-50 text-center text-stone-400">
-                  <Images className="w-6 h-6 mx-auto mb-1 text-stone-400" />
-                  <span className="text-[11px]">Photo gallery selector (multi-image)</span>
-                </div>
-              )}
-
-              {field.type === 'GEO_POINT' && (
-                <div className="p-3 border border-stone-200 rounded-lg bg-stone-50 space-y-2">
-                  <div className="flex items-center gap-1.5 text-emerald-700 font-semibold text-[11px]">
-                    <MapPin className="w-3.5 h-3.5" /> Spatial PostGIS Coordinates
-                  </div>
-                  <div className="grid grid-cols-2 gap-2">
-                    <input
-                      type="text"
-                      disabled
-                      placeholder="Latitude (e.g. 21.25)"
-                      className="px-2.5 py-1.5 border border-stone-200 rounded bg-white text-stone-500"
-                    />
-                    <input
-                      type="text"
-                      disabled
-                      placeholder="Longitude (e.g. 81.63)"
-                      className="px-2.5 py-1.5 border border-stone-200 rounded bg-white text-stone-500"
-                    />
-                  </div>
-                </div>
-              )}
-
-              {field.type === 'DROPDOWN' && (
-                <select
-                  disabled
-                  className="w-full px-3 py-2 border border-stone-200 rounded-lg bg-stone-50 text-stone-500 cursor-not-allowed"
-                >
-                  <option value="">
-                    {field.placeholder || `Select ${field.label}...`}
-                  </option>
-                  {(field.options || []).map((opt, i) => (
-                    <option key={i} value={opt.value}>
-                      {opt.label}
-                    </option>
-                  ))}
-                </select>
-              )}
-
-              {field.type === 'TAGS' && (
-                <div className="flex items-center gap-1.5 p-2 border border-stone-200 rounded-lg bg-stone-50 text-stone-400">
-                  <Tags className="w-4 h-4 text-stone-400" />
-                  <span className="text-[11px]">Type and press enter to add tags...</span>
-                </div>
-              )}
-
-              {field.type === 'DATE' && (
-                <div className="flex items-center gap-2 px-3 py-2 border border-stone-200 rounded-lg bg-stone-50 text-stone-500">
-                  <Calendar className="w-4 h-4 text-stone-400" />
-                  <span>YYYY-MM-DD</span>
-                </div>
-              )}
-
-              {field.type === 'NUMBER' && (
-                <div className="flex items-center gap-2 px-3 py-2 border border-stone-200 rounded-lg bg-stone-50 text-stone-500">
-                  <Hash className="w-4 h-4 text-stone-400" />
-                  <span>0.00</span>
-                </div>
-              )}
-
-              {field.type === 'BOOLEAN' && (
-                <div className="flex items-center gap-2 py-1">
-                  <input
-                    type="checkbox"
-                    disabled
-                    className="rounded border-stone-300 text-emerald-600 cursor-not-allowed"
-                  />
-                  <span className="text-stone-600">Enable / Yes</span>
-                </div>
-              )}
-
-              {field.type === 'RELATION' && (
-                <div className="flex items-center gap-2 p-2 border border-stone-200 rounded-lg bg-stone-50 text-stone-400">
-                  <Link2 className="w-4 h-4 text-stone-400" />
-                  <span className="text-[11px]">Select referenced tourism entity...</span>
-                </div>
-              )}
-
-              {field.helpText && (
-                <p className="text-[10px] text-stone-400 mt-1">{field.helpText}</p>
-              )}
-            </div>
-          ))}
-        </div>
-      )}
+      <CanonicalTemplatePreview fields={canonicalFields} />
     </div>
   );
 };
+
+export default TemplatePreview;
