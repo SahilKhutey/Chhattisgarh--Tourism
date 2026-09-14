@@ -226,6 +226,7 @@ export async function seedContentTemplates() {
   // 5. Seed sample entries
   const sampleEntries = [
     {
+      slug: 'chitrakote-waterfalls',
       title: 'Chitrakote Waterfalls',
       summary: 'Often referred to as the Niagara of India, Chitrakote is the widest waterfall in India.',
       description: 'Chitrakote Falls is a natural waterfall on the Indravati River, located approximately 38 km west of Jagdalpur in Bastar district. During the monsoon season, the waterfall spans nearly 300 meters across the horseshoe cliff.',
@@ -240,6 +241,7 @@ export async function seedContentTemplates() {
       isAccessible: true,
     },
     {
+      slug: 'bhoramdeo-temple',
       title: 'Bhoramdeo Temple',
       summary: 'An exquisitely carved 11th-century temple complex known as the Khajuraho of Chhattisgarh.',
       description: 'Located amidst the picturesque Maikal range in Kabirdham district, the Bhoramdeo temple was built by the Nagavanshi dynasty between the 7th and 11th centuries. It features intricate stone sculptures depicting deities, celestial nymphs, and mythic scenes.',
@@ -259,8 +261,7 @@ export async function seedContentTemplates() {
     const existing = await prisma.contentEntry.findFirst({
       where: {
         templateId: destinationTemplate.id,
-        region: entryData.district,
-        latitude: entryData.location.lat,
+        slug: entryData.slug,
       },
     });
 
@@ -268,6 +269,7 @@ export async function seedContentTemplates() {
       await prisma.contentEntry.create({
         data: {
           templateId: destinationTemplate.id,
+          slug: entryData.slug,
           data: entryData,
           status: EntryStatus.PUBLISHED,
           authorId: adminId,
