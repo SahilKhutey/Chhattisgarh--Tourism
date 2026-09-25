@@ -103,3 +103,47 @@ def get_workflow_fragmentation_analysis(
     user: AdminUser = Depends(require_market_researcher),
 ):
     return service.analyze_workflow_fragmentation(db)
+
+
+from app.modules.market_validation.provider_metrics.schemas import (
+    ProviderFunnelAnalysis,
+    ProviderValueAnalysis,
+    ProviderResponseAnalysis,
+)
+from app.modules.market_validation.provider_metrics.service import ProviderMetricService
+
+metric_service = ProviderMetricService()
+
+
+@router.get(
+    "/provider-funnel",
+    response_model=ProviderFunnelAnalysis,
+)
+def get_provider_funnel_analysis(
+    db: Session = Depends(get_db),
+    user: AdminUser = Depends(require_market_researcher),
+):
+    return metric_service.get_funnel_analysis(db)
+
+
+@router.get(
+    "/provider-value",
+    response_model=ProviderValueAnalysis,
+)
+def get_provider_value_analysis(
+    db: Session = Depends(get_db),
+    user: AdminUser = Depends(require_market_researcher),
+):
+    return metric_service.get_value_analysis(db)
+
+
+@router.get(
+    "/provider-response",
+    response_model=ProviderResponseAnalysis,
+)
+def get_provider_response_analysis(
+    db: Session = Depends(get_db),
+    user: AdminUser = Depends(require_market_researcher),
+):
+    return metric_service.get_response_analysis(db)
+
