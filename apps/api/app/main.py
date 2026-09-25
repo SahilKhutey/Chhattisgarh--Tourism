@@ -22,6 +22,7 @@ from app.modules.search import search_router
 from app.modules.admin.api.localization import router as admin_localization_router
 from app.modules.admin.api.glossary import router as admin_glossary_router
 from app.modules.admin.api.accessibility import router as admin_accessibility_router
+from app.modules.market_validation import market_validation_router
 
 settings = get_settings()
 
@@ -88,6 +89,7 @@ app.include_router(search_router, prefix="/api")
 app.include_router(admin_localization_router, prefix="/api")
 app.include_router(admin_glossary_router, prefix="/api")
 app.include_router(admin_accessibility_router, prefix="/api")
+app.include_router(market_validation_router, prefix="/api")
 
 
 @app.get("/")
