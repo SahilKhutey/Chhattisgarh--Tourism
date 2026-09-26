@@ -86,3 +86,21 @@ market_validation_router.include_router(retention_router)
 from app.modules.market_validation.business_model.router import router as business_router
 market_validation_router.include_router(business_router)
 
+# MV11: Post-Validation Pilot, Scale Readiness & Market Launch Execution
+from app.modules.market_validation.pilot.router import router as pilot_router
+from app.modules.market_validation.market_selection.router import router as market_selection_router
+from app.modules.market_validation.launch_readiness.router import router as launch_readiness_router
+from app.modules.market_validation.scale_gates.router import router as scale_gates_router
+from app.modules.market_validation.launch_controls.router import router as launch_controls_router
+from app.modules.market_validation.operational_readiness.router import router as operational_readiness_router
+from app.modules.market_validation.expansion.router import router as expansion_router
+
+market_validation_router.include_router(pilot_router)
+market_validation_router.include_router(market_selection_router)
+market_validation_router.include_router(launch_readiness_router)
+market_validation_router.include_router(scale_gates_router)
+market_validation_router.include_router(launch_controls_router)
+market_validation_router.include_router(operational_readiness_router)
+market_validation_router.include_router(expansion_router)
+
+
