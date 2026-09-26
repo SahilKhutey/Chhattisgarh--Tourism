@@ -4,7 +4,14 @@ from uuid import UUID
 from fastapi import Depends, HTTPException, Request, status
 from app.modules.admin.dependencies import AdminUser, get_current_user
 
-VALIDATION_ROLES = {"ADMIN", "MARKET_RESEARCHER", "PRODUCT_MANAGER"}
+VALIDATION_ROLES = {
+    "ADMIN",
+    "MARKET_RESEARCHER",
+    "PRODUCT_MANAGER",
+    "CONTENT_EDITOR",
+    "CONTENT_REVIEWER",
+    "CONTENT_VERIFIER",
+}
 
 
 def require_market_researcher(

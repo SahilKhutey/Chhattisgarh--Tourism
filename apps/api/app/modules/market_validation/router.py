@@ -60,3 +60,18 @@ geography_router.include_router(route_validation_router)
 geography_router.include_router(geo_analysis_router)
 
 market_validation_router.include_router(geography_router)
+
+# MV5: Content & Discovery Validation
+from app.modules.market_validation.content.router import router as content_entries_router
+from app.modules.market_validation.content_evidence.router import router as content_evidence_router
+from app.modules.market_validation.trust.router import router as content_trust_router
+from app.modules.market_validation.content_experiments.router import router as content_experiments_router
+from app.modules.market_validation.discovery.router import router as discovery_router
+from app.modules.market_validation.content_analysis.router import router as content_analysis_router
+
+market_validation_router.include_router(content_entries_router)
+market_validation_router.include_router(content_evidence_router)
+market_validation_router.include_router(content_trust_router)
+market_validation_router.include_router(content_experiments_router)
+market_validation_router.include_router(discovery_router)
+market_validation_router.include_router(content_analysis_router)
