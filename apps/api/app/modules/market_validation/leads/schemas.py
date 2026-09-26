@@ -22,18 +22,57 @@ VALID_CONVERSION_STATUSES = {
     "DECLINED",
     "EXPIRED",
     "CONVERTED",
+    "CONTACT",
+    "QUALIFIED",
+    "BOOKING_INTENT",
+    "BOOKED",
+    "COMPLETED",
+}
+
+QUALIFICATION_STATUSES = {
+    "UNQUALIFIED",
+    "PENDING",
+    "QUALIFIED",
+    "DISQUALIFIED",
+}
+
+DISQUALIFICATION_REASONS = {
+    "WRONG_PROVIDER",
+    "INVALID_REQUEST",
+    "DUPLICATE",
+    "SPAM",
+    "OUT_OF_SERVICE_AREA",
+    "INSUFFICIENT_INFORMATION",
+    "OTHER",
+}
+
+LEAD_SOURCES = {
+    "SEARCH",
+    "DESTINATION",
+    "MAP",
+    "NEARBY",
+    "EXPERIENCE",
+    "CREATOR",
+    "ROUTE",
+    "RECOMMENDATION",
+    "TRIP",
+    "SHARED",
+    "DIRECT",
+    "DISCOVERY",
+    "MAP_EXPLORER",
+    "PORTAL",
 }
 
 
 class LeadBase(BaseModel):
-    source: str = "DISCOVERY"
-    traveler_segment: str
-    destination: str
-    experience: str
-    request_type: str
+    source: str = "SEARCH"
+    traveler_segment: str = "GENERAL"
+    destination: str = "Bastar"
+    experience: str = "Local Guided Experience"
+    request_type: str = "BOOKING_INQUIRY"
     status: str = "NEW"
     qualified: bool = False
-    conversion_status: str = "PENDING"
+    conversion_status: str = "CONTACT"
     outcome: str | None = None
 
     @model_validator(mode="before")
@@ -53,6 +92,25 @@ class LeadCreate(LeadBase):
     provider_id: UUID
 
 
+class MarketLeadCreate(BaseModel):
+    provider_id: UUID
+    consumer_id: str | None = None
+    anonymous_user_id: str | None = None
+    session_id: str | None = None
+    source: str = "SEARCH"
+    destination_id: str | None = None
+    experience_id: str | None = None
+    request_type: str = "BOOKING_INQUIRY"
+    requested_date: datetime | None = None
+    traveler_count: int = 1
+    budget_band: str | None = None
+    message: str | None = None
+    traveler_segment: str | None = "GENERAL"
+    destination: str | None = "Bastar"
+    experience: str | None = "Local Guided Experience"
+    lead_details: dict | None = None
+
+
 class LeadUpdate(BaseModel):
     source: str | None = None
     traveler_segment: str | None = None
@@ -61,38 +119,79 @@ class LeadUpdate(BaseModel):
     request_type: str | None = None
     status: str | None = None
     qualified: bool | None = None
+    qualification_status: str | None = None
+    disqualification_reason: str | None = None
     conversion_status: str | None = None
     outcome: str | None = None
-    provider_response_at: datetime | None = None
+    provider_response_status: str | None = None
 
 
 class LeadQualify(BaseModel):
     qualified: bool = True
-    status: str = "QUALIFIED"
+    outcome: str | None = None
+
+
+class MarketLeadQualifyRequest(BaseModel):
+    qualification_status: str = "QUALIFIED"  # QUALIFIED or DISQUALIFIED
+    disqualification_reason: str | None = None
+    notes: str | None = None
+
+
+class MarketLeadRespondRequest(BaseModel):
+    response_type: str = "RESPONDED"  # ACCEPT, DECLINE, QUESTION, QUOTE
+    response_message: str | None = None
+    offered_price: float | None = None
+    offered_date: datetime | None = None
+    metadata: dict | None = None
 
 
 class LeadResponseRecord(BaseModel):
     response_at: datetime | None = None
+    provider_response_at: datetime | None = None
+    response_time_seconds: int = Field(default=0, ge=0)
     status: str = "RESPONDED"
     outcome: str | None = None
 
 
 class LeadBookingRecord(BaseModel):
+    outcome: str = "BOOKED"
     conversion_status: str = "CONVERTED"
-    status: str = "BOOKED"
-    outcome: str | None = "CONFIRMED_BOOKING"
 
 
-class LeadResponse(LeadBase):
+class LeadResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: UUID
     provider_id: UUID
+    lead_id: str | None = None
+    consumer_id: str | None = None
+    anonymous_user_id: str | None = None
+    session_id: str | None = None
+    source: str
+    destination_id: str | None = None
+    experience_id: str | None = None
+    traveler_segment: str
+    destination: str
+    experience: str
+    request_type: str
+    requested_date: datetime | None = None
+    traveler_count: int = 1
+    budget_band: str | None = None
+    message: str | None = None
+    status: str
+    qualified: bool
+    qualification_status: str = "PENDING"
+    disqualification_reason: str | None = None
+    provider_response_status: str = "NEW"
+    conversion_status: str
+    outcome: str | None = None
+    lead_details: dict | None = None
     created_at: datetime
+    updated_at: datetime | None = None
     provider_response_at: datetime | None = None
     response_time_seconds: int | None = None
 
-    model_config = ConfigDict(from_attributes=True)
-
 
 class LeadListResponse(BaseModel):
-    total: int
     items: list[LeadResponse]
+    total: int
