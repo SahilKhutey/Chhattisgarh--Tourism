@@ -103,4 +103,9 @@ market_validation_router.include_router(launch_controls_router)
 market_validation_router.include_router(operational_readiness_router)
 market_validation_router.include_router(expansion_router)
 
+# MV13: Final Integration, Production Sign-Off & Market Validation Release
+from app.modules.market_validation.final.router import router as final_router
+market_validation_router.include_router(final_router)
+
+
 
