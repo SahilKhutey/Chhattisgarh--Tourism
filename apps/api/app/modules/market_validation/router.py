@@ -78,3 +78,7 @@ market_validation_router.include_router(discovery_router)
 market_validation_router.include_router(content_analysis_router)
 market_validation_router.include_router(transactions_router, prefix="/transactions")
 
+# MV8: Retention, Repeat Usage & Network Effects
+from app.modules.market_validation.retention.router import router as retention_router
+market_validation_router.include_router(retention_router)
+
