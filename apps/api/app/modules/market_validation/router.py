@@ -82,3 +82,7 @@ market_validation_router.include_router(transactions_router, prefix="/transactio
 from app.modules.market_validation.retention.router import router as retention_router
 market_validation_router.include_router(retention_router)
 
+# MV9: Business Model, Monetization & Unit Economics
+from app.modules.market_validation.business_model.router import router as business_router
+market_validation_router.include_router(business_router)
+
