@@ -12,7 +12,7 @@ This repository serves as an enterprise-grade, schema-driven tourism operating s
 docs/
 ├── README.md                                # Central documentation hub (this file)
 │
-├── 🏛️ System Architecture
+├── 🏛️ System Architecture & Audits
 │   ├── Architecture.md                      # End-to-end system topology and platform design
 │   ├── Generic_Tourism_Template_Engine.md   # Dynamic schema-driven rendering engine specification
 │   ├── Backend.md                           # Kernel services, API patterns, and database layers
@@ -21,9 +21,19 @@ docs/
 │   ├── Features.md                          # Platform capabilities and functional matrix
 │   ├── Services.md                          # Microservices, jobs, and worker topologies
 │   ├── Workflow.md                          # Authoring, review, moderation, and publication flow
-│   └── architecture/                        # Deep-dive architecture canonicalization RFCs
-│       ├── content-template-canonicalization.md
-│       └── template-canonicalization.md
+│   ├── architecture/                        # Deep-dive architecture canonicalization RFCs
+│   │   ├── CG_Tourism_Canonical_Architecture_v1.md
+│   │   ├── content-template-canonicalization.md
+│   │   └── template-canonicalization.md
+│   └── operations/                          # Operational audits and master task logs
+│       ├── deep-dive-system-audit-task-log.md # Comprehensive System Deep-Dive Audit & Master Task Log
+│       └── final-integration-task-log.md    # 36 Final Integration (FI) tasks verification
+│
+├── 🎯 Market Validation Program (MV0 — MV13)
+│   ├── market-validation/README.md          # Market validation overview and JTBD framework
+│   ├── market-validation/mv13-final-validation.md # Final synthesis and conditional GO decision
+│   ├── market-validation/market-validation-signoff.md # Executive signoff & 90-day pilot authorization
+│   └── market-validation/findings/          # Empirical findings and task logs (MV2 through MV13)
 │
 ├── 📦 P13 System Integration & Release Closure
 │   ├── p13/TASK_LOG.md                      # Audit log of tasks P13-001 through P13-076 & Golden Path
