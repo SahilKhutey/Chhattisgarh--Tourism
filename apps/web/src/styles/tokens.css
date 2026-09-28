@@ -1,0 +1,36 @@
+:root {
+  --cg-background: 0 0% 100%;
+  --cg-foreground: 222 47% 11%;
+
+  --cg-primary: 142 48% 32%;
+  --cg-primary-foreground: 0 0% 100%;
+
+  --cg-secondary: 36 70% 48%;
+  --cg-secondary-foreground: 222 47% 11%;
+
+  --cg-muted: 210 20% 96%;
+  --cg-muted-foreground: 215 16% 47%;
+
+  --cg-border: 214 20% 88%;
+
+  --cg-success: 142 71% 35%;
+  --cg-warning: 38 92% 45%;
+  --cg-danger: 0 72% 45%;
+  --cg-info: 210 80% 45%;
+
+  --cg-radius-sm: 0.375rem;
+  --cg-radius-md: 0.625rem;
+  --cg-radius-lg: 1rem;
+  --cg-radius-xl: 1.5rem;
+
+  --cg-content-max: 80rem;
+
+  --cg-space-1: 0.25rem;
+  --cg-space-2: 0.5rem;
+  --cg-space-3: 0.75rem;
+  --cg-space-4: 1rem;
+  --cg-space-6: 1.5rem;
+  --cg-space-8: 2rem;
+  --cg-space-12: 3rem;
+  --cg-space-16: 4rem;
+}

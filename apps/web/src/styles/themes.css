@@ -1,0 +1,52 @@
+/* CG Tourism OS — Theme & Motion Foundations */
+
+/* Reduced Motion Override */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* High Contrast & Forced Colors */
+@media (forced-colors: active) {
+  :root {
+    --cg-border: 0 0% 0%;
+  }
+}
+
+[data-theme="high-contrast"] {
+  --cg-background: 0 0% 100%;
+  --cg-foreground: 0 0% 0%;
+  --cg-primary: 0 0% 0%;
+  --cg-primary-foreground: 0 0% 100%;
+  --cg-secondary: 0 0% 20%;
+  --cg-secondary-foreground: 0 0% 100%;
+  --cg-muted: 0 0% 90%;
+  --cg-muted-foreground: 0 0% 10%;
+  --cg-border: 0 0% 0%;
+}
+
+/* Dark Mode Extensibility */
+[data-theme="dark"],
+.dark {
+  --cg-background: 222 47% 8%;
+  --cg-foreground: 210 20% 98%;
+  --cg-primary: 142 55% 45%;
+  --cg-primary-foreground: 0 0% 100%;
+  --cg-secondary: 36 75% 55%;
+  --cg-secondary-foreground: 222 47% 11%;
+  --cg-muted: 217 33% 17%;
+  --cg-muted-foreground: 215 20% 65%;
+  --cg-border: 217 33% 22%;
+}
+
+/* Future Event/Seasonal Theme Anchor */
+[data-theme="bastar-dussehra"] {
+  --cg-primary: 25 85% 42%;
+  --cg-secondary: 42 88% 50%;
+}

@@ -1,0 +1,29 @@
+/* CG Tourism OS — Global CSS Foundation */
+@import "./tokens.css";
+@import "./typography.css";
+@import "./themes.css";
+
+html {
+  min-width: 320px;
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  background: hsl(var(--cg-background));
+  color: hsl(var(--cg-foreground));
+  text-rendering: optimizeLegibility;
+}
+
+button,
+a,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+}
