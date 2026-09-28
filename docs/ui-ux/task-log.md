@@ -2,13 +2,26 @@
 
 **System Version**: `v1.1.0-ui-ux-foundation`  
 **Current Branch**: `main`  
-**Current Phase**: `UI/UX-1 — UX Foundation & Design Architecture`  
 **Signoff Authority**: Product Architecture, Systems Design & UI/UX Governance  
 
 ---
 
-## 📋 13-Phase Track Overview
+## 📋 14-Phase Track Overview
 
+- [x] **UI/UX-0 — Foundation Setup**
+  - [x] Establish canonical UI layer structure (`ui/`, `lib/`, `styles/`, `tests/`)
+  - [x] Semantic design tokens in `styles/tokens.css` (`--cg-*`)
+  - [x] Typography foundation in `styles/typography.css` (`.cg-display`, `.cg-heading-*`, `.cg-body-*`)
+  - [x] Canonical layout primitives in `ui/layout/` (`Container`, `Section`, `Stack`, `Grid`, `Page`)
+  - [x] Canonical UI primitives in `ui/` (`Button`, `Card`, `Badge`, `Input`, `Select`, `Dialog`, `Drawer`, `Tabs`, `Accordion`, `Skeleton`, `EmptyState`, `ErrorState`)
+  - [x] UX State Model in `lib/ui/ui-state.ts` (`UIState`, `isBlockingUIState`)
+  - [x] Content UI Contract in `lib/content/content-ui.ts` (`ContentRenderModel`, `ContentSection`)
+  - [x] Geographic UI Contract in `lib/geo/geo-types.ts` (`GeoCoordinate`, `GeoBounds`, `GeoEntityReference`)
+  - [x] Theme & reduced motion in `styles/themes.css`
+  - [x] 100% unit tests passing in `tests/ui-foundation/` (17/17 tests passing)
+  - [x] TypeScript validation passing (0 errors)
+  - [x] ESLint validation passing (0 errors)
+  - [x] Next.js production build passing (36/36 pages generated)
 - [x] **UI/UX-1 — UX Foundation & Design Architecture**
   - [x] Establish core UX principles (cultural dignity, schema-driven determinism, low-connectivity resilience)
   - [x] Information Architecture (IA) 9-stage funnel & 33-district spatial hierarchy
@@ -19,7 +32,7 @@
   - [x] WCAG 2.1 AA accessibility baseline & contrast formulas
   - [x] 5-stage UI lifecycle state contracts (`IDLE`, `LOADING`, `EMPTY`, `ERROR`, `OFFLINE_SYNCING`)
   - [x] Typed design-token architecture in `apps/web/src/lib/tokens/`
-  - [x] Automated unit test suite validating token integrity & WCAG contrast compliance
+  - [x] Automated unit test suite validating token integrity & WCAG contrast compliance (13/13 tests passing)
 - [ ] **UI/UX-2 — Global Canonical Design System** (Zero duplicates, unified components)
 - [ ] **UI/UX-3 — Global Application Shell** (Desktop & Independent Mobile navigation)
 - [ ] **UI/UX-4 — Tourism Discovery Experience** (Multi-facet filters, corridor explorer)
@@ -36,22 +49,22 @@
 
 ---
 
-## 🛠️ UI/UX-1 Deliverables & Files
+## 🛠️ UI/UX-0 & UI/UX-1 Deliverables & Verification Reports
 
-1. **Architecture & Governance Docs**:
+1. **Governance & Specifications**:
    - [`docs/ui-ux/README.md`](README.md)
    - [`docs/ui-ux/ui-ux-1-foundation-architecture.md`](ui-ux-1-foundation-architecture.md)
+   - [`docs/ui-ux/ui-ux-0-foundation-verification.md`](ui-ux-0-foundation-verification.md)
    - [`docs/ui-ux/task-log.md`](task-log.md)
-2. **Design Tokens & Foundation Contracts**:
-   - [`apps/web/src/lib/tokens/colors.ts`](../../apps/web/src/lib/tokens/colors.ts)
-   - [`apps/web/src/lib/tokens/typography.ts`](../../apps/web/src/lib/tokens/typography.ts)
-   - [`apps/web/src/lib/tokens/spacing.ts`](../../apps/web/src/lib/tokens/spacing.ts)
-   - [`apps/web/src/lib/tokens/elevation.ts`](../../apps/web/src/lib/tokens/elevation.ts)
-   - [`apps/web/src/lib/tokens/radii.ts`](../../apps/web/src/lib/tokens/radii.ts)
-   - [`apps/web/src/lib/tokens/motion.ts`](../../apps/web/src/lib/tokens/motion.ts)
-   - [`apps/web/src/lib/tokens/breakpoints.ts`](../../apps/web/src/lib/tokens/breakpoints.ts)
-   - [`apps/web/src/lib/tokens/states.ts`](../../apps/web/src/lib/tokens/states.ts)
-   - [`apps/web/src/lib/tokens/contracts.ts`](../../apps/web/src/lib/tokens/contracts.ts)
-   - [`apps/web/src/lib/tokens/index.ts`](../../apps/web/src/lib/tokens/index.ts)
-3. **Verification Test Suite**:
-   - [`apps/web/tests/ui-ux/ui-ux-1-foundation.spec.ts`](../../apps/web/tests/ui-ux/ui-ux-1-foundation.spec.ts)
+2. **Canonical UI Primitives & Layout**:
+   - `apps/web/src/ui/layout/` (`Container`, `Section`, `Stack`, `Grid`, `Page`)
+   - `apps/web/src/ui/` (`Button`, `Card`, `Badge`, `Input`, `Select`, `Dialog`, `Drawer`, `Tabs`, `Accordion`, `Skeleton`, `EmptyState`, `ErrorState`)
+3. **Contracts & Tokens**:
+   - `apps/web/src/lib/ui/ui-state.ts`
+   - `apps/web/src/lib/content/content-ui.ts`
+   - `apps/web/src/lib/geo/geo-types.ts`
+   - `apps/web/src/styles/` (`tokens.css`, `typography.css`, `themes.css`, `globals.css`)
+   - `apps/web/src/lib/tokens/` (`colors`, `typography`, `spacing`, `elevation`, `radii`, `motion`, `breakpoints`, `states`, `contracts`)
+4. **Test Suites**:
+   - `apps/web/tests/ui-foundation/` (17 tests passing)
+   - `apps/web/tests/ui-ux/ui-ux-1-foundation.spec.ts` (13 tests passing)
