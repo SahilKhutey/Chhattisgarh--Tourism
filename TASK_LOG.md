@@ -15,7 +15,8 @@ CG Tourism OS Development History
 ├── 1. Foundation & Infrastructure (P1 — P18) .......... [ 18 / 18 COMPLETE ]
 ├── 2. Final Integration & Reconciliation (FI-01 — 36) . [ 36 / 36 COMPLETE ]
 ├── 3. Market Validation Program (MV0 — MV13) .......... [ 13 / 13 COMPLETE ]
-└── 4. 90-Day Pilot Execution (Bastar Circuit 1) ....... [ IN PROGRESS / READY ]
+├── 4. 90-Day Pilot Execution (Bastar Circuit 1) ....... [ IN PROGRESS / READY ]
+└── 5. UI/UX Framework Track (UI/UX-1 — UI/UX-13) ...... [ UI/UX-1 COMPLETE ]
 ```
 
 ---
@@ -45,6 +46,13 @@ CG Tourism OS Development History
   - **Days 1–30**: Bastar corridor lockdown, 25 homestay onboardings, offline pack generation, emergency SOS command drill.
   - **Days 31–60**: Monetization validation, 5% platform commission collection, UPI payout reconciliation.
   - **Days 61–90**: ATIS telemetry self-learning loop, secondary corridor evaluation (Surguja), executive review.
+
+### 5. UI/UX Framework Track (UI/UX-1 — UI/UX-13 + FINAL)
+- **Status**: **UI/UX-1 COMPLETE / ACTIVE**
+- **Detailed Log**: [`docs/ui-ux/task-log.md`](docs/ui-ux/task-log.md) & [`docs/ui-ux/ui-ux-1-foundation-architecture.md`](docs/ui-ux/ui-ux-1-foundation-architecture.md)
+- **Scope**: Consumer interaction framework bridging Core Systems, Template Engine, and GIS.
+  - **UI/UX-1**: UX principles, 9-stage IA funnel, dual-mode desktop & mobile navigation, responsive strategy, WCAG 2.1 AA baseline, 5-stage UI lifecycle states, and typed design tokens (`colors`, `typography`, `spacing`, `elevation`, `radii`, `motion`, `breakpoints`, `states`, `contracts`).
+  - **Next Transition**: UI/UX-2 (Global Canonical Design System — zero duplicate components).
 
 ---
 
