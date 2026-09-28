@@ -47,11 +47,12 @@ CG Tourism OS Development History
   - **Days 31–60**: Monetization validation, 5% platform commission collection, UPI payout reconciliation.
   - **Days 61–90**: ATIS telemetry self-learning loop, secondary corridor evaluation (Surguja), executive review.
 
-### 5. UI/UX Framework Track (UI/UX-1 — UI/UX-13 + FINAL)
-- **Status**: **UI/UX-1 COMPLETE / ACTIVE**
-- **Detailed Log**: [`docs/ui-ux/task-log.md`](docs/ui-ux/task-log.md) & [`docs/ui-ux/ui-ux-1-foundation-architecture.md`](docs/ui-ux/ui-ux-1-foundation-architecture.md)
+### 5. UI/UX Framework Track (UI/UX-0 — UI/UX-13 + FINAL)
+- **Status**: **UI/UX-0 & UI/UX-1 COMPLETE / ACTIVE**
+- **Detailed Log**: [`docs/ui-ux/task-log.md`](docs/ui-ux/task-log.md), [`docs/ui-ux/ui-ux-0-foundation-verification.md`](docs/ui-ux/ui-ux-0-foundation-verification.md), & [`docs/ui-ux/ui-ux-1-foundation-architecture.md`](docs/ui-ux/ui-ux-1-foundation-architecture.md)
 - **Scope**: Consumer interaction framework bridging Core Systems, Template Engine, and GIS.
-  - **UI/UX-1**: UX principles, 9-stage IA funnel, dual-mode desktop & mobile navigation, responsive strategy, WCAG 2.1 AA baseline, 5-stage UI lifecycle states, and typed design tokens (`colors`, `typography`, `spacing`, `elevation`, `radii`, `motion`, `breakpoints`, `states`, `contracts`).
+  - **UI/UX-0 (Foundation Setup)**: Canonical UI primitives in `@/ui/*` (`Button`, `Card`, `Badge`, `Input`, `Select`, `Dialog`, `Drawer`, `Tabs`, `Accordion`, `Skeleton`, `EmptyState`, `ErrorState`), layout primitives (`Container`, `Section`, `Stack`, `Grid`, `Page`), semantic tokens (`--cg-*`), typography (`.cg-display`, `.cg-heading-*`, `.cg-body-*`), themes & reduced motion, `UIState` machine, `ContentRenderModel`, and `GeoEntityReference` contracts. Verified with 17 passing tests, 0 lint/tsc errors, and successful 36-page production build.
+  - **UI/UX-1 (UX Foundation & Architecture)**: UX principles, 9-stage IA funnel, dual-mode desktop & mobile navigation, responsive strategy, WCAG 2.1 AA baseline, 5-stage UI lifecycle states, and typed design tokens (`colors`, `typography`, `spacing`, `elevation`, `radii`, `motion`, `breakpoints`, `states`, `contracts`). Verified with 13 passing unit tests.
   - **Next Transition**: UI/UX-2 (Global Canonical Design System — zero duplicate components).
 
 ---
