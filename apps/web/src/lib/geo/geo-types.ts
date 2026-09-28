@@ -1,3 +1,30 @@
+export type GeoCoordinate = {
+  latitude: number;
+  longitude: number;
+};
+
+export type GeoBounds = {
+  north: number;
+  south: number;
+  east: number;
+  west: number;
+};
+
+export type GeoEntityReference = {
+  id: string;
+  type:
+    | "division"
+    | "district"
+    | "zone"
+    | "place"
+    | "route"
+    | "experience"
+    | "service"
+    | "safety";
+  name: string;
+  coordinate?: GeoCoordinate;
+};
+
 export interface MapPlace {
   id: string;
   name: string;
