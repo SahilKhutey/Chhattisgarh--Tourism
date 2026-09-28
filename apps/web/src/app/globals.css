@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @source "../components";
 @source "../app";
+@source "../ui";
 
 /* ── Leaflet popup style overrides ──────────────────────────────────────── */
 /* Leaflet CSS fixes for Tailwind */
