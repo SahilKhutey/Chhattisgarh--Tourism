@@ -13,16 +13,43 @@ html {
   outline-offset: 2px;
 }
 
-/* Interactive touch and tactile feedback */
+/* Interactive control tactile feedback (Buttons, IconButtons) */
 .cg-interactive {
-  transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1),
-              box-shadow 150ms cubic-bezier(0.4, 0, 0.2, 1),
-              border-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition:
+    transform 150ms cubic-bezier(0.2, 0, 0, 1),
+    opacity 150ms cubic-bezier(0.2, 0, 0, 1),
+    box-shadow 150ms cubic-bezier(0.2, 0, 0, 1);
   -webkit-tap-highlight-color: transparent;
 }
 
 .cg-interactive:active:not(:disabled) {
   transform: scale(0.98);
+}
+
+.cg-interactive:disabled {
+  cursor: not-allowed;
+}
+
+.cg-interactive:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+/* Interactive card micro-interaction (Hover lift & press reset) */
+.cg-card-interactive {
+  transition:
+    transform 200ms cubic-bezier(0.2, 0, 0, 1),
+    box-shadow 200ms cubic-bezier(0.2, 0, 0, 1),
+    border-color 200ms cubic-bezier(0.2, 0, 0, 1);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.cg-card-interactive:hover {
+  transform: translateY(-2px);
+}
+
+.cg-card-interactive:active {
+  transform: translateY(0);
 }
 
 /* WCAG AAA touch target compliance */
@@ -39,6 +66,13 @@ html {
 
   .cg-interactive,
   .cg-interactive:active {
+    transform: none !important;
+    transition: none !important;
+  }
+
+  .cg-card-interactive,
+  .cg-card-interactive:hover,
+  .cg-card-interactive:active {
     transform: none !important;
     transition: none !important;
   }
