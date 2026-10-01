@@ -67,7 +67,7 @@ export function MobileNavigation({
         ref={drawerRef}
         className={cn(
           "relative z-10 w-full max-w-xs h-full bg-background border-l border-border shadow-2xl",
-          "flex flex-col overflow-y-auto p-6 transition-transform animate-in slide-in-from-right duration-200"
+          "flex flex-col overflow-y-auto p-6 cg-mobile-menu"
         )}
       >
         {/* Drawer Header */}
