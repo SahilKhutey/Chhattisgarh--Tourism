@@ -85,7 +85,7 @@
   - [x] TypeScript validation passing (0 errors)
   - [x] ESLint validation passing (0 errors)
   - [x] Production build passing (87/87 static & dynamic routes compiled)
-- [x] **UI/UX-4 — Loading Screens, Skeleton Systems & Smooth Transitions**
+- [x] **UI/UX-4 (Part A) — Loading Screens, Skeleton Systems & Smooth Transitions**
   - [x] Canonical loading state contract in `src/core/ui/loading/types.ts` (`LoadingState`, `LoadingPriority`, `ContentLoadingShape`)
   - [x] Timing policies in `src/core/ui/loading/policies.ts` (120ms blocking, 200ms skeleton, 3s slow network, 10s long running)
   - [x] Loading state machine & predicates in `src/core/ui/loading/states.ts` (`resolveLoadingState`, `transitionLoadingState`)
@@ -97,6 +97,23 @@
   - [x] Next.js route loading integration in `src/app/loading.tsx`
   - [x] 100% unit tests passing in `src/core/ui/__tests__/` and `src/components/loading/__tests__/` (36/36 tests passing)
   - [x] 100% full web test suite passing (435/435 tests passing across 106 test suites)
+  - [x] TypeScript validation passing (0 errors)
+  - [x] ESLint validation passing (0 errors)
+  - [x] Production build passing (87/87 static & dynamic routes compiled)
+- [x] **UI/UX-4 (Part B) — Application Shell & Consumer Navigation Experience**
+  - [x] Consumer Information Architecture & contracts in `src/core/ui/shell/` (`ShellNavigationItem`, `ShellNavigationGroup`, `consumerNavigation`)
+  - [x] Safe area and responsive helpers in `src/core/ui/shell/responsive.ts`
+  - [x] Canonical Application Shell in `src/components/shell/AppShell/` (`AppShell`, `SkipToContent`)
+  - [x] Responsive Consumer Header in `src/components/shell/Header/` (`Header`, `DesktopHeader`, `MobileHeader`)
+  - [x] Consumer Navigation primitives in `src/components/shell/Navigation/` (`PrimaryNavigation`, `SecondaryNavigation`, `MobileNavigation`, `NavigationItem`)
+  - [x] Global Search Entry in `src/components/shell/SearchEntry/` (`SearchEntry`)
+  - [x] Action and state entries in `src/components/shell/` (`AccountEntry`, `TripEntry`)
+  - [x] Responsive Footer in `src/components/shell/Footer/` (`Footer`)
+  - [x] High-frequency Mobile Bottom Navigation in `src/components/shell/BottomNavigation/` (`BottomNavigation`)
+  - [x] Contextual Page Navigation in `src/components/navigation/ContextNavigation/` (`ContextNavigation`)
+  - [x] Application Shell stylesheet in `src/styles/shell.css`
+  - [x] 100% unit tests passing in `src/components/shell/__tests__/` and `src/core/ui/__tests__/` (48/48 tests passing)
+  - [x] 100% full web test suite passing (470/470 tests passing across 117 test suites)
   - [x] TypeScript validation passing (0 errors)
   - [x] ESLint validation passing (0 errors)
   - [x] Production build passing (87/87 static & dynamic routes compiled)
@@ -123,6 +140,7 @@
    - [`docs/ui-ux/ui-ux-2-visual-components-verification.md`](ui-ux-2-visual-components-verification.md)
    - [`docs/ui-ux/ui-ux-3-motion-verification.md`](ui-ux-3-motion-verification.md)
    - [`docs/ui-ux/ui-ux-4-loading-transitions-verification.md`](ui-ux-4-loading-transitions-verification.md)
+   - [`docs/ui-ux/ui-ux-4-application-shell-verification.md`](ui-ux-4-application-shell-verification.md)
    - [`docs/ui-ux/task-log.md`](task-log.md)
 2. **Canonical UI Primitives & Layout**:
    - `apps/web/src/ui/layout/` (`Container`, `Section`, `Stack`, `Grid`, `Page`)
