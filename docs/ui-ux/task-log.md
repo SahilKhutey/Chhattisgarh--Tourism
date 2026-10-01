@@ -44,7 +44,29 @@
   - [x] TypeScript validation passing (0 errors)
   - [x] ESLint validation passing (0 errors)
   - [x] Production build passing (36/36 static/dynamic routes compiled)
-- [ ] **UI/UX-2 — Global Canonical Design System** (Zero duplicates, unified components)
+- [x] **UI/UX-2 — Visual Components, Buttons & Navigation Smoothness**
+  - [x] Canonical Button in `src/components/ui/Button/` with variants (`primary`, `secondary`, `outline`, `ghost`, `danger`) and sizes (`sm`, `md`, `lg`)
+  - [x] Canonical IconButton in `src/components/ui/IconButton/` with required accessible label and title
+  - [x] Canonical Link in `src/components/ui/Link/` with external link security and active route state
+  - [x] Composable Card primitive in `src/components/ui/Card/` (`Card`, `CardHeader`, `CardTitle`, `CardDescription`, `CardContent`, `CardFooter`)
+  - [x] Status & categorical Badge in `src/components/ui/Badge/`
+  - [x] Accessible Spinner in `src/components/ui/Spinner/` (`role="status"`, screen reader announce)
+  - [x] Accessible Separator in `src/components/ui/Separator/` (`role="separator"`, horizontal/vertical)
+  - [x] Canonical Feedback components in `src/components/feedback/` (`LoadingIndicator`, `ErrorMessage`, `EmptyState`)
+  - [x] Route state engine in `src/core/ui/navigation/active-route.ts` (`isRouteActive`, `normalizePath`)
+  - [x] Canonical `consumerNavigation` hierarchy in `src/core/ui/navigation/navigation.ts`
+  - [x] NavigationLink in `src/components/navigation/NavigationLink.tsx` with `aria-current="page"`
+  - [x] DesktopNavigation in `src/components/navigation/DesktopNavigation.tsx`
+  - [x] MobileNavigation drawer in `src/components/navigation/MobileNavigation.tsx` with backdrop and Esc dismiss
+  - [x] Breadcrumbs in `src/components/navigation/Breadcrumbs.tsx` with semantic nav and active page
+  - [x] Responsive sticky AppHeader in `src/components/navigation/AppHeader.tsx`
+  - [x] Smooth scrolling with reduced-motion auto fallback in `src/core/ui/navigation/scroll.ts` (`scrollToElement`)
+  - [x] Tactile and interaction styles in `src/styles/interactions.css` (`.cg-interactive`, `.cg-focus-ring`, `.cg-touch-target`)
+  - [x] 100% unit tests passing in `src/components/ui/` and `src/components/navigation/` (25/25 tests passing)
+  - [x] Full suite regression test passing (371/371 tests passing across 90 suites)
+  - [x] TypeScript validation passing (0 errors)
+  - [x] ESLint validation passing (0 errors in new UI components)
+  - [x] Production build passing (87/87 static & dynamic routes compiled)
 - [ ] **UI/UX-3 — Global Application Shell** (Desktop & Independent Mobile navigation)
 - [ ] **UI/UX-4 — Tourism Discovery Experience** (Multi-facet filters, corridor explorer)
 - [ ] **UI/UX-5 — Tourism Place & Destination Experience** (Dynamic section orchestration)
@@ -66,6 +88,7 @@
    - [`docs/ui-ux/README.md`](README.md)
    - [`docs/ui-ux/ui-ux-0-foundation-verification.md`](ui-ux-0-foundation-verification.md)
    - [`docs/ui-ux/ui-ux-1-core-verification.md`](ui-ux-1-core-verification.md)
+   - [`docs/ui-ux/ui-ux-2-visual-components-verification.md`](ui-ux-2-visual-components-verification.md)
    - [`docs/ui-ux/task-log.md`](task-log.md)
 2. **Canonical UI Primitives & Layout**:
    - `apps/web/src/ui/layout/` (`Container`, `Section`, `Stack`, `Grid`, `Page`)

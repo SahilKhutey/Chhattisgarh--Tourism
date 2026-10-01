@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import Link from "next/link";
 import { consumerNavigation } from "@/core/ui/navigation/navigation";
 import { NavigationGroup } from "@/core/ui/navigation/types";
 import { NavigationLink } from "./NavigationLink";
@@ -135,14 +136,14 @@ export function MobileNavigation({
 
         {/* Drawer Footer Actions */}
         <div className="pt-4 border-t border-border mt-auto space-y-2">
-          <a
+          <Link
             href="/safety"
             onClick={onClose}
             className="flex items-center justify-center gap-2 w-full py-2.5 px-3 rounded-xl bg-destructive/10 text-destructive text-sm font-semibold hover:bg-destructive/20 transition-colors"
           >
             <span className="h-2 w-2 rounded-full bg-destructive animate-pulse" />
             Emergency SOS / Safety
-          </a>
+          </Link>
         </div>
       </div>
     </div>
