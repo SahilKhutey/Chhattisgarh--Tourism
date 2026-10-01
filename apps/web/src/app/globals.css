@@ -3,6 +3,7 @@
 @import "../styles/typography.css";
 @import "../styles/themes.css";
 @import "../styles/motion.css";
+@import "../styles/interactions.css";
 @source "../components";
 @source "../app";
 @source "../ui";
