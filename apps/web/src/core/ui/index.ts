@@ -24,3 +24,4 @@ export * from "./motion";
 export * from "./loading";
 export * from "./transitions";
 export * from "./shell";
+export { consumerNavigation } from "./shell/navigation";

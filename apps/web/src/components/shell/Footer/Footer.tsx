@@ -14,7 +14,7 @@ export function Footer({ className }: FooterProps) {
             CG Tourism OS
           </h2>
           <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-            Digitizing Chhattisgarh's sacred narratives, natural bio-reserves, and heritage corridors.
+            Digitizing Chhattisgarh&apos;s sacred narratives, natural bio-reserves, and heritage corridors.
           </p>
         </div>
 
