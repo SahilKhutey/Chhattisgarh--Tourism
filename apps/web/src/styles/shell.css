@@ -1,0 +1,28 @@
+/**
+ * CG Tourism Application Shell Styles
+ */
+
+/* Safe area support for mobile devices */
+.cg-bottom-navigation {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Sticky context navigation offset */
+.cg-context-nav {
+  top: 4rem; /* 64px desktop header height */
+}
+
+/* Ensure smooth section anchor jumping doesn't get obscured by headers */
+section[id],
+article[id],
+div[id] {
+  scroll-margin-top: 5rem;
+}
+
+@media (min-width: 768px) {
+  section[id],
+  article[id],
+  div[id] {
+    scroll-margin-top: 7rem;
+  }
+}

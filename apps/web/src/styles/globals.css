@@ -4,6 +4,7 @@
 @import "./themes.css";
 @import "./loading.css";
 @import "./transitions.css";
+@import "./shell.css";
 
 html {
   min-width: 320px;
