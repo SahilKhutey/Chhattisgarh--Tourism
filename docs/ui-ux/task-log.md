@@ -85,8 +85,23 @@
   - [x] TypeScript validation passing (0 errors)
   - [x] ESLint validation passing (0 errors)
   - [x] Production build passing (87/87 static & dynamic routes compiled)
-- [ ] **UI/UX-4 — Tourism Discovery Experience** (Multi-facet filters, corridor explorer)
-- [ ] **UI/UX-5 — Tourism Place & Destination Experience** (Dynamic section orchestration)
+- [x] **UI/UX-4 — Loading Screens, Skeleton Systems & Smooth Transitions**
+  - [x] Canonical loading state contract in `src/core/ui/loading/types.ts` (`LoadingState`, `LoadingPriority`, `ContentLoadingShape`)
+  - [x] Timing policies in `src/core/ui/loading/policies.ts` (120ms blocking, 200ms skeleton, 3s slow network, 10s long running)
+  - [x] Loading state machine & predicates in `src/core/ui/loading/states.ts` (`resolveLoadingState`, `transitionLoadingState`)
+  - [x] Transition policies & contracts in `src/core/ui/transitions/` (`transitionPolicy`, `transitionDurationMs`)
+  - [x] Canonical loading components in `src/components/loading/` (`AppLoadingScreen`, `PageLoading`, `SectionLoading`, `CardSkeleton`, `ListSkeleton`, `ContentSkeleton`, `ImageSkeleton`, `MapLoading`, `SearchLoading`, `TripPlanningLoading`)
+  - [x] Feedback & continuity states in `src/components/feedback/` (`SlowNetworkState`, `OfflineState`, `ErrorState`)
+  - [x] Transition primitives in `src/components/transitions/` (`PageTransition`, `RouteTransition`, `ContentTransition`)
+  - [x] Loading & transition stylesheets in `src/styles/` (`loading.css`, `transitions.css`) with reduced-motion overrides
+  - [x] Next.js route loading integration in `src/app/loading.tsx`
+  - [x] 100% unit tests passing in `src/core/ui/__tests__/` and `src/components/loading/__tests__/` (36/36 tests passing)
+  - [x] 100% full web test suite passing (435/435 tests passing across 106 test suites)
+  - [x] TypeScript validation passing (0 errors)
+  - [x] ESLint validation passing (0 errors)
+  - [x] Production build passing (87/87 static & dynamic routes compiled)
+- [ ] **UI/UX-5 — Tourism Discovery Experience** (Multi-facet filters, corridor explorer)
+- [ ] **UI/UX-6 — Tourism Place & Destination Experience** (Dynamic section orchestration)
 - [ ] **UI/UX-6 — Dynamic Template Rendering Engine** (Template -> Section -> Component)
 - [ ] **UI/UX-7 — Maps & Geographic Synchronized Interface** (Multi-layer GIS, bidirectional list-map sync)
 - [ ] **UI/UX-8 — Search & Intelligent Semantic Discovery** (Natural language & intent explanations)
@@ -107,6 +122,7 @@
    - [`docs/ui-ux/ui-ux-1-core-verification.md`](ui-ux-1-core-verification.md)
    - [`docs/ui-ux/ui-ux-2-visual-components-verification.md`](ui-ux-2-visual-components-verification.md)
    - [`docs/ui-ux/ui-ux-3-motion-verification.md`](ui-ux-3-motion-verification.md)
+   - [`docs/ui-ux/ui-ux-4-loading-transitions-verification.md`](ui-ux-4-loading-transitions-verification.md)
    - [`docs/ui-ux/task-log.md`](task-log.md)
 2. **Canonical UI Primitives & Layout**:
    - `apps/web/src/ui/layout/` (`Container`, `Section`, `Stack`, `Grid`, `Page`)
