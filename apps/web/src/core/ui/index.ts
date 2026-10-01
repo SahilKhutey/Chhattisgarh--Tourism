@@ -19,4 +19,4 @@ export * from "./theme/defaults";
 export * from "./telemetry/types";
 export * from "./telemetry/client";
 
-export * from "./navigation/types";
+export * from "./navigation";

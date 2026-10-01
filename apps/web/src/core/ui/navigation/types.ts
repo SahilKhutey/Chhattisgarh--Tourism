@@ -5,6 +5,9 @@ export type NavigationItem = {
   icon?: string;
   external?: boolean;
   requiresAuth?: boolean;
+  description?: string;
+  badge?: string;
+  exact?: boolean;
 };
 
 export type NavigationGroup = {
