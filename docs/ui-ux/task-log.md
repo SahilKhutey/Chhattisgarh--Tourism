@@ -1,6 +1,6 @@
 # UI/UX Master Track — Task Log & Production Checklist
 
-**System Version**: `v1.1.0-ui-ux-foundation`  
+**System Version**: `v1.2.0-ui-ux-core`  
 **Current Branch**: `main`  
 **Signoff Authority**: Product Architecture, Systems Design & UI/UX Governance  
 
@@ -22,17 +22,28 @@
   - [x] TypeScript validation passing (0 errors)
   - [x] ESLint validation passing (0 errors)
   - [x] Next.js production build passing (36/36 pages generated)
-- [x] **UI/UX-1 — UX Foundation & Design Architecture**
-  - [x] Establish core UX principles (cultural dignity, schema-driven determinism, low-connectivity resilience)
-  - [x] Information Architecture (IA) 9-stage funnel & 33-district spatial hierarchy
-  - [x] Dual-mode navigation architecture (Desktop Shell & Independent Mobile Dock)
-  - [x] Consumer mental model mapping (corridor-thinking, seasonal readiness, offline packs)
-  - [x] Page hierarchy specification (Level 0 Gateway to Level 3 Transactional Workflows)
-  - [x] Responsive layout strategy (6 breakpoints, 44px minimum touch targets)
-  - [x] WCAG 2.1 AA accessibility baseline & contrast formulas
-  - [x] 5-stage UI lifecycle state contracts (`IDLE`, `LOADING`, `EMPTY`, `ERROR`, `OFFLINE_SYNCING`)
-  - [x] Typed design-token architecture in `apps/web/src/lib/tokens/`
-  - [x] Automated unit test suite validating token integrity & WCAG contrast compliance (13/13 tests passing)
+- [x] **UI/UX-1 — Foundation Core Code / Modules / Functions / Services**
+  - [x] Canonical UI core directory under `apps/web/src/core/ui/`
+  - [x] Dependency-free `cn()` utility in `src/lib/ui/cn.ts`
+  - [x] Centralized UI constants in `src/lib/ui/constants.ts` (`UI_BREAKPOINTS`, `UI_Z_INDEX`, `UI_DURATIONS`)
+  - [x] General UI helper utilities in `src/lib/ui/helpers.ts`
+  - [x] UI State Service & types in `src/core/ui/state/` (`UIState`, `AsyncUIState<T>`, predicates)
+  - [x] Content UI Contract in `src/core/ui/content/` (`ContentUIModel`, `ContentSection`)
+  - [x] Content Validation Service (`validateContentUIModel`)
+  - [x] Content Renderer Registry (`registerContentRenderer`, `getContentRenderer`, `hasContentRenderer`)
+  - [x] Geographic Contracts in `src/core/ui/geo/` (`GeoCoordinate`, `GeoBounds`, `GeoEntityReference`, `GeoMapViewport`)
+  - [x] Geographic Validation Functions (`isValidCoordinate`, `isValidBounds`)
+  - [x] Responsive Value Contract in `src/core/ui/responsive/` (`ResponsiveValue<T>`)
+  - [x] Accessibility Core in `src/core/ui/accessibility/` (`INTERACTIVE_ROLES`, `LIVE_REGIONS`, `createUIId`)
+  - [x] Theme Core in `src/core/ui/theme/` (`UITheme`, `MotionPreference`, `UIThemeSettings`, defaults)
+  - [x] Telemetry Contract & Client in `src/core/ui/telemetry/` (`UIEvent`, `trackUIEvent`, `configureUIEventSink`)
+  - [x] Navigation Contract in `src/core/ui/navigation/` (`NavigationItem`, `NavigationGroup`)
+  - [x] Canonical Layout Primitives in `src/components/layout/` (`Container`, `Section`, `Stack`, `Grid`, `Page`)
+  - [x] Tailwind v4 Design Tokens in `src/styles/` (`tokens.css`, `typography.css`, `themes.css`, `motion.css`)
+  - [x] 100% Passing Unit Test Suite in `src/core/ui/__tests__/` (18/18 tests passing in 4.721s)
+  - [x] TypeScript validation passing (0 errors)
+  - [x] ESLint validation passing (0 errors)
+  - [x] Production build passing (36/36 static/dynamic routes compiled)
 - [ ] **UI/UX-2 — Global Canonical Design System** (Zero duplicates, unified components)
 - [ ] **UI/UX-3 — Global Application Shell** (Desktop & Independent Mobile navigation)
 - [ ] **UI/UX-4 — Tourism Discovery Experience** (Multi-facet filters, corridor explorer)
@@ -49,22 +60,23 @@
 
 ---
 
-## 🛠️ UI/UX-0 & UI/UX-1 Deliverables & Verification Reports
+## 🛠️ Verification Reports & Core Artifacts
 
 1. **Governance & Specifications**:
    - [`docs/ui-ux/README.md`](README.md)
-   - [`docs/ui-ux/ui-ux-1-foundation-architecture.md`](ui-ux-1-foundation-architecture.md)
    - [`docs/ui-ux/ui-ux-0-foundation-verification.md`](ui-ux-0-foundation-verification.md)
+   - [`docs/ui-ux/ui-ux-1-core-verification.md`](ui-ux-1-core-verification.md)
    - [`docs/ui-ux/task-log.md`](task-log.md)
 2. **Canonical UI Primitives & Layout**:
    - `apps/web/src/ui/layout/` (`Container`, `Section`, `Stack`, `Grid`, `Page`)
+   - `apps/web/src/components/layout/` (`Container`, `Section`, `Stack`, `Grid`, `Page`)
    - `apps/web/src/ui/` (`Button`, `Card`, `Badge`, `Input`, `Select`, `Dialog`, `Drawer`, `Tabs`, `Accordion`, `Skeleton`, `EmptyState`, `ErrorState`)
-3. **Contracts & Tokens**:
-   - `apps/web/src/lib/ui/ui-state.ts`
-   - `apps/web/src/lib/content/content-ui.ts`
-   - `apps/web/src/lib/geo/geo-types.ts`
-   - `apps/web/src/styles/` (`tokens.css`, `typography.css`, `themes.css`, `globals.css`)
-   - `apps/web/src/lib/tokens/` (`colors`, `typography`, `spacing`, `elevation`, `radii`, `motion`, `breakpoints`, `states`, `contracts`)
-4. **Test Suites**:
+3. **Core Modules**:
+   - `apps/web/src/core/ui/` (`accessibility`, `content`, `geo`, `responsive`, `state`, `theme`, `telemetry`, `navigation`)
+   - `apps/web/src/lib/ui/` (`cn.ts`, `constants.ts`, `helpers.ts`)
+4. **Styles & Tokens**:
+   - `apps/web/src/styles/` (`tokens.css`, `typography.css`, `themes.css`, `motion.css`, `globals.css`)
+5. **Test Suites**:
+   - `apps/web/src/core/ui/__tests__/` (18 tests passing)
    - `apps/web/tests/ui-foundation/` (17 tests passing)
-   - `apps/web/tests/ui-ux/ui-ux-1-foundation.spec.ts` (13 tests passing)
+   - `apps/web/tests/ui-ux/` (13 tests passing)
