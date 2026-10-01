@@ -21,7 +21,7 @@ export function AppLoadingScreen({
       )}
     >
       <div className="flex flex-col items-center gap-4">
-        <Spinner size="lg" label={label} />
+        <Spinner size="lg" aria-hidden="true" />
         <span className="text-sm font-medium text-muted-foreground">
           {label}
         </span>

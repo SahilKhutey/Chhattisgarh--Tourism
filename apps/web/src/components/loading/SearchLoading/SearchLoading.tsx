@@ -21,7 +21,7 @@ export function SearchLoading({
       aria-busy="true"
       className={cn("flex items-center gap-2 py-2 text-xs text-muted-foreground", className)}
     >
-      <Spinner size="sm" label={label} />
+      <Spinner size="sm" aria-hidden="true" />
       <span>{label}</span>
     </div>
   );

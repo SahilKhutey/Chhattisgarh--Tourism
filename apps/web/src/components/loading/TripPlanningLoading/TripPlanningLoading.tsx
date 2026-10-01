@@ -49,7 +49,7 @@ export function TripPlanningLoading({
         className,
       )}
     >
-      <Spinner size="lg" label={activeLabel} />
+      <Spinner size="lg" aria-hidden="true" />
 
       <div className="space-y-1">
         <h3 className="text-base font-semibold text-foreground">
