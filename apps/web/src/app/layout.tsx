@@ -55,7 +55,7 @@ export const metadata: Metadata = {
 };
 
 import { VoiceTranslator } from "../components/VoiceTranslator";
-import MobileBottomNav from "../components/Navigation/MobileBottomNav";
+import MobileBottomNav from "../components/navigation/MobileBottomNav";
 
 export default function RootLayout({
   children,
