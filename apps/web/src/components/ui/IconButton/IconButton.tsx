@@ -60,9 +60,8 @@ export function IconButton({
       disabled={isDisabled}
       aria-busy={isBusy || undefined}
       className={cn(
-        "inline-flex items-center justify-center font-medium transition-all duration-150 select-none shrink-0",
+        "cg-interactive inline-flex items-center justify-center font-medium select-none shrink-0",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
-        "active:scale-[0.96]",
         variantStyles[variant],
         sizeStyles[size],
         isDisabled && "cursor-not-allowed opacity-60 active:scale-100",

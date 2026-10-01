@@ -17,6 +17,9 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   loading?: boolean;
   isLoading?: boolean;
   loadingLabel?: string;
+  success?: boolean;
+  isSuccess?: boolean;
+  successLabel?: string;
   className?: string;
 }
 
@@ -46,12 +49,16 @@ export function Button({
   loading = false,
   isLoading = false,
   loadingLabel = "Loading…",
+  success = false,
+  isSuccess = false,
+  successLabel = "Saved",
   disabled,
   className = "",
   type = "button",
   ...props
 }: ButtonProps) {
   const isBusy = Boolean(loading || isLoading);
+  const isDone = Boolean(success || isSuccess);
   const isDisabled = Boolean(disabled || isBusy);
 
   return (
@@ -60,11 +67,11 @@ export function Button({
       disabled={isDisabled}
       aria-busy={isBusy || undefined}
       className={cn(
-        "inline-flex items-center justify-center font-medium transition-all duration-150 select-none",
+        "cg-interactive inline-flex items-center justify-center font-medium select-none",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
-        "active:scale-[0.98]",
         variantStyles[variant],
         sizeStyles[size],
+        isDone && "bg-emerald-700 text-white hover:bg-emerald-800",
         isDisabled && "cursor-not-allowed opacity-60 active:scale-100",
         className
       )}
@@ -94,6 +101,24 @@ export function Button({
             />
           </svg>
           <span>{loadingLabel}</span>
+        </span>
+      ) : isDone ? (
+        <span className="inline-flex items-center gap-1.5">
+          <svg
+            className="h-4 w-4 text-current"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth="2.5"
+            stroke="currentColor"
+            aria-hidden="true"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M4.5 12.75l6 6 9-13.5"
+            />
+          </svg>
+          <span>{successLabel}</span>
         </span>
       ) : (
         children

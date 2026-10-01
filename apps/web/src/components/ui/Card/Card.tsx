@@ -17,7 +17,7 @@ const variantStyles: Record<CardVariant, string> = {
   outline:
     "border-2 border-border bg-transparent text-card-foreground",
   interactive:
-    "border border-border bg-card text-card-foreground shadow-sm hover:shadow-md hover:border-primary/40 transition-all duration-200 cursor-pointer active:scale-[0.99]",
+    "cg-card-interactive border border-border bg-card text-card-foreground shadow-sm hover:shadow-md hover:border-primary/40 cursor-pointer",
 };
 
 export function Card({
