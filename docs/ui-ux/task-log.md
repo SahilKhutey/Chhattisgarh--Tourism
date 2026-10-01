@@ -67,7 +67,24 @@
   - [x] TypeScript validation passing (0 errors)
   - [x] ESLint validation passing (0 errors in new UI components)
   - [x] Production build passing (87/87 static & dynamic routes compiled)
-- [ ] **UI/UX-3 — Global Application Shell** (Desktop & Independent Mobile navigation)
+- [x] **UI/UX-3 — Design System, Micro-Animations & Interaction Motion**
+  - [x] Canonical motion tokens & curves in `src/core/ui/motion/tokens.ts`
+  - [x] SSR-safe motion preferences & `useReducedMotion()` hook in `src/core/ui/motion/preferences.ts`
+  - [x] Canonical interaction matrix & states in `src/core/ui/motion/interaction.ts`
+  - [x] Motion transitions and duration converters in `src/core/ui/motion/transition.ts`
+  - [x] Motion variants map in `src/core/ui/motion/variants.ts`
+  - [x] GPU-accelerated motion CSS & stagger delays in `src/styles/motion.css`
+  - [x] Tactile control and interactive card styles in `src/styles/interactions.css`
+  - [x] Reusable motion primitives in `src/components/motion/` (`FadeIn`, `SlideIn`, `ScaleIn`, `Reveal`, `Stagger`)
+  - [x] Micro-interaction integration into `Button` (loading/success states) and `IconButton`
+  - [x] Micro-interaction integration into `Card` (`.cg-card-interactive` hover lift & press reset)
+  - [x] Micro-interaction integration into `Navigation` (`MobileNavigation` entrance animation & Esc dismiss)
+  - [x] Animated feedback primitives in `src/components/feedback/` (`Skeleton`, `Toast`, `SuccessState`)
+  - [x] 100% unit tests passing in `src/components/motion/` and `src/components/feedback/` (21/21 tests passing)
+  - [x] 100% full web test suite passing (399/399 tests passing across 100 test suites)
+  - [x] TypeScript validation passing (0 errors)
+  - [x] ESLint validation passing (0 errors)
+  - [x] Production build passing (87/87 static & dynamic routes compiled)
 - [ ] **UI/UX-4 — Tourism Discovery Experience** (Multi-facet filters, corridor explorer)
 - [ ] **UI/UX-5 — Tourism Place & Destination Experience** (Dynamic section orchestration)
 - [ ] **UI/UX-6 — Dynamic Template Rendering Engine** (Template -> Section -> Component)
@@ -89,6 +106,7 @@
    - [`docs/ui-ux/ui-ux-0-foundation-verification.md`](ui-ux-0-foundation-verification.md)
    - [`docs/ui-ux/ui-ux-1-core-verification.md`](ui-ux-1-core-verification.md)
    - [`docs/ui-ux/ui-ux-2-visual-components-verification.md`](ui-ux-2-visual-components-verification.md)
+   - [`docs/ui-ux/ui-ux-3-motion-verification.md`](ui-ux-3-motion-verification.md)
    - [`docs/ui-ux/task-log.md`](task-log.md)
 2. **Canonical UI Primitives & Layout**:
    - `apps/web/src/ui/layout/` (`Container`, `Section`, `Stack`, `Grid`, `Page`)

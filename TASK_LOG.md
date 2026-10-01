@@ -16,7 +16,7 @@ CG Tourism OS Development History
 ├── 2. Final Integration & Reconciliation (FI-01 — 36) . [ 36 / 36 COMPLETE ]
 ├── 3. Market Validation Program (MV0 — MV13) .......... [ 13 / 13 COMPLETE ]
 ├── 4. 90-Day Pilot Execution (Bastar Circuit 1) ....... [ IN PROGRESS / READY ]
-└── 5. UI/UX Framework Track (UI/UX-0 — UI/UX-13) ...... [ UI/UX-2 COMPLETE ]
+└── 5. UI/UX Framework Track (UI/UX-0 — UI/UX-13) ...... [ UI/UX-3 COMPLETE ]
 ```
 
 ---
@@ -48,13 +48,14 @@ CG Tourism OS Development History
   - **Days 61–90**: ATIS telemetry self-learning loop, secondary corridor evaluation (Surguja), executive review.
 
 ### 5. UI/UX Framework Track (UI/UX-0 — UI/UX-13 + FINAL)
-- **Status**: **UI/UX-0, UI/UX-1 & UI/UX-2 COMPLETE / ACTIVE**
-- **Detailed Log**: [`docs/ui-ux/task-log.md`](docs/ui-ux/task-log.md), [`docs/ui-ux/ui-ux-0-foundation-verification.md`](docs/ui-ux/ui-ux-0-foundation-verification.md), [`docs/ui-ux/ui-ux-1-foundation-architecture.md`](docs/ui-ux/ui-ux-1-foundation-architecture.md), [`docs/ui-ux/ui-ux-1-core-verification.md`](docs/ui-ux/ui-ux-1-core-verification.md), & [`docs/ui-ux/ui-ux-2-visual-components-verification.md`](docs/ui-ux/ui-ux-2-visual-components-verification.md)
+- **Status**: **UI/UX-0, UI/UX-1, UI/UX-2 & UI/UX-3 COMPLETE / ACTIVE**
+- **Detailed Log**: [`docs/ui-ux/task-log.md`](docs/ui-ux/task-log.md), [`docs/ui-ux/ui-ux-0-foundation-verification.md`](docs/ui-ux/ui-ux-0-foundation-verification.md), [`docs/ui-ux/ui-ux-1-foundation-architecture.md`](docs/ui-ux/ui-ux-1-foundation-architecture.md), [`docs/ui-ux/ui-ux-1-core-verification.md`](docs/ui-ux/ui-ux-1-core-verification.md), [`docs/ui-ux/ui-ux-2-visual-components-verification.md`](docs/ui-ux/ui-ux-2-visual-components-verification.md), & [`docs/ui-ux/ui-ux-3-motion-verification.md`](docs/ui-ux/ui-ux-3-motion-verification.md)
 - **Scope**: Consumer interaction framework bridging Core Systems, Template Engine, and GIS.
   - **UI/UX-0 (Foundation Setup)**: Canonical UI primitives in `@/ui/*`, layout primitives (`Container`, `Section`, `Stack`, `Grid`, `Page`), semantic tokens (`--cg-*`), typography (`.cg-display`, `.cg-heading-*`, `.cg-body-*`), themes & reduced motion, `UIState` machine, `ContentRenderModel`, and `GeoEntityReference` contracts. Verified with 17 passing tests, 0 lint/tsc errors, and successful 36-page production build.
   - **UI/UX-1 (Foundation Core Code & Modules)**: 8 Core Modules under `apps/web/src/core/ui/` (`accessibility`, `content`, `geo`, `responsive`, `state`, `theme`, `telemetry`, `navigation`), zero-dependency `cn()` utility, centralized `UI_BREAKPOINTS`, `UI_Z_INDEX`, and `UI_DURATIONS`, Content validation & renderer registry, and canonical layout components in `components/layout/`. Verified with 18 passing core unit tests, 0 lint/tsc errors, and clean Next.js production build.
-  - **UI/UX-2 (Visual Components, Buttons & Navigation Smoothness)**: Canonical Button, IconButton, Link, Card hierarchy, Badge, Spinner, Separator, and Feedback primitives. Canonical `consumerNavigation` hierarchy, active-route detection (`isRouteActive`), `NavigationLink`, `DesktopNavigation`, `MobileNavigation` drawer, `Breadcrumbs`, sticky `AppHeader`, smooth scrolling (`scrollToElement`), and interaction tactile CSS (`interactions.css`). Verified with 25 new tests (371 passing tests across full web suite), 0 tsc errors, 0 UI lint errors, and 87/87 static & dynamic routes compiled in production build.
-  - **Next Transition**: UI/UX-3 (Global Application Shell & Context Integration).
+  - **UI/UX-2 (Visual Components, Buttons & Navigation Smoothness)**: Canonical Button, IconButton, Link, Card hierarchy, Badge, Spinner, Separator, and Feedback primitives. Canonical `consumerNavigation` hierarchy, active-route detection (`isRouteActive`), `NavigationLink`, `DesktopNavigation`, `MobileNavigation` drawer, `Breadcrumbs`, sticky `AppHeader`, smooth scrolling (`scrollToElement`), and interaction tactile CSS (`interactions.css`). Verified with 25 new tests, 0 tsc errors, 0 UI lint errors, and 87/87 static & dynamic routes compiled in production build.
+  - **UI/UX-3 (Design System, Micro-Animations & Interaction Motion)**: Canonical motion tokens, durations, easing curves, spatial distances, and tactile scale factors under `core/ui/motion/`. SSR-safe `prefersReducedMotion` & `useReducedMotion` hook. Component interaction matrix contract. GPU-accelerated motion keyframes and utility classes (`FadeIn`, `SlideIn`, `ScaleIn`, `Reveal`, `Stagger`). Micro-interaction integration into `Button` (loading/success states), `Card` (`cg-card-interactive` hover lift), and `Navigation`. Feedback primitives (`Skeleton`, `Toast`, `SuccessState`). Full `@media (prefers-reduced-motion: reduce)` overrides. Verified with 21 new tests (399/399 tests passing across 100 test suites), 0 tsc errors, 0 lint errors, and 87/87 static & dynamic routes compiled in production build.
+  - **Next Transition**: UI/UX-4 (Tourism Discovery Experience & Multi-Facet Filtering).
 
 ---
 
