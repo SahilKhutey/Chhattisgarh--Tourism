@@ -20,3 +20,4 @@ export * from "./telemetry/types";
 export * from "./telemetry/client";
 
 export * from "./navigation";
+export * from "./motion";
