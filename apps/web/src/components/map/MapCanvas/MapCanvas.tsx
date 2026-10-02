@@ -17,6 +17,7 @@ export interface MapCanvasProps {
   onViewportChange?: (viewport: MapViewport) => void;
   onBoundsChange?: (bounds: MapBounds) => void;
   baseLayer?: "standard" | "terrain" | "satellite";
+  onLayerError?: (layer: "standard" | "terrain" | "satellite") => void;
   children?: React.ReactNode;
   className?: string;
   interactive?: boolean;
@@ -115,6 +116,7 @@ export function MapCanvas({
   onViewportChange,
   onBoundsChange,
   baseLayer = "standard",
+  onLayerError,
   children,
   className = "h-full w-full",
   interactive = true,
@@ -149,6 +151,13 @@ export function MapCanvas({
           url={selectedTileConfig.url}
           attribution={selectedTileConfig.attribution}
           maxZoom={selectedTileConfig.maxZoom}
+          eventHandlers={{
+            tileerror: () => {
+              if (onLayerError) {
+                onLayerError(baseLayer);
+              }
+            },
+          }}
         />
 
         <ViewportController

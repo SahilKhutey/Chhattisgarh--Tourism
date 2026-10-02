@@ -69,6 +69,7 @@ export function MapExperience({
   );
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [activeStepId, setActiveStepId] = useState<string | undefined>(undefined);
+  const [layerWarning, setLayerWarning] = useState<string | null>(null);
 
   // Track map opened telemetry on mount
   useEffect(() => {
@@ -277,6 +278,22 @@ export function MapExperience({
     });
   }, []);
 
+  // Layer error & fallback resilience
+  const handleLayerError = useCallback((failedLayer: "standard" | "terrain" | "satellite") => {
+    trackUIEvent({
+      name: "map_interaction",
+      metadata: { action: "layer_error", failedLayer },
+    });
+    if (failedLayer !== "standard") {
+      setBaseLayer("standard");
+      setLayerWarning(
+        `The ${failedLayer} layer is currently unavailable. Automatically switched to standard topography.`
+      );
+    } else {
+      setLayerWarning("Map tile services are experiencing connectivity issues.");
+    }
+  }, []);
+
   return (
     <section
       ref={containerRef}
@@ -290,6 +307,7 @@ export function MapExperience({
         <MapCanvas
           viewport={viewport}
           baseLayer={baseLayer}
+          onLayerError={handleLayerError}
           onViewportChange={setViewport}
         >
           {/* Tourism Markers */}
@@ -372,6 +390,25 @@ export function MapExperience({
             onSelectStep={handleSelectGuideStep}
             onClose={() => setUiState({ type: "idle" })}
           />
+        )}
+
+        {/* Resilience Layer Warning Toast */}
+        {layerWarning && (
+          <div
+            role="status"
+            aria-live="polite"
+            className="absolute bottom-16 left-4 right-4 md:left-auto md:right-20 z-[900] max-w-md rounded-xl bg-neutral-900/90 p-3 text-xs text-sand-beige shadow-lg backdrop-blur-md border border-neutral-700/60 flex items-center justify-between gap-3 animate-in fade-in"
+          >
+            <span>{layerWarning}</span>
+            <button
+              type="button"
+              onClick={() => setLayerWarning(null)}
+              className="text-neutral-400 hover:text-white px-2 py-0.5 rounded text-xs font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-forest-emerald"
+              aria-label="Dismiss map alert"
+            >
+              Dismiss
+            </button>
+          </div>
         )}
       </div>
 
