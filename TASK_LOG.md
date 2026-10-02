@@ -55,9 +55,20 @@ CG Tourism OS Development History
   - **UI/UX-1 (Foundation Core Code & Modules)**: 8 Core Modules under `apps/web/src/core/ui/` (`accessibility`, `content`, `geo`, `responsive`, `state`, `theme`, `telemetry`, `navigation`), zero-dependency `cn()` utility, centralized `UI_BREAKPOINTS`, `UI_Z_INDEX`, and `UI_DURATIONS`, Content validation & renderer registry, and canonical layout components in `components/layout/`. Verified with 18 passing core unit tests, 0 lint/tsc errors, and clean Next.js production build.
   - **UI/UX-2 (Visual Components, Buttons & Navigation Smoothness)**: Canonical Button, IconButton, Link, Card hierarchy, Badge, Spinner, Separator, and Feedback primitives. Canonical `consumerNavigation` hierarchy, active-route detection (`isRouteActive`), `NavigationLink`, `DesktopNavigation`, `MobileNavigation` drawer, `Breadcrumbs`, sticky `AppHeader`, smooth scrolling (`scrollToElement`), and interaction tactile CSS (`interactions.css`). Verified with 25 new tests, 0 tsc errors, 0 UI lint errors, and 87/87 static & dynamic routes compiled in production build.
   - **UI/UX-3 (Design System, Micro-Animations & Interaction Motion)**: Canonical motion tokens, durations, easing curves, spatial distances, and tactile scale factors under `core/ui/motion/`. SSR-safe `prefersReducedMotion` & `useReducedMotion` hook. Component interaction matrix contract. GPU-accelerated motion keyframes and utility classes (`FadeIn`, `SlideIn`, `ScaleIn`, `Reveal`, `Stagger`). Micro-interaction integration into `Button` (loading/success states), `Card` (`cg-card-interactive` hover lift), and `Navigation`. Feedback primitives (`Skeleton`, `Toast`, `SuccessState`). Full `@media (prefers-reduced-motion: reduce)` overrides. Verified with 21 new tests (399/399 tests passing across 100 test suites), 0 tsc errors, 0 lint errors, and 87/87 static & dynamic routes compiled in production build.
-  - **UI/UX-4 (Part A: Loading & Transitions; Part B: Application Shell & Consumer Navigation)**:
-    - *Part A*: Canonical loading state contracts, SLA timing policies, state machines, and canonical skeleton suite (`AppLoadingScreen`, `PageLoading`, `SectionLoading`, `CardSkeleton`, `ListSkeleton`, `ContentSkeleton`, `ImageSkeleton`, `MapLoading`, `SearchLoading`, `TripPlanningLoading`). Verified with 36 new tests.
     - *Part B*: Application Shell (`AppShell`, `SkipToContent`), responsive Header (`DesktopHeader`, `MobileHeader`), consumer navigation (`PrimaryNavigation`, `SecondaryNavigation`, `MobileNavigation`, `NavigationItem`), global search entry (`SearchEntry`), trip/account actions (`TripEntry`, `AccountEntry`), responsive footer (`Footer`), mobile bottom navigation (`BottomNavigation`), and contextual page navigation (`ContextNavigation`). Verified with 48 new tests (470/470 full suite tests passing across 117 test suites), 0 tsc errors, 0 lint errors, and 87/87 static & dynamic routes compiled in production build.
+  - **Geographic Experience Layer (Observer Style)**:
+    - Canonical spatial visual contracts (`MapMode`, `ScaleZoomThreshold`, `MapEntityType`, `MapEntity`, `MapViewport`, `MapBounds`, `MapMarkerModel`, `MapRoute`, `MapGuide`, `MapDetailsModel`, `MapUIState`).
+    - Canonical `MapCanvas` with client-side Leaflet boundary, configurable tile providers, attribution, and reduced-motion viewport animation controls.
+    - `TourismMarker` system with distinct SVG shape DivIcons (◆ Destination, ● Experience, ★ Event, ⊙ Service, ▣ Safety, ⚐ Guide), selection pulse, and lightweight popup.
+    - Observer console controls (`ZoomControls`, `LocateControl`, `ResetViewControl`, `FullscreenControl`, `MapControls`).
+    - Map layer controls (`LayerControl`, `LayerList`, `LayerLegend`).
+    - Observer overview metrics console (`MapOverview`).
+    - Floating geographic inspector & mobile bottom sheet (`MapDetailsPanel`).
+    - Polyline corridor visualization & stops timeline (`RouteLayer`, `RouteDetails`).
+    - Step-by-step curated trail sequencer (`MapGuide`, `GuideStep`).
+    - Synchronized accessible result list (`MapResultList`) enabling 100% WCAG keyboard access without direct canvas manipulation.
+    - Master observer orchestrator (`MapExperience`, `DynamicMapExperience`) with telemetry event tracking.
+    - Verified with 59 new tests (529/529 full suite tests passing across 134 test suites), 0 tsc errors, 0 lint errors, and 87/87 static & dynamic routes compiled in production build.
   - **Next Transition**: UI/UX-5 (Tourism Discovery Experience & Multi-Facet Filtering).
 
 ---

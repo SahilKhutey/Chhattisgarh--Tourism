@@ -117,6 +117,26 @@
   - [x] TypeScript validation passing (0 errors)
   - [x] ESLint validation passing (0 errors)
   - [x] Production build passing (87/87 static & dynamic routes compiled)
+- [x] **UI/UX — Map Visuals, Graphics, Overview, Observer Style, Details, Guides & Markers**
+  - [x] Geographic visual contracts in `src/core/ui/map/` (`types.ts`, `entities.ts`, `viewport.ts`, `markers.ts`, `routes.ts`, `guides.ts`, `details.ts`, `state.ts`)
+  - [x] Scale-dependent zoom thresholds (`WORLD_STATE: 6` to `DETAIL: 16`) and priority ordering
+  - [x] Canonical MapCanvas in `src/components/map/MapCanvas/` with Leaflet boundary, attribution, and reduced-motion handling
+  - [x] TourismMarker system with SVG shape DivIcons (◆ Destination, ● Experience, ★ Event, ⊙ Service, ▣ Safety, ⚐ Guide), selection pulse, and popup
+  - [x] High-density MarkerCluster aggregation
+  - [x] Map Layer Controls in `src/components/map/MapLayers/` (`LayerControl`, `LayerList`, `LayerLegend`)
+  - [x] Observer Overview console HUD in `src/components/map/Overview/` (`MapOverview`)
+  - [x] Geographic Details experience in `src/components/map/Details/` (`MapDetailsPanel`)
+  - [x] Tourism Route Visualization in `src/components/map/Routes/` (`RouteLayer`, `RouteDetails`)
+  - [x] Geographic Guide Experience in `src/components/map/Guides/` (`MapGuide`, `GuideStep`)
+  - [x] Observer Controls in `src/components/map/MapControls/` (Zoom, Locate, Reset View, Fullscreen)
+  - [x] Synchronized Accessible Result List in `src/components/map/MapResultList.tsx` (Map ↔ List sync)
+  - [x] Master Observer Experience in `src/components/map/MapExperience/` (`MapExperience`, `DynamicMapExperience`)
+  - [x] Observer map stylesheet in `src/styles/map.css`
+  - [x] 100% unit tests passing in `src/core/ui/map/__tests__/` and `src/components/map/__tests__/` (59/59 tests passing)
+  - [x] 100% full web test suite passing (529/529 tests passing across 134 test suites)
+  - [x] TypeScript validation passing (0 errors)
+  - [x] ESLint validation passing (0 errors)
+  - [x] Production build passing (87/87 static & dynamic routes compiled)
 - [ ] **UI/UX-5 — Tourism Discovery Experience** (Multi-facet filters, corridor explorer)
 - [ ] **UI/UX-6 — Tourism Place & Destination Experience** (Dynamic section orchestration)
 - [ ] **UI/UX-6 — Dynamic Template Rendering Engine** (Template -> Section -> Component)
@@ -141,6 +161,7 @@
    - [`docs/ui-ux/ui-ux-3-motion-verification.md`](ui-ux-3-motion-verification.md)
    - [`docs/ui-ux/ui-ux-4-loading-transitions-verification.md`](ui-ux-4-loading-transitions-verification.md)
    - [`docs/ui-ux/ui-ux-4-application-shell-verification.md`](ui-ux-4-application-shell-verification.md)
+   - [`docs/ui-ux/ui-ux-map-experience-verification.md`](ui-ux-map-experience-verification.md)
    - [`docs/ui-ux/task-log.md`](task-log.md)
 2. **Canonical UI Primitives & Layout**:
    - `apps/web/src/ui/layout/` (`Container`, `Section`, `Stack`, `Grid`, `Page`)
