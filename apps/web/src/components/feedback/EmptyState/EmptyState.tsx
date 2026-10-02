@@ -13,6 +13,7 @@ export interface EmptyStateProps {
   clearLabel?: string;
   actionHref?: string;
   actionLabel?: string;
+  action?: React.ReactNode;
   icon?: React.ReactNode;
   className?: string;
 }
@@ -24,6 +25,7 @@ export function EmptyState({
   clearLabel = "Clear Filters",
   actionHref,
   actionLabel = "Explore All",
+  action,
   icon,
   className = "",
 }: EmptyStateProps) {
@@ -48,7 +50,7 @@ export function EmptyState({
         {description}
       </p>
 
-      {(onClearFilters || actionHref) && (
+      {(onClearFilters || actionHref || action) && (
         <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
           {onClearFilters && (
             <Button
@@ -69,6 +71,7 @@ export function EmptyState({
               {actionLabel}
             </Link>
           )}
+          {action}
         </div>
       )}
     </div>

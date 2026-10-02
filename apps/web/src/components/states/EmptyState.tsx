@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { Compass } from "lucide-react";
+import { EmptyState as CanonicalEmptyState } from "@/components/feedback/EmptyState";
 
 export interface EmptyStateProps {
   title: string;
@@ -15,20 +15,12 @@ export function EmptyState({
   icon,
 }: EmptyStateProps) {
   return (
-    <div className="rounded-2xl border border-dashed border-charcoal-stone/15 p-10 text-center">
-      <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-forest-emerald/5 text-forest-emerald">
-        {icon || <Compass className="h-6 w-6" />}
-      </div>
-
-      <h3 className="text-lg font-semibold text-charcoal-stone">
-        {title}
-      </h3>
-
-      <p className="mx-auto mt-2 max-w-md text-sm text-charcoal-stone/60">
-        {description}
-      </p>
-
-      {action && <div className="mt-6">{action}</div>}
-    </div>
+    <CanonicalEmptyState
+      title={title}
+      description={description}
+      action={action}
+      icon={icon}
+      className="my-8"
+    />
   );
 }
