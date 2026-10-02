@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/Button";
 export interface RetryButtonProps {
   onRetry: () => void;
   isLoading?: boolean;
+  loadingLabel?: string;
   disabled?: boolean;
   label?: string;
   attempt?: number;
@@ -16,6 +17,7 @@ export interface RetryButtonProps {
 export function RetryButton({
   onRetry,
   isLoading = false,
+  loadingLabel = "Retrying...",
   disabled = false,
   label = "Try Again",
   attempt,
@@ -29,12 +31,13 @@ export function RetryButton({
       onClick={onRetry}
       disabled={disabled || isLoading}
       isLoading={isLoading}
+      loadingLabel={loadingLabel}
       aria-label={label}
       className={`inline-flex items-center gap-2 ${className}`}
     >
-      <RotateCcw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
+      <RotateCcw className="h-4 w-4" />
       <span>
-        {isLoading ? "Retrying..." : label}
+        {label}
         {attempt && attempt > 0 ? ` (${attempt})` : ""}
       </span>
     </Button>

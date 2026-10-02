@@ -4,12 +4,12 @@ import React from "react";
 import Link from "next/link";
 import { Clock } from "lucide-react";
 import { ErrorState } from "./ErrorState";
-import { Button } from "@/components/ui/Button";
 
 export interface TimeoutErrorProps {
   title?: string;
   description?: string;
   onRetry?: () => void;
+  retryLabel?: string;
   continueHref?: string;
   continueLabel?: string;
   className?: string;
@@ -19,6 +19,7 @@ export function TimeoutError({
   title = "This is taking longer than expected",
   description = "The connection took too long to respond. The network may be slow or congested.",
   onRetry,
+  retryLabel = "Try Again",
   continueHref = "/discover",
   continueLabel = "Continue Browsing",
   className = "",
@@ -28,7 +29,7 @@ export function TimeoutError({
       title={title}
       description={description}
       onRetry={onRetry}
-      retryLabel="Try Again"
+      retryLabel={retryLabel}
       icon={<Clock className="h-6 w-6 text-amber-600 dark:text-amber-400" />}
       action={
         continueHref ? (

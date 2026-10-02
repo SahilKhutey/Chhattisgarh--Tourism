@@ -8,14 +8,12 @@ export interface SkeletonProps extends React.HTMLAttributes<HTMLDivElement> {
 
 export function Skeleton({
   className = "",
-  label = "Loading...",
+  "aria-hidden": ariaHidden = true,
   ...props
 }: SkeletonProps) {
   return (
     <div
-      role="status"
-      aria-label={label}
-      aria-busy="true"
+      aria-hidden={ariaHidden}
       className={cn(
         "animate-pulse rounded-md bg-neutral-200 dark:bg-neutral-800 cg-skeleton",
         className,
