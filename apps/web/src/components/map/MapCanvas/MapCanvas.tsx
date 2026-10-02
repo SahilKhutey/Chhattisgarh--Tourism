@@ -55,20 +55,22 @@ function ViewportController({
 }) {
   const map = useMap();
 
+  const { latitude, longitude } = viewport.center;
+
   useEffect(() => {
-    if (!isValidCoordinate(viewport.center)) return;
+    if (!isValidCoordinate({ latitude, longitude })) return;
 
     const currentCenter = map.getCenter();
     const currentZoom = map.getZoom();
 
-    const latDiff = Math.abs(currentCenter.lat - viewport.center.latitude);
-    const lngDiff = Math.abs(currentCenter.lng - viewport.center.longitude);
+    const latDiff = Math.abs(currentCenter.lat - latitude);
+    const lngDiff = Math.abs(currentCenter.lng - longitude);
     const zoomDiff = Math.abs(currentZoom - viewport.zoom);
 
     // Only update if there is a meaningful difference
     if (latDiff > 0.0001 || lngDiff > 0.0001 || zoomDiff > 0.1) {
       map.setView(
-        [viewport.center.latitude, viewport.center.longitude],
+        [latitude, longitude],
         viewport.zoom,
         {
           animate: !reducedMotion,
@@ -76,7 +78,7 @@ function ViewportController({
         },
       );
     }
-  }, [viewport.center.latitude, viewport.center.longitude, viewport.zoom, map, reducedMotion]);
+  }, [latitude, longitude, viewport.zoom, map, reducedMotion]);
 
   useMapEvents({
     moveend() {
