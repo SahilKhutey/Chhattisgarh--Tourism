@@ -1,0 +1,82 @@
+from __future__ import annotations
+
+from enum import StrEnum
+
+
+class ContentType(StrEnum):
+    POST = "POST"
+    VIDEO = "VIDEO"
+    REEL = "REEL"
+    STORY = "STORY"
+    JOURNAL = "JOURNAL"
+    CULTURAL_STORY = "CULTURAL_STORY"
+
+
+class CreatorStatus(StrEnum):
+    PENDING = "PENDING"
+    VERIFIED = "VERIFIED"
+    REJECTED = "REJECTED"
+    SUSPENDED = "SUSPENDED"
+
+
+class ContentStatus(StrEnum):
+    DRAFT = "DRAFT"
+    SUBMITTED = "SUBMITTED"
+    PROCESSING = "PROCESSING"
+    UNDER_REVIEW = "UNDER_REVIEW"
+    APPROVED = "APPROVED"
+    PUBLISHED = "PUBLISHED"
+    REJECTED = "REJECTED"
+    HIDDEN = "HIDDEN"
+    ARCHIVED = "ARCHIVED"
+    EXPIRED = "EXPIRED"
+
+
+class ContentVisibility(StrEnum):
+    PUBLIC = "PUBLIC"
+    UNLISTED = "UNLISTED"
+    PRIVATE = "PRIVATE"
+
+
+class ModerationStatus(StrEnum):
+    PENDING = "PENDING"
+    UNDER_REVIEW = "UNDER_REVIEW"
+    APPROVED = "APPROVED"
+    REJECTED = "REJECTED"
+    ESCALATED_CULTURAL_COMMITTEE = "ESCALATED_CULTURAL_COMMITTEE"
+
+
+class ModerationDecision(StrEnum):
+    APPROVE = "APPROVE"
+    REJECT = "REJECT"
+    REQUEST_CHANGES = "REQUEST_CHANGES"
+    ESCALATE = "ESCALATE"
+
+
+class CulturalSensitivityLevel(StrEnum):
+    STANDARD = "STANDARD"
+    SENSITIVE = "SENSITIVE"
+    SACRED_RITUAL = "SACRED_RITUAL"
+    COMMUNITY_PROTECTED = "COMMUNITY_PROTECTED"
+
+
+class LicenseType(StrEnum):
+    ORIGINAL_CREATOR = "ORIGINAL_CREATOR"
+    CC_BY_SA = "CC_BY_SA"
+    COMMUNITY_HERITAGE = "COMMUNITY_HERITAGE"
+    EDITORIAL_PERMITTED = "EDITORIAL_PERMITTED"
+
+
+class FeedType(StrEnum):
+    HOME = "HOME"
+    EXPLORE = "EXPLORE"
+    REGIONAL = "REGIONAL"
+    CULTURE = "CULTURE"
+
+
+class InteractionType(StrEnum):
+    LIKE = "LIKE"
+    COMMENT = "COMMENT"
+    SAVE = "SAVE"
+    SHARE = "SHARE"
+    TRIP_ADD = "TRIP_ADD"

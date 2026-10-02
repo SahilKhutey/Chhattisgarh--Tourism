@@ -146,3 +146,35 @@ The following table and deep-dive break down the commits on `main` establishing 
 ## 6. Sign-off & Production Readiness
 
 The Chhattisgarh Tourism OS user experience platform is fully verified, production-hardened, and ready for deployment.
+
+---
+
+## 7. Phase 23: Social & Living Discovery Feed Subsystem (Domain & Data Architecture)
+
+### 7.1 Strategic Objective
+Build a living discovery and regional intelligence layer for Chhattisgarh Tourism OS (`Unseen36Garh`), avoiding generic social feed patterns. Connects local creators, stories, reels, cultural lore, and festival coverage directly to canonical Tourism entities (`place_slug`, `district_id`, `route_id`, `festival_name`) and the Trip Planner.
+
+### 7.2 Architecture & Components Implemented
+* **Domain Layer & Lifecycle State Machines (`apps/api/app/modules/social/domain/`)**:
+  * `enums.py`: `ContentType` (`POST`, `VIDEO`, `REEL`, `STORY`, `JOURNAL`, `CULTURAL_STORY`), `CreatorStatus`, `ContentStatus`, `ModerationStatus`, `CulturalSensitivityLevel`, `LicenseType`, `FeedType`, `InteractionType`.
+  * `state_machines.py`: Enforces transitions for Creators and Content, including cultural heritage guardrails (`validate_cultural_protection` requiring explicit community consent and attribution for sacred rituals) and ephemeral expiration (24h story TTL vs. evergreen conversion).
+* **Database Models (`apps/api/app/modules/social/models/`)**:
+  * `Creator`: Profile, regional district, local languages, verification level, engagement counters (`followers_count`, `posts_count`).
+  * `SocialContent`: Canonical content entity linking directly to the Tourism Entity Graph (`place_slug`, `district_id`, `route_id`, `festival_name`, `coordinates`), sensitivity levels, and engagement metrics (`trip_adds_count`, `likes_count`, `shares_count`).
+  * `SocialMedia`: Media attachments supporting `9:16` vertical reels/stories, `16:9` landscape videos, transcripts, and CDN storage paths.
+  * `Interactions`: `SocialLike`, `SocialSave`, `SocialComment`, `SocialShare`, `SocialTripAdd`, and `CreatorFollow`.
+  * `SocialModerationLog`: Audit tracking for regional and cultural moderation decisions.
+* **Pydantic v2 Schemas (`apps/api/app/modules/social/schemas/`)**:
+  * Strict typed schemas using `ConfigDict(from_attributes=True)` and payload validation.
+* **Services & Repositories (`apps/api/app/modules/social/`)**:
+  * `CreatorService` & `CreatorRepository`: Onboarding, verification, profile maintenance, follow/unfollow with ANSI SQL atomic counters.
+  * `SocialContentService` & `SocialContentRepository`: Draft creation, unique slug generation, moderation submission, publication gating, evergreen conversion.
+  * `ModerationService`: Queue retrieval, approve/reject/escalate workflows, and audit logging.
+  * `InteractionService`: Atomic social interactions and `Add to Trip` event publishing.
+  * `FeedService`: Multi-feed resolution (`Home`, `Explore`, `Regional`, `Culture`) with Anti-Monopoly Diversity Logic (caps per creator and district to ensure balanced regional representation across Bastar, Surguja, Bilaspur, Raipur, and Durg).
+* **Transactional Outbox Events (`app/events/types.py`)**:
+  * Added 8 domain events: `SOCIAL_CREATOR_REGISTERED`, `SOCIAL_CREATOR_VERIFIED`, `SOCIAL_CONTENT_SUBMITTED`, `SOCIAL_CONTENT_APPROVED`, `SOCIAL_CONTENT_REJECTED`, `SOCIAL_CONTENT_PUBLISHED`, `SOCIAL_CONTENT_EXPIRED`, and `SOCIAL_INTERACTION_TRIP_ADD`.
+* **Database Migration**:
+  * `apps/api/alembic/versions/p23_social_feed_subsystem.py` with multi-dialect support (PostgreSQL and SQLite).
+* **Automated Verification**:
+  * `apps/api/tests/social/` (12 / 12 tests passed, 100% success rate).

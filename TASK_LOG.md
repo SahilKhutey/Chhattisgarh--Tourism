@@ -88,6 +88,13 @@ CG Tourism OS Development History
     - Unused lint directives resolved; 0 errors and 0 warnings across all UI modules.
     - Playwright E2E Master Integration Spec (`final-system-integration.spec.ts`) validating end-to-end user journeys (Discover -> Explore -> Map -> Details -> Save -> Plan).
     - Production build verification: **87 / 87 static and dynamic routes compiled cleanly** in 13.3s.
+  - **P23 (Social & Living Discovery Feed Subsystem — Domain & Data Architecture)**:
+    - First-class Tourism OS living discovery layer linking creators, stories, reels, and lore directly to the Tourism Entity Graph.
+    - Cultural sensitivity gates enforcing explicit consent and attribution for sacred tribal traditions and rituals.
+    - Canonical schemas, SQLite/PostgreSQL models, repositories, and state machines with 24h story expiry vs evergreen conversion.
+    - Multi-feed engine (`Home`, `Explore`, `Regional`, `Culture`) with Anti-Monopoly Diversity Logic.
+    - Direct "Add to Trip" planner intent integration publishing Outbox events.
+    - Verified with 12 / 12 Pytest tests passing (100% pass rate) and Alembic migration `p23_social_feed_subsystem.py`.
 
 ---
 
