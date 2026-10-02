@@ -7,3 +7,4 @@ export * from "./SuccessState";
 export * from "./SlowNetworkState";
 export * from "./OfflineState";
 export * from "./ErrorState";
+export * from "./Retry";

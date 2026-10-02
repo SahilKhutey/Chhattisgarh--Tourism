@@ -8,6 +8,7 @@
 @import "../styles/transitions.css";
 @import "../styles/shell.css";
 @import "../styles/map.css";
+@import "../styles/feedback.css";
 @source "../components";
 @source "../app";
 @source "../ui";

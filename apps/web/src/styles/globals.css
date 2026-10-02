@@ -6,6 +6,7 @@
 @import "./transitions.css";
 @import "./shell.css";
 @import "./map.css";
+@import "./feedback.css";
 
 html {
   min-width: 320px;
