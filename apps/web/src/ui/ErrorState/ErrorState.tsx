@@ -1,1 +1,1 @@
-export * from "@/components/feedback/ErrorMessage/ErrorMessage";
+export * from "@/components/feedback/ErrorState/ErrorState";

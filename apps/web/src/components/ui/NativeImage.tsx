@@ -43,7 +43,6 @@ export default function NativeImage({
     : `max-w-full h-auto object-cover ${className}`;
 
   return (
-    // eslint-disable-next-line @next/next/no-img-element
     <img
       src={imgSrc}
       alt={alt || "Image"}
