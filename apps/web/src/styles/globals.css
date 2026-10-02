@@ -5,6 +5,7 @@
 @import "./loading.css";
 @import "./transitions.css";
 @import "./shell.css";
+@import "./map.css";
 
 html {
   min-width: 320px;
