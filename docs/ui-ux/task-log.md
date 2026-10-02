@@ -137,6 +137,21 @@
   - [x] TypeScript validation passing (0 errors)
   - [x] ESLint validation passing (0 errors)
   - [x] Production build passing (87/87 static & dynamic routes compiled)
+- [x] **UI/UX System 6 — Workflow, Breakdown, Errors, Timeouts & Non-Loading Screens**
+  - [x] Canonical workflow state machine in `src/core/ui/workflow/` (`types.ts`, `state.ts`, `transitions.ts`, `timeout.ts`, `retry.ts`, `errors.ts`, `cancellation.ts`, `visibility.ts`)
+  - [x] Exponential backoff with jitter and idempotent method safety guards
+  - [x] Request tracking and in-flight cancellation (`createRequestTracker`)
+  - [x] Multi-section independent readiness and error detection (`createSectionTracker`)
+  - [x] Canonical feedback components in `src/components/feedback/` (`Skeleton`, `SkeletonText`, `SkeletonCard`, `SkeletonImage`, `SkeletonMap`, `ErrorState`, `NetworkError`, `TimeoutError`, `NotFoundState`, `EmptyState`, `RetryButton`)
+  - [x] Shimmer feedback styles in `src/styles/feedback.css` with reduced-motion overrides
+  - [x] Global route error boundary in `src/app/error.tsx` and 404 handler in `src/app/not-found.tsx`
+  - [x] Partial map layer failure fallback in `MapCanvas.tsx` and `MapExperience.tsx`
+  - [x] Resilient template section rendering and empty states in `ContentRenderer.tsx`
+  - [x] 100% unit tests passing in `core/ui/workflow/__tests__/` and `components/feedback/__tests__/` (52/52 tests passing)
+  - [x] 100% full web test suite passing (581/581 tests passing across 146 test suites)
+  - [x] TypeScript validation passing (0 errors)
+  - [x] ESLint validation passing (0 errors on Phase 6 code)
+  - [x] Production build passing (87/87 static & dynamic routes compiled)
 - [ ] **UI/UX-5 — Tourism Discovery Experience** (Multi-facet filters, corridor explorer)
 - [ ] **UI/UX-6 — Tourism Place & Destination Experience** (Dynamic section orchestration)
 - [ ] **UI/UX-6 — Dynamic Template Rendering Engine** (Template -> Section -> Component)
@@ -162,6 +177,7 @@
    - [`docs/ui-ux/ui-ux-4-loading-transitions-verification.md`](ui-ux-4-loading-transitions-verification.md)
    - [`docs/ui-ux/ui-ux-4-application-shell-verification.md`](ui-ux-4-application-shell-verification.md)
    - [`docs/ui-ux/ui-ux-map-experience-verification.md`](ui-ux-map-experience-verification.md)
+   - [`docs/ui-ux/ui-ux-6-workflow-resilience-verification.md`](ui-ux-6-workflow-resilience-verification.md)
    - [`docs/ui-ux/task-log.md`](task-log.md)
 2. **Canonical UI Primitives & Layout**:
    - `apps/web/src/ui/layout/` (`Container`, `Section`, `Stack`, `Grid`, `Page`)
