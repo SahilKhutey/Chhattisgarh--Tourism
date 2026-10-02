@@ -25,3 +25,4 @@ export * from "./loading";
 export * from "./transitions";
 export * from "./shell";
 export { consumerNavigation } from "./shell/navigation";
+export * from "./map";
