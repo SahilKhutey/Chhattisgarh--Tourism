@@ -31,6 +31,7 @@ import { WeatherAlertBanner } from "@/components/WeatherAlertBanner";
 import { TransitOverviewCard } from "@/components/TransitOverviewCard";
 import { TrustVerificationBadge } from "@/components/TrustVerificationBadge";
 import { CreatorMediaGallery } from "@/components/CreatorMediaGallery";
+import { DestinationSocialShowcase } from "@/features/social";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -564,6 +565,9 @@ export default function DestinationDetailPage({ params }: PageProps) {
               </div>
             </div>
           )}
+
+          {/* Living Social & Reels Discovery Showcase */}
+          <DestinationSocialShowcase placeSlug={resolvedParams.slug} placeName={localizedName} />
 
           {/* Verified Community Reviews */}
           <ReviewList placeId={destination.placeId || destination.id} placeName={localizedName} />

@@ -178,3 +178,40 @@ Build a living discovery and regional intelligence layer for Chhattisgarh Touris
   * `apps/api/alembic/versions/p23_social_feed_subsystem.py` with multi-dialect support (PostgreSQL and SQLite).
 * **Automated Verification**:
   * `apps/api/tests/social/` (12 / 12 tests passed, 100% success rate).
+
+---
+
+## 8. Phase 24: Living Discovery Feed & Next.js Experience (Social UI Layer)
+
+### 8.1 Strategic Scope
+Deliver the consumer and creator interface for Chhattisgarh Tourism OS (`Unseen36Garh`). Bridge multimedia storytelling directly into regional discovery and trip planning, ensuring authentic cultural representation and balanced district exposure.
+
+### 8.2 UI Components & Systems Built (`apps/web/src/features/social/`)
+* **Vertical 9:16 Reel Player (`ReelPlayer.tsx`)**:
+  * Auto-play, mute/unmute, play/pause controls.
+  * Tourism overlays: Destination entity badges (linking to `/destinations/[slug]`), district indicators (`Bastar`, `Surguja`, etc.), festival tags (e.g. `Bastar Dussehra`), and sacred ritual compliance indicators.
+  * First-class **"Add to Trip" CTA button**: Directly increments trip interest, dispatches outbox interactions, and displays actionable toast feedback.
+* **24h Ephemeral Stories Bar & Fullscreen Viewer (`StoryBar.tsx` & `StoryViewerModal.tsx`)**:
+  * Glowing gradient district rings, creator identity pills, and festival indicators.
+  * Auto-advancing fullscreen viewer (5s per story) with pause-on-hold, tap navigation, and direct destination explore & "Add to Trip" actions.
+* **Cultural Narrative Cards (`CulturalNarrativeCard.tsx`)**:
+  * Formatted for indigenous lore, oral traditions, and tribal craft heritage (e.g. Kondagaon Dhokra bell-metal casting, Sirpur terracotta bricks).
+  * Enforces sacred ritual attribution headers and clan consent disclosures.
+* **Master Living Feed Stream (`SocialFeedStream.tsx`)**:
+  * Anti-Monopoly diversity banner certifying balanced regional exposure across all 33 districts.
+  * Multi-feed tabs: `Living Feed`, `Reels`, `Lore & Heritage`, `Bastar`, and `Surguja` with instant client search filtering.
+* **Creator Authoring Modal (`CreateContentModal.tsx`)**:
+  * Creator studio modal supporting Reels, Stories, Photo Posts, and Cultural Narratives.
+  * Enforces the **Cultural Protection Gate**: Mandates explicit clan consent confirmations and community attribution entries for sacred tribal rituals.
+* **Destination Detail Living Showcase (`DestinationSocialShowcase.tsx`)**:
+  * Plug-and-play widget embedded directly inside destination pages (`/destinations/[slug]`).
+* **Living Feed Page (`/feed`)**:
+  * Dedicated route (`apps/web/src/app/feed/page.tsx`) with hero discovery banner, story bar, and feed stream.
+* **Navigation Integration (`Navbar.tsx` & Locales)**:
+  * Mounted `/feed` into top desktop and mobile navigation across English (`Living Feed`), Hindi (`जीवंत फ़ीड`), and Chhattisgarhi (`जीवंत फ़ीड`).
+
+### 8.3 Quality Gate & Production Verification Matrix
+* **TypeScript Compilation**: `npx tsc --noEmit` (**0 errors**).
+* **Unit & Component Tests**: Jest (`apps/web/src/__tests__/social-living-feed.test.tsx`): **8 / 8 tests passed** (100%).
+* **Full Web Test Suite**: **147 / 147 test suites passed**, **589 / 589 tests passed** (100%).
+* **Next.js Production Build**: `next build --webpack` (**88 / 88 routes compiled cleanly**, including `/feed` and updated `/destinations/[slug]`).

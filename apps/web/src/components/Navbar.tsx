@@ -12,6 +12,7 @@ import { useLanguage } from "../context/LanguageContext";
 
 const NAV_LINKS = [
   { href: "/explore", key: "nav.map" },
+  { href: "/feed", key: "nav.feed" },
   { href: "/creators", key: "nav.creators" },
   { href: "/planner", key: "nav.planner" },
   { href: "/creator", key: "nav.creator" },
