@@ -3,6 +3,89 @@ from __future__ import annotations
 from enum import StrEnum
 
 
+class SocialPlatform(StrEnum):
+    YOUTUBE = "youtube"
+    INSTAGRAM = "instagram"
+
+    @classmethod
+    def _missing_(cls, value: object):
+        if isinstance(value, str):
+            for member in cls:
+                if member.value.lower() == value.lower() or member.name.lower() == value.lower():
+                    return member
+        return None
+
+
+class SocialAccountStatus(StrEnum):
+    PENDING = "pending"
+    VERIFYING = "verifying"
+    VERIFIED = "verified"
+    PENDING_ACCEPTANCE = "pending_acceptance"
+    ACCEPTED = "accepted"
+    ACTIVE = "active"
+    PAUSED = "paused"
+    REJECTED = "rejected"
+    DISCONNECTED = "disconnected"
+
+    @classmethod
+    def _missing_(cls, value: object):
+        if isinstance(value, str):
+            for member in cls:
+                if member.value.lower() == value.lower() or member.name.lower() == value.lower():
+                    return member
+        return None
+
+
+class SocialContentType(StrEnum):
+    POST = "post"
+    VIDEO = "video"
+    REEL = "reel"
+    SHORT = "short"
+    STORY = "story"
+
+
+class SocialContentStatus(StrEnum):
+    DISCOVERED = "discovered"
+    SYNCED = "synced"
+    VALIDATED = "validated"
+    UNDER_REVIEW = "under_review"
+    APPROVED = "approved"
+    PUBLISHED = "published"
+    HIDDEN = "hidden"
+    REMOVED = "removed"
+    SOURCE_UNAVAILABLE = "source_unavailable"
+    SOURCE_DELETED = "source_deleted"
+    SOURCE_PRIVATE = "source_private"
+
+
+class SocialModerationStatus(StrEnum):
+    NOT_REQUIRED = "not_required"
+    PENDING = "pending"
+    APPROVED = "approved"
+    REJECTED = "rejected"
+
+
+class SocialVisibility(StrEnum):
+    PUBLIC = "public"
+    HIDDEN = "hidden"
+
+
+class SyncStatus(StrEnum):
+    NEVER_RUN = "never_run"
+    RUNNING = "running"
+    SUCCEEDED = "succeeded"
+    PARTIAL = "partial"
+    FAILED = "failed"
+
+
+class AccountAcceptanceAction(StrEnum):
+    ACCEPT = "accept"
+    REJECT = "reject"
+    PAUSE = "pause"
+    REACTIVATE = "reactivate"
+
+
+# Existing domain enums retained for backwards compatibility
 class ContentType(StrEnum):
     POST = "POST"
     VIDEO = "VIDEO"
@@ -11,26 +94,6 @@ class ContentType(StrEnum):
     STORY = "STORY"
     JOURNAL = "JOURNAL"
     CULTURAL_STORY = "CULTURAL_STORY"
-
-
-class SocialPlatform(StrEnum):
-    YOUTUBE = "YOUTUBE"
-    INSTAGRAM = "INSTAGRAM"
-    FACEBOOK = "FACEBOOK"
-    X = "X"
-    VIMEO = "VIMEO"
-
-
-class SocialAccountStatus(StrEnum):
-    PENDING = "PENDING"
-    VERIFYING = "VERIFYING"
-    VERIFIED = "VERIFIED"
-    PENDING_ACCEPTANCE = "PENDING_ACCEPTANCE"
-    ACCEPTED = "ACCEPTED"
-    ACTIVE = "ACTIVE"
-    PAUSED = "PAUSED"
-    REJECTED = "REJECTED"
-    DISCONNECTED = "DISCONNECTED"
 
 
 class SyncHealthStatus(StrEnum):
