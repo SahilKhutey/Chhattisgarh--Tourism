@@ -4,7 +4,50 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any, Protocol, runtime_checkable
 
-from app.modules.social.domain.enums import ContentType, SocialPlatform
+from app.modules.social.domain.enums import ContentType, SocialContentType, SocialPlatform
+from app.modules.social.domain.models import SocialContent
+
+
+@dataclass(frozen=True, slots=True)
+class ProviderAccount:
+    external_id: str
+    handle: str
+    display_name: str | None
+    profile_url: str
+
+
+@dataclass(frozen=True, slots=True)
+class ProviderContent:
+    external_id: str
+    content_type: SocialContentType
+
+    title: str | None
+    description: str | None
+
+    source_url: str
+    thumbnail_url: str | None
+
+    published_at: datetime | None
+
+
+@runtime_checkable
+class SocialProvider(Protocol):
+    platform: SocialPlatform
+
+    def verify_account(
+        self,
+        profile_url: str,
+    ) -> Any:
+        ...
+
+    def fetch_content(
+        self,
+        account: Any,
+        *,
+        cursor: str | None = None,
+        limit: int = 20,
+    ) -> Any:
+        ...
 
 
 @dataclass
@@ -42,19 +85,3 @@ class SyncResult:
     items: list[NormalizedSocialItem]
     next_cursor: str | None = None
     has_more: bool = False
-
-
-@runtime_checkable
-class SocialProvider(Protocol):
-    def verify_account(self, handle_or_url: str) -> SocialAccountProfile:
-        """Verifies if the social handle or channel exists on the platform."""
-        ...
-
-    def fetch_content(
-        self,
-        handle: str,
-        cursor: str | None = None,
-        limit: int = 20,
-    ) -> SyncResult:
-        """Fetches and normalizes latest posts, reels, or videos from the platform."""
-        ...
