@@ -56,10 +56,10 @@ def test_admin_register_creator_with_social_accounts(
     assert len(accounts) == 2
 
     platforms = {a["platform"]: a for a in accounts}
-    assert "YOUTUBE" in platforms
-    assert "INSTAGRAM" in platforms
-    assert platforms["YOUTUBE"]["status"] == "VERIFIED"
-    assert platforms["INSTAGRAM"]["status"] == "VERIFIED"
+    assert SocialPlatform.YOUTUBE in platforms
+    assert SocialPlatform.INSTAGRAM in platforms
+    assert platforms[SocialPlatform.YOUTUBE]["status"] == SocialAccountStatus.VERIFIED
+    assert platforms[SocialPlatform.INSTAGRAM]["status"] == SocialAccountStatus.VERIFIED
 
 
 def test_social_acceptance_and_sync_engine(
@@ -87,7 +87,7 @@ def test_social_acceptance_and_sync_engine(
     acc_res = client.get(f"/api/social/admin/creators/{creator_id}/accounts", headers=admin_headers)
     account = acc_res.json()[0]
     account_id = account["id"]
-    assert account["status"] == "VERIFIED"
+    assert account["status"] == SocialAccountStatus.VERIFIED
 
     # 2. Accept social account (Social Acceptance Gate)
     accept_res = client.post(
@@ -96,7 +96,7 @@ def test_social_acceptance_and_sync_engine(
         headers=admin_headers,
     )
     assert accept_res.status_code == 200
-    assert accept_res.json()["status"] == "ACTIVE"
+    assert accept_res.json()["status"] == SocialAccountStatus.ACTIVE
 
     # 3. Trigger Sync
     sync_res = client.post(f"/api/social/admin/accounts/{account_id}/sync", headers=admin_headers)
