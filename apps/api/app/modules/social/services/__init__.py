@@ -1,5 +1,9 @@
 from __future__ import annotations
 
+from app.modules.social.services.account_service import (
+    ALLOWED_TRANSITIONS,
+    transition_account,
+)
 from app.modules.social.services.creator_service import (
     CreatorNotFoundError,
     CreatorService,
@@ -21,6 +25,8 @@ from app.modules.social.services.social_content_service import (
 from app.modules.social.services.social_sync_engine import SocialSyncEngine
 
 __all__ = [
+    "transition_account",
+    "ALLOWED_TRANSITIONS",
     "CreatorService",
     "SocialContentService",
     "ModerationService",
