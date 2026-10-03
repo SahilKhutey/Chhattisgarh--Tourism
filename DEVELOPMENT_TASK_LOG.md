@@ -215,3 +215,55 @@ Deliver the consumer and creator interface for Chhattisgarh Tourism OS (`Unseen3
 * **Unit & Component Tests**: Jest (`apps/web/src/__tests__/social-living-feed.test.tsx`): **8 / 8 tests passed** (100%).
 * **Full Web Test Suite**: **147 / 147 test suites passed**, **589 / 589 tests passed** (100%).
 * **Next.js Production Build**: `next build --webpack` (**88 / 88 routes compiled cleanly**, including `/feed` and updated `/destinations/[slug]`).
+
+---
+
+## 9. Phase 25: Curated Social Aggregation & Showcase Engine (Backend Architecture & Sync Pipeline)
+
+### 9.1 Core Distinction & Product Definition
+CG Tourism does **not** host or own creator video blobs permanently. It acts as an authoritative, curated discovery layer that normalizes metadata from approved external platforms (`YouTube`, `Instagram`, future `Facebook`/`X`) and drives traffic to the original platform (`Watch on YouTube`, `View on Instagram`) while connecting directly to the **Tourism Entity Graph** (`place_slug`, `district_id`, `route_id`, `festival_name`) and **Trip Planner**.
+
+### 9.2 Subsystems & Architecture Built
+1. **Domain Enums & State Transitions (`domain/enums.py`, `domain/state_machines.py`)**:
+   - `SocialPlatform`: `YOUTUBE`, `INSTAGRAM`, `FACEBOOK`, `X`, `OTHER`.
+   - `SocialAccountStatus`: `PENDING` -> `VERIFYING` -> `VERIFIED` -> `PENDING_ACCEPTANCE` -> `ACCEPTED` -> `ACTIVE` (with `PAUSED`, `REJECTED`, `DISCONNECTED`).
+   - `SocialAccountStateMachine`: Strict validation of allowed transitions and automated acceptance gate.
+   - `SyncHealthStatus`: `HEALTHY`, `DEGRADED`, `ERROR`, `PAUSED`.
+   - `FeedLayoutType`: `STANDARD_GRID`, `MASONRY`, `FEATURED_GRID`, `CAROUSEL`, `HERO_SPOTLIGHT`, `REGIONAL_SHOWCASE`.
+2. **Provider Abstraction Layer (`providers/`)**:
+   - `SocialProvider` protocol defining `verify_account(handle_or_url)` and `fetch_content(handle, cursor, limit)`.
+   - `YouTubeProvider`: Channel handle extraction, deterministic channel resolution, metadata normalization for Videos and Shorts.
+   - `InstagramProvider`: Handle extraction, profile verification, normalization for Reels and Photo posts.
+   - `ProviderFactory`: Factory for runtime provider resolution with extensible registry.
+3. **Database Schema & ORM Models (`models/`)**:
+   - `SocialAccount`: Platform, handle, priority, allowed content types, sync frequency, health status, consecutive failures, cursor, and metadata.
+   - `SocialSyncRun`: Audit log for tracking sync executions, items discovered, items synced, timestamps, and error traces.
+   - `SocialFeedTemplate`: Configurable layout templates with responsive desktop/tablet/mobile columns, filter rules, and sort strategies.
+   - Extended `SocialContent`: Added `social_account_id`, `provider`, `provider_content_id`, `source_url`, `original_platform_action_label`, `synced_at`, `duration_seconds`, and `aspect_ratio`.
+   - `Creator`: Updated to support external administrative onboarding (`user_id` nullable).
+4. **Service & Engine Layer (`services/`)**:
+   - `SocialAccountService`: Creator registration with accounts, handle verification, social acceptance gate, priority and filter management.
+   - `SocialSyncEngine`: Synchronous incremental sync engine with deduplication on `(provider, provider_content_id)`, engagement refresh, thumbnail extraction, and failure recovery.
+   - `FeedTemplateService`: Layout rendering with platform/content-type/district filtering and responsive presentation metadata.
+5. **Admin & Public API Routers (`api/`)**:
+   - `admin_social_router.py` mounted at `/api/social/admin/`:
+     - `POST /creators/register` (Admin registers creator with social accounts)
+     - `POST /creators/{creator_id}/accounts` & `GET /creators/{creator_id}/accounts`
+     - `POST /accounts/{account_id}/verify`
+     - `POST /accounts/{account_id}/accept`
+     - `POST /accounts/{account_id}/activate`, `/pause`
+     - `PATCH /accounts/{account_id}/settings`
+     - `POST /accounts/{account_id}/sync` & `POST /sync-all`
+     - `GET /accounts/health`
+     - `POST /feed-templates` & `GET /feed-templates`
+     - `PATCH /content/{content_id}/visibility`
+   - `templates_router.py` mounted at `/api/social/templates/`:
+     - `GET /{slug}` (Consumer layout and content resolution)
+6. **Alembic Migration**:
+   - `apps/api/alembic/versions/p24_social_aggregation_engine.py`.
+
+### 9.3 Comprehensive Verification Matrix
+* **Social Module Test Suite**: `pytest apps/api/tests/social -v -p no:cacheprovider` (**15 / 15 tests passed**, 100%).
+* **Full Backend API Test Suite**: `pytest apps/api/tests -v -p no:cacheprovider` (**459 passed**, 4 skipped, 0 failed, 100%).
+* **Full Web Test Suite**: `npm test` (**147 / 147 test suites passed, 589 / 589 tests passed**, 100%).
+* **Next.js Production Build**: `88 / 88 routes cleanly compiled**.

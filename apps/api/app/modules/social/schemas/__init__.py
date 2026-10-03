@@ -1,5 +1,10 @@
-from __future__ import annotations
-
+from app.modules.social.schemas.account_schemas import (
+    AdminCreatorRegister,
+    SocialAccountAcceptPayload,
+    SocialAccountCreate,
+    SocialAccountResponse,
+    SocialAccountUpdate,
+)
 from app.modules.social.schemas.content_schemas import (
     AddToTripRequest,
     AddToTripResponse,
@@ -30,6 +35,10 @@ from app.modules.social.schemas.moderation_schemas import (
     ModerationQueueItemResponse,
     ModerationReviewRequest,
 )
+from app.modules.social.schemas.template_schemas import (
+    FeedTemplateCreate,
+    FeedTemplateResponse,
+)
 
 __all__ = [
     "CreatorRegisterRequest",
@@ -54,4 +63,11 @@ __all__ = [
     "ModerationReviewRequest",
     "ModerationLogResponse",
     "ModerationQueueItemResponse",
+    "SocialAccountCreate",
+    "SocialAccountUpdate",
+    "SocialAccountResponse",
+    "SocialAccountAcceptPayload",
+    "AdminCreatorRegister",
+    "FeedTemplateCreate",
+    "FeedTemplateResponse",
 ]

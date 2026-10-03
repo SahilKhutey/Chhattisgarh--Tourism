@@ -164,6 +164,15 @@ class SocialContentResponse(BaseModel):
     trip_adds_count: int
     views_count: int
 
+    # Curated Provider Aggregation
+    provider: str | None = None
+    provider_content_id: str | None = None
+    source_url: str | None = None
+    original_platform_action_label: str | None = None
+    duration_seconds: int | None = None
+    aspect_ratio: str | None = None
+    synced_at: datetime | None = None
+
     media_items: list[MediaItemResponse] = Field(default_factory=list)
     created_at: datetime
     updated_at: datetime
@@ -189,6 +198,11 @@ class FeedCardResponse(BaseModel):
     comments_count: int
     trip_adds_count: int
     shares_count: int
+    provider: str | None = None
+    source_url: str | None = None
+    original_platform_action_label: str | None = None
+    duration_seconds: int | None = None
+    aspect_ratio: str | None = None
     published_at: datetime | None = None
     expires_at: datetime | None = None
     is_story_expired: bool = False

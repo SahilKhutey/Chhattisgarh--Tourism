@@ -12,6 +12,7 @@ from app.core.database import Base
 from app.modules.social.domain.enums import CreatorStatus
 
 if TYPE_CHECKING:
+    from app.modules.social.models.social_account import SocialAccount
     from app.modules.social.models.social_content import SocialContent
 
 JSON_TYPE = JSON().with_variant(JSONB, "postgresql")
@@ -33,9 +34,9 @@ class Creator(Base):
         default=uuid.uuid4,
     )
 
-    user_id: Mapped[uuid.UUID] = mapped_column(
+    user_id: Mapped[uuid.UUID | None] = mapped_column(
         Uuid(as_uuid=True),
-        nullable=False,
+        nullable=True,
         unique=True,
     )
 
@@ -128,6 +129,12 @@ class Creator(Base):
 
     contents: Mapped[list[SocialContent]] = relationship(
         "SocialContent",
+        back_populates="creator",
+        cascade="all, delete-orphan",
+    )
+
+    social_accounts: Mapped[list[SocialAccount]] = relationship(
+        "SocialAccount",
         back_populates="creator",
         cascade="all, delete-orphan",
     )

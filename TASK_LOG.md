@@ -104,6 +104,15 @@ CG Tourism OS Development History
     - Destination detail living showcase (`DestinationSocialShowcase.tsx`) embedded into `/destinations/[slug]`.
     - Living Feed route `/feed` and top navigation link across English, Hindi, and Chhattisgarhi.
     - Verified: 8/8 new Jest tests passed, 589/589 full web tests passed (147 test suites), 0 TypeScript errors, 88/88 Next.js production routes compiled cleanly.
+  - **P25 (Curated Social Aggregation & Showcase Engine — Backend & Integration Layer)**:
+    - Designed as a Curated Social Discovery Layer: CG Tourism does not store raw external video blobs; it curates, normalizes, indexes metadata, and routes users to the original platform (YouTube / Instagram) while tying items directly into the Tourism Entity Graph.
+    - Creator Social Registry: Admin onboarding of verified creators and external platform handles (`@channel`, `@handle`).
+    - Provider Layer: Pluggable `SocialProvider` protocol with deterministic normalization engines (`YouTubeProvider`, `InstagramProvider`, `ProviderFactory`).
+    - Multi-stage Social Acceptance & Health Gate (`PENDING` -> `VERIFYING` -> `VERIFIED` -> `ACCEPTED` -> `ACTIVE` / `PAUSED` / `REJECTED`) with sync health auditing.
+    - Synchronous Incremental Sync Engine (`SocialSyncEngine`): Content type filtering, deduplication on `(provider, provider_content_id)`, engagement refresh (`views_count`, `likes_count`), media asset extraction, and audit log generation (`SocialSyncRun`).
+    - Modular Feed Template System: Admin-defined layout builder (`STANDARD_GRID`, `MASONRY`, `FEATURED_GRID`, `REGIONAL_SHOWCASE`) with responsive columns and query resolution (`GET /api/social/templates/{slug}`).
+    - Alembic migration `p24_social_aggregation_engine.py` adding `social_accounts`, `social_sync_runs`, `social_feed_templates`, and extended `social_contents`.
+    - Verified: 15/15 tests in `apps/api/tests/social/` passed (100%), 459/459 tests across `apps/api/tests/` passed (100%), and 589/589 web tests passed (100%).
 
 ---
 

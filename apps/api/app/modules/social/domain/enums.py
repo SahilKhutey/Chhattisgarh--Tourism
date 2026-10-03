@@ -7,13 +7,50 @@ class ContentType(StrEnum):
     POST = "POST"
     VIDEO = "VIDEO"
     REEL = "REEL"
+    SHORT = "SHORT"
     STORY = "STORY"
     JOURNAL = "JOURNAL"
     CULTURAL_STORY = "CULTURAL_STORY"
 
 
+class SocialPlatform(StrEnum):
+    YOUTUBE = "YOUTUBE"
+    INSTAGRAM = "INSTAGRAM"
+    FACEBOOK = "FACEBOOK"
+    X = "X"
+    VIMEO = "VIMEO"
+
+
+class SocialAccountStatus(StrEnum):
+    PENDING = "PENDING"
+    VERIFYING = "VERIFYING"
+    VERIFIED = "VERIFIED"
+    PENDING_ACCEPTANCE = "PENDING_ACCEPTANCE"
+    ACCEPTED = "ACCEPTED"
+    ACTIVE = "ACTIVE"
+    PAUSED = "PAUSED"
+    REJECTED = "REJECTED"
+    DISCONNECTED = "DISCONNECTED"
+
+
+class SyncHealthStatus(StrEnum):
+    HEALTHY = "HEALTHY"
+    SYNCING = "SYNCING"
+    ERROR = "ERROR"
+    QUOTA_EXCEEDED = "QUOTA_EXCEEDED"
+    PAUSED = "PAUSED"
+
+
+class FeedLayoutType(StrEnum):
+    STANDARD_GRID = "STANDARD_GRID"
+    MASONRY = "MASONRY"
+    FEATURED_GRID = "FEATURED_GRID"
+    REGIONAL_SHOWCASE = "REGIONAL_SHOWCASE"
+
+
 class CreatorStatus(StrEnum):
     PENDING = "PENDING"
+    ACTIVE = "ACTIVE"
     VERIFIED = "VERIFIED"
     REJECTED = "REJECTED"
     SUSPENDED = "SUSPENDED"

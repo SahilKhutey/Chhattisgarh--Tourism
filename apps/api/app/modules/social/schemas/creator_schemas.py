@@ -41,7 +41,7 @@ class CreatorResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: UUID
-    user_id: UUID
+    user_id: UUID | None = None
     handle: str
     display_name: str
     bio: str | None = None

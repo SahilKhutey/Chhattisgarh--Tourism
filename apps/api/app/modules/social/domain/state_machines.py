@@ -11,6 +11,7 @@ from app.modules.social.domain.enums import (
     CulturalSensitivityLevel,
     ModerationDecision,
     ModerationStatus,
+    SocialAccountStatus,
 )
 
 
@@ -29,10 +30,11 @@ class CulturalConsentViolationError(AppError):
 
 class CreatorStateMachine:
     ALLOWED_TRANSITIONS: dict[CreatorStatus, set[CreatorStatus]] = {
-        CreatorStatus.PENDING: {CreatorStatus.VERIFIED, CreatorStatus.REJECTED, CreatorStatus.SUSPENDED},
-        CreatorStatus.VERIFIED: {CreatorStatus.SUSPENDED},
+        CreatorStatus.PENDING: {CreatorStatus.ACTIVE, CreatorStatus.VERIFIED, CreatorStatus.REJECTED, CreatorStatus.SUSPENDED},
+        CreatorStatus.ACTIVE: {CreatorStatus.VERIFIED, CreatorStatus.SUSPENDED, CreatorStatus.REJECTED},
+        CreatorStatus.VERIFIED: {CreatorStatus.ACTIVE, CreatorStatus.SUSPENDED},
         CreatorStatus.REJECTED: {CreatorStatus.PENDING},  # Allowed to re-apply
-        CreatorStatus.SUSPENDED: {CreatorStatus.VERIFIED, CreatorStatus.REJECTED},
+        CreatorStatus.SUSPENDED: {CreatorStatus.ACTIVE, CreatorStatus.VERIFIED, CreatorStatus.REJECTED},
     }
 
     @classmethod
@@ -40,6 +42,27 @@ class CreatorStateMachine:
         allowed = cls.ALLOWED_TRANSITIONS.get(current, set())
         if target not in allowed:
             raise InvalidStateTransitionError("Creator", current.value, target.value)
+        return target
+
+
+class SocialAccountStateMachine:
+    ALLOWED_TRANSITIONS: dict[SocialAccountStatus, set[SocialAccountStatus]] = {
+        SocialAccountStatus.PENDING: {SocialAccountStatus.VERIFYING, SocialAccountStatus.REJECTED, SocialAccountStatus.DISCONNECTED},
+        SocialAccountStatus.VERIFYING: {SocialAccountStatus.VERIFIED, SocialAccountStatus.REJECTED, SocialAccountStatus.PENDING},
+        SocialAccountStatus.VERIFIED: {SocialAccountStatus.PENDING_ACCEPTANCE, SocialAccountStatus.ACCEPTED, SocialAccountStatus.REJECTED},
+        SocialAccountStatus.PENDING_ACCEPTANCE: {SocialAccountStatus.ACCEPTED, SocialAccountStatus.REJECTED, SocialAccountStatus.VERIFIED},
+        SocialAccountStatus.ACCEPTED: {SocialAccountStatus.ACTIVE, SocialAccountStatus.PAUSED, SocialAccountStatus.REJECTED},
+        SocialAccountStatus.ACTIVE: {SocialAccountStatus.PAUSED, SocialAccountStatus.DISCONNECTED, SocialAccountStatus.REJECTED},
+        SocialAccountStatus.PAUSED: {SocialAccountStatus.ACTIVE, SocialAccountStatus.DISCONNECTED, SocialAccountStatus.REJECTED},
+        SocialAccountStatus.REJECTED: {SocialAccountStatus.PENDING, SocialAccountStatus.DISCONNECTED},
+        SocialAccountStatus.DISCONNECTED: {SocialAccountStatus.PENDING},
+    }
+
+    @classmethod
+    def transition(cls, current: SocialAccountStatus, target: SocialAccountStatus) -> SocialAccountStatus:
+        allowed = cls.ALLOWED_TRANSITIONS.get(current, set())
+        if target not in allowed:
+            raise InvalidStateTransitionError("SocialAccount", current.value, target.value)
         return target
 
 

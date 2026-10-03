@@ -32,6 +32,7 @@ from app.modules.social.domain.enums import (
 if TYPE_CHECKING:
     from app.modules.social.models.creator import Creator
     from app.modules.social.models.moderation import SocialModerationLog
+    from app.modules.social.models.social_account import SocialAccount
     from app.modules.social.models.social_media import SocialMedia
 
 JSON_TYPE = JSON().with_variant(JSONB, "postgresql")
@@ -50,6 +51,7 @@ class SocialContent(Base):
         Index("ix_social_contents_place_slug", "place_slug"),
         Index("ix_social_contents_expires_at", "expires_at"),
         Index("ix_social_contents_created_at", "created_at"),
+        Index("ix_social_contents_provider_and_cid", "provider", "provider_content_id"),
     )
 
     id: Mapped[uuid.UUID] = mapped_column(
@@ -62,6 +64,51 @@ class SocialContent(Base):
         Uuid(as_uuid=True),
         ForeignKey("creators.id", ondelete="CASCADE"),
         nullable=False,
+    )
+
+    social_account_id: Mapped[uuid.UUID | None] = mapped_column(
+        Uuid(as_uuid=True),
+        ForeignKey("social_accounts.id", ondelete="SET NULL"),
+        nullable=True,
+        index=True,
+    )
+
+    provider: Mapped[str | None] = mapped_column(
+        String(32),
+        nullable=True,
+        index=True,
+    )
+
+    provider_content_id: Mapped[str | None] = mapped_column(
+        String(128),
+        nullable=True,
+        index=True,
+    )
+
+    source_url: Mapped[str | None] = mapped_column(
+        String(1024),
+        nullable=True,
+    )
+
+    original_platform_action_label: Mapped[str | None] = mapped_column(
+        String(64),
+        nullable=True,
+    )
+
+    duration_seconds: Mapped[int | None] = mapped_column(
+        Integer,
+        nullable=True,
+    )
+
+    aspect_ratio: Mapped[str | None] = mapped_column(
+        String(16),
+        nullable=True,
+        default="16:9",
+    )
+
+    synced_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True,
     )
 
     content_type: Mapped[str] = mapped_column(
@@ -297,6 +344,11 @@ class SocialContent(Base):
     # Relationships
     creator: Mapped[Creator] = relationship(
         "Creator",
+        back_populates="contents",
+    )
+
+    social_account: Mapped[SocialAccount | None] = relationship(
+        "SocialAccount",
         back_populates="contents",
     )
 

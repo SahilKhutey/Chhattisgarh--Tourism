@@ -15,13 +15,16 @@ from app.modules.admin.dependencies import AdminUser, get_current_user
 from app.modules.social.models import (
     Creator,
     CreatorFollow,
+    SocialAccount,
     SocialComment,
     SocialContent,
+    SocialFeedTemplate,
     SocialLike,
     SocialMedia,
     SocialModerationLog,
     SocialSave,
     SocialShare,
+    SocialSyncRun,
     SocialTripAdd,
 )
 
@@ -37,7 +40,10 @@ def db_session():
     # Create tables
     OutboxEvent.__table__.create(bind=engine, checkfirst=True)
     Creator.__table__.create(bind=engine, checkfirst=True)
+    SocialAccount.__table__.create(bind=engine, checkfirst=True)
     SocialContent.__table__.create(bind=engine, checkfirst=True)
+    SocialSyncRun.__table__.create(bind=engine, checkfirst=True)
+    SocialFeedTemplate.__table__.create(bind=engine, checkfirst=True)
     SocialMedia.__table__.create(bind=engine, checkfirst=True)
     SocialLike.__table__.create(bind=engine, checkfirst=True)
     SocialSave.__table__.create(bind=engine, checkfirst=True)
