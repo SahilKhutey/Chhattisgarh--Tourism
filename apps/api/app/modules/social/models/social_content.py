@@ -90,6 +90,11 @@ class SocialContent(Base):
         nullable=True,
     )
 
+    thumbnail_url: Mapped[str | None] = mapped_column(
+        String(1024),
+        nullable=True,
+    )
+
     original_platform_action_label: Mapped[str | None] = mapped_column(
         String(64),
         nullable=True,
@@ -198,6 +203,12 @@ class SocialContent(Base):
     )
 
     template_payload: Mapped[dict[str, Any]] = mapped_column(
+        JSON_TYPE,
+        nullable=False,
+        default=dict,
+    )
+
+    metadata_json: Mapped[dict[str, Any]] = mapped_column(
         JSON_TYPE,
         nullable=False,
         default=dict,
@@ -365,3 +376,86 @@ class SocialContent(Base):
         cascade="all, delete-orphan",
         order_by="SocialModerationLog.created_at.desc()",
     )
+
+    @property
+    def platform(self):
+        from app.modules.social.domain.enums import SocialPlatform
+
+        if not self.provider:
+            return None
+        try:
+            return SocialPlatform(self.provider)
+        except Exception:
+            return None
+
+    @property
+    def status(self) -> str:
+        return self.publication_status
+
+    @status.setter
+    def status(self, val: str) -> None:
+        self.publication_status = val
+
+    def to_domain(self):
+
+        from app.modules.social.domain.enums import SocialPlatform
+        from app.modules.social.domain.models import SocialContent as DomainSocialContent
+
+        try:
+            platform_val = SocialPlatform(self.provider) if self.provider else SocialPlatform.YOUTUBE
+        except Exception:
+            platform_val = SocialPlatform.YOUTUBE
+
+        return DomainSocialContent(
+            id=str(self.id),
+            creator_id=str(self.creator_id),
+            social_account_id=str(self.social_account_id) if self.social_account_id else "",
+            platform=platform_val,
+            provider_content_id=self.provider_content_id or "",
+            content_type=self.content_type,
+            title=self.title,
+            description=self.description,
+            source_url=self.source_url or "",
+            thumbnail_url=self.thumbnail_url,
+            published_at=self.published_at,
+            synced_at=self.synced_at or self.created_at,
+            status=self.publication_status,
+            visibility=self.visibility,
+            district_id=self.district_id,
+            tourism_zone_id=self.tourism_zone_id,
+            place_id=str(self.place_id) if self.place_id else None,
+            language=self.language,
+            hashtags=list(self.hashtags or []),
+            tourism_tags=list(self.tourism_tags or []),
+            cultural_tags=list(self.cultural_tags or []),
+            metadata=dict(self.metadata_json) if getattr(self, "metadata_json", None) else {},
+        )
+
+    @classmethod
+    def from_domain(cls, domain_content):
+        return cls(
+            id=uuid.UUID(domain_content.id) if isinstance(domain_content.id, str) else domain_content.id,
+            creator_id=uuid.UUID(domain_content.creator_id) if isinstance(domain_content.creator_id, str) else domain_content.creator_id,
+            social_account_id=uuid.UUID(domain_content.social_account_id) if domain_content.social_account_id else None,
+            provider=domain_content.platform.value if hasattr(domain_content.platform, "value") else str(domain_content.platform),
+            provider_content_id=domain_content.provider_content_id,
+            content_type=domain_content.content_type,
+            title=domain_content.title or "",
+            caption=domain_content.description or "",
+            description=domain_content.description,
+            slug=f"{domain_content.platform.value if hasattr(domain_content.platform, 'value') else domain_content.platform}-{domain_content.provider_content_id[:32]}",
+            source_url=domain_content.source_url,
+            thumbnail_url=domain_content.thumbnail_url,
+            published_at=domain_content.published_at,
+            synced_at=domain_content.synced_at,
+            publication_status=domain_content.status,
+            visibility=domain_content.visibility,
+            district_id=domain_content.district_id or "bastar",
+            tourism_zone_id=domain_content.tourism_zone_id,
+            place_id=uuid.UUID(domain_content.place_id) if domain_content.place_id else None,
+            language=domain_content.language or "hi",
+            hashtags=list(domain_content.hashtags or []),
+            tourism_tags=list(domain_content.tourism_tags or []),
+            cultural_tags=list(domain_content.cultural_tags or []),
+            metadata_json=dict(domain_content.metadata) if domain_content.metadata else {},
+        )

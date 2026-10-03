@@ -307,3 +307,34 @@ Phase 0 establishes the immutable foundation and contracts for the Social Engine
    - `test_provider_registry.py` (3 tests).
    - `test_account_lifecycle.py` (4 tests).
    - All 17 Phase 0 unit tests passed cleanly in <2s.
+
+---
+
+## 11. Phase 1: Persistence Layer & Models (Production Social Engine)
+
+### 11.1 Strategic Objective
+Deliver the production persistence layer for Chhattisgarh Tourism OS Social Engine (`Unseen36Garh`), establishing relational integrity, lifecycle fields, uniqueness constraints, bi-directional domain mappings, audit trails, and transactional outbox event publishing.
+
+### 11.2 Architectural Components Implemented
+1. **Domain Model Extensions (`apps/api/app/modules/social/domain/models.py`)**:
+   - `SocialCreator`: Pure domain dataclass for local creator profiles.
+   - `SocialSyncState`: Pure domain dataclass for provider sync status snapshots.
+2. **SQLAlchemy ORM Models (`apps/api/app/modules/social/models/`)**:
+   - `Creator` / `SocialCreator`: Added canonical alias and `.to_domain()`.
+   - `SocialAccount`: Added `display_name`, `external_account_id`, `sync_status` (`SyncStatus` enum), properties (`sync_enabled`, `last_synced_at`, `last_successful_sync_at`), `.to_domain()`, `.from_domain()`, and 1-to-1 relationship to `SocialAccountSyncState`.
+   - `SocialAccountSyncState` (new model in `models/sync_state.py`): Tracks account sync snapshot, failure counts, errors, and pagination cursors.
+   - `SocialContent`: Added `thumbnail_url`, `metadata_json`, properties (`platform`, `status`), and `.to_domain()`, `.from_domain()`.
+3. **Database Migration (`apps/api/alembic/versions/p25_social_persistence_layer.py`)**:
+   - Upgrades `social_accounts` with `display_name`, `external_account_id`, `sync_status`, and secondary indexes.
+   - Upgrades `social_contents` with `thumbnail_url` and `metadata_json`.
+   - Creates `social_account_sync_states` table with 1-to-1 foreign key to `social_accounts`.
+   - Creates SQL view alias `social_creators` pointing to `creators`.
+4. **Transactional Outbox Events (`app/events/types.py`, `services/`)**:
+   - Added events: `SOCIAL_ACCOUNT_REGISTERED`, `SOCIAL_ACCOUNT_ACCEPTED`, `SOCIAL_ACCOUNT_ACTIVATED`, `SOCIAL_ACCOUNT_PAUSED`, `SOCIAL_CONTENT_SYNCED`, `SOCIAL_SYNC_COMPLETED`, `SOCIAL_SYNC_FAILED`.
+   - Emits outbox events across account lifecycle and content sync operations.
+5. **Schemas & API Compatibility (`schemas/account_schemas.py`, `schemas/content_schemas.py`)**:
+   - Updated `SocialAccountCreate`, `SocialAccountResponse`, `SocialContentResponse`, and `FeedCardResponse` to seamlessly handle new persistence fields.
+6. **Comprehensive Test Suite (`apps/api/app/modules/social/tests/test_persistence_models.py`)**:
+   - 5 comprehensive tests validating ORM relationships, bidirectional domain conversions, and transactional outbox event generation.
+   - 37 / 37 social tests passing cleanly in <3s.
+

@@ -121,6 +121,15 @@ CG Tourism OS Development History
     - `transition_account` state machine guard preventing unauthorized transitions.
     - `SocialSettings` configuration boundary with disabled-by-default safety posture.
     - Comprehensive unit test suite in `app/modules/social/tests/`: 17 / 17 tests passed in <2s (test_enums, test_source_url, test_provider_registry, test_account_lifecycle).
+  - **Phase 1 (Social Engine Persistence Layer & Models — Production Relational Foundation)**:
+    - Production persistence models implemented: `Creator` / `SocialCreator`, `SocialAccount`, `SocialAccountSyncState`, `SocialContent`, and `SocialSyncRun`.
+    - Database constraints and indexes: composite uniqueness `uq_social_account_creator_platform_handle`, composite index on `(status, platform)`, index on `external_account_id` and `sync_status`.
+    - Bi-directional domain mapping via `.to_domain()` and `.from_domain()`, with full compatibility properties (`sync_enabled`, `last_synced_at`, `last_successful_sync_at`, `platform`, `status`).
+    - Dedicated `SocialAccountSyncState` tracking 1-to-1 sync snapshots, failures, pagination cursors, and total counts.
+    - Transactional outbox event publishing (`SOCIAL_ACCOUNT_REGISTERED`, `SOCIAL_ACCOUNT_ACCEPTED`, `SOCIAL_ACCOUNT_ACTIVATED`, `SOCIAL_ACCOUNT_PAUSED`, `SOCIAL_CONTENT_SYNCED`, `SOCIAL_SYNC_COMPLETED`, `SOCIAL_SYNC_FAILED`).
+    - Alembic migration `p25_social_persistence_layer.py` adding columns, indexes, `social_account_sync_states` table, and `social_creators` view alias.
+    - Verified: 37/37 social tests passing in 2.36s (100%).
+
 
 ---
 

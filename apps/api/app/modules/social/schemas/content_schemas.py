@@ -168,10 +168,12 @@ class SocialContentResponse(BaseModel):
     provider: str | None = None
     provider_content_id: str | None = None
     source_url: str | None = None
+    thumbnail_url: str | None = None
     original_platform_action_label: str | None = None
     duration_seconds: int | None = None
     aspect_ratio: str | None = None
     synced_at: datetime | None = None
+    metadata_json: dict[str, Any] = Field(default_factory=dict)
 
     media_items: list[MediaItemResponse] = Field(default_factory=list)
     created_at: datetime
@@ -200,12 +202,15 @@ class FeedCardResponse(BaseModel):
     shares_count: int
     provider: str | None = None
     source_url: str | None = None
+    thumbnail_url: str | None = None
     original_platform_action_label: str | None = None
     duration_seconds: int | None = None
     aspect_ratio: str | None = None
+    metadata_json: dict[str, Any] = Field(default_factory=dict)
     published_at: datetime | None = None
     expires_at: datetime | None = None
     is_story_expired: bool = False
+
 
 
 class AddToTripRequest(BaseModel):

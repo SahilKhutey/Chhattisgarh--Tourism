@@ -70,3 +70,41 @@ class SocialContent:
     cultural_tags: list[str] = field(default_factory=list)
 
     metadata: dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass(slots=True)
+class SocialCreator:
+    id: str
+    handle: str
+    display_name: str
+    district_id: str
+    user_id: str | None = None
+    bio: str | None = None
+    avatar_url: str | None = None
+    languages: list[str] = field(default_factory=lambda: ["cg", "hi"])
+    categories: list[str] = field(default_factory=lambda: ["Culture", "Travel"])
+    status: str = "PENDING"
+    is_verified: bool = False
+    followers_count: int = 0
+    following_count: int = 0
+    posts_count: int = 0
+    featured_work_id: str | None = None
+    created_at: datetime | None = None
+    updated_at: datetime | None = None
+
+
+@dataclass(slots=True)
+class SocialSyncState:
+    id: str
+    social_account_id: str
+    sync_status: SyncStatus = SyncStatus.NEVER_RUN
+    sync_enabled: bool = True
+    last_synced_at: datetime | None = None
+    last_successful_sync_at: datetime | None = None
+    consecutive_failures: int = 0
+    last_error: str | None = None
+    cursor: str | None = None
+    items_synced_total: int = 0
+    created_at: datetime | None = None
+    updated_at: datetime | None = None
+

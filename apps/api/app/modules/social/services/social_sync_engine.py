@@ -8,6 +8,8 @@ from typing import Any
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app.events.publisher import create_outbox_event
+from app.events.types import EventType
 from app.modules.social.domain.enums import (
     ContentStatus,
     ContentType,
@@ -18,13 +20,16 @@ from app.modules.social.domain.enums import (
     SocialAccountStatus,
     SocialPlatform,
     SyncHealthStatus,
+    SyncStatus,
 )
 from app.modules.social.models.creator import Creator
 from app.modules.social.models.social_account import SocialAccount
 from app.modules.social.models.social_content import SocialContent
 from app.modules.social.models.social_media import SocialMedia
+from app.modules.social.models.sync_state import SocialAccountSyncState
 from app.modules.social.providers.provider_factory import ProviderFactory
 from app.modules.social.repositories.social_account_repository import SocialAccountRepository
+
 
 logger = logging.getLogger(__name__)
 
@@ -90,6 +95,7 @@ class SocialSyncEngine:
                         provider=item.provider.value,
                         provider_content_id=item.provider_content_id,
                         source_url=item.source_url,
+                        thumbnail_url=item.thumbnail_url,
                         original_platform_action_label=action_label,
                         content_type=item.content_type.value,
                         title=item.title,
@@ -127,15 +133,47 @@ class SocialSyncEngine:
                         )
                         self.session.add(media)
 
+                    create_outbox_event(
+                        self.session,
+                        event_type=EventType.SOCIAL_CONTENT_SYNCED,
+                        aggregate_id=new_content.id,
+                        payload={
+                            "content_id": str(new_content.id),
+                            "account_id": str(account.id),
+                            "creator_id": str(account.creator_id),
+                            "provider": new_content.provider,
+                            "provider_content_id": new_content.provider_content_id,
+                            "source_url": new_content.source_url,
+                        },
+                    )
+
                     synced_count += 1
 
             finished_at = datetime.now(timezone.utc)
             account.last_successful_sync = finished_at
             account.last_attempted_sync = finished_at
             account.sync_health = SyncHealthStatus.HEALTHY.value
+            account.sync_status = SyncStatus.SUCCEEDED.value
             account.consecutive_failures = 0
             account.last_error = None
             account.sync_cursor = sync_result.next_cursor
+
+            # Update or create SocialAccountSyncState
+            sync_state = self.session.scalar(
+                select(SocialAccountSyncState).where(SocialAccountSyncState.social_account_id == account.id)
+            )
+            if not sync_state:
+                sync_state = SocialAccountSyncState(social_account_id=account.id)
+                self.session.add(sync_state)
+
+            sync_state.sync_status = SyncStatus.SUCCEEDED.value
+            sync_state.sync_enabled = account.is_sync_enabled
+            sync_state.last_synced_at = finished_at
+            sync_state.last_successful_sync_at = finished_at
+            sync_state.consecutive_failures = 0
+            sync_state.last_error = None
+            sync_state.cursor = sync_result.next_cursor
+            sync_state.items_synced_total += synced_count
 
             self.account_repo.record_sync_run(
                 account_id=account.id,
@@ -144,6 +182,18 @@ class SocialSyncEngine:
                 items_synced=synced_count,
                 started_at=started_at,
                 finished_at=finished_at,
+            )
+
+            create_outbox_event(
+                self.session,
+                event_type=EventType.SOCIAL_SYNC_COMPLETED,
+                aggregate_id=account.id,
+                payload={
+                    "account_id": str(account.id),
+                    "creator_id": str(account.creator_id),
+                    "items_discovered": discovered_count,
+                    "items_synced": synced_count,
+                },
             )
 
             self.session.commit()
@@ -159,8 +209,18 @@ class SocialSyncEngine:
             finished_at = datetime.now(timezone.utc)
             account.last_attempted_sync = finished_at
             account.sync_health = SyncHealthStatus.ERROR.value
+            account.sync_status = SyncStatus.FAILED.value
             account.consecutive_failures += 1
             account.last_error = str(e)
+
+            sync_state = self.session.scalar(
+                select(SocialAccountSyncState).where(SocialAccountSyncState.social_account_id == account.id)
+            )
+            if sync_state:
+                sync_state.sync_status = SyncStatus.FAILED.value
+                sync_state.last_synced_at = finished_at
+                sync_state.consecutive_failures += 1
+                sync_state.last_error = str(e)
 
             self.account_repo.record_sync_run(
                 account_id=account.id,
@@ -171,8 +231,21 @@ class SocialSyncEngine:
                 finished_at=finished_at,
                 error_message=str(e),
             )
+
+            create_outbox_event(
+                self.session,
+                event_type=EventType.SOCIAL_SYNC_FAILED,
+                aggregate_id=account.id,
+                payload={
+                    "account_id": str(account.id),
+                    "creator_id": str(account.creator_id),
+                    "error": str(e),
+                },
+            )
+
             self.session.commit()
             return {"status": "FAILED", "error": str(e)}
+
 
     def sync_all_active_accounts(self) -> list[dict[str, Any]]:
         accounts = self.account_repo.list_active_accounts_for_sync()

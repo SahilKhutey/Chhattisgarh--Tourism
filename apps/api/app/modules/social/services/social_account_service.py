@@ -7,11 +7,14 @@ from typing import Any, Sequence
 from sqlalchemy.orm import Session
 
 from app.core.errors import AppError
+from app.events.publisher import create_outbox_event
+from app.events.types import EventType
 from app.modules.social.domain.enums import (
     CreatorStatus,
     SocialAccountStatus,
     SocialPlatform,
     SyncHealthStatus,
+    SyncStatus,
 )
 from app.modules.social.domain.state_machines import (
     CreatorStateMachine,
@@ -19,6 +22,7 @@ from app.modules.social.domain.state_machines import (
 )
 from app.modules.social.models.creator import Creator
 from app.modules.social.models.social_account import SocialAccount
+from app.modules.social.models.sync_state import SocialAccountSyncState
 from app.modules.social.providers.provider_factory import ProviderFactory
 from app.modules.social.repositories.creator_repository import CreatorRepository
 from app.modules.social.repositories.social_account_repository import SocialAccountRepository
@@ -108,11 +112,14 @@ class SocialAccountService:
 
         account = SocialAccount(
             creator_id=creator_id,
-            platform=payload.platform.value,
+            platform=payload.platform.value if hasattr(payload.platform, "value") else str(payload.platform),
             handle=payload.handle,
+            display_name=getattr(payload, "display_name", None),
+            external_account_id=getattr(payload, "external_account_id", None),
             profile_url=payload.profile_url,
             account_type=payload.account_type,
             status=SocialAccountStatus.PENDING.value,
+            sync_status=SyncStatus.NEVER_RUN.value,
             is_sync_enabled=True,
             sync_frequency_minutes=payload.sync_frequency_minutes,
             priority=payload.priority,
@@ -123,9 +130,30 @@ class SocialAccountService:
         )
         self.account_repo.create(account)
 
+        # Initialize dedicated sync state record
+        sync_state = SocialAccountSyncState(
+            social_account_id=account.id,
+            sync_status=SyncStatus.NEVER_RUN.value,
+            sync_enabled=True,
+        )
+        self.session.add(sync_state)
+
+        create_outbox_event(
+            self.session,
+            event_type=EventType.SOCIAL_ACCOUNT_REGISTERED,
+            aggregate_id=account.id,
+            payload={
+                "account_id": str(account.id),
+                "creator_id": str(creator_id),
+                "platform": account.platform,
+                "handle": account.handle,
+            },
+        )
+
         # Trigger automatic provider verification
         self.verify_social_account(account.id)
         return account
+
 
     def verify_social_account(self, account_id: uuid.UUID) -> SocialAccount:
         account = self.account_repo.get_by_id(account_id)
@@ -191,6 +219,19 @@ class SocialAccountService:
             SocialAccountStatus.ACTIVE,
         ).value
 
+        create_outbox_event(
+            self.session,
+            event_type=EventType.SOCIAL_ACCOUNT_ACCEPTED,
+            aggregate_id=account.id,
+            payload={
+                "account_id": str(account.id),
+                "creator_id": str(account.creator_id),
+                "platform": account.platform,
+                "handle": account.handle,
+                "priority": account.priority,
+            },
+        )
+
         self.session.commit()
         return account
 
@@ -204,6 +245,19 @@ class SocialAccountService:
             SocialAccountStatus.ACTIVE,
         ).value
         account.is_sync_enabled = True
+
+        create_outbox_event(
+            self.session,
+            event_type=EventType.SOCIAL_ACCOUNT_ACTIVATED,
+            aggregate_id=account.id,
+            payload={
+                "account_id": str(account.id),
+                "creator_id": str(account.creator_id),
+                "platform": account.platform,
+                "handle": account.handle,
+            },
+        )
+
         self.session.commit()
         return account
 
@@ -217,8 +271,22 @@ class SocialAccountService:
             SocialAccountStatus.PAUSED,
         ).value
         account.is_sync_enabled = False
+
+        create_outbox_event(
+            self.session,
+            event_type=EventType.SOCIAL_ACCOUNT_PAUSED,
+            aggregate_id=account.id,
+            payload={
+                "account_id": str(account.id),
+                "creator_id": str(account.creator_id),
+                "platform": account.platform,
+                "handle": account.handle,
+            },
+        )
+
         self.session.commit()
         return account
+
 
     def update_account_settings(
         self,

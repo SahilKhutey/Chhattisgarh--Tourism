@@ -16,6 +16,7 @@ from app.modules.social.models import (
     Creator,
     CreatorFollow,
     SocialAccount,
+    SocialAccountSyncState,
     SocialComment,
     SocialContent,
     SocialFeedTemplate,
@@ -41,6 +42,7 @@ def db_session():
     OutboxEvent.__table__.create(bind=engine, checkfirst=True)
     Creator.__table__.create(bind=engine, checkfirst=True)
     SocialAccount.__table__.create(bind=engine, checkfirst=True)
+    SocialAccountSyncState.__table__.create(bind=engine, checkfirst=True)
     SocialContent.__table__.create(bind=engine, checkfirst=True)
     SocialSyncRun.__table__.create(bind=engine, checkfirst=True)
     SocialFeedTemplate.__table__.create(bind=engine, checkfirst=True)
@@ -52,6 +54,7 @@ def db_session():
     SocialTripAdd.__table__.create(bind=engine, checkfirst=True)
     CreatorFollow.__table__.create(bind=engine, checkfirst=True)
     SocialModerationLog.__table__.create(bind=engine, checkfirst=True)
+
 
     TestingSessionLocal = sessionmaker(
         autocommit=False,

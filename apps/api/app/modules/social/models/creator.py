@@ -138,3 +138,30 @@ class Creator(Base):
         back_populates="creator",
         cascade="all, delete-orphan",
     )
+
+    def to_domain(self):
+        from app.modules.social.domain.models import SocialCreator as DomainSocialCreator
+
+        return DomainSocialCreator(
+            id=str(self.id),
+            handle=self.handle,
+            display_name=self.display_name,
+            district_id=self.district_id,
+            user_id=str(self.user_id) if self.user_id else None,
+            bio=self.bio,
+            avatar_url=self.avatar_url,
+            languages=list(self.languages or []),
+            categories=list(self.categories or []),
+            status=self.status,
+            is_verified=self.is_verified,
+            followers_count=self.followers_count,
+            following_count=self.following_count,
+            posts_count=self.posts_count,
+            featured_work_id=str(self.featured_work_id) if self.featured_work_id else None,
+            created_at=self.created_at,
+            updated_at=self.updated_at,
+        )
+
+
+# Canonical alias for domain alignment
+SocialCreator = Creator

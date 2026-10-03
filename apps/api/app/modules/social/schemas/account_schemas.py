@@ -16,6 +16,8 @@ from app.modules.social.domain.enums import (
 class SocialAccountCreate(BaseModel):
     platform: SocialPlatform
     handle: str = Field(..., min_length=2, max_length=128)
+    display_name: str | None = None
+    external_account_id: str | None = None
     profile_url: str | None = None
     account_type: str = "CREATOR"
     sync_frequency_minutes: int = Field(60, ge=5, le=1440)
@@ -26,6 +28,7 @@ class SocialAccountCreate(BaseModel):
 
 
 class SocialAccountUpdate(BaseModel):
+    display_name: str | None = None
     is_sync_enabled: bool | None = None
     sync_frequency_minutes: int | None = None
     priority: int | None = None
@@ -45,9 +48,12 @@ class SocialAccountResponse(BaseModel):
     creator_id: uuid.UUID
     platform: str
     handle: str
+    display_name: str | None = None
+    external_account_id: str | None = None
     profile_url: str | None = None
     account_type: str
     status: str
+    sync_status: str | None = None
     is_sync_enabled: bool
     sync_frequency_minutes: int
     priority: int
@@ -59,10 +65,12 @@ class SocialAccountResponse(BaseModel):
     last_attempted_sync: datetime | None = None
     last_error: str | None = None
     consecutive_failures: int
+    metadata_json: dict[str, Any] = Field(default_factory=dict)
     created_at: datetime
     updated_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
+
 
 
 class AdminCreatorRegister(BaseModel):

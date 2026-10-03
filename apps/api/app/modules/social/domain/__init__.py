@@ -37,6 +37,8 @@ from app.modules.social.domain.errors import (
 from app.modules.social.domain.models import (
     SocialAccount as DomainSocialAccount,
     SocialContent as DomainSocialContent,
+    SocialCreator as DomainSocialCreator,
+    SocialSyncState as DomainSocialSyncState,
 )
 from app.modules.social.domain.state_machines import (
     ContentStateMachine,
@@ -61,6 +63,8 @@ __all__ = [
     "SourceUrl",
     "DomainSocialAccount",
     "DomainSocialContent",
+    "DomainSocialCreator",
+    "DomainSocialSyncState",
     "SocialEngineError",
     "UnsupportedPlatformError",
     "ProviderNotConfiguredError",
