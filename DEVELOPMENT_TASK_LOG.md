@@ -267,3 +267,43 @@ CG Tourism does **not** host or own creator video blobs permanently. It acts as 
 * **Full Backend API Test Suite**: `pytest apps/api/tests -v -p no:cacheprovider` (**459 passed**, 4 skipped, 0 failed, 100%).
 * **Full Web Test Suite**: `npm test` (**147 / 147 test suites passed, 589 / 589 tests passed**, 100%).
 * **Next.js Production Build**: `88 / 88 routes cleanly compiled**.
+
+---
+
+## 10. Phase 0: Social Engine Foundations (Domain Naming, Contracts & Architecture)
+
+### 10.1 Objective & Strategy
+Phase 0 establishes the immutable foundation and contracts for the Social Engine within `apps/api/app/modules/social/` without premature external provider network calls or database dependencies.
+
+### 10.2 Architectural Components Implemented
+1. **Domain Enums (`domain/enums.py`)**:
+   - `SocialPlatform`: `youtube`, `instagram` (with case-insensitive resolution).
+   - `SocialAccountStatus`: `pending`, `verifying`, `verified`, `pending_acceptance`, `accepted`, `active`, `paused`, `rejected`, `disconnected`.
+   - `SocialContentType`: `post`, `video`, `reel`, `short`, `story`.
+   - `SocialContentStatus`: `discovered`, `synced`, `validated`, `under_review`, `approved`, `published`, `hidden`, `removed`, `source_unavailable`, `source_deleted`, `source_private`.
+   - `SocialModerationStatus`: `not_required`, `pending`, `approved`, `rejected`.
+   - `SocialVisibility`: `public`, `hidden`.
+   - `SyncStatus`: `never_run`, `running`, `succeeded`, `partial`, `failed`.
+   - `AccountAcceptanceAction`: `accept`, `reject`, `pause`, `reactivate`.
+2. **Canonical Domain Dataclasses (`domain/models.py`)**:
+   - `SocialAccount`: Pure domain dataclass representing an approved external account.
+   - `SocialContent`: Canonical representation of external social media items linked with Tourism Context.
+3. **SourceUrl Value Object (`domain/value_objects.py`)**:
+   - Scheme enforcement (HTTP/HTTPS only).
+   - Hostname validation and normalization (lowercasing, fragment stripping).
+4. **Provider Abstraction & Registry (`providers/base.py`, `providers/registry.py`)**:
+   - `SocialProvider` protocol defining `verify_account`, `fetch_content`, and `fetch_content_item`.
+   - `ProviderAccount` and `ProviderContent` value contracts.
+   - `ProviderRegistry` for runtime registration and decoupling.
+5. **Account State Machine Service (`services/account_service.py`)**:
+   - Explicit `ALLOWED_TRANSITIONS` guard and `transition_account` transition logic.
+6. **Safety Configuration Boundary (`config.py`)**:
+   - `SocialSettings`: Default `social_engine_enabled=False`, `social_sync_enabled=False`, `social_require_acceptance=True`.
+7. **Error Taxonomy (`domain/errors.py`)**:
+   - Hierarchy of retryable, non-retryable, provider, and moderation exceptions.
+8. **Foundational Unit Tests (`app/modules/social/tests/`)**:
+   - `test_enums.py` (6 tests).
+   - `test_source_url.py` (4 tests).
+   - `test_provider_registry.py` (3 tests).
+   - `test_account_lifecycle.py` (4 tests).
+   - All 17 Phase 0 unit tests passed cleanly in <2s.

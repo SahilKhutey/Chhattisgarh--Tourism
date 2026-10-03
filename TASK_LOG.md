@@ -113,6 +113,14 @@ CG Tourism OS Development History
     - Modular Feed Template System: Admin-defined layout builder (`STANDARD_GRID`, `MASONRY`, `FEATURED_GRID`, `REGIONAL_SHOWCASE`) with responsive columns and query resolution (`GET /api/social/templates/{slug}`).
     - Alembic migration `p24_social_aggregation_engine.py` adding `social_accounts`, `social_sync_runs`, `social_feed_templates`, and extended `social_contents`.
     - Verified: 15/15 tests in `apps/api/tests/social/` passed (100%), 459/459 tests across `apps/api/tests/` passed (100%), and 589/589 web tests passed (100%).
+  - **Phase 0 (Social Engine Foundations — Domain Naming, Contracts & Architecture)**:
+    - Immutable architectural foundation establishing domain terminology, provider abstraction, account lifecycle, content representation, and error taxonomy without external API calls or database dependencies.
+    - Domain enums (`SocialPlatform`, `SocialAccountStatus`, `SocialContentType`, `SocialContentStatus`, `SocialModerationStatus`, `SocialVisibility`, `SyncStatus`, `AccountAcceptanceAction`).
+    - Domain models (`SocialAccount`, `SocialContent` dataclasses) and `SourceUrl` value object with HTTP/HTTPS scheme and hostname validation.
+    - `SocialProvider` protocol and `ProviderRegistry` runtime decoupling.
+    - `transition_account` state machine guard preventing unauthorized transitions.
+    - `SocialSettings` configuration boundary with disabled-by-default safety posture.
+    - Comprehensive unit test suite in `app/modules/social/tests/`: 17 / 17 tests passed in <2s (test_enums, test_source_url, test_provider_registry, test_account_lifecycle).
 
 ---
 
