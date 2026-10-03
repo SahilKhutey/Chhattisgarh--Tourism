@@ -127,8 +127,23 @@ CG Tourism OS Development History
     - Bi-directional domain mapping via `.to_domain()` and `.from_domain()`, with full compatibility properties (`sync_enabled`, `last_synced_at`, `last_successful_sync_at`, `platform`, `status`).
     - Dedicated `SocialAccountSyncState` tracking 1-to-1 sync snapshots, failures, pagination cursors, and total counts.
     - Transactional outbox event publishing (`SOCIAL_ACCOUNT_REGISTERED`, `SOCIAL_ACCOUNT_ACCEPTED`, `SOCIAL_ACCOUNT_ACTIVATED`, `SOCIAL_ACCOUNT_PAUSED`, `SOCIAL_CONTENT_SYNCED`, `SOCIAL_SYNC_COMPLETED`, `SOCIAL_SYNC_FAILED`).
-    - Alembic migration `p25_social_persistence_layer.py` adding columns, indexes, `social_account_sync_states` table, and `social_creators` view alias.
     - Verified: 37/37 social tests passing in 2.36s (100%).
+  - **Phase 1 (Social Engine Core Modules & Functions — Modular Services Architecture)**:
+    - Modular architecture implemented across 12 packages under `apps/api/app/modules/social/`:
+      - `creators/`: CreatorService, CreatorRepository, schemas, uniqueness validation.
+      - `accounts/`: SocialAccountService, SocialAccountRepository, handle validation via SourceValidator.
+      - `acceptance/`: SocialAcceptanceService with fail-closed assert_sync_allowed security policy.
+      - `providers/`: ProviderRegistry, YouTubeAdapter, InstagramAdapter with ProviderCapabilities.
+      - `content/`: SocialContentNormalizer, SocialContentService, SocialContentRepository with upsert deduplication.
+      - `sync/`: SocialSyncService, SyncResult, allowed content type filters, exponential backoff, auto-quarantine.
+      - `context/`: SocialContextResolver inferring Bastar & 20+ CG districts, tourism tags, and circuits.
+      - `source/`: SourceValidator and SourceResolver handling deep link resolution & SOURCE_UNAVAILABLE fallback.
+      - `feed/`: SocialFeedService, FeedQuery, FeedPolicy, anti-monopoly diversity interleaving.
+      - `moderation/`: SocialModerationService (approve, reject, hide, restore, and audit events).
+      - `audit/`: SocialAuditService for domain audit logging.
+      - `engine.py`: Master SocialEngine dependency injection container.
+      - `api/`: Admin and public discovery REST routes cleanly mounted.
+    - Verified: 47/47 social tests passing (100%), 545/545 backend tests passing with 0 regressions.
 
 
 ---

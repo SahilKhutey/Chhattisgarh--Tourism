@@ -338,3 +338,77 @@ Deliver the production persistence layer for Chhattisgarh Tourism OS Social Engi
    - 5 comprehensive tests validating ORM relationships, bidirectional domain conversions, and transactional outbox event generation.
    - 37 / 37 social tests passing cleanly in <3s.
 
+
+---
+
+## 12. Phase 1: Core Modules & Functions (Production Social Engine)
+
+### 12.1 Strategic Objective
+Transform domain contracts and persistence layers into the modular core application architecture for the Chhattisgarh Tourism OS Social Engine.
+Architectural flow:
+`Admin-approved social accounts -> Provider adapters -> Normalized social content -> Tourism-aware feed -> Original source`
+
+Strict constraints enforced:
+- **Canonical backend**: All code resides in `apps/api/app/modules/social/`.
+- **Fail-closed acceptance**: Only `ACTIVE` accounts with `sync_enabled=True` may sync.
+- **Strict attribution & linking**: Zero raw video blob storage; all content deep links to the original YouTube/Instagram source.
+- **Tourism graph grounding**: Content automatically infers Bastar and 20+ CG districts, tourism zones, and cultural tags.
+- **Feed diversity**: Anti-monopoly diversity interleaving prevents a single viral creator or dominant district from saturating the public feed.
+
+### 12.2 Architectural Subpackages Implemented
+1. **`providers/`**:
+   - `base.py`: `ProviderCapabilities`, `ProviderAccount`, `ProviderContent`, and `SocialProvider` protocol.
+   - `registry.py`: `ProviderRegistry` with singleton `default()` container and support listing.
+   - `adapters/`: Deterministic mock adapters for `YouTubeAdapter` and `InstagramAdapter` generating valid deep links and tourism test fixtures.
+2. **`source/`**:
+   - `validator.py`: `SourceValidator` with host checking (YouTube: `youtube.com`, `youtu.be`; Instagram: `instagram.com`), URL normalization, and handle extraction.
+   - `resolver.py`: `SourceResolver` resolving canonical external link or returning `"SOURCE_UNAVAILABLE"` for hidden, private, or deleted content.
+3. **`acceptance/`**:
+   - `policies.py`: `can_sync(account)` and `assert_sync_allowed(account)` enforcing fail-closed security.
+   - `service.py`: `SocialAcceptanceService` orchestrating `submit_for_acceptance`, `accept`, `reject`, `pause`, and `reactivate` with transactional outbox events.
+4. **`creators/`**:
+   - `models.py`, `schemas.py` (`CreatorCreate`, `CreatorUpdate`, `CreatorResponse`).
+   - `repository.py` (`CreatorRepository`), `service.py` (`CreatorService`) managing creator profiles, handle uniqueness guards, and status lifecycles.
+5. **`accounts/`**:
+   - `models.py`, `schemas.py` (`SocialAccountRegisterRequest`, `SocialAccountCreate`, `SocialAccountUpdate`, `SocialAccountAcceptPayload`, `SocialAccountResponse`).
+   - `repository.py` (`SocialAccountRepository`).
+   - `service.py` (`SocialAccountService`) handling registration validation via `SourceValidator`, duplicate account rejection (`409`), initial `PENDING` state and `SocialAccountSyncState` provisioning.
+6. **`content/`**:
+   - `models.py`, `schemas.py` (`SocialContentCreateRequest`, `SocialContentUpdateRequest`, `SocialContentResponse`, `SocialContentSyncInput`).
+   - `normalizer.py`: `SocialContentNormalizer` mapping provider items into canonical `SocialContent` with tourism context, deterministic slugs, and source action labels.
+   - `repository.py`: `SocialContentRepository` with `get_by_provider_and_id`.
+   - `service.py`: `SocialContentService` with upserting deduplication logic preventing duplicate rows.
+7. **`sync/`**:
+   - `state.py`: `SyncResult` dataclass tracking discovery, creations, updates, skips, failures, and cursors.
+   - `policies.py`: Allowed content type enforcement, exponential retry backoff, and automatic quarantine (`MAX_CONSECUTIVE_FAILURES_BEFORE_QUARANTINE = 5`).
+   - `service.py`: `SocialSyncService` orchestrating end-to-end sync runs, error recovery, sync state snapshotting, and `SOCIAL_SYNC_COMPLETED`/`FAILED` events.
+8. **`context/`**:
+   - `resolver.py`: `SocialContextResolver` inferring Bastar, Dantewada, Surguja, Raipur, etc., plus waterfalls, heritage, wildlife, tribal art, and tourism circuit metadata.
+9. **`feed/`**:
+   - `query.py`: `FeedQuery` dataclass with multi-dimensional filtering.
+   - `policy.py`: `FeedPolicy` and `is_feed_eligible` verifying publication, moderation, visibility, and expiration status.
+   - `service.py`: `SocialFeedService` executing feed resolution with anti-monopoly diversity interleaving and deep link resolution.
+10. **`moderation/`**:
+    - `service.py`: `SocialModerationService` handling approve, reject, hide, restore actions and `SOCIAL_CONTENT_MODERATED` events.
+11. **`audit/`**:
+    - `service.py`: `SocialAuditService` for domain audit logging via outbox events.
+12. **`engine.py`**:
+    - `SocialEngine`: Master dependency injection container composing all domain services.
+13. **`api/`**:
+    - `admin.py`: REST routes for creators, accounts, acceptance, sync triggers, and moderation.
+    - `public.py`: Public discovery feed, creator profiles, and source deep link resolution.
+
+### 12.3 Verification & Quality Assurance
+- **Unit & Integration Tests (`apps/api/app/modules/social/tests/test_phase1_core.py`)**:
+  - `test_source_validator_valid_and_invalid`: Validates URLs across platforms, schemes, and formats.
+  - `test_source_resolver_fallbacks`: Validates fallback to `"SOURCE_UNAVAILABLE"`.
+  - `test_acceptance_policies_fail_closed`: Verifies rejection of sync for non-active or unaccepted accounts.
+  - `test_provider_adapters`: Validates adapter capabilities and deterministic profiles.
+  - `test_content_normalizer`: Validates normalization, tourism tag mapping, and slug formatting.
+  - `test_social_engine_lifecycle`: End-to-end admin registration -> acceptance -> activation -> sync -> feed -> source deep link resolution.
+  - `test_feed_eligibility_and_moderation`: Tests moderation approval, feed eligibility, and hide/restore actions.
+  - `test_source_resolver_private_or_deleted`: Verifies private or deleted source handling.
+  - `test_feed_policy_expired_without_evergreen`: Tests story expiration vs evergreen persistence.
+  - `test_sync_engine_error_tracking_and_quarantine`: Tests failure counts, health degradation, and automatic quarantine.
+- **Social Module Test Results**: **47 / 47 PASSED (100%) in 2.70s**.
+- **Full Backend API Test Results**: **545 PASSED, 4 SKIPPED, 0 FAILURES**.

@@ -3,6 +3,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from urllib.parse import urlparse
 
+from app.modules.social.domain.errors import SourceUrlError
+
 SUPPORTED_SCHEMES = {"http", "https"}
 
 
@@ -14,10 +16,18 @@ class SourceUrl:
         parsed = urlparse(self.value)
 
         if parsed.scheme not in SUPPORTED_SCHEMES:
-            raise ValueError("Source URL must use HTTP or HTTPS.")
+            raise SourceUrlError("Source URL must use HTTP or HTTPS.")
 
         if not parsed.netloc:
-            raise ValueError("Source URL must contain a hostname.")
+            raise SourceUrlError("Source URL must contain a hostname.")
+
+    @classmethod
+    def from_raw(cls, url: str) -> SourceUrl:
+        if not url or not isinstance(url, str):
+            raise SourceUrlError("Source URL must be a non-empty string.")
+        cleaned = url.strip()
+        obj = cls(cleaned)
+        return cls(obj.normalized())
 
     @property
     def hostname(self) -> str:

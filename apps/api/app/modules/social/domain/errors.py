@@ -21,7 +21,7 @@ class AccountSyncDisabledError(SocialEngineError):
     """Synchronization is disabled for the account."""
 
 
-class SourceUrlError(SocialEngineError):
+class SourceUrlError(SocialEngineError, ValueError):
     """The external source URL is invalid."""
 
 

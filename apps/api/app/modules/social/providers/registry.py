@@ -31,3 +31,14 @@ class ProviderRegistry:
 
     def supports(self, platform: SocialPlatform) -> bool:
         return platform in self._providers
+
+    def list_supported(self) -> list[SocialPlatform]:
+        return list(self._providers.keys())
+
+    @classmethod
+    def default(cls) -> ProviderRegistry:
+        from .adapters.instagram_adapter import InstagramAdapter
+        from .adapters.youtube_adapter import YouTubeAdapter
+
+        return cls([YouTubeAdapter(), InstagramAdapter()])
+
