@@ -412,3 +412,72 @@ Strict constraints enforced:
   - `test_sync_engine_error_tracking_and_quarantine`: Tests failure counts, health degradation, and automatic quarantine.
 - **Social Module Test Results**: **47 / 47 PASSED (100%) in 2.70s**.
 - **Full Backend API Test Results**: **545 PASSED, 4 SKIPPED, 0 FAILURES**.
+
+---
+
+## 13. Social Engine — Phase 2: Creator Acceptance, Verification & Validation Service Layer
+
+### 13.1 Architectural Principles & Boundaries
+Phase 2 establishes the editorial and verification gatekeepers that decide whether an external social handle is allowed into the CG Tourism discovery ecosystem:
+$$\text{VALIDATED} \neq \text{VERIFIED} \neq \text{ACCEPTED} \neq \text{ACTIVE}$$
+- **A creator can exist without being accepted.**
+- **A social account can be registered without being synchronized.**
+- **Only a validated + accepted + active account can enter the Social Sync pipeline.**
+- **Fail-Closed Security**: Any non-active, unaccepted, or sync-disabled state immediately halts synchronization with deterministic errors (`AccountNotAcceptedError`, `AccountSyncDisabledError`).
+
+### 13.2 Core Services & Components Implemented
+1. **`CreatorValidator` (`creators/validator.py`)**:
+   - Enforces display name length ($\le 120$ chars), non-empty slug/handle, bio length ($\le 1000$ chars).
+   - Validates regional association: assigning a `tourism_zone_id` mandates an explicit `district_id`.
+   - Structured `ValidationResult` with strongly-typed `ValidationIssue` entities.
+2. **`CreatorDuplicateService` (`creators/duplicate.py`)**:
+   - Similarity engine computing confidence scores using sequence matching and token overlap heuristics.
+   - Boosts matching confidence when geographical districts align.
+   - Non-destructive candidate reporting (`{"possible_duplicates": [...]}`) preventing accidental merges or deletions.
+3. **`SocialAccountValidator` (`accounts/validator.py`)**:
+   - Platform host whitelisting:
+     - YouTube: `youtube.com`, `www.youtube.com`, `m.youtube.com`, `youtu.be`.
+     - Instagram: `instagram.com`, `www.instagram.com`.
+   - Rejects non-HTTP(S) schemes (e.g. `ftp://`, `javascript:`) and redirect tricks.
+   - Validates handle format regex (`^[\w\-\.]+$`), sanitizes leading `@`, and extracts handles from URL paths.
+4. **`SocialVerificationService` & `CreatorVerificationService` (`verification/`)**:
+   - Calls registered provider adapters to verify that external accounts genuinely exist.
+   - Transitions verified accounts to status `VERIFIED`, updates `external_account_id` (e.g. YouTube channel ID `UC_...`), and emits `SOCIAL_ACCOUNT_VERIFIED` outbox events.
+   - Handles upstream provider errors (`PROVIDER_ERROR`) and missing handles (`NOT_FOUND`) gracefully without panics.
+   - Manages creator trust tiers: `UNVERIFIED`, `IDENTITY_CHECKED`, `REGIONAL_CREATOR`, `OFFICIAL_CREATOR`, `FEATURED_CREATOR`.
+5. **`SocialAcceptancePolicy` & `SocialAcceptanceWorkflow` (`acceptance/`)**:
+   - Enforces valid state machine paths:
+     - `PENDING` $\rightarrow$ `VERIFYING` $\rightarrow$ `VERIFIED` $\rightarrow$ `PENDING_ACCEPTANCE` $\rightarrow$ `ACCEPTED` $\rightarrow$ `ACTIVE`.
+     - `ACTIVE` $\leftrightarrow$ `PAUSED`.
+     - Rejection transitions to `REJECTED` with `sync_enabled=False`.
+   - Concurrency conflict detection: `SocialAcceptanceWorkflow.verify_expected_state` guards against race conditions between concurrent admin actions, returning `ConcurrencyStateConflictError` (HTTP 409).
+6. **`SocialAcceptanceService` (`acceptance/service.py`)**:
+   - `submit(account)`: Moves account to `PENDING_ACCEPTANCE`.
+   - `accept(account, approved_content_types, priority, reason)`: Transition to `ACCEPTED` and `ACTIVE` with `sync_enabled=True`. Completely idempotent: already accepted accounts do not re-fire duplicate outbox events.
+   - `reject(account, reason, reason_code)`: Requires non-empty reason string and structured `RejectionReasonCode` (`INVALID_CREATOR`, `NOT_RELEVANT`, `CONTENT_POLICY`, etc.).
+   - `request_changes(account, reason, requested_fields)`: Transitions back to `PENDING` with feedback notes recorded.
+   - `pause(account)` / `reactivate(account)`: Safely pauses or resumes syncing.
+7. **`SocialEligibilityService` (`eligibility/service.py`)**:
+   - Fail-closed evaluation gate:
+     - `can_sync(account, creator, engine_enabled)`: Checks `engine_enabled == True`, `account.status == "active"`, `account.sync_enabled == True`, and `creator.status in ("ACTIVE", "VERIFIED")`.
+     - `assert_eligible_for_sync(...)`: Raises explicit `AccountNotAcceptedError` or `AccountSyncDisabledError`.
+     - `can_display(account)`: Validates public visibility.
+8. **Admin API Endpoints (`api/admin.py`)**:
+   - `POST /api/admin/creators/validate`: Validates creator draft payload.
+   - `POST /api/admin/creators/duplicates`: Scans for candidate duplicates.
+   - `POST /api/admin/accounts/{id}/submit`: Submits verified account for acceptance review.
+   - `POST /api/admin/accounts/{id}/accept`: Approves and activates account for sync.
+   - `POST /api/admin/accounts/{id}/reject`: Rejects account with mandatory justification.
+   - `POST /api/admin/accounts/{id}/request-changes`: Requests modifications from creator.
+   - `POST /api/admin/accounts/{id}/activate`: Activates accepted account.
+   - `GET /api/admin/accounts/{id}/eligibility`: Returns live sync & display eligibility diagnostics.
+
+### 13.3 Test Suite & Verification Matrix
+- **`test_creator_validation.py`**: Validates display name constraints, missing slug, bio length, tourism zone district mandates, and duplicate candidate scoring (8 tests).
+- **`test_account_validation.py`**: Validates YouTube & Instagram host whitelists, host mismatch rejections, invalid URL scheme rejections, handle regex checks, and handle extraction (7 tests).
+- **`test_verification.py`**: Tests provider verification, external ID persistence, provider failure recovery, not found handling, and creator trust tier assignment (4 tests).
+- **`test_acceptance.py`**: Tests acceptance workflow transitions, concurrency conflict HTTP 409 guard, policy checks, accept lifecycle, rejection reason requirement, change request flow, and pause/reactivate (7 tests).
+- **`test_eligibility.py`**: Tests end-to-end positive pipeline (Create $\rightarrow$ Validate $\rightarrow$ Register $\rightarrow$ Verify $\rightarrow$ Accept $\rightarrow$ `can_sync == True`), end-to-end negative pipeline (Rejection $\rightarrow$ `can_sync == False`), and fail-closed edge cases (3 tests).
+- **`test_acceptance_api.py`**: FastAPI TestClient integration testing of all admin REST endpoints (5 tests).
+- **Social Module Test Results**: **81 / 81 PASSED (100%) in 4.01s**.
+- **Full Backend API Test Results**: **582 PASSED, 4 SKIPPED, 0 FAILURES**.

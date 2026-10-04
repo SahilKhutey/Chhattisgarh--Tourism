@@ -144,6 +144,18 @@ CG Tourism OS Development History
       - `engine.py`: Master SocialEngine dependency injection container.
       - `api/`: Admin and public discovery REST routes cleanly mounted.
     - Verified: 47/47 social tests passing (100%), 545/545 backend tests passing with 0 regressions.
+  - **Phase 2 (Creator Acceptance, Verification & Validation Service Layer)**:
+    - **Architectural Boundary**: Enforces strict separation: $\text{VALIDATED} \neq \text{VERIFIED} \neq \text{ACCEPTED} \neq \text{ACTIVE}$.
+    - **`CreatorValidator`**: Enforces display name length ($\le 120$), slug presence, bio length ($\le 1000$), and district association when tourism zone is specified.
+    - **`CreatorDuplicateService`**: Calculates name similarity (sequence matcher + token overlap) and district matching confidence without automatic deletion/merging.
+    - **`SocialAccountValidator`**: Whitelists YouTube (`youtube.com`, `www.youtube.com`, `m.youtube.com`, `youtu.be`) and Instagram (`instagram.com`, `www.instagram.com`) hosts, rejects non-HTTP(S) schemes and URL redirect tricks, and validates handle regex patterns.
+    - **`SocialVerificationService`**: Calls external provider adapters, verifies account existence, persists `external_account_id` and transitions status to `VERIFIED`.
+    - **`CreatorVerificationService`**: Manages creator trust tiers (`UNVERIFIED`, `IDENTITY_CHECKED`, `REGIONAL_CREATOR`, `OFFICIAL_CREATOR`, `FEATURED_CREATOR`) and publishes outbox events.
+    - **`SocialAcceptancePolicy` & `SocialAcceptanceWorkflow`**: Validates legal status transitions, protects against concurrent conflicting admin actions via `ConcurrencyStateConflictError` (HTTP 409).
+    - **`SocialAcceptanceService`**: Implements idempotent accept (no duplicate outbox/audit events if already accepted/active), mandatory non-empty rejection explanations (`RejectionReasonCode`), request-changes workflow, and pause/reactivate.
+    - **`SocialEligibilityService`**: Fail-closed gatekeeper ensuring only active accounts with `sync_enabled=True` belonging to active/verified creators under an enabled engine can enter the sync pipeline.
+    - **Admin REST API Endpoints**: Mounted at `/api/admin/creators/validate`, `/api/admin/creators/duplicates`, `/api/admin/accounts/{id}/submit`, `/api/admin/accounts/{id}/accept`, `/api/admin/accounts/{id}/reject`, `/api/admin/accounts/{id}/request-changes`, `/api/admin/accounts/{id}/activate`, `/api/admin/accounts/{id}/eligibility`.
+    - **Verification**: 81 / 81 social tests passing (100%), 582 / 582 full backend tests passing (0 failures, 4 skipped).
 
 
 ---

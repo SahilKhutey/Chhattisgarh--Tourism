@@ -12,6 +12,35 @@ if TYPE_CHECKING:
     from app.modules.social.models.social_account import SocialAccount
 
 
+class SocialAcceptancePolicy:
+    """Policy rules governing when a social account can enter review, be accepted, or be activated."""
+
+    def can_submit(
+        self,
+        status: SocialAccountStatus | str,
+    ) -> bool:
+        s = SocialAccountStatus(status) if isinstance(status, str) else status
+        return s == SocialAccountStatus.VERIFIED
+
+    def can_accept(
+        self,
+        status: SocialAccountStatus | str,
+    ) -> bool:
+        s = SocialAccountStatus(status) if isinstance(status, str) else status
+        return s in (SocialAccountStatus.VERIFIED, SocialAccountStatus.PENDING_ACCEPTANCE)
+
+    def can_activate(
+        self,
+        status: SocialAccountStatus | str,
+        sync_enabled: bool,
+    ) -> bool:
+        s = SocialAccountStatus(status) if isinstance(status, str) else status
+        return (
+            s == SocialAccountStatus.ACCEPTED
+            and sync_enabled
+        )
+
+
 def can_sync(account: Any) -> bool:
     """
     Central business/security rule:
@@ -59,3 +88,10 @@ def assert_sync_allowed(account: Any) -> None:
         raise AccountSyncDisabledError(
             "Social account synchronization is disabled."
         )
+
+
+__all__ = [
+    "SocialAcceptancePolicy",
+    "can_sync",
+    "assert_sync_allowed",
+]

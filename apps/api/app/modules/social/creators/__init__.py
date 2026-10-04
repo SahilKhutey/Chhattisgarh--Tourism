@@ -1,13 +1,16 @@
 from __future__ import annotations
 
+from app.modules.social.creators.duplicate import CreatorDuplicateService
 from app.modules.social.creators.models import Creator, SocialCreator
 from app.modules.social.creators.repository import CreatorRepository
 from app.modules.social.creators.schemas import CreatorCreate, CreatorResponse, CreatorUpdate
 from app.modules.social.creators.service import (
     CreatorNotFoundError,
     CreatorService,
+    CreatorValidationError,
     HandleAlreadyExistsError,
 )
+from app.modules.social.creators.validator import CreatorValidator, ValidationIssue, ValidationResult
 
 __all__ = [
     "Creator",
@@ -19,4 +22,9 @@ __all__ = [
     "CreatorService",
     "CreatorNotFoundError",
     "HandleAlreadyExistsError",
+    "CreatorValidationError",
+    "CreatorValidator",
+    "ValidationIssue",
+    "ValidationResult",
+    "CreatorDuplicateService",
 ]

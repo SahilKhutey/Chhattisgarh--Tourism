@@ -38,6 +38,9 @@ from app.modules.social.repositories.creator_repository import CreatorRepository
 from app.modules.social.source.validator import SourceValidator
 
 
+from app.modules.social.accounts.validator import SocialAccountValidator
+
+
 class SocialAccountNotFoundError(AppError):
     def __init__(self, account_id: uuid.UUID | str) -> None:
         super().__init__(
@@ -57,15 +60,30 @@ class DuplicateSocialAccountError(AppError):
 
 
 class SocialAccountService:
-    def __init__(self, session: Session) -> None:
-        self.session = session
-        self.account_repo = SocialAccountRepository(session)
-        self.creator_repo = CreatorRepository(session)
-        self.acceptance_service = SocialAcceptanceService(session)
+    def __init__(
+        self,
+        session_or_repo: Session | SocialAccountRepository,
+        validator: SocialAccountValidator | None = None,
+    ) -> None:
+        if isinstance(session_or_repo, Session):
+            self.session = session_or_repo
+            self.account_repo = SocialAccountRepository(session_or_repo)
+            self.creator_repo = CreatorRepository(session_or_repo)
+            self.acceptance_service = SocialAcceptanceService(session_or_repo)
+        else:
+            self.account_repo = session_or_repo
+            self.session = getattr(session_or_repo, "session", None)
+            self.creator_repo = CreatorRepository(self.session) if self.session else None
+            self.acceptance_service = SocialAcceptanceService(self.session) if self.session else None
+
+        self.validator = validator or SocialAccountValidator()
         self.provider_registry = ProviderRegistry.default()
 
     def _normalize_handle(self, handle: str) -> str:
         return re.sub(r"^@", "", handle.strip())
+
+    def validate_account_url(self, platform: SocialPlatform | str, profile_url: str) -> None:
+        self.validator.validate_url(platform=platform, profile_url=profile_url)
 
     def register_social_account(
         self,
@@ -73,7 +91,7 @@ class SocialAccountService:
         payload: SocialAccountCreate | SocialAccountRegisterRequest,
         auto_verify: bool = True,
     ) -> SocialAccount:
-        creator = self.creator_repo.get_by_id(creator_id)
+        creator = self.creator_repo.get_by_id(creator_id) if self.creator_repo else None
         if not creator:
             raise AppError(
                 code="CREATOR_NOT_FOUND",
@@ -88,6 +106,7 @@ class SocialAccountService:
         # Validate profile_url if provided
         profile_url = payload.profile_url
         if profile_url:
+            self.validator.validate_url(platform=platform_enum, profile_url=profile_url)
             validated_source = SourceValidator.validate_platform_url(profile_url, platform_enum)
             profile_url = validated_source.value
 

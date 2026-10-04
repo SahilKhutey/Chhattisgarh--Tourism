@@ -17,7 +17,47 @@ from app.modules.social.repositories.social_account_repository import (
 
 class SocialAccountRepository(LegacySocialAccountRepository):
     """Repository for SocialAccount persistence operations."""
-    pass
+
+    def set_verified(
+        self,
+        account_id: uuid.UUID,
+        external_account_id: str | None = None,
+        handle: str | None = None,
+    ) -> SocialAccount | None:
+        account = self.get_by_id(account_id)
+        if account:
+            account.status = SocialAccountStatus.VERIFIED.value
+            if external_account_id:
+                account.external_account_id = external_account_id
+            if handle:
+                account.handle = handle
+            self.session.flush()
+        return account
+
+    def accept(self, account_id: uuid.UUID) -> SocialAccount | None:
+        account = self.get_by_id(account_id)
+        if account:
+            account.status = SocialAccountStatus.ACCEPTED.value
+            self.session.flush()
+        return account
+
+    def activate(self, account_id: uuid.UUID) -> SocialAccount | None:
+        account = self.get_by_id(account_id)
+        if account:
+            account.status = SocialAccountStatus.ACTIVE.value
+            account.sync_enabled = True
+            self.session.flush()
+        return account
+
+    def reject(self, account_id: uuid.UUID, reason: str | None = None) -> SocialAccount | None:
+        account = self.get_by_id(account_id)
+        if account:
+            account.status = SocialAccountStatus.REJECTED.value
+            account.sync_enabled = False
+            if reason:
+                account.last_error = reason
+            self.session.flush()
+        return account
 
 
 __all__ = ["SocialAccountRepository"]

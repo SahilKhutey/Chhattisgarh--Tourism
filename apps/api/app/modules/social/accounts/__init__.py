@@ -15,6 +15,7 @@ from app.modules.social.accounts.service import (
     SocialAccountNotFoundError,
     SocialAccountService,
 )
+from app.modules.social.accounts.validator import PLATFORM_HOSTS, SocialAccountValidator
 
 __all__ = [
     "SocialAccount",
@@ -29,4 +30,6 @@ __all__ = [
     "SocialAccountService",
     "SocialAccountNotFoundError",
     "DuplicateSocialAccountError",
+    "SocialAccountValidator",
+    "PLATFORM_HOSTS",
 ]

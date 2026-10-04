@@ -7,7 +7,13 @@ from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
+from app.core.errors import AppError
 from app.modules.admin.dependencies import AdminUser
+from app.modules.social.acceptance.schemas import (
+    AcceptanceDecisionPayload,
+    RejectionPayload,
+    RequestChangesPayload,
+)
 from app.modules.social.accounts.schemas import (
     AdminCreatorRegister,
     SocialAccountAcceptPayload,
@@ -23,6 +29,43 @@ from app.modules.social.engine import SocialEngine
 from app.modules.social.schemas.content_schemas import SocialContentResponse
 
 admin_router = APIRouter(prefix="/admin", tags=["Social Admin & Moderation"])
+
+
+@admin_router.post("/creators/validate")
+def validate_creator_payload(
+    payload: CreatorCreate,
+    db: Session = Depends(get_db),
+    admin: AdminUser = Depends(require_admin),
+) -> Any:
+    engine = SocialEngine(db)
+    result = engine.creators.validate_creator(
+        display_name=payload.display_name,
+        slug=payload.handle,
+        bio=payload.bio,
+        district_id=payload.district_id,
+        tourism_zone_id=None,
+    )
+    return {
+        "valid": result.valid,
+        "issues": [
+            {"field": i.field, "code": i.code, "message": i.message}
+            for i in result.issues
+        ],
+    }
+
+
+@admin_router.post("/creators/duplicates")
+def check_creator_duplicates(
+    display_name: str = Query(...),
+    district_id: str | None = Query(None),
+    db: Session = Depends(get_db),
+    admin: AdminUser = Depends(require_admin),
+) -> Any:
+    engine = SocialEngine(db)
+    return engine.duplicate.find_candidates_sync(
+        display_name=display_name,
+        district_id=district_id,
+    )
 
 
 @admin_router.post("/creators", response_model=CreatorResponse, status_code=status.HTTP_201_CREATED)
@@ -143,6 +186,16 @@ def verify_social_account(
     return engine.accounts.verify_social_account(account_id)
 
 
+@admin_router.post("/accounts/{account_id}/submit", response_model=SocialAccountResponse)
+def submit_social_account(
+    account_id: uuid.UUID,
+    db: Session = Depends(get_db),
+    admin: AdminUser = Depends(require_admin),
+) -> Any:
+    engine = SocialEngine(db)
+    return engine.acceptance.submit(account_id, actor_id=admin.id)
+
+
 @admin_router.post("/accounts/{account_id}/accept", response_model=SocialAccountResponse)
 def accept_social_account(
     account_id: uuid.UUID,
@@ -151,18 +204,79 @@ def accept_social_account(
     admin: AdminUser = Depends(require_admin),
 ) -> Any:
     engine = SocialEngine(db)
-    return engine.accounts.accept_social_account(account_id, payload)
+    return engine.acceptance.accept(
+        account=account_id,
+        actor_id=admin.id,
+        approved_content_types=payload.approved_content_types,
+        priority=payload.priority,
+    )
 
 
 @admin_router.post("/accounts/{account_id}/reject", response_model=SocialAccountResponse)
 def reject_social_account(
     account_id: uuid.UUID,
+    payload: RejectionPayload | None = None,
     reason: str | None = Query(None),
     db: Session = Depends(get_db),
     admin: AdminUser = Depends(require_admin),
 ) -> Any:
     engine = SocialEngine(db)
-    return engine.accounts.reject_social_account(account_id, reason=reason)
+    rejection_reason = (payload.reason if payload else None) or reason
+    reason_code = payload.reason_code if payload else None
+    if not rejection_reason or not rejection_reason.strip():
+        raise AppError(code="REJECTION_REASON_REQUIRED", message="A rejection reason is required.", status_code=422)
+    return engine.acceptance.reject(
+        account=account_id,
+        actor_id=admin.id,
+        reason=rejection_reason,
+        reason_code=reason_code,
+    )
+
+
+@admin_router.post("/accounts/{account_id}/request-changes", response_model=SocialAccountResponse)
+def request_changes_social_account(
+    account_id: uuid.UUID,
+    payload: RequestChangesPayload,
+    db: Session = Depends(get_db),
+    admin: AdminUser = Depends(require_admin),
+) -> Any:
+    engine = SocialEngine(db)
+    return engine.acceptance.request_changes(
+        account=account_id,
+        actor_id=admin.id,
+        reason=payload.reason,
+        requested_fields=payload.requested_fields,
+    )
+
+
+@admin_router.post("/accounts/{account_id}/activate", response_model=SocialAccountResponse)
+def activate_social_account(
+    account_id: uuid.UUID,
+    db: Session = Depends(get_db),
+    admin: AdminUser = Depends(require_admin),
+) -> Any:
+    engine = SocialEngine(db)
+    return engine.acceptance.activate(account=account_id, actor_id=admin.id)
+
+
+@admin_router.get("/accounts/{account_id}/eligibility")
+def check_account_eligibility(
+    account_id: uuid.UUID,
+    db: Session = Depends(get_db),
+    admin: AdminUser = Depends(require_admin),
+) -> Any:
+    engine = SocialEngine(db)
+    account = engine.accounts.get_account(account_id)
+    creator = engine.creators.get_creator(account.creator_id)
+    can_sync = engine.eligibility.can_sync(account, creator=creator)
+    can_display = engine.eligibility.can_display(account)
+    return {
+        "account_id": str(account.id),
+        "status": account.status,
+        "sync_enabled": account.sync_enabled,
+        "can_sync": can_sync,
+        "can_display": can_display,
+    }
 
 
 @admin_router.post("/accounts/{account_id}/pause", response_model=SocialAccountResponse)
@@ -172,7 +286,7 @@ def pause_social_account(
     admin: AdminUser = Depends(require_admin),
 ) -> Any:
     engine = SocialEngine(db)
-    return engine.accounts.pause_social_account(account_id)
+    return engine.acceptance.pause(account_id, actor_id=admin.id)
 
 
 @admin_router.post("/accounts/{account_id}/reactivate", response_model=SocialAccountResponse)
@@ -182,7 +296,7 @@ def reactivate_social_account(
     admin: AdminUser = Depends(require_admin),
 ) -> Any:
     engine = SocialEngine(db)
-    return engine.accounts.reactivate_social_account(account_id)
+    return engine.acceptance.reactivate(account_id, actor_id=admin.id)
 
 
 @admin_router.post("/sync/{account_id}")
