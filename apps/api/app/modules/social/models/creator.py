@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any
 
 from sqlalchemy import Boolean, DateTime, Index, Integer, JSON, String, Text, Uuid, func
 from sqlalchemy.dialects.postgresql import JSONB
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column, relationship, synonym
 
 from app.core.database import Base
 from app.modules.social.domain.enums import CreatorStatus
@@ -113,6 +113,11 @@ class Creator(Base):
         Uuid(as_uuid=True),
         nullable=True,
     )
+    metadata_json: Mapped[dict[str, Any]] = mapped_column(
+        JSON_TYPE,
+        nullable=False,
+        default=dict,
+    )
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
@@ -126,6 +131,8 @@ class Creator(Base):
         default=lambda: datetime.now(timezone.utc),
         onupdate=lambda: datetime.now(timezone.utc),
     )
+
+    slug: Mapped[str] = synonym("handle")
 
     contents: Mapped[list[SocialContent]] = relationship(
         "SocialContent",
@@ -160,6 +167,8 @@ class Creator(Base):
             featured_work_id=str(self.featured_work_id) if self.featured_work_id else None,
             created_at=self.created_at,
             updated_at=self.updated_at,
+            slug=self.handle,
+            metadata=dict(self.metadata_json or {}),
         )
 
 

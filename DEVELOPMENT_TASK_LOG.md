@@ -481,3 +481,101 @@ $$\text{VALIDATED} \neq \text{VERIFIED} \neq \text{ACCEPTED} \neq \text{ACTIVE}$
 - **`test_acceptance_api.py`**: FastAPI TestClient integration testing of all admin REST endpoints (5 tests).
 - **Social Module Test Results**: **81 / 81 PASSED (100%) in 4.01s**.
 - **Full Backend API Test Results**: **582 PASSED, 4 SKIPPED, 0 FAILURES**.
+
+---
+
+## 14. Social Engine — Phase 3: Database & Persistence Layer
+
+### 14.1 Objectives & Architectural Governance
+Phase 3 converts the Social Engine from service and in-memory abstractions into an immutable PostgreSQL/PostGIS relational persistence system. It enforces the end-to-end lifecycle guarantees established across Phases 0–2:
+$$\text{Creator} \longrightarrow \text{Social Account} \longrightarrow \text{Verification} \longrightarrow \text{Acceptance} \longrightarrow \text{Activation} \longrightarrow \text{Sync State} \longrightarrow \text{Canonical Social Content}$$
+
+- **Single Source of Truth**: PostgreSQL (+ PostGIS) is the authoritative persistence engine; Redis serves exclusively as an acceleration/cache layer.
+- **Location**: Canonical backend at `apps/api/app/modules/social/` with no auxiliary databases.
+- **Repository Commit Isolation**: All repositories invoke `session.flush()` exclusively and never execute `session.commit()`. Calling service layers maintain complete boundary control over unit-of-work transactions.
+
+### 14.2 Schema Enhancements & Persistence Invariants
+1. **`creators` Table (`SocialCreator` / `Creator`)**:
+   - Added `metadata_json` column (`JSONB` / `JSON`) for flexible extensible properties.
+   - Added `slug` synonym property targeting `handle`, enabling unified querying via `slug` or `handle`.
+   - Maintained global unique index on lower-cased creator handles.
+2. **`social_accounts` Table (`SocialAccount`)**:
+   - Added `version: Mapped[int]` (default 1) for optimistic concurrency control.
+   - Partial unique index `uq_social_account_external_identity` on `(platform, external_account_id) WHERE external_account_id IS NOT NULL`:
+     - Allows multiple pre-verification accounts on the same platform with `external_account_id = None`.
+     - Strictly forbids duplicate accounts once an external identity (e.g. YouTube channel ID `UC_...`) is established.
+   - Added index `idx_social_account_platform_profile` on `(platform, profile_url)`.
+   - Added 1-to-many relationship with `SocialAccountVerification` cascading on delete.
+3. **`social_account_verifications` Table (`SocialAccountVerification`)**:
+   - Durable audit trail preserving every verification check:
+     - `social_account_id`: Foreign key to `social_accounts.id` (`CASCADE`).
+     - `status`: Verification outcome status (`verified`, `failed`, `error`).
+     - `provider_account_id`, `provider_handle`, `provider_display_name`.
+     - `verified_at`: Timestamp of verification event.
+     - `details`: Extensible JSON payload capturing provider diagnostic metadata.
+4. **`social_account_sync_states` Table (`SocialAccountSyncState` / `SocialSyncState`)**:
+   - Strict 1:1 unique constraint on `social_account_id`.
+   - Comprehensive sync execution metrics:
+     - `last_started_at`, `last_finished_at`, `last_synced_at`, `last_successful_sync_at`.
+     - `etag`: HTTP caching etag token for conditional upstream sync requests.
+     - Counters: `discovered_count`, `created_count`, `updated_count`, `failed_count`, `items_synced_total`.
+5. **`social_contents` Table (`SocialContent`)**:
+   - Canonical deduplication: Partial unique index `uq_social_content_provider_identity` on `(provider, provider_content_id) WHERE provider_content_id IS NOT NULL`.
+   - Fast feed retrieval: Compound index `idx_social_content_feed` on `(publication_status, visibility, created_at)`.
+   - Regional discovery: Compound index `idx_social_content_region` on `(publication_status, district_id, created_at)`.
+   - Soft-delete preservation: `mark_source_deleted(content_id)` and `mark_source_unavailable(content_id)` archive publication status to `ARCHIVED` and record `source_status` in `metadata_json` (`SOURCE_DELETED`, `SOURCE_UNAVAILABLE`) preserving historical analytics and tour references.
+6. **`social_content_context` Table (`SocialContentContext`)**:
+   - Polymorphic association linking social content to CG Tourism entities (`district`, `place`, `craft`, `route`, `festival`, `experience`).
+   - Captures `source` (`admin`, `system_resolver`, `editorial`) and `confidence` score ($0.0 \dots 1.0$).
+   - Indexed on `social_content_id` and compound `(context_type, context_id)`.
+
+### 14.3 Repository & Concurrency Layer
+- **`CreatorRepository` (`creators/repository.py`)**: Added `get_by_slug(slug)` and re-exported `SocialCreatorRepository = CreatorRepository`.
+- **`SocialAccountRepository` (`accounts/repository.py`)**:
+  - `get_for_update(account_id)`: Implemented pessimistic row-level locking (`with_for_update()`).
+  - `get_by_external_identity(platform, external_account_id)`: Looks up verified accounts.
+  - `update_optimistic(account_id, expected_version, **updates)`: Checks version match and increments `version`, raising `ConcurrencyStateConflictError` (HTTP 409) on concurrent collisions.
+- **`SocialVerificationRepository` (`verification/repository.py`)**:
+  - `record_verification(...)`: Persists verification event logs.
+  - `get_history(account_id)` & `get_latest(account_id)`: Queries chronological verification events.
+- **`SocialSyncStateRepository` (`sync/repository.py`)**:
+  - `get_or_create(account_id)`: Idempotently initializes sync state.
+  - `record_sync_success(...)` & `record_sync_failure(...)`: Updates execution timestamps, etags, and metrics counters.
+- **`SocialContentRepository` (`content/repository.py`)**:
+  - `get_by_provider_content = get_by_provider_and_id`: Canonical content query by provider ID.
+  - `mark_source_deleted` & `mark_source_unavailable`: Soft deletion handling.
+- **`SocialContentContextRepository` (`context/repository.py`)**:
+  - `attach_context(...)`: Connects tourism graph context tags.
+  - `get_contexts_for_content(...)` & `get_contents_by_context(...)`: Bidirectional lookups.
+
+### 14.4 Service-Layer Atomic Transactions & Row Locking
+- **`SocialAcceptanceService` (`acceptance/service.py`)**:
+  - Updated `_resolve_account(..., for_update=True)` to acquire row-level lock via `get_for_update()`.
+  - Added `expected_version` validation to `accept()`, incrementing `acc.version += 1`.
+  - Acceptance transaction writes account state, records audit log, and creates outbox events atomically in a single session transaction.
+- **`SocialVerificationService` (`verification/service.py`)**:
+  - Records verification attempt in `SocialAccountVerification` on both sync and async verification runs.
+
+### 14.5 Database Migrations
+- **Alembic Migration `p26_social_persistence_phase3.py`**:
+  - Down revision: `p25_social_persistence_layer`.
+  - Creates `social_account_verifications` and `social_content_context` tables.
+  - Adds `metadata_json` to `creators`.
+  - Adds `version` and partial unique index `uq_social_account_external_identity` to `social_accounts`.
+  - Adds metrics columns to `social_account_sync_states`.
+  - Adds `uq_social_content_provider_identity`, `idx_social_content_feed`, and `idx_social_content_region` to `social_contents`.
+  - Cross-dialect support: Fully operational on both PostgreSQL and SQLite.
+
+### 14.6 Test Suite & Verification Matrix
+- **`test_persistence_phase3.py`** (8 tests):
+  1. `test_creator_persistence_and_slug`: Creator persistence, metadata JSON, slug lookup, and unique handle constraint.
+  2. `test_account_partial_unique_index_on_external_identity`: Pre-verification coexistence of NULL external IDs, verified lookup, and partial unique constraint collision on duplicate external ID.
+  3. `test_verification_history_retention`: Chronological verification attempt history retention and account relationship loading.
+  4. `test_sync_state_persistence_and_metrics`: 1:1 invariant enforcement and metric tracking (`discovered`, `created`, `updated`, `failed`, `etag`, `cursor`, `started_at`, `finished_at`).
+  5. `test_canonical_content_deduplication_and_soft_delete`: Provider ID uniqueness enforcement, duplicate collision handling, and soft deletion preservation via `source_status` and `publication_status = ARCHIVED`.
+  6. `test_polymorphic_content_context`: Polymorphic context attachment, bidirectional querying, and relationship loading.
+  7. `test_optimistic_locking_and_concurrency_collision`: Version check increment and `ConcurrencyStateConflictError` (HTTP 409) collision guard.
+  8. `test_acceptance_service_atomic_row_locking_and_versioning`: Atomic transaction row locking and version increment during acceptance.
+- **Social Module Test Results**: **89 / 89 PASSED (100%) in 2.61s**.
+- **Full Backend API Test Results**: **590 PASSED, 4 SKIPPED, 0 FAILURES in 219s**.
+

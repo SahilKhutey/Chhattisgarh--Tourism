@@ -156,6 +156,21 @@ CG Tourism OS Development History
     - **`SocialEligibilityService`**: Fail-closed gatekeeper ensuring only active accounts with `sync_enabled=True` belonging to active/verified creators under an enabled engine can enter the sync pipeline.
     - **Admin REST API Endpoints**: Mounted at `/api/admin/creators/validate`, `/api/admin/creators/duplicates`, `/api/admin/accounts/{id}/submit`, `/api/admin/accounts/{id}/accept`, `/api/admin/accounts/{id}/reject`, `/api/admin/accounts/{id}/request-changes`, `/api/admin/accounts/{id}/activate`, `/api/admin/accounts/{id}/eligibility`.
     - **Verification**: 81 / 81 social tests passing (100%), 582 / 582 full backend tests passing (0 failures, 4 skipped).
+  - **Phase 3 (Database & Persistence Layer)**:
+    - **PostgreSQL / PostGIS Relational Schema & Invariants**:
+      - `creators`: Added `metadata_json` column and `slug` synonym for handle uniqueness queries.
+      - `social_accounts`: Added optimistic locking `version` column, composite index on `(platform, profile_url)`, and partial unique index `uq_social_account_external_identity` on `(platform, external_account_id) WHERE external_account_id IS NOT NULL` allowing unverified accounts to coexist while strictly preventing verified external identity duplication.
+      - `social_account_verifications`: New audit table tracking chronological verification history (`status`, `provider_account_id`, `provider_handle`, `provider_display_name`, `verified_at`, `details`).
+      - `social_account_sync_states`: Enforced strict 1:1 relation with `social_accounts` plus metric tracking columns (`discovered_count`, `created_count`, `updated_count`, `failed_count`, `last_started_at`, `last_finished_at`, `etag`).
+      - `social_contents`: Created partial unique index `uq_social_content_provider_identity` on `(provider, provider_content_id) WHERE provider_content_id IS NOT NULL` for canonical deduplication, plus compound indexes `idx_social_content_feed` and `idx_social_content_region`. Added soft-delete preservation (`SOURCE_DELETED`, `SOURCE_UNAVAILABLE`) retaining rows while archiving publication status.
+      - `social_content_context`: Polymorphic association table linking content to districts, places, craft hubs, routes, and festivals with confidence scores.
+    - **Repository & Transaction Boundary Layer**:
+      - All repositories isolated to `flush()` without premature `commit()`, ensuring caller-controlled unit-of-work transactions.
+      - Implemented `get_for_update(account_id)` row locking in `SocialAccountRepository`.
+      - Implemented `update_optimistic(account_id, expected_version)` raising `ConcurrencyStateConflictError` (HTTP 409) on collisions.
+      - Implemented `SocialVerificationRepository`, `SocialSyncStateRepository`, and `SocialContentContextRepository`.
+    - **Alembic Migration**: Created `p26_social_persistence_phase3.py` (down_revision = `p25_social_persistence_layer`) with full PostgreSQL/SQLite dialect compatibility.
+    - **Verification**: 89 / 89 social tests passing (100%), 590 / 590 full backend tests passing (0 failures, 4 skipped).
 
 
 ---

@@ -29,6 +29,10 @@ class CreatorRepository:
         stmt = select(Creator).where(func.lower(Creator.handle) == handle.strip().lower())
         return self.db.scalar(stmt)
 
+    def get_by_slug(self, slug: str) -> Creator | None:
+        """Alias for get_by_handle as slug is a synonym for handle."""
+        return self.get_by_handle(slug)
+
     def list_creators(
         self,
         district_id: str | None = None,
@@ -77,3 +81,8 @@ class CreatorRepository:
         )
         self.db.execute(stmt)
         self.db.flush()
+
+
+SocialCreatorRepository = CreatorRepository
+
+__all__ = ["CreatorRepository", "SocialCreatorRepository"]

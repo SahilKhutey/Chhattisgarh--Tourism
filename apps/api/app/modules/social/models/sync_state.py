@@ -53,6 +53,16 @@ class SocialAccountSyncState(Base):
         default=True,
     )
 
+    last_started_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True,
+    )
+
+    last_finished_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True,
+    )
+
     last_synced_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True),
         nullable=True,
@@ -77,6 +87,35 @@ class SocialAccountSyncState(Base):
     cursor: Mapped[str | None] = mapped_column(
         String(256),
         nullable=True,
+    )
+
+    etag: Mapped[str | None] = mapped_column(
+        String(512),
+        nullable=True,
+    )
+
+    discovered_count: Mapped[int] = mapped_column(
+        Integer,
+        nullable=False,
+        default=0,
+    )
+
+    created_count: Mapped[int] = mapped_column(
+        Integer,
+        nullable=False,
+        default=0,
+    )
+
+    updated_count: Mapped[int] = mapped_column(
+        Integer,
+        nullable=False,
+        default=0,
+    )
+
+    failed_count: Mapped[int] = mapped_column(
+        Integer,
+        nullable=False,
+        default=0,
     )
 
     items_synced_total: Mapped[int] = mapped_column(
@@ -118,3 +157,8 @@ class SocialAccountSyncState(Base):
             created_at=self.created_at,
             updated_at=self.updated_at,
         )
+
+
+SocialSyncState = SocialAccountSyncState
+
+__all__ = ["SocialAccountSyncState", "SocialSyncState"]

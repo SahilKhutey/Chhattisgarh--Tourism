@@ -44,6 +44,32 @@ class SocialContentRepository(LegacySocialContentRepository):
         )
         return list(self.db.scalars(stmt).all())
 
+    get_by_provider_content = get_by_provider_and_id
+
+    def mark_source_deleted(self, content_id: uuid.UUID) -> SocialContent | None:
+        """Preserves social content row while flagging source deletion."""
+        from app.modules.social.domain.enums import ContentStatus, SocialContentStatus
+        content = self.get_by_id(content_id)
+        if content:
+            content.publication_status = ContentStatus.ARCHIVED.value
+            metadata = dict(content.metadata_json or {})
+            metadata["source_status"] = SocialContentStatus.SOURCE_DELETED.value
+            content.metadata_json = metadata
+            self.db.flush()
+        return content
+
+    def mark_source_unavailable(self, content_id: uuid.UUID) -> SocialContent | None:
+        """Preserves social content row while flagging source unavailability."""
+        from app.modules.social.domain.enums import ContentStatus, SocialContentStatus
+        content = self.get_by_id(content_id)
+        if content:
+            content.publication_status = ContentStatus.ARCHIVED.value
+            metadata = dict(content.metadata_json or {})
+            metadata["source_status"] = SocialContentStatus.SOURCE_UNAVAILABLE.value
+            content.metadata_json = metadata
+            self.db.flush()
+        return content
+
     def delete(self, content_id: uuid.UUID) -> bool:
         content = self.get_by_id(content_id)
         if content:

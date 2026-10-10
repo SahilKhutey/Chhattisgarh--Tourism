@@ -25,6 +25,10 @@ class SocialAccountRepository:
         stmt = select(SocialAccount).where(SocialAccount.id == account_id)
         return self.session.scalar(stmt)
 
+    def get_for_update(self, account_id: uuid.UUID) -> SocialAccount | None:
+        stmt = select(SocialAccount).where(SocialAccount.id == account_id).with_for_update()
+        return self.session.scalar(stmt)
+
     def get_by_creator(self, creator_id: uuid.UUID) -> Sequence[SocialAccount]:
         stmt = select(SocialAccount).where(SocialAccount.creator_id == creator_id).order_by(SocialAccount.created_at.asc())
         return list(self.session.scalars(stmt).all())
@@ -33,6 +37,13 @@ class SocialAccountRepository:
         stmt = select(SocialAccount).where(
             SocialAccount.platform == platform,
             SocialAccount.handle == handle,
+        )
+        return self.session.scalar(stmt)
+
+    def get_by_external_identity(self, platform: str, external_account_id: str) -> SocialAccount | None:
+        stmt = select(SocialAccount).where(
+            SocialAccount.platform == platform,
+            SocialAccount.external_account_id == external_account_id,
         )
         return self.session.scalar(stmt)
 
@@ -121,3 +132,23 @@ class SocialAccountRepository:
         self.session.add(run)
         self.session.flush()
         return run
+
+    def update_optimistic(
+        self,
+        account_id: uuid.UUID,
+        expected_version: int,
+        **updates: Any,
+    ) -> SocialAccount:
+        account = self.get_by_id(account_id)
+        if not account:
+            raise ValueError(f"Account {account_id} not found.")
+        if account.version != expected_version:
+            from app.modules.social.acceptance.workflow import ConcurrencyStateConflictError
+            raise ConcurrencyStateConflictError(
+                f"Conflict: Account version mismatch (expected {expected_version}, got {account.version})"
+            )
+        for key, value in updates.items():
+            setattr(account, key, value)
+        account.version += 1
+        self.session.flush()
+        return account

@@ -15,6 +15,7 @@ from sqlalchemy import (
     String,
     Text,
     Uuid,
+    text,
 )
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -30,6 +31,7 @@ from app.modules.social.domain.enums import (
 )
 
 if TYPE_CHECKING:
+    from app.modules.social.models.context import SocialContentContext
     from app.modules.social.models.creator import Creator
     from app.modules.social.models.moderation import SocialModerationLog
     from app.modules.social.models.social_account import SocialAccount
@@ -51,7 +53,16 @@ class SocialContent(Base):
         Index("ix_social_contents_place_slug", "place_slug"),
         Index("ix_social_contents_expires_at", "expires_at"),
         Index("ix_social_contents_created_at", "created_at"),
-        Index("ix_social_contents_provider_and_cid", "provider", "provider_content_id"),
+        Index(
+            "uq_social_content_provider_identity",
+            "provider",
+            "provider_content_id",
+            unique=True,
+            postgresql_where=text("provider_content_id IS NOT NULL"),
+            sqlite_where=text("provider_content_id IS NOT NULL"),
+        ),
+        Index("idx_social_content_feed", "publication_status", "visibility", "created_at"),
+        Index("idx_social_content_region", "publication_status", "district_id", "created_at"),
     )
 
     id: Mapped[uuid.UUID] = mapped_column(
@@ -377,6 +388,12 @@ class SocialContent(Base):
         order_by="SocialModerationLog.created_at.desc()",
     )
 
+    contexts = relationship(
+        "SocialContentContext",
+        back_populates="social_content",
+        cascade="all, delete-orphan",
+    )
+
     @property
     def platform(self):
         from app.modules.social.domain.enums import SocialPlatform
@@ -388,6 +405,10 @@ class SocialContent(Base):
         except Exception:
             return None
 
+    @platform.setter
+    def platform(self, val: Any) -> None:
+        self.provider = val.value if hasattr(val, "value") else str(val) if val else None
+
     @property
     def status(self) -> str:
         return self.publication_status
@@ -395,6 +416,10 @@ class SocialContent(Base):
     @status.setter
     def status(self, val: str) -> None:
         self.publication_status = val
+
+    @property
+    def source_status(self) -> str:
+        return (self.metadata_json or {}).get("source_status", "active")
 
     def to_domain(self):
 

@@ -45,14 +45,21 @@ class SocialAcceptanceService:
         self.audit_service = audit_service
         self.event_service = event_service
 
-    def _resolve_account(self, account_or_id: Any = None, account_id: Any = None) -> SocialAccount:
+    def _resolve_account(
+        self,
+        account_or_id: Any = None,
+        account_id: Any = None,
+        for_update: bool = False,
+    ) -> SocialAccount:
         target = account_or_id if account_or_id is not None else account_id
         if target is None:
             raise ValueError("An account or account_id must be provided.")
         if isinstance(target, (uuid.UUID, str)):
-            account = self.account_repo.get_by_id(
-                uuid.UUID(str(target)) if not isinstance(target, uuid.UUID) else target
-            )
+            target_uuid = uuid.UUID(str(target)) if not isinstance(target, uuid.UUID) else target
+            if for_update and hasattr(self.account_repo, "get_for_update") and self.session:
+                account = self.account_repo.get_for_update(target_uuid)
+            else:
+                account = self.account_repo.get_by_id(target_uuid)
             if not account:
                 raise AppError(
                     code="SOCIAL_ACCOUNT_NOT_FOUND",
@@ -112,9 +119,15 @@ class SocialAcceptanceService:
         approved_content_types: list[str] | None = None,
         priority: int | None = None,
         account_id: Any = None,
+        expected_version: int | None = None,
     ) -> SocialAccount:
-        acc = self._resolve_account(account, account_id)
+        acc = self._resolve_account(account, account_id, for_update=True)
         current = SocialAccountStatus(acc.status)
+
+        if expected_version is not None and getattr(acc, "version", None) != expected_version:
+            raise ConcurrencyStateConflictError(
+                f"Conflict: Account version mismatch (expected {expected_version}, got {getattr(acc, 'version', None)})"
+            )
 
         # Idempotency rule: if already accepted or active, return without duplicate mutations
         if current in (SocialAccountStatus.ACCEPTED, SocialAccountStatus.ACTIVE):
@@ -135,6 +148,7 @@ class SocialAcceptanceService:
         # Transition ACCEPTED -> ACTIVE
         acc.status = SocialAccountStatus.ACTIVE.value
         acc.sync_enabled = True
+        acc.version = (getattr(acc, "version", 1) or 1) + 1
 
         if self.audit_service:
             self.audit_service.record(

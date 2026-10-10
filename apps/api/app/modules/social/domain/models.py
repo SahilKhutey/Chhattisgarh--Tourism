@@ -91,6 +91,8 @@ class SocialCreator:
     featured_work_id: str | None = None
     created_at: datetime | None = None
     updated_at: datetime | None = None
+    slug: str | None = None
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass(slots=True)

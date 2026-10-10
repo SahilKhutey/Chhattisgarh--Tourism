@@ -15,6 +15,7 @@ from sqlalchemy import (
     Text,
     UniqueConstraint,
     Uuid,
+    text,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -137,6 +138,11 @@ class SocialAccount(Base):
         String(256),
         nullable=True,
     )
+    version: Mapped[int] = mapped_column(
+        Integer,
+        nullable=False,
+        default=1,
+    )
     metadata_json: Mapped[dict[str, Any]] = mapped_column(
         JSON,
         nullable=False,
@@ -158,12 +164,22 @@ class SocialAccount(Base):
     contents = relationship("SocialContent", back_populates="social_account", cascade="all, delete-orphan")
     sync_runs = relationship("SocialSyncRun", back_populates="social_account", cascade="all, delete-orphan")
     sync_state = relationship("SocialAccountSyncState", back_populates="social_account", uselist=False, cascade="all, delete-orphan")
+    verifications = relationship("SocialAccountVerification", back_populates="social_account", cascade="all, delete-orphan", order_by="desc(SocialAccountVerification.created_at)")
 
     __table_args__ = (
         UniqueConstraint("creator_id", "platform", "handle", name="uq_social_account_creator_platform_handle"),
         Index("ix_social_accounts_status_platform", "status", "platform"),
         Index("ix_social_accounts_external_id", "external_account_id"),
         Index("ix_social_accounts_sync_status", "sync_status"),
+        Index(
+            "uq_social_account_external_identity",
+            "platform",
+            "external_account_id",
+            unique=True,
+            postgresql_where=text("external_account_id IS NOT NULL"),
+            sqlite_where=text("external_account_id IS NOT NULL"),
+        ),
+        Index("ix_social_accounts_platform_url", "platform", "profile_url"),
     )
 
     @property

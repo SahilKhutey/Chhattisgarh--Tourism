@@ -17,8 +17,10 @@ from app.modules.social.models import (
     CreatorFollow,
     SocialAccount,
     SocialAccountSyncState,
+    SocialAccountVerification,
     SocialComment,
     SocialContent,
+    SocialContentContext,
     SocialFeedTemplate,
     SocialLike,
     SocialMedia,
@@ -42,8 +44,10 @@ def db_session():
     OutboxEvent.__table__.create(bind=engine, checkfirst=True)
     Creator.__table__.create(bind=engine, checkfirst=True)
     SocialAccount.__table__.create(bind=engine, checkfirst=True)
+    SocialAccountVerification.__table__.create(bind=engine, checkfirst=True)
     SocialAccountSyncState.__table__.create(bind=engine, checkfirst=True)
     SocialContent.__table__.create(bind=engine, checkfirst=True)
+    SocialContentContext.__table__.create(bind=engine, checkfirst=True)
     SocialSyncRun.__table__.create(bind=engine, checkfirst=True)
     SocialFeedTemplate.__table__.create(bind=engine, checkfirst=True)
     SocialMedia.__table__.create(bind=engine, checkfirst=True)

@@ -24,11 +24,48 @@ class SocialVerificationService:
         account_repository: Any,
         audit_service: Any = None,
         event_service: Any = None,
+        verification_repository: Any = None,
     ) -> None:
         self.provider_registry = provider_registry
         self.account_repository = account_repository
         self.audit_service = audit_service
         self.event_service = event_service
+        self.verification_repository = verification_repository
+
+    def _record_verification_history(
+        self,
+        account_id: Any,
+        status: str,
+        ext_id: str | None = None,
+        handle: str | None = None,
+        display_name: str | None = None,
+        details: dict[str, Any] | None = None,
+    ) -> None:
+        try:
+            if self.verification_repository:
+                self.verification_repository.record_verification(
+                    social_account_id=account_id,
+                    status=status,
+                    provider_account_id=ext_id,
+                    provider_handle=handle,
+                    provider_display_name=display_name,
+                    details=details or {},
+                )
+            else:
+                session = getattr(self.account_repository, "session", None) or getattr(self.account_repository, "db", None)
+                if session:
+                    from app.modules.social.verification.repository import SocialVerificationRepository
+                    v_repo = SocialVerificationRepository(session)
+                    v_repo.record_verification(
+                        social_account_id=account_id,
+                        status=status,
+                        provider_account_id=ext_id,
+                        provider_handle=handle,
+                        provider_display_name=display_name,
+                        details=details or {},
+                    )
+        except Exception:
+            pass
 
     def _call_provider(self, provider: Any, identifier: str) -> Any:
         func = getattr(provider, "verify_account")
@@ -96,6 +133,15 @@ class SocialVerificationService:
                         },
                     )
 
+                self._record_verification_history(
+                    account_id=account.id,
+                    status="verified",
+                    ext_id=ext_id,
+                    handle=getattr(profile, "handle", account.handle),
+                    display_name=getattr(profile, "display_name", None),
+                    details={"profile_url": getattr(profile, "profile_url", account.profile_url)},
+                )
+
                 return VerificationResult(
                     verified=True,
                     external_account_id=ext_id,
@@ -105,6 +151,14 @@ class SocialVerificationService:
                     status=VerificationStatus.VERIFIED,
                 )
             else:
+                self._record_verification_history(
+                    account_id=account.id,
+                    status="failed",
+                    handle=getattr(profile, "handle", account.handle),
+                    display_name=getattr(profile, "display_name", None),
+                    details={"reason": "Handle could not be verified on external platform."},
+                )
+
                 return VerificationResult(
                     verified=False,
                     external_account_id=None,
@@ -116,6 +170,12 @@ class SocialVerificationService:
                 )
 
         except Exception as exc:
+            self._record_verification_history(
+                account_id=account.id,
+                status="error",
+                handle=account.handle,
+                details={"reason": f"Provider error: {str(exc)}"},
+            )
             return VerificationResult(
                 verified=False,
                 external_account_id=None,
@@ -162,6 +222,15 @@ class SocialVerificationService:
                     if inspect.isawaitable(res_rec):
                         await res_rec
 
+                self._record_verification_history(
+                    account_id=account.id,
+                    status="verified",
+                    ext_id=ext_id,
+                    handle=getattr(profile, "handle", account.handle),
+                    display_name=getattr(profile, "display_name", None),
+                    details={"profile_url": getattr(profile, "profile_url", account.profile_url)},
+                )
+
                 return VerificationResult(
                     verified=True,
                     external_account_id=ext_id,
@@ -171,6 +240,14 @@ class SocialVerificationService:
                     status=VerificationStatus.VERIFIED,
                 )
             else:
+                self._record_verification_history(
+                    account_id=account.id,
+                    status="failed",
+                    handle=getattr(profile, "handle", account.handle),
+                    display_name=getattr(profile, "display_name", None),
+                    details={"reason": "Handle could not be verified on external platform."},
+                )
+
                 return VerificationResult(
                     verified=False,
                     external_account_id=None,
@@ -181,6 +258,12 @@ class SocialVerificationService:
                     status=VerificationStatus.NOT_FOUND,
                 )
         except Exception as exc:
+            self._record_verification_history(
+                account_id=account.id,
+                status="error",
+                handle=account.handle,
+                details={"reason": f"Provider error: {str(exc)}"},
+            )
             return VerificationResult(
                 verified=False,
                 external_account_id=None,
