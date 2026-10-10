@@ -134,6 +134,7 @@ def test_verification_history_retention(session: Session):
         social_account_id=account.id,
         status="failed",
         provider_handle="surguja_tales",
+        verified_at=datetime(2026, 10, 1, 10, 0, 0, tzinfo=timezone.utc),
         details={"reason": "Profile not reachable"},
     )
     session.commit()
@@ -145,6 +146,7 @@ def test_verification_history_retention(session: Session):
         provider_account_id="ig_12345678",
         provider_handle="surguja_tales",
         provider_display_name="Surguja Tales Official",
+        verified_at=datetime(2026, 10, 2, 10, 0, 0, tzinfo=timezone.utc),
         details={"verified_badges": True},
     )
     session.commit()

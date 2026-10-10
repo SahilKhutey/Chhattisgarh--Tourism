@@ -58,7 +58,10 @@ class SocialVerificationRepository:
         stmt = (
             select(SocialAccountVerification)
             .where(SocialAccountVerification.social_account_id == social_account_id)
-            .order_by(desc(SocialAccountVerification.created_at))
+            .order_by(
+                desc(SocialAccountVerification.verified_at),
+                desc(SocialAccountVerification.created_at),
+            )
             .limit(limit)
             .offset(offset)
         )
@@ -68,7 +71,10 @@ class SocialVerificationRepository:
         stmt = (
             select(SocialAccountVerification)
             .where(SocialAccountVerification.social_account_id == social_account_id)
-            .order_by(desc(SocialAccountVerification.created_at))
+            .order_by(
+                desc(SocialAccountVerification.verified_at),
+                desc(SocialAccountVerification.created_at),
+            )
             .limit(1)
         )
         return self.session.scalar(stmt)

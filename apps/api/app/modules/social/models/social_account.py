@@ -164,7 +164,7 @@ class SocialAccount(Base):
     contents = relationship("SocialContent", back_populates="social_account", cascade="all, delete-orphan")
     sync_runs = relationship("SocialSyncRun", back_populates="social_account", cascade="all, delete-orphan")
     sync_state = relationship("SocialAccountSyncState", back_populates="social_account", uselist=False, cascade="all, delete-orphan")
-    verifications = relationship("SocialAccountVerification", back_populates="social_account", cascade="all, delete-orphan", order_by="desc(SocialAccountVerification.created_at)")
+    verifications = relationship("SocialAccountVerification", back_populates="social_account", cascade="all, delete-orphan", order_by="desc(SocialAccountVerification.verified_at), desc(SocialAccountVerification.created_at)")
 
     __table_args__ = (
         UniqueConstraint("creator_id", "platform", "handle", name="uq_social_account_creator_platform_handle"),
