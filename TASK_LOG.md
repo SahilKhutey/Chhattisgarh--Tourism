@@ -2,7 +2,7 @@
 
 **System Version**: `v1.2.0-production-hardened`  
 **Current Branch**: `main`  
-**Latest Baseline Commit**: `3a3cf96`  
+**Latest Baseline Commit**: `0d90270`  
 **Overall Status**: **PRODUCTION-HARDENED / AUDITED / PILOT READY**  
 **Detailed Audit Document**: [`docs/operations/deep-dive-system-audit-task-log.md`](docs/operations/deep-dive-system-audit-task-log.md)  
 **Development Task Log & Commit Analysis**: [`DEVELOPMENT_TASK_LOG.md`](DEVELOPMENT_TASK_LOG.md)  
