@@ -579,3 +579,76 @@ $$\text{Creator} \longrightarrow \text{Social Account} \longrightarrow \text{Ver
 - **Social Module Test Results**: **89 / 89 PASSED (100%) in 2.61s**.
 - **Full Backend API Test Results**: **590 PASSED, 4 SKIPPED, 0 FAILURES in 219s**.
 
+---
+
+## 15. Social Engine — Phase 4: YouTube Sync, Verification & Content Fetching
+
+### 15.1 Architectural Scope & Core Invariants
+Phase 4 connects the CG Tourism Social Engine to the live YouTube Data API v3.
+- **Uploads-Playlist Architecture**: Replaces expensive `search.list` (100 quota units)
+  with 1-unit `channels.list` -> `playlistItems.list` -> `videos.list` (batch up to 50).
+- **Scope Isolation**: Excludes Instagram (reserved for Phase 5), consumer UI, ranking,
+  AI tagging, and rehosting/video downloading. Aggregates metadata only.
+- **Canonical Source Attribution**: Maps canonical URL `https://www.youtube.com/watch?v={id}`
+  and deterministic slug `yt-{video_id}`.
+- **Editorial Field Preservation**: Sync updates provider-owned fields (`title`,
+  `description`, `thumbnail_url`, `published_at`, `duration_seconds`, view/like counts)
+  while strictly preserving editorial curation (`place_slug`, `district_id`, `route_id`,
+  `experience_id`, `cultural_tags`, `tourism_tags`, `moderation_status`, `visibility`).
+- **Security & Privacy**: Strict server-side isolation of API key; masked in logs,
+  never persisted in content metadata, sync cursors, or outbox payloads.
+
+### 15.2 Subsystem Implementation
+- **`YouTubeClient` (`providers/youtube/client.py`)**:
+  - Asynchronous client with connection pooling via `httpx`.
+  - Implements `get_channel_by_handle`, `get_channel_by_id`, `get_playlist_items`,
+    and batch `get_videos` (up to 50 IDs per call).
+  - Sanitized request logging stripping API keys.
+  - Comprehensive exception hierarchy (`YouTubeQuotaExceededError`, `YouTubeRateLimitError`,
+    `YouTubeAuthenticationError`, `YouTubeAccountNotFoundError`, `YouTubeUnavailableError`,
+    `TransientProviderError`).
+- **`YouTubeContentClassifier` (`providers/youtube/classifier.py`)**:
+  - Classifies videos into Shorts vs Videos based on duration (<= 180s), `#shorts` regex
+    in title/description/URL, tags, and a strict duration negative gate override.
+- **`YouTubeContentMapper` (`providers/youtube/mapper.py`)**:
+  - Normalizes raw video payload into `SocialContent` model.
+  - Resolves tourism context via `SocialContextResolver`.
+  - Maps YouTube privacy and upload statuses (`private` -> `SOURCE_PRIVATE` / `PRIVATE`,
+    `deleted` -> `SOURCE_DELETED` / `PRIVATE`, `unlisted` -> `UNLISTED`, `public` -> `PUBLIC`).
+- **`YouTubeAdapter` (`providers/youtube/adapter.py`)**:
+  - Adapts `SocialProvider` protocol for YouTube.
+  - Declares capabilities (`supports_shorts=True`, `supports_videos=True`,
+    `supports_embeds=True`, `supports_posts=False`, `supports_reels=False`).
+  - Supports offline test fallback when client is not configured.
+- **`YouTubeSyncService` (`sync/youtube_sync.py`)**:
+  - Validates account eligibility via `SocialEligibilityService.can_sync`.
+  - Checkpointed incremental pagination: stops fetching once `last_seen_published_at`
+    cursor is encountered.
+  - Implements retry with exponential backoff and jitter for transient 429/5xx errors.
+  - Idempotent upsert via `SocialContentRepository.upsert_provider_content`.
+  - Emits `SOCIAL_CONTENT_SYNCED` outbox event and records audit log.
+- **Admin REST API (`api/admin.py`)**:
+  - Added `POST /api/admin/accounts/{account_id}/verify` for channel verification.
+  - Added `POST /api/admin/accounts/{account_id}/sync` (HTTP 202 Accepted) for sync.
+
+### 15.3 Test Suite & Verification Matrix
+- **YouTube Provider Tests (`tests/providers/youtube/`)**:
+  - `test_parser.py` (8 tests): Handles, channel IDs, URLs, ISO 8601 duration conversion.
+  - `test_classifier.py` (6 tests): Shorts duration bounds, regex signals, negative gate.
+  - `test_client.py` (12 tests): API endpoints, status codes, quota errors, log sanitization.
+  - `test_mapper.py` (6 tests): Video normalization, privacy mapping, context tags.
+  - `test_adapter.py` (6 tests): Capabilities, verification workflow, offline fallbacks.
+- **YouTube Sync Tests (`tests/sync/test_youtube_sync.py`)**:
+  - `test_sync_eligible_account_e2e_success`: Full end-to-end sync workflow.
+  - `test_sync_deduplication_and_idempotency`: Idempotent upsert verification.
+  - `test_sync_editorial_preservation`: Strict preservation of editorial curation.
+  - `test_sync_incremental_checkpoint_stops_pagination`: Timestamp cursor stopping.
+  - `test_sync_ineligible_account_raises_account_not_accepted`: Fail-closed gatekeeper.
+  - `test_sync_quota_exceeded_handled_gracefully`: Graceful rollback on quota limits.
+  - `test_sync_security_no_api_key_leak`: Zero API key leaks in metadata or outbox.
+- **Verification Results**:
+  - **Social Module Tests**: **128 / 128 PASSED (100%) in 1.48s**.
+  - **Social Tests (`tests/social`)**: **36 / 36 PASSED (100%) in 0.50s**.
+  - **Full Backend API Tests**: **625 PASSED, 4 SKIPPED, 0 FAILURES in 52.88s**.
+
+

@@ -170,8 +170,19 @@ CG Tourism OS Development History
       - Implemented `update_optimistic(account_id, expected_version)` raising `ConcurrencyStateConflictError` (HTTP 409) on collisions.
       - Implemented `SocialVerificationRepository`, `SocialSyncStateRepository`, and `SocialContentContextRepository`.
     - **Alembic Migration**: Created `p26_social_persistence_phase3.py` (down_revision = `p25_social_persistence_layer`) with full PostgreSQL/SQLite dialect compatibility.
-    - **Verification**: 89 / 89 social tests passing (100%), 590 / 590 full backend tests passing (0 failures, 4 skipped).
-
+  - **Phase 4 (YouTube Sync, Account Verification & Content Fetching)**:
+    - **YouTube Data API v3 Uploads-Playlist Architecture**:
+      - Avoids high-quota `search.list` (100 units) in favor of the 1-unit `channels.list` -> `playlistItems.list` -> batch `videos.list` (up to 50 items) aggregation pipeline.
+      - Implemented `YouTubeClient` with async HTTP transport, API key log sanitization, timeout/network retry mapping, and granular status code error classification (`YouTubeQuotaExceededError`, `YouTubeRateLimitError`, `YouTubeAuthenticationError`, `YouTubeAccountNotFoundError`, `YouTubeUnavailableError`).
+      - Implemented `YouTubeContentClassifier` for Shorts vs Videos with duration evaluation (<= 180s), `#shorts` regex, tag signals, and negative gate overrides.
+      - Implemented `YouTubeContentMapper` generating deterministic canonical slugs (`yt-{video_id}`), canonical source URLs, best thumbnail selection, tourism context resolution, and privacy mapping (`private` -> `SOURCE_PRIVATE`, `deleted` -> `SOURCE_DELETED`, `unlisted` -> `UNLISTED`).
+      - Implemented `YouTubeAdapter` declaring platform capabilities (`supports_shorts=True`, `supports_videos=True`), channel discovery, and offline mock support.
+    - **Social Sync Service & Checkpoint Orchestration**:
+      - `YouTubeSyncService`: Enforces fail-closed eligibility gate, resolves channel uploads playlist, performs incremental sync stopping at previously recorded timestamp cursor (`last_seen_published_at`), batches video metadata, and executes idempotent upsert.
+      - Editorial Field Preservation: `SocialContentRepository.upsert_provider_content` updates provider-owned fields (`title`, `description`, `thumbnail_url`, `published_at`, `duration_seconds`, view/like counts) while strictly preserving editorial curation (`place_slug`, `district_id`, `route_id`, `experience_id`, `cultural_tags`, `tourism_tags`, `moderation_status`, `visibility`).
+      - Security: Guaranteed zero API key leaks in logs, content metadata, sync cursors, or outbox payloads.
+      - Admin Endpoints: Added `POST /api/admin/accounts/{id}/verify` and `POST /api/admin/accounts/{id}/sync` (HTTP 202 Accepted).
+    - **Verification**: 128 / 128 social tests passing (100%), 36 / 36 tests/social passing, 625 full backend tests passing (0 failures, 4 skipped).
 
 ---
 

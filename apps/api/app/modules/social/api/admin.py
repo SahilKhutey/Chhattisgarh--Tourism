@@ -259,6 +259,61 @@ def activate_social_account(
     return engine.acceptance.activate(account=account_id, actor_id=admin.id)
 
 
+@admin_router.post("/accounts/{account_id}/verify")
+def verify_social_account(
+    account_id: uuid.UUID,
+    db: Session = Depends(get_db),
+    admin: AdminUser = Depends(require_admin),
+) -> Any:
+    engine = SocialEngine(db)
+    account = engine.accounts.get_account(account_id)
+    result = engine.verification.verify_account_sync(account)
+    db.refresh(account)
+    return {
+        "id": str(account.id),
+        "platform": account.platform,
+        "status": account.status,
+        "external_account_id": account.external_account_id,
+        "handle": account.handle,
+        "display_name": result.display_name or account.handle,
+        "profile_url": account.profile_url,
+        "verified": result.verified,
+        "reason": result.reason,
+    }
+
+
+@admin_router.post("/accounts/{account_id}/sync", status_code=status.HTTP_202_ACCEPTED)
+def queue_social_account_sync(
+    account_id: uuid.UUID,
+    db: Session = Depends(get_db),
+    admin: AdminUser = Depends(require_admin),
+) -> Any:
+    engine = SocialEngine(db)
+    account = engine.accounts.get_account(account_id)
+    creator = engine.creators.get_creator(account.creator_id)
+    if not engine.eligibility.can_sync(account, creator=creator):
+        raise AppError(
+            code="ACCOUNT_NOT_ELIGIBLE_FOR_SYNC",
+            message=f"Account '{account_id}' is not currently eligible for synchronization.",
+            status_code=400,
+        )
+
+    from app.events.publisher import create_outbox_event
+    create_outbox_event(
+        db,
+        event_type="SOCIAL_SYNC_JOB_QUEUED",
+        aggregate_id=account.id,
+        payload={"account_id": str(account.id), "platform": str(account.platform)},
+    )
+    db.commit()
+
+    return {
+        "status": "queued",
+        "account_id": str(account.id),
+        "platform": account.platform,
+    }
+
+
 @admin_router.get("/accounts/{account_id}/eligibility")
 def check_account_eligibility(
     account_id: uuid.UUID,

@@ -70,6 +70,46 @@ class SocialContentRepository(LegacySocialContentRepository):
             self.db.flush()
         return content
 
+    def upsert_provider_content(self, content: SocialContent) -> tuple[SocialContent, bool]:
+        """
+        Idempotently inserts new content or updates provider-owned fields of existing content.
+        Strictly preserves all editorial-owned fields (Place, District, Tags, Moderation status, Cultural sensitivity).
+        Returns (content, is_created).
+        """
+        existing = self.get_by_provider_and_id(content.provider, content.provider_content_id)
+        if existing is None:
+            self.create(content)
+            return content, True
+
+        # Update provider-owned fields
+        existing.title = content.title
+        existing.description = content.description
+        existing.thumbnail_url = content.thumbnail_url
+        existing.source_url = content.source_url
+        existing.published_at = content.published_at
+        existing.duration_seconds = content.duration_seconds
+        existing.aspect_ratio = content.aspect_ratio
+        existing.content_type = content.content_type
+        existing.likes_count = content.likes_count
+        existing.comments_count = content.comments_count
+        existing.views_count = content.views_count
+
+        # Merge metadata preserving existing editorial metadata
+        merged_meta = dict(existing.metadata_json or {})
+        merged_meta.update(content.metadata_json or {})
+        existing.metadata_json = merged_meta
+
+        # Only assign fallback district/tags if existing has none
+        if not existing.district_id and content.district_id:
+            existing.district_id = content.district_id
+        if (not existing.tourism_tags) and content.tourism_tags:
+            existing.tourism_tags = content.tourism_tags
+        if (not existing.cultural_tags) and content.cultural_tags:
+            existing.cultural_tags = content.cultural_tags
+
+        self.db.flush()
+        return existing, False
+
     def delete(self, content_id: uuid.UUID) -> bool:
         content = self.get_by_id(content_id)
         if content:
