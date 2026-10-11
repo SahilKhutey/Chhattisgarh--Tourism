@@ -12,6 +12,7 @@ from app.modules.social.eligibility.service import SocialEligibilityService
 from app.modules.social.feed.service import SocialFeedService
 from app.modules.social.moderation.service import SocialModerationService
 from app.modules.social.providers.registry import ProviderRegistry
+from app.modules.social.sync.instagram_sync import InstagramSyncService
 from app.modules.social.sync.service import SocialSyncService
 from app.modules.social.sync.youtube_sync import YouTubeSyncService
 from app.modules.social.verification.service import (
@@ -37,6 +38,7 @@ class SocialEngine:
         self.content = SocialContentService(session)
         self.sync = SocialSyncService(session)
         self.youtube_sync = YouTubeSyncService(session, audit_service=self.audit)
+        self.instagram_sync = InstagramSyncService(session, audit_service=self.audit)
         self.feed = SocialFeedService(session)
         self.moderation = SocialModerationService(session)
 

@@ -9,6 +9,7 @@ from app.modules.social.sync.repository import (
     SocialSyncStateRepository,
     SyncStateRepository,
 )
+from app.modules.social.sync.instagram_sync import InstagramSyncService
 from app.modules.social.sync.retry import retry_with_backoff
 from app.modules.social.sync.service import SocialSyncService
 from app.modules.social.sync.state import SocialAccountSyncState, SyncResult
@@ -19,6 +20,7 @@ __all__ = [
     "SocialAccountSyncState",
     "SocialSyncService",
     "YouTubeSyncService",
+    "InstagramSyncService",
     "retry_with_backoff",
     "SocialSyncStateRepository",
     "SyncStateRepository",

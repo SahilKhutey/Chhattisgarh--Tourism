@@ -85,6 +85,23 @@ class AccountAcceptanceAction(StrEnum):
     REACTIVATE = "reactivate"
 
 
+class ProviderAccessStatus(StrEnum):
+    NOT_REQUIRED = "not_required"
+    REQUIRED = "required"
+    AVAILABLE = "available"
+    EXPIRED = "expired"
+    REVOKED = "revoked"
+    INVALID = "invalid"
+
+    @classmethod
+    def _missing_(cls, value: object):
+        if isinstance(value, str):
+            for member in cls:
+                if member.value.lower() == value.lower() or member.name.lower() == value.lower():
+                    return member
+        return None
+
+
 # Existing domain enums retained for backwards compatibility
 class ContentType(StrEnum):
     POST = "POST"

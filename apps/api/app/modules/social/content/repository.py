@@ -89,10 +89,12 @@ class SocialContentRepository(LegacySocialContentRepository):
         existing.published_at = content.published_at
         existing.duration_seconds = content.duration_seconds
         existing.aspect_ratio = content.aspect_ratio
-        existing.content_type = content.content_type
-        existing.likes_count = content.likes_count
-        existing.comments_count = content.comments_count
-        existing.views_count = content.views_count
+        if content.likes_count is not None:
+            existing.likes_count = content.likes_count
+        if content.comments_count is not None:
+            existing.comments_count = content.comments_count
+        if content.views_count is not None:
+            existing.views_count = content.views_count
 
         # Merge metadata preserving existing editorial metadata
         merged_meta = dict(existing.metadata_json or {})

@@ -7,19 +7,27 @@ from typing import Any, Awaitable, Callable, TypeVar
 import httpx
 
 from app.modules.social.providers.youtube.errors import (
-    TransientProviderError,
+    TransientProviderError as YouTubeTransientProviderError,
     YouTubeRateLimitError,
     YouTubeUnavailableError,
+)
+from app.modules.social.providers.instagram.errors import (
+    TransientProviderError as InstagramTransientProviderError,
+    InstagramRateLimitError,
+    InstagramUnavailableError,
 )
 
 logger = logging.getLogger(__name__)
 
 T = TypeVar("T")
 
-DEFAULT_TRANSIENT_EXCEPTIONS = (
-    TransientProviderError,
+DEFAULT_TRANSIENT_EXCEPTIONS: tuple[type[Exception], ...] = (
+    YouTubeTransientProviderError,
     YouTubeRateLimitError,
     YouTubeUnavailableError,
+    InstagramTransientProviderError,
+    InstagramRateLimitError,
+    InstagramUnavailableError,
     httpx.TimeoutException,
     httpx.NetworkError,
 )

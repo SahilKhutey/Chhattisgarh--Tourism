@@ -26,6 +26,19 @@ class SocialSettings(BaseSettings):
     social_youtube_retry_base_delay_seconds: float = Field(default=1.0, ge=0.1)
     social_youtube_max_content_age_days: int = Field(default=90, ge=1)
 
+    # Instagram Specific Settings
+    social_instagram_enabled: bool = False
+    meta_graph_api_base_url: str = "https://graph.facebook.com"
+    instagram_api_version: str = "v21.0"
+    instagram_client_id: str | None = None
+    instagram_client_secret: str | None = None
+    social_instagram_max_results: int = Field(default=50, ge=1, le=100)
+    social_instagram_max_pages_per_sync: int = Field(default=3, ge=1, le=20)
+    social_instagram_max_media_per_sync: int = Field(default=150, ge=1, le=500)
+    social_instagram_request_timeout_seconds: float = Field(default=15.0, ge=1.0)
+    social_instagram_retry_attempts: int = Field(default=3, ge=1, le=10)
+    social_instagram_retry_base_delay_seconds: float = Field(default=1.0, ge=0.1)
+
     # General Social Settings
     social_default_page_size: int = Field(default=20, ge=1, le=100)
     social_max_content_age_days: int = Field(default=90, ge=1)
@@ -37,6 +50,11 @@ class SocialSettings(BaseSettings):
         if self.social_youtube_enabled:
             if not self.youtube_api_key:
                 raise ValueError("YOUTUBE_API_KEY is required when YouTube integration is enabled.")
+
+    def validate_instagram_configuration(self) -> None:
+        if self.social_instagram_enabled:
+            if not self.instagram_client_id or not self.instagram_client_secret:
+                raise ValueError("INSTAGRAM_CLIENT_ID and INSTAGRAM_CLIENT_SECRET are required when Instagram integration is enabled.")
 
     @property
     def allowed_platforms(self) -> set[str]:

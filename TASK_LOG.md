@@ -183,6 +183,21 @@ CG Tourism OS Development History
       - Security: Guaranteed zero API key leaks in logs, content metadata, sync cursors, or outbox payloads.
       - Admin Endpoints: Added `POST /api/admin/accounts/{id}/verify` and `POST /api/admin/accounts/{id}/sync` (HTTP 202 Accepted).
     - **Verification**: 128 / 128 social tests passing (100%), 36 / 36 tests/social passing, 625 full backend tests passing (0 failures, 4 skipped).
+  - **Phase 5 (Instagram Sync & Content Fetching)**:
+    - **Official Meta/Instagram Graph API Architecture**:
+      - Strict non-scraping invariant: interacts solely through official Graph API (`https://graph.facebook.com/{version}/...`) with authorized creator/business accounts.
+      - Implemented `ProviderAccessStatus` (`not_required`, `required`, `available`, `expired`, `revoked`, `invalid`) preventing overload of account lifecycle state.
+      - Implemented `InstagramClient` with connection pooling, bearer token authentication header, masked token logging, and granular error code mapping (code 190 -> `InstagramAuthenticationError`, code 200/10 -> `InstagramAuthorizationError`, code 4/17/32/613 -> `InstagramRateLimitError`, code 100/803 -> `InstagramMediaNotFoundError`, 5xx/1/2 -> `InstagramUnavailableError`, timeouts -> `TransientProviderError`).
+      - Implemented `InstagramContentClassifier` supporting `REEL` (from `REELS`), `VIDEO` (feed video), and `POST` (image and `CAROUSEL_ALBUM`).
+      - Implemented `InstagramContentMapper` generating deterministic canonical slugs (`ig-{provider_id}`), canonical source URLs (`https://www.instagram.com/reel/{id}/` or `/p/{id}/`), carousel aggregation (1 canonical `SocialContent` with `metadata.media_count`), aspect ratio mapping (9:16 for reels, 1:1 for posts/carousels, 16:9 for videos), and tourism context resolution.
+      - Implemented `InstagramAdapter` declaring platform capabilities (`supports_reels=True`, `supports_posts=True`, `supports_videos=True`, `supports_shorts=False`), account capability detection, and offline mock support.
+      - Implemented `InstagramWebhookService` boundary with SHA256 HMAC signature verification.
+    - **Social Sync Service & Security Invariants**:
+      - `InstagramSyncService`: Enforces fail-closed eligibility gate, paginates through `/media` with checkpointing stopping at `last_seen_published_at`, and idempotently upserts content via `SocialContentRepository.upsert_provider_content`.
+      - Provider Access Status Degradation: On token expiry (code 190) or revoked permissions (code 200), marks `provider_access_status` as `expired` or `revoked` and records sync failure without deleting creators, accounts, or synced content.
+      - Editorial Field Preservation: Provider sync updates provider metrics and metadata while strictly preserving editorial curation (`place_slug`, `district_id`, `cultural_tags`, `tourism_tags`).
+      - Strict Security & Token Leak Invariant: Guaranteed zero access tokens in logs, content metadata, sync cursors, or outbox payloads.
+    - **Verification**: 48 new Instagram tests (38 provider + 10 sync), 182 / 182 social tests passing (100%), 683 full backend tests passing (0 failures, 4 skipped).
 
 ---
 

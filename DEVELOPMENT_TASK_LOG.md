@@ -3,8 +3,8 @@
 **System Version**: `v1.2.0-production-hardened`  
 **Repository**: `SahilKhutey/Chhattisgarh--Tourism`  
 **Active Baseline Branch**: `main` (Synchronized with `develop` and `origin` at `0d90270`)  
-**Audit Timestamp**: `2026-10-10`  
-**Quality Status**: **100% PASSING (128 Social Tests, 635 Backend API Tests, 0 Failures)**  
+**Audit Timestamp**: `2026-10-11`  
+**Quality Status**: **100% PASSING (182 Social Tests, 683 Backend API Tests, 0 Failures)**  
 
 ---
 
@@ -650,5 +650,83 @@ Phase 4 connects the CG Tourism Social Engine to the live YouTube Data API v3.
   - **Social Module Tests**: **128 / 128 PASSED (100%) in 1.48s**.
   - **Social Tests (`tests/social`)**: **36 / 36 PASSED (100%) in 0.50s**.
   - **Full Backend API Tests**: **625 PASSED, 4 SKIPPED, 0 FAILURES in 52.88s**.
+
+---
+
+## 16. Social Engine — Phase 5: Instagram Sync & Content Fetching
+
+### 16.1 Architectural Scope & Core Invariants
+Phase 5 implements Instagram integration as a provider adapter adhering to all Social Engine contracts established in Phases 0–4:
+$$\text{Admin-approved Creator} \longrightarrow \text{Instagram Account Registry} \longrightarrow \text{Verification / Acceptance} \longrightarrow \text{ACTIVE + SYNC\_ENABLED} \longrightarrow \text{Instagram Provider Adapter} \longrightarrow \text{Official Meta Graph API} \longrightarrow \text{Normalize} \longrightarrow \text{Canonical SocialContent} \longrightarrow \text{PostgreSQL Idempotent Upsert} \longrightarrow \text{Tourism Feed} \longrightarrow \text{Open Original Source}$$
+
+- **Strict Non-Scraping Invariant**: Scraping Instagram usernames or web endpoints is strictly forbidden. The system exclusively communicates with official Meta Graph API endpoints (`https://graph.facebook.com/{version}/...`) using authorized provider credentials.
+- **Strict Token Privacy Invariant**: Meta access tokens, refresh tokens, and client secrets must never appear in application logs, database `SocialContent.metadata_json`, sync cursor state, or outbox event payloads.
+- **Account Status vs. Provider Access Isolation**: The lifecycle status `SocialAccountStatus` (`pending`, `verified`, `accepted`, `active`, `suspended`, `rejected`) is never overloaded with Meta API authorization state. A dedicated `ProviderAccessStatus` enum (`not_required`, `required`, `available`, `expired`, `revoked`, `invalid`) tracks token health.
+- **Provider Access Degradation**: If an access token expires (Meta error code 190) or permissions are revoked (code 200), the system does not delete or corrupt the creator, account, or previously synced content. It marks `provider_access_status` as `expired` or `revoked`, records the sync failure, and allows administrative token refresh.
+- **Editorial Field Preservation**: Automated provider sync updates provider-owned fields (`title`, `description`, `thumbnail_url`, `published_at`, duration, engagement counters) while strictly preserving editorial curation (`place_slug`, `district_id`, `route_id`, `cultural_tags`, `tourism_tags`, `moderation_status`, `visibility`).
+- **No Consumer UI / No Media Rehosting**: The system stores metadata only and links back to the canonical Instagram post or reel URL.
+- **Carousel Normalization**: A carousel is mapped to exactly one `SocialContent` record with type `POST` and `metadata_json["instagram"]["media_count"] = N`.
+
+### 16.2 Subsystem Implementation
+- **`ProviderAccessStatus` (`domain/enums.py`)**:
+  - Case-insensitive enum with values: `not_required`, `required`, `available`, `expired`, `revoked`, `invalid`.
+- **Configuration & Validation (`config.py`)**:
+  - Configurable settings: `social_instagram_enabled`, `meta_graph_api_base_url`, `instagram_api_version`, `instagram_client_id`, `instagram_client_secret`, `social_instagram_max_results`, `social_instagram_max_pages_per_sync`, `social_instagram_max_media_per_sync`, `social_instagram_request_timeout_seconds`, `social_instagram_retry_attempts`, `social_instagram_retry_base_delay_seconds`.
+  - Added `validate_instagram_configuration()`.
+- **`InstagramClient` (`providers/instagram/client.py`)**:
+  - Asynchronous client using connection pooling via `httpx.AsyncClient`.
+  - Token injection via `Authorization: Bearer <token>` header; query params sanitization.
+  - Granular error classification: `InstagramAuthenticationError` (401/190), `InstagramAuthorizationError` (403/200), `InstagramRateLimitError` (429/4/17/32/613), `InstagramMediaNotFoundError` (404/100/803), `InstagramUnavailableError` (5xx/1/2), `TransientProviderError` (network/timeout).
+- **`InstagramContentClassifier` (`providers/instagram/classifier.py`)**:
+  - Classifies `REELS` into `SocialContentType.REEL` / `ContentType.REEL`.
+  - Classifies `VIDEO` into `SocialContentType.VIDEO` / `ContentType.VIDEO`.
+  - Classifies `IMAGE` and `CAROUSEL_ALBUM` into `SocialContentType.POST` / `ContentType.POST`.
+  - Raises `ContentNormalizationError` for unsupported types.
+- **`InstagramContentMapper` (`providers/instagram/mapper.py`)**:
+  - Maps `InstagramMedia` into canonical `SocialContent` model.
+  - Generates deterministic slug `ig-{media.provider_id.lower()}`.
+  - Derives clean title from first line of caption without hashtags; fallback to `"Instagram Reel by @username"`.
+  - Sets aspect ratios: 9:16 for REEL, 1:1 for POST/CAROUSEL, 16:9 for VIDEO.
+  - Context resolution via `SocialContextResolver` for district, tourism zone, and cultural tags.
+  - Enforces rights boundary: `license_type = LicenseType.ORIGINAL_CREATOR.value`.
+- **`InstagramAdapter` (`providers/instagram/adapter.py`)**:
+  - Implements `SocialProvider` protocol for Instagram.
+  - Declares capabilities (`supports_reels=True`, `supports_posts=True`, `supports_videos=True`, `supports_shorts=False`, `supports_embeds=True`).
+  - Implements `verify_account_async`, `get_account_info`, `fetch_media_page`, and offline mock fallback.
+- **`InstagramWebhookService` (`providers/instagram/webhooks.py`)**:
+  - HMAC SHA256 signature verification and outbox event dispatching boundary.
+- **`InstagramSyncService` (`sync/instagram_sync.py`)**:
+  - Validates creator and account eligibility using `SocialEligibilityService.can_sync`.
+  - Blocks execution if `provider_access_status` is `expired`, `revoked`, or `invalid`.
+  - Checkpointed incremental pagination: stops fetching once `last_seen_published_at` cursor is encountered.
+  - Idempotent upsert via `SocialContentRepository.upsert_provider_content`.
+  - Emits `SOCIAL_CONTENT_SYNCED` and `social.instagram.sync.completed` outbox events.
+  - Gracefully handles token degradation and records sync state failure.
+
+### 16.3 Test Suite & Verification Matrix
+- **Provider Test Suite (`tests/providers/instagram/`)**:
+  - `test_parser.py` (8 tests): Profile handle parsing, URLs, schemes, canonical URLs, permalinks.
+  - `test_classifier.py` (5 tests): Reel, Video, Image, Carousel classification, and unsupported errors.
+  - `test_credentials.py` (2 tests): Token masking, in-memory credential storage, revocation.
+  - `test_client.py` (10 tests): Profile retrieval, media paging, single media, 401/403/429/404/500 mapping, timeouts, context manager.
+  - `test_mapper.py` (5 tests): Reel mapping, carousel single-record mapping, video mapping, fallback title, missing ID error.
+  - `test_adapter.py` (7 tests): Capabilities, account capabilities, offline fallback, online profile verification, media fetch.
+- **Sync Test Suite (`tests/sync/test_instagram_sync.py`)**:
+  - `test_sync_eligible_instagram_account_e2e_success`: End-to-end sync workflow and outbox verification.
+  - `test_sync_deduplication_and_idempotency`: Upsert deduplication.
+  - `test_sync_editorial_preservation`: Strict preservation of editorial curation.
+  - `test_sync_checkpoint_incremental`: Checkpoint cursor stopping pagination.
+  - `test_sync_ineligible_account_raises`: Fail-closed gatekeeper.
+  - `test_sync_blocked_on_expired_access_status`: Token expiration blocks sync cleanly.
+  - `test_sync_auth_failure_updates_provider_access_status`: 401/190 degrades status to `expired`.
+  - `test_sync_permission_revoked_updates_provider_access_status`: 403 degrades status to `revoked`.
+  - `test_sync_retry_on_transient_error`: Retry with backoff on transient errors.
+  - `test_security_no_tokens_leaked`: Zero token leakage across database, cursor, and outbox.
+- **Verification Results**:
+  - **Instagram Provider Tests**: **38 / 38 PASSED (100%) in 0.74s**.
+  - **Instagram Sync Tests**: **10 / 10 PASSED (100%) in 2.02s**.
+  - **Social Module Tests**: **182 / 182 PASSED (100%) in 4.01s**.
+  - **Full Backend API Tests**: **683 PASSED, 4 SKIPPED, 0 FAILURES in 240.63s**.
+
 
 
