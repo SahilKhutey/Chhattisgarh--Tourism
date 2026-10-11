@@ -84,3 +84,22 @@ def health(db: Session = Depends(get_db)):
         "search": search_health,
         "intelligence": intelligence_health,
     }
+
+
+@router.get("/social")
+def social_health(db: Session = Depends(get_db)):
+    from app.modules.social.engine import SocialEngine
+
+    engine = SocialEngine(db)
+    supported_platforms = [p.value for p in engine.providers.list_supported()]
+    return {
+        "status": "healthy",
+        "supported_platforms": supported_platforms,
+        "circuit_breaker": {
+            p: "closed" if engine.circuit_breaker.can_execute(p) else "open"
+            for p in supported_platforms
+        },
+        "worker_ready": True,
+        "scheduler_ready": True,
+    }
+

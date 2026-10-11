@@ -82,3 +82,67 @@ class AdminCreatorRegister(BaseModel):
     languages: list[str] = Field(default_factory=lambda: ["hi", "en", "cg"])
     categories: list[str] = Field(default_factory=list)
     social_accounts: list[SocialAccountCreate] = Field(default_factory=list)
+
+
+class HandleRegisterRequest(BaseModel):
+    creator_id: uuid.UUID
+    platform: str
+    handle: str = Field(..., min_length=1, max_length=128)
+    profile_url: str | None = None
+    sync_enabled: bool = False
+    display_name: str | None = None
+    metadata: dict[str, Any] | None = None
+
+
+class SyncRequestResponse(BaseModel):
+    status: str = "accepted"
+    account_id: str
+    message: str
+    run_id: str | None = None
+
+
+class SyncStateResponse(BaseModel):
+    id: uuid.UUID
+    social_account_id: uuid.UUID
+    sync_status: str
+    sync_enabled: bool
+    last_started_at: datetime | None = None
+    last_finished_at: datetime | None = None
+    last_synced_at: datetime | None = None
+    last_successful_sync_at: datetime | None = None
+    consecutive_failures: int = 0
+    last_error: str | None = None
+    last_error_code: str | None = None
+    cursor: str | None = None
+    etag: str | None = None
+    discovered_count: int = 0
+    created_count: int = 0
+    updated_count: int = 0
+    skipped_count: int = 0
+    failed_count: int = 0
+    items_synced_total: int = 0
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class SyncRunResponse(BaseModel):
+    id: uuid.UUID
+    social_account_id: uuid.UUID
+    run_id: str | None = None
+    platform: str
+    trigger: str
+    status: str
+    items_discovered: int = 0
+    items_created: int = 0
+    items_updated: int = 0
+    items_skipped: int = 0
+    items_failed: int = 0
+    items_synced: int = 0
+    error_code: str | None = None
+    error_message: str | None = None
+    metadata_json: dict[str, Any] = Field(default_factory=dict)
+    started_at: datetime
+    finished_at: datetime | None = None
+
+    model_config = ConfigDict(from_attributes=True)
+

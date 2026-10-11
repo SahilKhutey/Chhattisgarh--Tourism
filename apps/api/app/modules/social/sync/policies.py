@@ -4,6 +4,11 @@ from typing import Any
 
 from app.modules.social.domain.enums import ContentType, SocialContentType
 from app.modules.social.models.social_account import SocialAccount
+from app.modules.social.sync.policy import (
+    SocialSyncPolicy,
+    SyncSchedulePolicy,
+    calculate_backoff,
+)
 
 MAX_CONSECUTIVE_FAILURES_BEFORE_DEGRADED = 3
 MAX_CONSECUTIVE_FAILURES_BEFORE_QUARANTINE = 5
@@ -31,10 +36,18 @@ def should_quarantine_account(consecutive_failures: int) -> bool:
     return consecutive_failures >= MAX_CONSECUTIVE_FAILURES_BEFORE_QUARANTINE
 
 
+can_sync = SocialSyncPolicy.can_sync
+assert_sync_allowed = SocialSyncPolicy.assert_sync_allowed
+
 __all__ = [
     "is_content_type_allowed",
     "calculate_retry_backoff_minutes",
     "should_quarantine_account",
     "MAX_CONSECUTIVE_FAILURES_BEFORE_DEGRADED",
     "MAX_CONSECUTIVE_FAILURES_BEFORE_QUARANTINE",
+    "SocialSyncPolicy",
+    "SyncSchedulePolicy",
+    "calculate_backoff",
+    "can_sync",
+    "assert_sync_allowed",
 ]

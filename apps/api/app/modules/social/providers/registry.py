@@ -3,6 +3,7 @@ from __future__ import annotations
 from collections.abc import Iterable
 
 from ..domain.enums import SocialPlatform
+from ..domain.errors import UnsupportedPlatformError
 from .base import SocialProvider
 
 
@@ -21,15 +22,28 @@ class ProviderRegistry:
 
         self._providers[provider.platform] = provider
 
-    def get(self, platform: SocialPlatform) -> SocialProvider:
+    def get(self, platform: SocialPlatform | str) -> SocialProvider:
+        if isinstance(platform, str):
+            try:
+                platform = SocialPlatform(platform)
+            except Exception as exc:
+                raise UnsupportedPlatformError(
+                    f"No provider registered for: {platform}"
+                ) from exc
+
         try:
             return self._providers[platform]
         except KeyError as exc:
-            raise ValueError(
+            raise UnsupportedPlatformError(
                 f"No provider registered for: {platform}"
             ) from exc
 
-    def supports(self, platform: SocialPlatform) -> bool:
+    def supports(self, platform: SocialPlatform | str) -> bool:
+        if isinstance(platform, str):
+            try:
+                platform = SocialPlatform(platform)
+            except Exception:
+                return False
         return platform in self._providers
 
     def list_supported(self) -> list[SocialPlatform]:
@@ -42,3 +56,5 @@ class ProviderRegistry:
 
         return cls([YouTubeAdapter(), InstagramAdapter()])
 
+
+__all__ = ["ProviderRegistry"]

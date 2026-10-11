@@ -84,8 +84,23 @@ class SocialAccountSyncState(Base):
         nullable=True,
     )
 
+    last_error_code: Mapped[str | None] = mapped_column(
+        String(64),
+        nullable=True,
+    )
+
     cursor: Mapped[str | None] = mapped_column(
         String(256),
+        nullable=True,
+    )
+
+    last_seen_published_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True,
+    )
+
+    last_seen_provider_content_id: Mapped[str | None] = mapped_column(
+        String(128),
         nullable=True,
     )
 
@@ -107,6 +122,12 @@ class SocialAccountSyncState(Base):
     )
 
     updated_count: Mapped[int] = mapped_column(
+        Integer,
+        nullable=False,
+        default=0,
+    )
+
+    skipped_count: Mapped[int] = mapped_column(
         Integer,
         nullable=False,
         default=0,

@@ -9,10 +9,14 @@ from pydantic import BaseModel, ConfigDict, Field
 from app.modules.social.domain.enums import SocialPlatform
 from app.modules.social.schemas.account_schemas import (
     AdminCreatorRegister,
+    HandleRegisterRequest,
     SocialAccountAcceptPayload,
     SocialAccountCreate,
     SocialAccountResponse,
     SocialAccountUpdate,
+    SyncRequestResponse,
+    SyncRunResponse,
+    SyncStateResponse,
 )
 
 
@@ -37,4 +41,8 @@ __all__ = [
     "SocialAccountAcceptPayload",
     "SocialAccountResponse",
     "AdminCreatorRegister",
+    "HandleRegisterRequest",
+    "SyncRequestResponse",
+    "SyncRunResponse",
+    "SyncStateResponse",
 ]

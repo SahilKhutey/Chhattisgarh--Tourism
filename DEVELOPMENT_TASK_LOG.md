@@ -732,5 +732,86 @@ $$\text{Admin-approved Creator} \longrightarrow \text{Instagram Account Registry
   - **Social Module Tests**: **182 / 182 PASSED (100%) in 4.01s**.
   - **Full Backend API Tests**: **683 PASSED, 4 SKIPPED, 0 FAILURES in 240.63s**.
 
+---
+
+## 17. Production Build — Social Engine — Phase 6: Social Handle Sync & Fetching
+
+### 17.1 Architecture & Objectives
+Phase 6 builds the unified Social Handle Synchronization and Orchestration Layer across YouTube and Instagram:
+$$\text{Creator} \longrightarrow \text{Social Handle Registry} \longrightarrow \text{Normalize/Validate} \longrightarrow \text{Verify/Accept} \longrightarrow \text{Active + Sync-Enabled} \longrightarrow \text{Sync Coordinator} \longrightarrow \text{Providers} \longrightarrow \text{PostgreSQL/Feed}$$
+
+1. **Social Handle Layer**:
+   - Universal handle normalization (`@` prefix and slash stripping, lowercase, non-empty validation).
+   - Platform-specific syntax validation (YouTube vs. Instagram syntax rules).
+   - Profile URL & handle resolution into platform and normalized handle.
+   - Creator handle registration enforcing platform-level uniqueness (`UNIQUE(platform, normalized_handle)`).
+2. **Fail-Closed Eligibility & Adaptive Scheduling**:
+   - Centralized `SocialSyncPolicy` gatekeeper enforcing `ACTIVE`, `sync_enabled`, and `provider_access_status == AVAILABLE`.
+   - Adaptive `SyncSchedulePolicy` computing `next_sync_at` (featured 30m, standard 2h, low-priority 6h) with exponential backoff on consecutive failures.
+3. **Concurrency Control & Resilience**:
+   - Distributed locking via `SocialSyncLock` protocol with thread-safe in-memory and atomic Redis Lua implementations.
+   - Circuit breaker protection via `ProviderCircuitBreaker` (CLOSED, OPEN, HALF_OPEN) per platform.
+4. **Unified Synchronization Coordinator & Worker**:
+   - `SocialSyncCoordinator` orchestrating locking, stale sync recovery, circuit breaking, adapter fetching, canonical normalization, idempotent persistence, partial success detection, run history logging, and outbox event publishing.
+   - Source lifecycle preservation via `mark_source_unavailable` preventing hard deletion.
+   - `SocialSyncWorker` and bounded `SocialSyncScheduler`.
+5. **Admin REST API & Observability**:
+   - Endpoints for handle registration, sync state, sync runs, manual sync triggers (202 Accepted), pause/resume sync, and `/health/social`.
+6. **Database Migration**:
+   - Migration `p27_social_sync_orchestration`.
+
+### 17.2 Implementation Details
+- **`SocialHandleNormalizer` & `normalize_handle` (`handles/normalizer.py`)**:
+  - Normalizes handles by stripping whitespace, leading `@`, leading/trailing slashes, and lowercasing.
+- **`SocialHandleValidator` (`handles/validator.py`)**:
+  - YouTube: alphanumeric, dots, hyphens, underscores; length 3-30.
+  - Instagram: alphanumeric, dots, underscores; length 1-30; no leading/trailing or consecutive dots.
+- **`SocialHandleResolver` (`handles/resolver.py`)**:
+  - Parses raw handles and URLs across YouTube and Instagram into `(platform, normalized_handle)`.
+- **`SocialHandleService` (`handles/service.py`)**:
+  - Registers creator handles with duplicate rejection (`SocialAccountAlreadyExistsError`), fail-closed defaults (`PENDING`, `NEVER_RUN`), and outbox event emission.
+- **`SocialSyncPolicy` & `SyncSchedulePolicy` (`sync/policy.py`)**:
+  - Enforces `can_sync` and `assert_sync_allowed`.
+  - Calculates `next_sync_at` and exponential backoff with jitter.
+- **`SocialSyncLock` (`sync/locking.py`)**:
+  - `InMemorySocialSyncLock` (monotonic timestamps, thread-safe).
+  - `RedisSocialSyncLock` (atomic `SET NX EX` with safe Lua release).
+- **`ProviderCircuitBreaker` (`sync/circuit_breaker.py`)**:
+  - Per-platform circuit breaker protecting external APIs during outages.
+- **`SocialSyncCoordinator` (`sync/coordinator.py`)**:
+  - Unified sync entrypoint coordinating policy, locking, circuit breaking, adapter execution, partial success detection, run history, and outbox events.
+- **`SocialSyncRunRepository` & `SocialSyncStateRepository` (`sync/repository.py`)**:
+  - Historical execution run logs and adaptive schedule due account queries (`find_due_accounts`).
+- **`SocialSyncScheduler` & `SocialSyncWorker` (`sync/scheduler.py`, `sync/worker.py`)**:
+  - Periodic discovery and queueing of due syncs; background worker handling `SocialSyncRequested`.
+- **Admin Endpoints (`api/admin.py`, `api/health.py`)**:
+  - `POST /api/admin/handles`, `GET /api/admin/handles`
+  - `GET /api/admin/accounts/{id}/sync-state`
+  - `GET /api/admin/accounts/{id}/sync-runs`
+  - `POST /api/admin/accounts/{id}/sync` (202 Accepted)
+  - `POST /api/admin/accounts/{id}/pause-sync`, `POST /api/admin/accounts/{id}/resume-sync`
+  - `GET /health/social`
+
+### 17.3 Test Suite & Verification Matrix
+- **Handles Suite (`tests/handles/`)**:
+  - `test_normalizer.py` (3 tests): basic normalization, whitespace/slashes, empty rejection.
+  - `test_validator.py` (2 tests): YouTube syntax rules, Instagram syntax rules.
+  - `test_resolver.py` (5 tests): Raw handles, YouTube URLs, Instagram URLs, invalid hosts.
+  - `test_service.py` (4 tests): Registration, duplicate prevention, cross-platform allowance, missing creator.
+- **Sync Suite (`tests/sync/`)**:
+  - `test_policy.py` (4 tests): Eligibility checks, fail-closed assertions, backoff calculation, schedule intervals.
+  - `test_locking.py` (3 tests): In-memory lock, context manager conflict, Redis lock with Lua release.
+  - `test_circuit_breaker.py` (2 tests): State transitions, platform isolation.
+  - `test_coordinator.py` (4 tests): Successful sync, partial success, fail-closed gatekeeper, source lifecycle.
+  - `test_concurrency.py` (1 test): 10 concurrent sync threads with barrier; exactly 1 succeeds, 9 blocked by lock.
+  - `test_scheduler_worker.py` (2 tests): Due account discovery, bounded queueing, worker handling and lock conflict.
+  - `test_api_endpoints.py` (3 tests): `/health/social`, handle registration/listing, sync management endpoints.
+- **Verification Results**:
+  - **Phase 6 Handle Tests**: **14 / 14 PASSED (100%) in 0.46s**.
+  - **Phase 6 Sync Tests**: **26 / 26 PASSED (100%) in 4.88s**.
+  - **Total Social Module Tests**: **195 / 195 PASSED (100%) in 6.54s**.
+  - **Full Backend API Tests**: **716 PASSED, 4 SKIPPED, 0 FAILURES**.
+
+
 
 
