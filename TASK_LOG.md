@@ -215,8 +215,15 @@ CG Tourism OS Development History
     - Asynchronous workers and schedulers: `SocialSyncWorker` consuming `SocialSyncRequested` events and bounded `SocialSyncScheduler`.
   - **Persistence, Migration & Admin API**:
     - Migration `p27_social_sync_orchestration`: added `provider_access_status`, `next_sync_at`, `last_sync_requested_at`, composite index `ix_social_accounts_due_sync`, `social_sync_runs` tracking columns, and `social_account_sync_states` counters.
-    - Admin REST endpoints: handle registration and listing, account sync state and run history, manual sync triggers (202 Accepted), sync pause/resume, and `/health/social`.
-  - **Verification**: 40 new Phase 6 tests (14 handle + 26 sync orchestration), 195 / 195 social tests passing (100%), 716 full backend tests passing (0 failures, 4 skipped).
+    - Admin REST endpoints: handle registration and listing, handle verification (`POST /api/admin/social/handles/verify`), account sync state and run history, manual sync triggers (202 Accepted), sync pause/resume, and `/health/social`.
+    - Dual Route Aliasing: Seamless routing across both `/api/admin/social/...` (spec Section 6.45) and `/api/admin/...` paths.
+    - Consumer APIs: Provider-neutral `GET /api/social/feed` and `GET /api/social/content/{id}`.
+  - **Comprehensive End-to-End Verification (`test_phase6_complete_flow.py`)**:
+    - Complete flow (Section 6.54): Creator -> Register handles -> Verify -> Accept -> Activate -> Worker fetch -> Normalization & Idempotent Upsert -> Zero duplicates -> Sync state SUCCESS -> Consumer feed.
+    - Failure integration test (Section 6.55): Instagram 429 rate limit backoff and YouTube 500 error tracking.
+    - Scheduler bounded concurrency (Section 6.57): 100 due accounts discovering and queueing with bounded batch limits.
+    - Security authorization (Section 6.58): Unauthenticated & non-admin rejected (401/403), paused & unaccepted accounts blocked, cross-creator collision prevention, and zero credential leakage in responses and events.
+  - **Verification**: 45 Phase 6 tests (14 handle + 31 sync orchestration), 200 / 200 social tests passing (100%), 721 full backend tests passing (0 failures, 4 skipped).
 
 ---
 

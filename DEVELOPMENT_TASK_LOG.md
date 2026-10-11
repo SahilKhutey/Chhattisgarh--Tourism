@@ -784,13 +784,16 @@ $$\text{Creator} \longrightarrow \text{Social Handle Registry} \longrightarrow \
   - Historical execution run logs and adaptive schedule due account queries (`find_due_accounts`).
 - **`SocialSyncScheduler` & `SocialSyncWorker` (`sync/scheduler.py`, `sync/worker.py`)**:
   - Periodic discovery and queueing of due syncs; background worker handling `SocialSyncRequested`.
-- **Admin Endpoints (`api/admin.py`, `api/health.py`)**:
-  - `POST /api/admin/handles`, `GET /api/admin/handles`
-  - `GET /api/admin/accounts/{id}/sync-state`
-  - `GET /api/admin/accounts/{id}/sync-runs`
-  - `POST /api/admin/accounts/{id}/sync` (202 Accepted)
-  - `POST /api/admin/accounts/{id}/pause-sync`, `POST /api/admin/accounts/{id}/resume-sync`
-  - `GET /health/social`
+- **Admin Endpoints (`api/admin.py`, `api/router.py`, `api/health.py`)**:
+  - `POST /api/admin/social/handles`, `GET /api/admin/social/handles` (and `/api/admin/handles`)
+  - `POST /api/admin/social/handles/verify` (and `/api/admin/handles/verify`)
+  - `GET /api/admin/social/accounts/{id}/sync-state` (and `/api/admin/accounts/{id}/sync-state`)
+  - `GET /api/admin/social/accounts/{id}/sync-runs` (and `/api/admin/accounts/{id}/sync-runs`)
+  - `POST /api/admin/social/accounts/{id}/sync` (202 Accepted) (and `/api/admin/accounts/{id}/sync`)
+  - `POST /api/admin/social/accounts/{id}/verify` (and `/api/admin/accounts/{id}/verify`)
+  - `POST /api/admin/social/accounts/{id}/pause-sync`, `POST /api/admin/social/accounts/{id}/resume-sync`
+  - `GET /api/social/feed` (Consumer feed)
+  - `GET /health/social` (Production health check)
 
 ### 17.3 Test Suite & Verification Matrix
 - **Handles Suite (`tests/handles/`)**:
@@ -805,12 +808,17 @@ $$\text{Creator} \longrightarrow \text{Social Handle Registry} \longrightarrow \
   - `test_coordinator.py` (4 tests): Successful sync, partial success, fail-closed gatekeeper, source lifecycle.
   - `test_concurrency.py` (1 test): 10 concurrent sync threads with barrier; exactly 1 succeeds, 9 blocked by lock.
   - `test_scheduler_worker.py` (2 tests): Due account discovery, bounded queueing, worker handling and lock conflict.
-  - `test_api_endpoints.py` (3 tests): `/health/social`, handle registration/listing, sync management endpoints.
+  - `test_api_endpoints.py` (4 tests): `/health/social`, handle registration/listing, sync management endpoints, dual `/api/admin/social/...` prefixes and `/api/social/feed`.
+  - `test_phase6_complete_flow.py` (4 tests):
+    1. Complete flow end-to-end integration: Creator -> YouTube & Instagram handles -> verification -> acceptance -> activation -> worker fetch -> normalization & idempotent upsert -> 0 duplicates on re-sync -> sync state SUCCESS -> feed cards & source URLs.
+    2. Failure integration test: Instagram 429 rate limit backoff and YouTube 500 error tracking with delayed `next_sync_at`.
+    3. Scheduler bounded concurrency: 100 due accounts discovering and queueing with bounded batch limits.
+    4. Security authorization: Unauthenticated & non-admin rejected (401/403), paused & unaccepted accounts blocked (400), cross-creator collision prevention (`SocialAccountAlreadyExistsError`), and zero credential leakage.
 - **Verification Results**:
   - **Phase 6 Handle Tests**: **14 / 14 PASSED (100%) in 0.46s**.
-  - **Phase 6 Sync Tests**: **26 / 26 PASSED (100%) in 4.88s**.
-  - **Total Social Module Tests**: **195 / 195 PASSED (100%) in 6.54s**.
-  - **Full Backend API Tests**: **716 PASSED, 4 SKIPPED, 0 FAILURES**.
+  - **Phase 6 Sync Tests**: **31 / 31 PASSED (100%) in 6.22s**.
+  - **Total Social Module Tests**: **200 / 200 PASSED (100%) in 5.17s**.
+  - **Full Backend API Tests**: **721 PASSED, 4 SKIPPED, 0 FAILURES in 3m 16s**.
 
 
 

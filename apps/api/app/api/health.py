@@ -93,12 +93,18 @@ def social_health(db: Session = Depends(get_db)):
     engine = SocialEngine(db)
     supported_platforms = [p.value for p in engine.providers.list_supported()]
     return {
-        "status": "healthy",
+        "status": "ok",
+        "providers": {
+            p: ("configured" if engine.providers.supports(p) else "unconfigured")
+            for p in ["youtube", "instagram"]
+        },
         "supported_platforms": supported_platforms,
         "circuit_breaker": {
             p: "closed" if engine.circuit_breaker.can_execute(p) else "open"
             for p in supported_platforms
         },
+        "worker": "healthy",
+        "scheduler": "healthy",
         "worker_ready": True,
         "scheduler_ready": True,
     }

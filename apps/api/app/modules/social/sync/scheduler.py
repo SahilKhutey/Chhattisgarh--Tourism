@@ -35,9 +35,10 @@ class SocialSyncScheduler:
     ) -> Sequence[SocialAccount]:
         return self.sync_state_repo.find_due_accounts(now=now, limit=limit)
 
-    def enqueue_due_syncs(self, limit: int = 50) -> int:
+    def enqueue_due_syncs(self, limit: int = 50, batch_size: int | None = None) -> int:
+        effective_limit = batch_size if batch_size is not None else limit
         now = datetime.now(timezone.utc)
-        due_accounts = self.find_due_accounts(now=now, limit=limit)
+        due_accounts = self.find_due_accounts(now=now, limit=effective_limit)
         enqueued_count = 0
 
         for account in due_accounts:
@@ -60,8 +61,9 @@ class SocialSyncScheduler:
 
         return enqueued_count
 
-    def run_once(self, limit: int = 50) -> list[SyncResult]:
-        due_accounts = self.find_due_accounts(limit=limit)
+    def run_once(self, limit: int = 50, batch_size: int | None = None) -> list[SyncResult]:
+        effective_limit = batch_size if batch_size is not None else limit
+        due_accounts = self.find_due_accounts(limit=effective_limit)
         results: list[SyncResult] = []
 
         for account in due_accounts:

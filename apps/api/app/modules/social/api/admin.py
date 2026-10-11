@@ -17,6 +17,7 @@ from app.modules.social.acceptance.schemas import (
 from app.modules.social.accounts.schemas import (
     AdminCreatorRegister,
     HandleRegisterRequest,
+    HandleVerifyRequest,
     SocialAccountAcceptPayload,
     SocialAccountCreate,
     SocialAccountRegisterRequest,
@@ -187,7 +188,10 @@ def verify_social_account(
     admin: AdminUser = Depends(require_admin),
 ) -> Any:
     engine = SocialEngine(db)
-    return engine.accounts.verify_social_account(account_id)
+    account = engine.accounts.get_account(account_id)
+    engine.verification.verify_account_sync(account)
+    db.refresh(account)
+    return account
 
 
 @admin_router.post("/accounts/{account_id}/submit", response_model=SocialAccountResponse)
@@ -263,26 +267,35 @@ def activate_social_account(
     return engine.acceptance.activate(account=account_id, actor_id=admin.id)
 
 
-@admin_router.post("/accounts/{account_id}/verify")
-def verify_social_account(
-    account_id: uuid.UUID,
+@admin_router.post("/handles/verify")
+def verify_handle_payload(
+    payload: HandleVerifyRequest,
     db: Session = Depends(get_db),
     admin: AdminUser = Depends(require_admin),
 ) -> Any:
     engine = SocialEngine(db)
-    account = engine.accounts.get_account(account_id)
-    result = engine.verification.verify_account_sync(account)
-    db.refresh(account)
+    try:
+        normalized = engine.handles.validator.validate(payload.platform, payload.handle)
+    except ValueError as e:
+        raise AppError(code="INVALID_HANDLE", message=str(e), status_code=422)
+
+    is_valid = True
+    reason = None
+    try:
+        provider = engine.providers.get(payload.platform)
+        if provider and hasattr(provider, "verify_handle"):
+            res = provider.verify_handle(normalized)
+            is_valid = getattr(res, "verified", True)
+            reason = getattr(res, "reason", None)
+    except Exception:
+        pass
+
     return {
-        "id": str(account.id),
-        "platform": account.platform,
-        "status": account.status,
-        "external_account_id": account.external_account_id,
-        "handle": account.handle,
-        "display_name": result.display_name or account.handle,
-        "profile_url": account.profile_url,
-        "verified": result.verified,
-        "reason": result.reason,
+        "platform": payload.platform,
+        "handle": payload.handle,
+        "normalized_handle": normalized,
+        "verified": is_valid,
+        "reason": reason,
     }
 
 
@@ -534,4 +547,63 @@ def reject_content(
     return engine.moderation.reject(content_id, moderator_id=admin.id, reason=reason)
 
 
-__all__ = ["admin_router"]
+admin_social_sync_router = APIRouter(prefix="/admin/social", tags=["Social Handle & Sync Orchestration"])
+
+admin_social_sync_router.add_api_route(
+    "/handles",
+    register_handle,
+    methods=["POST"],
+    response_model=SocialAccountResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+admin_social_sync_router.add_api_route(
+    "/handles",
+    list_handles,
+    methods=["GET"],
+    response_model=list[SocialAccountResponse],
+)
+admin_social_sync_router.add_api_route(
+    "/handles/verify",
+    verify_handle_payload,
+    methods=["POST"],
+)
+admin_social_sync_router.add_api_route(
+    "/accounts/{account_id}/sync",
+    queue_social_account_sync,
+    methods=["POST"],
+    response_model=SyncRequestResponse,
+    status_code=status.HTTP_202_ACCEPTED,
+)
+admin_social_sync_router.add_api_route(
+    "/accounts/{account_id}/sync-state",
+    get_account_sync_state,
+    methods=["GET"],
+    response_model=SyncStateResponse,
+)
+admin_social_sync_router.add_api_route(
+    "/accounts/{account_id}/sync-runs",
+    list_account_sync_runs,
+    methods=["GET"],
+    response_model=list[SyncRunResponse],
+)
+admin_social_sync_router.add_api_route(
+    "/accounts/{account_id}/verify",
+    verify_social_account,
+    methods=["POST"],
+    response_model=SocialAccountResponse,
+)
+admin_social_sync_router.add_api_route(
+    "/accounts/{account_id}/pause-sync",
+    pause_social_account_sync,
+    methods=["POST"],
+    response_model=SocialAccountResponse,
+)
+admin_social_sync_router.add_api_route(
+    "/accounts/{account_id}/resume-sync",
+    resume_social_account_sync,
+    methods=["POST"],
+    response_model=SocialAccountResponse,
+)
+
+
+__all__ = ["admin_router", "admin_social_sync_router"]

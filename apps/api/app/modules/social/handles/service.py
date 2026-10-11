@@ -29,6 +29,8 @@ logger = logging.getLogger(__name__)
 class SocialHandleService:
     """Production service for social handle registration, normalization, and deduplication."""
 
+    validator = SocialHandleValidator
+
     def __init__(self, session: Session) -> None:
         self.session = session
         self.account_repo = SocialAccountRepository(session)
