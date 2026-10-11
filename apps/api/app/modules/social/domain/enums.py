@@ -72,10 +72,25 @@ class SocialVisibility(StrEnum):
 
 class SyncStatus(StrEnum):
     NEVER_RUN = "never_run"
+    IDLE = "idle"
+    QUEUED = "queued"
     RUNNING = "running"
     SUCCEEDED = "succeeded"
+    SUCCESS = "success"
     PARTIAL = "partial"
     FAILED = "failed"
+    BLOCKED = "blocked"
+
+    @classmethod
+    def _missing_(cls, value: object):
+        if isinstance(value, str):
+            val_lower = value.lower()
+            if val_lower in ("success", "succeeded"):
+                return cls.SUCCEEDED
+            for member in cls:
+                if member.value.lower() == val_lower or member.name.lower() == val_lower:
+                    return member
+        return None
 
 
 class AccountAcceptanceAction(StrEnum):

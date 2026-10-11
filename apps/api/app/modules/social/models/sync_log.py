@@ -2,14 +2,18 @@ from __future__ import annotations
 
 import uuid
 from datetime import datetime, timezone
+from typing import Any
 
 from sqlalchemy import (
+    JSON,
     DateTime,
     ForeignKey,
+    Index,
     Integer,
     String,
     Text,
     Uuid,
+    desc,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -30,6 +34,21 @@ class SocialSyncRun(Base):
         nullable=False,
         index=True,
     )
+    run_id: Mapped[str | None] = mapped_column(
+        String(64),
+        nullable=True,
+        index=True,
+    )
+    platform: Mapped[str] = mapped_column(
+        String(32),
+        nullable=False,
+        default="YOUTUBE",
+    )
+    trigger: Mapped[str] = mapped_column(
+        String(32),
+        nullable=False,
+        default="manual",
+    )
     status: Mapped[str] = mapped_column(
         String(32),
         nullable=False,
@@ -41,14 +60,43 @@ class SocialSyncRun(Base):
         nullable=False,
         default=0,
     )
+    items_created: Mapped[int] = mapped_column(
+        Integer,
+        nullable=False,
+        default=0,
+    )
+    items_updated: Mapped[int] = mapped_column(
+        Integer,
+        nullable=False,
+        default=0,
+    )
+    items_skipped: Mapped[int] = mapped_column(
+        Integer,
+        nullable=False,
+        default=0,
+    )
+    items_failed: Mapped[int] = mapped_column(
+        Integer,
+        nullable=False,
+        default=0,
+    )
     items_synced: Mapped[int] = mapped_column(
         Integer,
         nullable=False,
         default=0,
     )
+    error_code: Mapped[str | None] = mapped_column(
+        String(64),
+        nullable=True,
+    )
     error_message: Mapped[str | None] = mapped_column(
         Text,
         nullable=True,
+    )
+    metadata_json: Mapped[dict[str, Any]] = mapped_column(
+        JSON,
+        nullable=False,
+        default=dict,
     )
     started_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
@@ -61,3 +109,10 @@ class SocialSyncRun(Base):
     )
 
     social_account = relationship("SocialAccount", back_populates="sync_runs")
+
+    __table_args__ = (
+        Index("ix_social_sync_runs_account_started", "social_account_id", desc("started_at")),
+    )
+
+
+__all__ = ["SocialSyncRun"]

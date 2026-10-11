@@ -5,6 +5,7 @@ from datetime import datetime
 from typing import Any
 
 from .enums import (
+    ProviderAccessStatus,
     SocialAccountStatus,
     SocialPlatform,
     SyncStatus,
@@ -27,6 +28,10 @@ class SocialAccount:
     sync_status: SyncStatus = SyncStatus.NEVER_RUN
 
     sync_enabled: bool = False
+
+    provider_access_status: ProviderAccessStatus = ProviderAccessStatus.AVAILABLE
+    next_sync_at: datetime | None = None
+    last_sync_requested_at: datetime | None = None
 
     last_synced_at: datetime | None = None
     last_successful_sync_at: datetime | None = None

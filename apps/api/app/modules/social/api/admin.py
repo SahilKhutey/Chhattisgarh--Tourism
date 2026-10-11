@@ -16,11 +16,15 @@ from app.modules.social.acceptance.schemas import (
 )
 from app.modules.social.accounts.schemas import (
     AdminCreatorRegister,
+    HandleRegisterRequest,
     SocialAccountAcceptPayload,
     SocialAccountCreate,
     SocialAccountRegisterRequest,
     SocialAccountResponse,
     SocialAccountUpdate,
+    SyncRequestResponse,
+    SyncRunResponse,
+    SyncStateResponse,
 )
 from app.modules.social.api.dependencies import require_admin
 from app.modules.social.creators.schemas import CreatorCreate, CreatorResponse, CreatorUpdate
@@ -282,36 +286,145 @@ def verify_social_account(
     }
 
 
-@admin_router.post("/accounts/{account_id}/sync", status_code=status.HTTP_202_ACCEPTED)
+@admin_router.post("/handles", response_model=SocialAccountResponse, status_code=status.HTTP_201_CREATED)
+def register_handle(
+    payload: HandleRegisterRequest,
+    db: Session = Depends(get_db),
+    admin: AdminUser = Depends(require_admin),
+) -> Any:
+    engine = SocialEngine(db)
+    account = engine.handles.register(
+        creator_id=payload.creator_id,
+        platform=payload.platform,
+        handle=payload.handle,
+        profile_url=payload.profile_url,
+        sync_enabled=payload.sync_enabled,
+        display_name=payload.display_name,
+        metadata=payload.metadata,
+    )
+    db.commit()
+    return account
+
+
+@admin_router.get("/handles", response_model=list[SocialAccountResponse])
+def list_handles(
+    creator_id: uuid.UUID | None = Query(None),
+    platform: str | None = Query(None),
+    status_filter: str | None = Query(None, alias="status"),
+    limit: int = Query(50, ge=1, le=100),
+    offset: int = Query(0, ge=0),
+    db: Session = Depends(get_db),
+    admin: AdminUser = Depends(require_admin),
+) -> Any:
+    engine = SocialEngine(db)
+    return engine.handles.list_handles(
+        creator_id=creator_id,
+        platform=platform,
+        status=status_filter,
+        limit=limit,
+        offset=offset,
+    )
+
+
+@admin_router.post("/accounts/{account_id}/sync", response_model=SyncRequestResponse, status_code=status.HTTP_202_ACCEPTED)
 def queue_social_account_sync(
     account_id: uuid.UUID,
     db: Session = Depends(get_db),
     admin: AdminUser = Depends(require_admin),
 ) -> Any:
+    from datetime import datetime, timezone
+    from app.events.publisher import create_outbox_event
+    from app.modules.social.sync.policy import SocialSyncPolicy
+
     engine = SocialEngine(db)
     account = engine.accounts.get_account(account_id)
-    creator = engine.creators.get_creator(account.creator_id)
-    if not engine.eligibility.can_sync(account, creator=creator):
+    if not SocialSyncPolicy.can_sync(account):
         raise AppError(
             code="ACCOUNT_NOT_ELIGIBLE_FOR_SYNC",
             message=f"Account '{account_id}' is not currently eligible for synchronization.",
             status_code=400,
         )
 
-    from app.events.publisher import create_outbox_event
+    run_id = uuid.uuid4().hex[:16]
     create_outbox_event(
         db,
         event_type="SOCIAL_SYNC_JOB_QUEUED",
         aggregate_id=account.id,
-        payload={"account_id": str(account.id), "platform": str(account.platform)},
+        payload={
+            "account_id": str(account.id),
+            "platform": str(account.platform),
+            "run_id": run_id,
+        },
     )
+    account.last_sync_requested_at = datetime.now(timezone.utc)
     db.commit()
 
-    return {
-        "status": "queued",
-        "account_id": str(account.id),
-        "platform": account.platform,
-    }
+    return SyncRequestResponse(
+        status="accepted",
+        account_id=str(account.id),
+        message="Sync request successfully queued.",
+        run_id=run_id,
+    )
+
+
+@admin_router.get("/accounts/{account_id}/sync-state", response_model=SyncStateResponse)
+def get_account_sync_state(
+    account_id: uuid.UUID,
+    db: Session = Depends(get_db),
+    admin: AdminUser = Depends(require_admin),
+) -> Any:
+    engine = SocialEngine(db)
+    account = engine.accounts.get_account(account_id)
+    state = engine.sync_states.get_by_account_id(account.id)
+    if not state:
+        state = engine.sync_states.get_or_create(account.id)
+        db.commit()
+    return state
+
+
+@admin_router.get("/accounts/{account_id}/sync-runs", response_model=list[SyncRunResponse])
+def list_account_sync_runs(
+    account_id: uuid.UUID,
+    limit: int = Query(50, ge=1, le=100),
+    offset: int = Query(0, ge=0),
+    db: Session = Depends(get_db),
+    admin: AdminUser = Depends(require_admin),
+) -> Any:
+    engine = SocialEngine(db)
+    return engine.sync_runs.list_by_account(account_id=account_id, limit=limit, offset=offset)
+
+
+@admin_router.post("/accounts/{account_id}/pause-sync", response_model=SocialAccountResponse)
+def pause_social_account_sync(
+    account_id: uuid.UUID,
+    db: Session = Depends(get_db),
+    admin: AdminUser = Depends(require_admin),
+) -> Any:
+    engine = SocialEngine(db)
+    account = engine.accounts.get_account(account_id)
+    account.is_sync_enabled = False
+    state = engine.sync_states.get_by_account_id(account_id)
+    if state:
+        state.sync_enabled = False
+    db.commit()
+    return account
+
+
+@admin_router.post("/accounts/{account_id}/resume-sync", response_model=SocialAccountResponse)
+def resume_social_account_sync(
+    account_id: uuid.UUID,
+    db: Session = Depends(get_db),
+    admin: AdminUser = Depends(require_admin),
+) -> Any:
+    engine = SocialEngine(db)
+    account = engine.accounts.get_account(account_id)
+    account.is_sync_enabled = True
+    state = engine.sync_states.get_by_account_id(account_id)
+    if state:
+        state.sync_enabled = True
+    db.commit()
+    return account
+
 
 
 @admin_router.get("/accounts/{account_id}/eligibility")

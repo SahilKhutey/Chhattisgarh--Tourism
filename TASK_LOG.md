@@ -199,6 +199,25 @@ CG Tourism OS Development History
       - Strict Security & Token Leak Invariant: Guaranteed zero access tokens in logs, content metadata, sync cursors, or outbox payloads.
     - **Verification**: 48 new Instagram tests (38 provider + 10 sync), 182 / 182 social tests passing (100%), 683 full backend tests passing (0 failures, 4 skipped).
 
+- **2026-10-11**: Production Build — Social Engine — Phase 6: Social Handle Sync & Fetching
+  - **Unified Handle Layer (`apps/api/app/modules/social/handles/`)**:
+    - Created `SocialHandle`, `normalize_handle`, and `SocialHandleNormalizer` enforcing lowercase, whitespace and leading/trailing slash/at-sign stripping.
+    - Created `SocialHandleValidator` with platform-specific rules for YouTube (3-30 chars, alphanumeric + dots/dashes/underscores) and Instagram (1-30 chars, alphanumeric + dots/underscores, no leading/trailing or consecutive dots).
+    - Created `SocialHandleResolver` parsing both raw handles and full profile URLs across YouTube and Instagram into normalized `(platform, handle)`.
+    - Created `SocialHandleService` enforcing unique handle registration per platform (`SocialAccountAlreadyExistsError`), initializing fail-closed sync state, and emitting outbox events.
+  - **Synchronization Orchestration & Policy Layer (`apps/api/app/modules/social/sync/`)**:
+    - Centralized fail-closed eligibility gatekeeper `SocialSyncPolicy` (`can_sync` and `assert_sync_allowed`) enforcing `ACTIVE`, `sync_enabled`, and `provider_access_status == AVAILABLE`.
+    - Adaptive schedule policy `SyncSchedulePolicy` calculating `next_sync_at` (featured 30m, standard 2h, low-priority 6h) with exponential backoff on consecutive failures via `calculate_backoff`.
+    - Distributed locking protocol `SocialSyncLock` with `InMemorySocialSyncLock` (thread-safe with monotonic expiration) and `RedisSocialSyncLock` (`SET NX EX` with atomic Lua script token release).
+    - Outage protection via `ProviderCircuitBreaker` (CLOSED -> OPEN -> HALF_OPEN) per social platform.
+    - Unified `SocialSyncCoordinator` orchestrating locking, stale sync recovery, circuit breaking, adapter fetching, canonical normalization, idempotent persistence, partial success detection, run history logging, and outbox event publishing.
+    - Media source lifecycle preservation via `mark_source_unavailable` preventing hard deletions and preserving curation and analytics.
+    - Asynchronous workers and schedulers: `SocialSyncWorker` consuming `SocialSyncRequested` events and bounded `SocialSyncScheduler`.
+  - **Persistence, Migration & Admin API**:
+    - Migration `p27_social_sync_orchestration`: added `provider_access_status`, `next_sync_at`, `last_sync_requested_at`, composite index `ix_social_accounts_due_sync`, `social_sync_runs` tracking columns, and `social_account_sync_states` counters.
+    - Admin REST endpoints: handle registration and listing, account sync state and run history, manual sync triggers (202 Accepted), sync pause/resume, and `/health/social`.
+  - **Verification**: 40 new Phase 6 tests (14 handle + 26 sync orchestration), 195 / 195 social tests passing (100%), 716 full backend tests passing (0 failures, 4 skipped).
+
 ---
 
 ## 🔍 Comprehensive System Audit & Release Logs

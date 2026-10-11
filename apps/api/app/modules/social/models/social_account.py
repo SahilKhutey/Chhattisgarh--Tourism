@@ -21,6 +21,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
 from app.modules.social.domain.enums import (
+    ProviderAccessStatus,
     SocialAccountStatus,
     SocialPlatform,
     SyncHealthStatus,
@@ -143,6 +144,21 @@ class SocialAccount(Base):
         nullable=False,
         default=1,
     )
+    provider_access_status: Mapped[str] = mapped_column(
+        String(32),
+        nullable=False,
+        default=ProviderAccessStatus.AVAILABLE.value,
+        index=True,
+    )
+    next_sync_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True,
+        index=True,
+    )
+    last_sync_requested_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True,
+    )
     metadata_json: Mapped[dict[str, Any]] = mapped_column(
         JSON,
         nullable=False,
@@ -180,6 +196,13 @@ class SocialAccount(Base):
             sqlite_where=text("external_account_id IS NOT NULL"),
         ),
         Index("ix_social_accounts_platform_url", "platform", "profile_url"),
+        Index(
+            "ix_social_accounts_due_sync",
+            "status",
+            "is_sync_enabled",
+            "provider_access_status",
+            "next_sync_at",
+        ),
     )
 
     @property
@@ -221,6 +244,9 @@ class SocialAccount(Base):
             status=SocialAccountStatus(self.status) if isinstance(self.status, str) else self.status,
             sync_status=SyncStatus(self.sync_status) if self.sync_status else SyncStatus.NEVER_RUN,
             sync_enabled=self.is_sync_enabled,
+            provider_access_status=ProviderAccessStatus(self.provider_access_status) if self.provider_access_status else ProviderAccessStatus.AVAILABLE,
+            next_sync_at=self.next_sync_at,
+            last_sync_requested_at=self.last_sync_requested_at,
             last_synced_at=self.last_attempted_sync,
             last_successful_sync_at=self.last_successful_sync,
             last_error=self.last_error,
@@ -240,6 +266,9 @@ class SocialAccount(Base):
             status=domain_acc.status.value if hasattr(domain_acc.status, "value") else str(domain_acc.status),
             sync_status=domain_acc.sync_status.value if hasattr(domain_acc.sync_status, "value") else str(domain_acc.sync_status),
             is_sync_enabled=domain_acc.sync_enabled,
+            provider_access_status=domain_acc.provider_access_status.value if hasattr(domain_acc, "provider_access_status") and hasattr(domain_acc.provider_access_status, "value") else "available",
+            next_sync_at=getattr(domain_acc, "next_sync_at", None),
+            last_sync_requested_at=getattr(domain_acc, "last_sync_requested_at", None),
             last_attempted_sync=domain_acc.last_synced_at,
             last_successful_sync=domain_acc.last_successful_sync_at,
             last_error=domain_acc.last_error,
