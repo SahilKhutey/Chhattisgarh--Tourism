@@ -14,7 +14,16 @@ class ProviderRegistry:
         for provider in providers:
             self.register(provider)
 
-    def register(self, provider: SocialProvider) -> None:
+    def register(
+        self,
+        provider: SocialProvider | SocialPlatform,
+        maybe_provider: SocialProvider | None = None,
+    ) -> None:
+        if maybe_provider is not None:
+            platform = provider if isinstance(provider, SocialPlatform) else SocialPlatform(provider)
+            self._providers[platform] = maybe_provider
+            return
+
         if provider.platform in self._providers:
             raise ValueError(
                 f"Provider already registered: {provider.platform}"

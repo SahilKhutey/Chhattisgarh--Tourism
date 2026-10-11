@@ -10,6 +10,7 @@ from app.modules.social.domain.enums import SocialPlatform
 from app.modules.social.schemas.account_schemas import (
     AdminCreatorRegister,
     HandleRegisterRequest,
+    HandleVerifyRequest,
     SocialAccountAcceptPayload,
     SocialAccountCreate,
     SocialAccountResponse,
@@ -42,6 +43,7 @@ __all__ = [
     "SocialAccountResponse",
     "AdminCreatorRegister",
     "HandleRegisterRequest",
+    "HandleVerifyRequest",
     "SyncRequestResponse",
     "SyncRunResponse",
     "SyncStateResponse",
