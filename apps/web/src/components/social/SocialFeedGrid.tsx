@@ -4,20 +4,23 @@ import React from 'react';
 import { SocialContent, SocialFeedTemplate } from '@/lib/social/types';
 import { SocialContentCard } from './SocialContentCard';
 
-interface SocialFeedGridProps {
+export interface SocialFeedGridProps {
   template: SocialFeedTemplate;
   items: SocialContent[];
   className?: string;
+  onMediaClick?: (content: SocialContent) => void;
 }
 
 export function StandardSocialGrid({
   items,
   columns,
   className = '',
+  onMediaClick,
 }: {
   items: SocialContent[];
   columns: SocialFeedTemplate['columns'];
   className?: string;
+  onMediaClick?: (content: SocialContent) => void;
 }) {
   return (
     <div
@@ -30,6 +33,7 @@ export function StandardSocialGrid({
           content={item}
           variant="default"
           priority={idx < 4}
+          onMediaClick={onMediaClick}
         />
       ))}
     </div>
@@ -39,9 +43,11 @@ export function StandardSocialGrid({
 export function MasonrySocialGrid({
   items,
   className = '',
+  onMediaClick,
 }: {
   items: SocialContent[];
   className?: string;
+  onMediaClick?: (content: SocialContent) => void;
 }) {
   return (
     <div
@@ -60,6 +66,7 @@ export function MasonrySocialGrid({
               variant={isHighlight ? 'featured' : 'default'}
               priority={idx < 3}
               showDescription={isHighlight}
+              onMediaClick={onMediaClick}
             />
           </div>
         );
@@ -71,9 +78,11 @@ export function MasonrySocialGrid({
 export function FeaturedSocialGrid({
   items,
   className = '',
+  onMediaClick,
 }: {
   items: SocialContent[];
   className?: string;
+  onMediaClick?: (content: SocialContent) => void;
 }) {
   if (items.length === 0) return null;
   const [featured, ...rest] = items;
@@ -91,6 +100,7 @@ export function FeaturedSocialGrid({
             variant="featured"
             priority={true}
             showDescription={true}
+            onMediaClick={onMediaClick}
           />
         </div>
       )}
@@ -103,6 +113,7 @@ export function FeaturedSocialGrid({
               key={item.id}
               content={item}
               variant="default"
+              onMediaClick={onMediaClick}
             />
           ))}
         </div>
@@ -114,9 +125,11 @@ export function FeaturedSocialGrid({
 export function RegionalSocialGrid({
   items,
   className = '',
+  onMediaClick,
 }: {
   items: SocialContent[];
   className?: string;
+  onMediaClick?: (content: SocialContent) => void;
 }) {
   if (items.length === 0) return null;
   const heroItem = items[0];
@@ -137,6 +150,7 @@ export function RegionalSocialGrid({
               variant="featured"
               priority={true}
               showDescription={true}
+              onMediaClick={onMediaClick}
             />
           </div>
         )}
@@ -148,6 +162,7 @@ export function RegionalSocialGrid({
                   content={item}
                   variant="default"
                   showDescription={false}
+                  onMediaClick={onMediaClick}
                 />
               </div>
             ))}
@@ -163,6 +178,7 @@ export function RegionalSocialGrid({
               key={item.id}
               content={item}
               variant="default"
+              onMediaClick={onMediaClick}
             />
           ))}
         </div>
@@ -174,9 +190,11 @@ export function RegionalSocialGrid({
 export function CompactSocialGrid({
   items,
   className = '',
+  onMediaClick,
 }: {
   items: SocialContent[];
   className?: string;
+  onMediaClick?: (content: SocialContent) => void;
 }) {
   return (
     <div
@@ -188,6 +206,7 @@ export function CompactSocialGrid({
           key={item.id}
           content={item}
           variant="compact"
+          onMediaClick={onMediaClick}
         />
       ))}
     </div>
@@ -198,16 +217,17 @@ export function SocialFeedGrid({
   template,
   items,
   className = '',
+  onMediaClick,
 }: SocialFeedGridProps) {
   switch (template.layout) {
     case 'masonry':
-      return <MasonrySocialGrid items={items} className={className} />;
+      return <MasonrySocialGrid items={items} className={className} onMediaClick={onMediaClick} />;
     case 'featured-grid':
-      return <FeaturedSocialGrid items={items} className={className} />;
+      return <FeaturedSocialGrid items={items} className={className} onMediaClick={onMediaClick} />;
     case 'regional-showcase':
-      return <RegionalSocialGrid items={items} className={className} />;
+      return <RegionalSocialGrid items={items} className={className} onMediaClick={onMediaClick} />;
     case 'compact-grid':
-      return <CompactSocialGrid items={items} className={className} />;
+      return <CompactSocialGrid items={items} className={className} onMediaClick={onMediaClick} />;
     case 'standard-grid':
     default:
       return (
@@ -215,6 +235,7 @@ export function SocialFeedGrid({
           items={items}
           columns={template.columns}
           className={className}
+          onMediaClick={onMediaClick}
         />
       );
   }
