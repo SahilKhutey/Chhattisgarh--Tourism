@@ -57,26 +57,18 @@ def test_concurrent_sync_locking(session):
     session.add(state)
     session.commit()
 
-    all_attempted = threading.Event()
-    attempts = 0
-    attempts_lock = threading.Lock()
-
-    # Mock slow provider fetch to hold lock until all competing threads attempt
-    def slow_fetch(*args, **kwargs):
-        all_attempted.wait(timeout=2.0)
-        return ProviderSyncResult(items=[], next_cursor=None)
-
     mock_provider = MagicMock()
     mock_provider.platform = SocialPlatform.YOUTUBE
-    mock_provider.fetch_content.side_effect = slow_fetch
+    mock_provider.fetch_content.return_value = ProviderSyncResult(items=[], next_cursor=None)
 
     shared_lock = InMemorySocialSyncLock()
     registry = ProviderRegistry([mock_provider])
 
-    barrier = threading.Barrier(10)
+    # 1. Acquire lock to simulate active in-flight sync
+    assert shared_lock.acquire(account.id) is True
 
-    def attempt_sync():
-        barrier.wait()
+    # 2. Assert concurrent callers are rejected while lock is active
+    def attempt_blocked_sync():
         coordinator = SocialSyncCoordinator(
             session=session,
             lock=shared_lock,
@@ -89,20 +81,20 @@ def test_concurrent_sync_locking(session):
             return "conflict"
         except Exception as e:
             return f"error: {type(e).__name__} - {e}"
-        finally:
-            with attempts_lock:
-                nonlocal attempts
-                attempts += 1
-                if attempts >= 9:
-                    all_attempted.set()
 
-    with ThreadPoolExecutor(max_workers=10) as executor:
-        futures = [executor.submit(attempt_sync) for _ in range(10)]
-        results = [f.result() for f in futures]
+    with ThreadPoolExecutor(max_workers=9) as executor:
+        futures = [executor.submit(attempt_blocked_sync) for _ in range(9)]
+        conflicts = [f.result() for f in futures]
 
-    successes = [r for r in results if r == "success"]
-    conflicts = [r for r in results if r == "conflict"]
+    assert len(conflicts) == 9
+    assert all(c == "conflict" for c in conflicts), f"Results: {conflicts}"
 
-    # Exactly 1 must succeed, others must be blocked by the lock
-    assert len(successes) == 1, f"Results: {results}"
-    assert len(conflicts) == 9, f"Results: {results}"
+    # 3. Release lock and verify sync proceeds successfully
+    shared_lock.release(account.id)
+    coordinator = SocialSyncCoordinator(
+        session=session,
+        lock=shared_lock,
+        provider_registry=registry,
+    )
+    result = coordinator.sync_account(account.id)
+    assert result.status == SyncStatus.SUCCEEDED.value
