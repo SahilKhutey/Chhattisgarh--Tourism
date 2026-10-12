@@ -37,7 +37,7 @@ export function JTBDCard({ jtbd, onSupport, onInvalidate }: JTBDCardProps) {
         </div>
 
         <h3 className="text-base font-semibold text-slate-100 mb-1.5">{jtbd.title}</h3>
-        <p className="text-sm text-slate-300 italic mb-3">"{jtbd.description}"</p>
+        <p className="text-sm text-slate-300 italic mb-3">&ldquo;{jtbd.description}&rdquo;</p>
 
         {jtbd.evidence_summary && (
           <div className="text-xs text-slate-400 bg-slate-950/60 p-2.5 rounded-lg border border-slate-800/80">

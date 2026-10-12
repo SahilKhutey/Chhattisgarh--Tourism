@@ -142,7 +142,7 @@ export function ContentInsights({ data }: ContentInsightsProps) {
             </li>
             <li>
               <strong>Stale Content Circuit Breaker:</strong> Automated degradation warning if timing
-              or pricing hasn't been re-verified within 90 days.
+              or pricing hasn&apos;t been re-verified within 90 days.
             </li>
             <li>
               <strong>Native Itinerary Hook:</strong> Every destination view must surface 1-click

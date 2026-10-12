@@ -98,7 +98,7 @@ function formatPreviewValue(value: unknown, type: string): React.ReactNode {
     return (
       <div className="text-xs space-y-1">
         <p className="truncate text-blue-600">{img.url}</p>
-        {img.alt && <p className="text-gray-500 italic">Alt: "{img.alt}"</p>}
+        {img.alt && <p className="text-gray-500 italic">Alt: &quot;{img.alt}&quot;</p>}
       </div>
     );
   }

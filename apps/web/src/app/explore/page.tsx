@@ -186,7 +186,7 @@ export default function ExplorePage() {
                     Explore by Administrative Division
                   </h2>
                   <p className="text-xs text-zinc-500 mt-0.5">
-                    Navigate through Chhattisgarh's 5 official administrative headquarters
+                    Navigate through Chhattisgarh&apos;s 5 official administrative headquarters
                   </p>
                 </div>
               </div>
