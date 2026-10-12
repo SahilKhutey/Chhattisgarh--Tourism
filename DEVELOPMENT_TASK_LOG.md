@@ -1197,11 +1197,20 @@ Following commit `3f23780`, GitHub Actions workflows failed across 4 jobs:
    - Monkey-patched `DefaultImpl.version_table_impl` in `apps/api/alembic/env.py` to emit `Column("version_num", String(128))`.
    - Added automated widening `ALTER TABLE alembic_version ALTER COLUMN version_num TYPE character varying(128)` in `run_migrations_online` and in migration `p3_enable_postgis_and_places.py`.
    - Auto-imported all 100 domain and module models in `apps/api/alembic/env.py` to ensure `target_metadata = Base.metadata` completely reflects all tables for `alembic check`.
+5. **Next.js 16 Node Runtime Compatibility**:
+   - Upgraded Node runtime from Node 20 to Node 22 LTS across `ci.yml`, `test.yml`, and `mobile.yml`, resolving undici `webidl.util.markAsUncloneable` runtime requirement during static page collection.
+   - Updated `package.json` engines to `"node": ">=20"`.
+6. **PostgreSQL pgvector Extension Support & Fallback**:
+   - Added container install step for `postgresql-16-pgvector` in the PostgreSQL service container across `backend.yml` and `ci.yml`.
+   - Added resilient try/except fallback in migration `p12_semantic_discovery_kg.py` to gracefully fallback to `ARRAY(Float)` if pgvector is unavailable.
+7. **Prisma Schema Validation Environment Variable**:
+   - Configured `DATABASE_URL` in `test.yml` during `pnpm --filter backend exec prisma validate` step.
 
 ### 24.3 Complete Verification Status
 - `pnpm --filter web run typecheck`: **0 errors (100% pass)**.
 - `pnpm lint`: **0 errors, 3 packages passed (100% pass)**.
 - `pnpm --filter web run build`: **92 / 92 static routes cleanly compiled**.
+- `pnpm --filter backend exec prisma validate`: **Valid 🚀 (100% pass)**.
 - Backend Pytest Suite: **799 passed, 4 skipped, 0 failed (100% pass)**.
 - Backend Social Module Suite: **273 / 273 passed (100% pass)**.
 

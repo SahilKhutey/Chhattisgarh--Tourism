@@ -22,11 +22,17 @@ def upgrade() -> None:
     bind = op.get_bind()
     is_postgres = bind.dialect.name == "postgresql"
 
+    has_vector = False
     if is_postgres:
-        op.execute("CREATE EXTENSION IF NOT EXISTS vector")
+        try:
+            op.execute("CREATE EXTENSION IF NOT EXISTS vector")
+            has_vector = True
+        except Exception:
+            has_vector = False
 
     uuid_type = postgresql.UUID(as_uuid=True) if is_postgres else sa.String(36)
     json_type = postgresql.JSONB(astext_type=sa.Text()) if is_postgres else sa.JSON()
+    embedding_type = Vector(EMBEDDING_DIMENSION) if has_vector else (postgresql.ARRAY(sa.Float) if is_postgres else sa.JSON())
 
     # 1. embedding_models
     op.create_table(
@@ -57,7 +63,7 @@ def upgrade() -> None:
             nullable=False,
         ),
         sa.Column("locale", sa.String(10), nullable=False, server_default="en"),
-        sa.Column("embedding", Vector(EMBEDDING_DIMENSION), nullable=False),
+        sa.Column("embedding", embedding_type, nullable=False),
         sa.Column("source_hash", sa.String(64), nullable=False),
         sa.Column("content_version", sa.String(100), nullable=False, server_default="1.0"),
         sa.Column("created_at", sa.DateTime(timezone=True), nullable=False, server_default=sa.func.now()),
@@ -75,7 +81,7 @@ def upgrade() -> None:
         ["content_entry_id"],
     )
 
-    if is_postgres:
+    if is_postgres and has_vector:
         op.execute(
             """
             CREATE INDEX IF NOT EXISTS idx_content_embeddings_vector
