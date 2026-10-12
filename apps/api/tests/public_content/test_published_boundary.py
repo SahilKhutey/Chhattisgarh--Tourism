@@ -7,9 +7,13 @@ def test_draft_content_is_not_public(client, draft_entry):
     assert response.json()["detail"] == "Content not found."
 
 
+from app.modules.public_content.cache import PublicContentCache
+
+
 def test_archived_content_is_not_public(client, db_session, published_entry):
     published_entry.status = "ARCHIVED"
     db_session.commit()
+    PublicContentCache().invalidate(published_entry.slug)
 
     response = client.get(f"/api/content/{published_entry.slug}")
     assert response.status_code == 404
@@ -18,6 +22,7 @@ def test_archived_content_is_not_public(client, db_session, published_entry):
 def test_in_review_content_is_not_public(client, db_session, published_entry):
     published_entry.status = "IN_REVIEW"
     db_session.commit()
+    PublicContentCache().invalidate(published_entry.slug)
 
     response = client.get(f"/api/content/{published_entry.slug}")
     assert response.status_code == 404

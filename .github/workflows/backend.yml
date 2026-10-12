@@ -57,6 +57,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -r apps/api/requirements.txt
+          pip install pytest-asyncio
 
       - name: Configure environment
         run: |

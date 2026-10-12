@@ -42,7 +42,7 @@ from app.db import models  # noqa: F401
 import app.modules
 
 for _info in pkgutil.walk_packages(app.modules.__path__, app.modules.__name__ + "."):
-    if _info.name.endswith(".models"):
+    if "models" in _info.name:
         try:
             importlib.import_module(_info.name)
         except Exception:
@@ -52,6 +52,48 @@ try:
     importlib.import_module("app.events.models")
 except Exception:
     pass
+
+POSTGIS_SYSTEM_TABLES = {
+    "spatial_ref_sys",
+    "state_lookup",
+    "county_lookup",
+    "zcta5",
+    "geocode_settings",
+    "geocode_settings_default",
+    "pagc_gaz",
+    "pagc_lex",
+    "pagc_rules",
+    "topology",
+    "layer",
+    "direction_lookup",
+    "secondary_unit_lookup",
+    "street_type_lookup",
+    "place_lookup",
+    "zip_lookup",
+    "zip_lookup_all",
+    "zip_lookup_base",
+    "zip_state",
+    "zip_state_loc",
+    "countysub_lookup",
+    "cousub_lookup",
+    "edges",
+    "faces",
+    "featnames",
+    "addr",
+    "tabblock",
+    "bg",
+    "tract",
+}
+
+
+def include_object(object, name, type_, reflected, compare_to):
+    if type_ == "table":
+        if name in POSTGIS_SYSTEM_TABLES:
+            return False
+        if reflected and name not in target_metadata.tables:
+            return False
+    return True
+
 
 config = context.config
 
@@ -68,8 +110,9 @@ def run_migrations_offline():
         url=settings.database_url,
         target_metadata=target_metadata,
         literal_binds=True,
-        compare_type=True,
-        compare_server_default=True,
+        include_object=include_object,
+        compare_type=False,
+        compare_server_default=False,
     )
 
     with context.begin_transaction():
@@ -107,8 +150,9 @@ def run_migrations_online():
         context.configure(
             connection=connection,
             target_metadata=target_metadata,
-            compare_type=True,
-            compare_server_default=True,
+            include_object=include_object,
+            compare_type=False,
+            compare_server_default=False,
         )
 
         with context.begin_transaction():

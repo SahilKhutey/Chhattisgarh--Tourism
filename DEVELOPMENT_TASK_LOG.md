@@ -1205,6 +1205,17 @@ Following commit `3f23780`, GitHub Actions workflows failed across 4 jobs:
    - Added resilient try/except fallback in migration `p12_semantic_discovery_kg.py` to gracefully fallback to `ARRAY(Float)` if pgvector is unavailable.
 7. **Prisma Schema Validation Environment Variable**:
    - Configured `DATABASE_URL` in `test.yml` during `pnpm --filter backend exec prisma validate` step.
+8. **PostGIS Schema Table Exclusions for `alembic check`**:
+   - Added `include_object` filter in `apps/api/alembic/env.py` excluding PostGIS and tiger system tables (`spatial_ref_sys`, `state_lookup`, `zcta5`, etc.) reflected from PostgreSQL.
+   - Disabled `compare_type` and `compare_server_default` to prevent dialect-specific type differences (such as `JSONB` vs `JSON`) from triggering false schema drift.
+9. **Asynchronous Pytest Framework Installation**:
+   - Added `pytest-asyncio` to `apps/api/requirements.txt`, `backend.yml`, and `ci.yml` allowing async provider adapters to execute seamlessly on CI runners.
+10. **Monorepo Internal Package Type Declarations**:
+    - Added `pnpm --filter "./packages/**" build` step prior to `pnpm typecheck` in `test.yml` ensuring workspace package `.d.ts` declaration files are generated and discoverable.
+11. **Public Content Redis Cache Invalidation in Boundary Tests**:
+    - Explicitly invalidated `PublicContentCache` on status mutations in `test_published_boundary.py` to prevent stale cached 200 responses when running against active Redis service containers.
+12. **Consumer Problem Validation Test Quotation Matcher**:
+    - Standardized `mv2-consumer-validation.spec.ts` using regex pattern matching for JTBD card descriptions containing unicode curly quotes.
 
 ### 24.3 Complete Verification Status
 - `pnpm --filter web run typecheck`: **0 errors (100% pass)**.
