@@ -453,13 +453,19 @@ CG Tourism OS Development History
    16. **Prisma Client Generation & CI Service Containers (`test.yml`, `mobile.yml`)**:
        - Added `pnpm --filter backend exec prisma generate` step across CI workflows to materialize `@prisma/client` types before typechecking.
        - Configured PostgreSQL and Redis service containers for `test.yml` and `mobile.yml` ensuring seamless database access during backend testing.
+   17. **`creators.user_id` Nullability Schema Alignment (`p27_social_sync_orchestration.py`)**:
+       - Aligned `creators.user_id` column nullability to `nullable=True` in migration `p27` to match `Creator` SQLAlchemy model definition, preventing `alembic check` drift detection.
+   18. **Deterministic Sync Lock Contention (`test_concurrency.py`)**:
+       - Replaced fixed timer sleep with atomic counter and event synchronization (`all_attempted.wait`) in `test_concurrent_sync_locking`, preventing thread scheduling jitter in CI runners.
+   19. **Prisma Generation & Package Build in CI Build Job (`test.yml`)**:
+       - Added `pnpm --filter backend exec prisma generate` and `pnpm --filter "./packages/**" build` before `pnpm build` in the isolated `build` job of `test.yml`.
 - **Verification**:
   - `pnpm --filter web run typecheck`: 0 errors.
   - `pnpm lint`: 0 errors.
   - `pnpm --filter web run build`: 92 / 92 static routes cleanly compiled.
   - `pnpm --filter backend exec prisma validate`: Valid 🚀.
-  - `pytest -q`: 799 passed, 4 skipped, 0 failed.
-  - `pytest -q app/modules/social/tests`: 273 / 273 passed.
+  - `pytest -q`: 803 passed, 4 skipped, 0 failed.
+  - `pytest -q app/modules/social/tests`: 274 / 274 passed.
 
 ## 🔍 Comprehensive System Audit & Release Logs
 

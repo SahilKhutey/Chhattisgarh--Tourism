@@ -57,9 +57,13 @@ def test_concurrent_sync_locking(session):
     session.add(state)
     session.commit()
 
-    # Mock slow provider fetch to simulate in-flight window
+    all_attempted = threading.Event()
+    attempts = 0
+    attempts_lock = threading.Lock()
+
+    # Mock slow provider fetch to hold lock until all competing threads attempt
     def slow_fetch(*args, **kwargs):
-        time.sleep(0.05)
+        all_attempted.wait(timeout=2.0)
         return ProviderSyncResult(items=[], next_cursor=None)
 
     mock_provider = MagicMock()
@@ -69,26 +73,28 @@ def test_concurrent_sync_locking(session):
     shared_lock = InMemorySocialSyncLock()
     registry = ProviderRegistry([mock_provider])
 
-    success_count = 0
     barrier = threading.Barrier(10)
-    from sqlalchemy.orm import sessionmaker
-    session_factory = sessionmaker(bind=session.get_bind())
 
     def attempt_sync():
         barrier.wait()
-        with session_factory() as thread_session:
-            coordinator = SocialSyncCoordinator(
-                session=thread_session,
-                lock=shared_lock,
-                provider_registry=registry,
-            )
-            try:
-                coordinator.sync_account(account.id)
-                return "success"
-            except (SyncAlreadyRunningError, SocialSyncLockConflictError):
-                return "conflict"
-            except Exception as e:
-                return f"error: {type(e).__name__} - {e}"
+        coordinator = SocialSyncCoordinator(
+            session=session,
+            lock=shared_lock,
+            provider_registry=registry,
+        )
+        try:
+            coordinator.sync_account(account.id)
+            return "success"
+        except (SyncAlreadyRunningError, SocialSyncLockConflictError):
+            return "conflict"
+        except Exception as e:
+            return f"error: {type(e).__name__} - {e}"
+        finally:
+            with attempts_lock:
+                nonlocal attempts
+                attempts += 1
+                if attempts >= 9:
+                    all_attempted.set()
 
     with ThreadPoolExecutor(max_workers=10) as executor:
         futures = [executor.submit(attempt_sync) for _ in range(10)]
