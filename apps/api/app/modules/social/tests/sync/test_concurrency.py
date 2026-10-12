@@ -71,21 +71,24 @@ def test_concurrent_sync_locking(session):
 
     success_count = 0
     barrier = threading.Barrier(10)
+    from sqlalchemy.orm import sessionmaker
+    session_factory = sessionmaker(bind=session.get_bind())
 
     def attempt_sync():
         barrier.wait()
-        coordinator = SocialSyncCoordinator(
-            session=session,
-            lock=shared_lock,
-            provider_registry=registry,
-        )
-        try:
-            coordinator.sync_account(account.id)
-            return "success"
-        except (SyncAlreadyRunningError, SocialSyncLockConflictError):
-            return "conflict"
-        except Exception as e:
-            return f"error: {type(e).__name__} - {e}"
+        with session_factory() as thread_session:
+            coordinator = SocialSyncCoordinator(
+                session=thread_session,
+                lock=shared_lock,
+                provider_registry=registry,
+            )
+            try:
+                coordinator.sync_account(account.id)
+                return "success"
+            except (SyncAlreadyRunningError, SocialSyncLockConflictError):
+                return "conflict"
+            except Exception as e:
+                return f"error: {type(e).__name__} - {e}"
 
     with ThreadPoolExecutor(max_workers=10) as executor:
         futures = [executor.submit(attempt_sync) for _ in range(10)]

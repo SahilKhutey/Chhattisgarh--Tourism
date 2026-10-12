@@ -92,6 +92,8 @@ def include_object(object, name, type_, reflected, compare_to):
             return False
         if reflected and name not in target_metadata.tables:
             return False
+    elif type_ in ("index", "unique_constraint"):
+        return False
     return True
 
 

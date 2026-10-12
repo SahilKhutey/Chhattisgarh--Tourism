@@ -34,6 +34,31 @@ jobs:
     name: Mobile Runtime & Cross-Package Verification
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgis/postgis:16-3.4
+        env:
+          POSTGRES_DB: cg_tourism_test
+          POSTGRES_USER: cg_tourism
+          POSTGRES_PASSWORD: cg_tourism_dev
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -53,6 +78,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Generate Prisma Client
+        env:
+          DATABASE_URL: postgresql://cg_tourism:cg_tourism_dev@localhost:5432/cg_tourism_test
+        run: pnpm --filter backend exec prisma generate
+
       - name: Mobile Typecheck
         run: pnpm --filter @cg-tourism/mobile typecheck
 
@@ -66,4 +96,7 @@ jobs:
         run: pnpm --filter web build
 
       - name: Backend Unit Tests
+        env:
+          DATABASE_URL: postgresql://cg_tourism:cg_tourism_dev@localhost:5432/cg_tourism_test
+          REDIS_URL: redis://localhost:6379/0
         run: pnpm --filter backend test:unit
