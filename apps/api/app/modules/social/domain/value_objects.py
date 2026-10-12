@@ -5,7 +5,7 @@ from urllib.parse import urlparse
 
 from app.modules.social.domain.errors import SourceUrlError
 
-SUPPORTED_SCHEMES = {"http", "https"}
+SUPPORTED_SCHEMES = {"https"}
 
 
 @dataclass(frozen=True, slots=True)
@@ -15,8 +15,8 @@ class SourceUrl:
     def __post_init__(self) -> None:
         parsed = urlparse(self.value)
 
-        if parsed.scheme not in SUPPORTED_SCHEMES:
-            raise SourceUrlError("Source URL must use HTTP or HTTPS.")
+        if parsed.scheme.lower() not in SUPPORTED_SCHEMES:
+            raise SourceUrlError("Source URL must use HTTPS.")
 
         if not parsed.netloc:
             raise SourceUrlError("Source URL must contain a hostname.")

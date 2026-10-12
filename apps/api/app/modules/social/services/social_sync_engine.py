@@ -163,7 +163,7 @@ class SocialSyncEngine:
                 select(SocialAccountSyncState).where(SocialAccountSyncState.social_account_id == account.id)
             )
             if not sync_state:
-                sync_state = SocialAccountSyncState(social_account_id=account.id)
+                sync_state = SocialAccountSyncState(social_account_id=account.id, items_synced_total=0)
                 self.session.add(sync_state)
 
             sync_state.sync_status = SyncStatus.SUCCEEDED.value
@@ -173,7 +173,7 @@ class SocialSyncEngine:
             sync_state.consecutive_failures = 0
             sync_state.last_error = None
             sync_state.cursor = sync_result.next_cursor
-            sync_state.items_synced_total += synced_count
+            sync_state.items_synced_total = (sync_state.items_synced_total or 0) + synced_count
 
             self.account_repo.record_sync_run(
                 account_id=account.id,
