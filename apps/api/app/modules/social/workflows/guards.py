@@ -191,7 +191,7 @@ def assert_content_publishable(
 ) -> None:
     """Verifies content is publishable according to publication policy."""
     status_str = _val(content.status)
-    if status_str != SocialContentStatus.APPROVED.value:
+    if status_str.lower() != SocialContentStatus.APPROVED.value.lower():
         raise ContentNotPublishableError(
             content.id, f"Content status is '{status_str}'; must be APPROVED"
         )

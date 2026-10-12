@@ -9,7 +9,7 @@ from app.modules.social.domain.value_objects import SourceUrl
 
 
 class SourceValidator:
-    ALLOWED_SCHEMES = frozenset({"http", "https"})
+    ALLOWED_SCHEMES = frozenset({"https"})
 
     YOUTUBE_HOSTS = frozenset({
         "youtube.com",

@@ -77,17 +77,18 @@ class SocialContentPolicy:
         has_consent = getattr(content, "has_sacred_consent", False)
         attribution = getattr(content, "community_attribution", None)
 
-        if sensitivity in {
-            CulturalSensitivityLevel.SACRED_RITUAL,
-            CulturalSensitivityLevel.COMMUNITY_PROTECTED,
+        sensitivity_val = sensitivity.value if hasattr(sensitivity, "value") else str(sensitivity)
+        if sensitivity_val in {
+            CulturalSensitivityLevel.SACRED_RITUAL.value,
+            CulturalSensitivityLevel.COMMUNITY_PROTECTED.value,
         }:
             if not has_consent:
                 issues.append(
-                    f"Content flagged as '{sensitivity.value}' requires verified community consent before publication."
+                    f"Content flagged as '{sensitivity_val}' requires verified community consent before publication."
                 )
             if not attribution or not attribution.strip():
                 issues.append(
-                    f"Content flagged as '{sensitivity.value}' requires explicit community attribution."
+                    f"Content flagged as '{sensitivity_val}' requires explicit community attribution."
                 )
 
         return len(issues) == 0, issues

@@ -163,11 +163,27 @@ class ContentStatus(StrEnum):
     ARCHIVED = "ARCHIVED"
     EXPIRED = "EXPIRED"
 
+    @classmethod
+    def _missing_(cls, value: object):
+        if isinstance(value, str):
+            for member in cls:
+                if member.value.lower() == value.lower() or member.name.lower() == value.lower():
+                    return member
+        return None
+
 
 class ContentVisibility(StrEnum):
     PUBLIC = "PUBLIC"
     UNLISTED = "UNLISTED"
     PRIVATE = "PRIVATE"
+
+    @classmethod
+    def _missing_(cls, value: object):
+        if isinstance(value, str):
+            for member in cls:
+                if member.value.lower() == value.lower() or member.name.lower() == value.lower():
+                    return member
+        return None
 
 
 class ModerationStatus(StrEnum):

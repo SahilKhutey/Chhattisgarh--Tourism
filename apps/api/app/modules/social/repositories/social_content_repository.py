@@ -70,8 +70,8 @@ class SocialContentRepository:
                 selectinload(SocialContent.media_items),
             )
             .where(
-                SocialContent.publication_status == ContentStatus.PUBLISHED.value,
-                SocialContent.visibility == ContentVisibility.PUBLIC.value,
+                SocialContent.publication_status.in_(["PUBLISHED", "published"]),
+                SocialContent.visibility.in_(["PUBLIC", "public"]),
                 or_(
                     SocialContent.expires_at.is_(None),
                     SocialContent.expires_at > now,
@@ -84,7 +84,8 @@ class SocialContentRepository:
             stmt = stmt.where(SocialContent.district_id == district_id.lower())
 
         if content_type:
-            stmt = stmt.where(SocialContent.content_type == content_type.value)
+            val = content_type.value if hasattr(content_type, "value") else str(content_type)
+            stmt = stmt.where(SocialContent.content_type.in_([val.upper(), val.lower()]))
 
         if place_slug:
             stmt = stmt.where(SocialContent.place_slug == place_slug)

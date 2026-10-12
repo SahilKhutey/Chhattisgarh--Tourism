@@ -1076,6 +1076,45 @@ $$\text{Admin} \longrightarrow \text{Creator Onboarding} \longrightarrow \text{H
   - `SocialPhase10Integration.test.tsx` (5 tests): Navigation helpers, unified `socialApi`, `SocialStoriesSection`, `DistrictSocialStories`.
   - **Full Frontend Social Suites**: **13 / 13 suites, 78 / 78 PASSED (100%)**.
 
+---
+
+## 22. Production Build — Social Engine — Phase 11: Unit Test Cases, Verification, Validation & End-to-End User Experience Testing
+
+### 22.1 Quality Architecture & Objectives
+Phase 11 acts as the strict production quality gate for the Social Engine subsystem of the CG Tourism OS. It validates the full continuum:
+$$\text{Admin} \longrightarrow \text{Provider} \longrightarrow \text{Database} \longrightarrow \text{Feed} \longrightarrow \text{Tourism} \longrightarrow \text{Planning} \longrightarrow \text{Original Source}$$
+
+### 22.2 Core Quality Gates & Verification Components
+1. **Deterministic Test Environment Hierarchy (`apps/api/app/modules/social/tests/fixtures.py`)**:
+   - `setup_social_test_environment(session)`: Builds a complete deterministic mock database state spanning geographic zones, Creators A/B/C, multi-platform accounts (Active, Rejected), and content across all publication and availability states.
+2. **HTTPS Scheme & Source URL Integrity (`apps/api/app/modules/social/domain/value_objects.py`, `source/validator.py`)**:
+   - Restricts `SUPPORTED_SCHEMES = {"https"}` and `ALLOWED_SCHEMES = frozenset({"https"})`. Rejects insecure `http://`, `file://`, `ftp://`, and `javascript:` schemes.
+3. **Backend Test Suites (`apps/api/app/modules/social/tests/`)**:
+   - `test_phase11_domain_and_urls.py` (9 tests): Covers Gates 01–03 (Enums, Source URL validation, normalization, state machine transitions, sync eligibility).
+   - `test_phase11_creators_and_accounts.py` (3 tests): Covers Gates 04–05 (Creator CRUD, duplicate slug rejection, district validation, account uniqueness, editorial acceptance gate).
+   - `test_phase11_providers_and_parsers.py` (6 tests): Covers Gates 06–08 (Provider registry, HTTP error mappings 404/401/429/503/quota, YouTube parser, Shorts vertical classifier, sync deduplication, and editorial field preservation).
+   - `test_phase11_content_moderation_feed.py` (9 tests): Covers Gates 09–12 (Content lifecycle, moderation review, audit logging, sacred consent validation, publication gate matrix, feed eligibility & filtering, cursor pagination, anti-monopoly diversity, and geography graph validation).
+   - `test_phase11_security_and_resilience.py` (9 tests): Covers Gates 13–15 (Standardized API error contracts, RBAC roles, SSRF isolation, secret scanning, outbox transaction atomicity, cache invalidation, sync idempotency, distributed locking concurrency, failure injection & recovery).
+4. **Frontend QA & End-to-End User Experience Suite (`apps/web/src/components/social/__tests__/SocialPhase11QA.test.tsx`)**:
+   - 10 comprehensive tests covering Consumer Journeys 1–6:
+     - Journey 1: Social discovery to outbound platform attribution with secure anchor attributes.
+     - Journey 2: Accessible format tabs with tablist semantics and active states.
+     - Journey 3: Verified regional creator strip with handle display and profile navigation.
+     - Journey 4: High-resolution media lightbox with Escape key dismissal and accessible close action.
+     - Journey 5: Tourism entity badge linking to place and district guides.
+     - Journey 6: Open original source action button with target `_blank` and rel `noopener noreferrer`.
+5. **Formal QA & Certification Documentation**:
+   - `docs/social/PHASE_11_TEST_REPORT.md`: Comprehensive test execution log across all 15 gates and frontend journeys.
+   - `docs/social/PHASE_11_VALIDATION_REPORT.md`: Invariant validation and production readiness sign-off report.
+
+### 22.3 Verification Matrix
+- **Full Backend Social Engine Pytest Suite (`apps/api`)**:
+  - `pytest -q app/modules/social/tests`: **265 / 265 PASSED (100%)** in 54.64s.
+- **Full Frontend Social Jest Suite (`apps/web`)**:
+  - `npm test -- --testPathPattern="social"`: **14 / 14 suites, 88 / 88 PASSED (100%)** in 6.13s.
+- **Combined Platform Verification**: **353 / 353 PASSED (100%)**. Zero regressions. All quality gates cleared.
+
+
 
 
 
