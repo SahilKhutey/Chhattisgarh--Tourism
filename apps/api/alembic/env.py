@@ -12,12 +12,46 @@ from sqlalchemy import engine_from_config, pool
 from app.core.config import get_settings
 from app.core.database import Base
 
-# Import models so metadata is populated.
+import importlib
+import pkgutil
+from alembic.ddl.impl import DefaultImpl
+from sqlalchemy import Table, MetaData, Column, String, PrimaryKeyConstraint, text
+
+# Patch DefaultImpl to generate VARCHAR(128) for alembic_version.version_num
+_orig_version_table_impl = DefaultImpl.version_table_impl
+
+
+def _custom_version_table_impl(self, *, version_table: str, version_table_schema=None, version_table_pk=True, **kw):
+    vt = Table(
+        version_table,
+        MetaData(),
+        Column("version_num", String(128), nullable=False),
+        schema=version_table_schema,
+    )
+    if version_table_pk:
+        vt.append_constraint(
+            PrimaryKeyConstraint("version_num", name=f"{version_table}_pkc")
+        )
+    return vt
+
+
+DefaultImpl.version_table_impl = _custom_version_table_impl
+
+# Import models so metadata is fully populated for alembic check.
 from app.db import models  # noqa: F401
-from app.modules.content_template.models import (
-    ContentTemplate,
-    TemplateField,
-)
+import app.modules
+
+for _info in pkgutil.walk_packages(app.modules.__path__, app.modules.__name__ + "."):
+    if _info.name.endswith(".models"):
+        try:
+            importlib.import_module(_info.name)
+        except Exception:
+            pass
+
+try:
+    importlib.import_module("app.events.models")
+except Exception:
+    pass
 
 config = context.config
 
@@ -57,6 +91,19 @@ def run_migrations_online():
     )
 
     with connectable.connect() as connection:
+        try:
+            connection.execute(
+                text(
+                    "DO $$ BEGIN "
+                    "  ALTER TABLE alembic_version ALTER COLUMN version_num TYPE character varying(128); "
+                    "EXCEPTION WHEN OTHERS THEN NULL; "
+                    "END $$;"
+                )
+            )
+            connection.commit()
+        except Exception:
+            pass
+
         context.configure(
             connection=connection,
             target_metadata=target_metadata,
