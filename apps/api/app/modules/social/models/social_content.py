@@ -178,6 +178,11 @@ class SocialContent(Base):
         nullable=True,
     )
 
+    place_name: Mapped[str | None] = mapped_column(
+        String(200),
+        nullable=True,
+    )
+
     route_id: Mapped[str | None] = mapped_column(
         String(100),
         nullable=True,

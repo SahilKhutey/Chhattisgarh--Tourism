@@ -327,6 +327,30 @@ CG Tourism OS Development History
 
 ---
 
+### Production Build — Social Engine — Phase 10: System Integration & End-to-End User Experience
+- **Goal**: Establish the Social Engine as a native subsystem of the CG Tourism OS, delivering a seamless discovery-to-tourism user journey.
+- **System Architecture & Decoupling**:
+  - `SocialTourismContextService` (`apps/api/app/modules/social/context/service.py`): Decoupled resolution boundary between SocialContent and CG Tourism's geographic graph.
+  - Strict ownership boundary: Providers own source content attributes (`title`, `description`, `thumbnail_url`, `source_url`); CG Tourism OS owns geographic, cultural, and planning metadata (`district_id`, `place_slug`, `place_name`, `tourism_zone_id`, `experience_id`, `festival_name`).
+  - Cache Invalidation Pipeline: Automatic eviction of `social:feed:all`, `social:feed:district:{id}`, `social:feed:place:{id}`, `social:content:{id}`, and `social:creator:{id}` upon moderation decisions and content publication.
+- **Backend API Endpoints Enriched**:
+  - `GET /api/social/districts/{district_id}`: District-specific social feeds.
+  - `GET /api/social/places/{place_id_or_slug}`: Supports both UUID and human-readable slugs.
+  - `GET /api/social/feed`: Supports `place_id`, `place_slug`, `creator_id`, `cultural_tag`, `content_type`, and `district_id`.
+  - `GET /api/social/creators` & `GET /api/social/creators/{handle_or_id}`: Full creator directory and profile resolution.
+- **Frontend Subsystem Integration (`apps/web`)**:
+  - `socialApi` (`src/lib/social/api.ts`): Unified client interface exposing `getFeed`, `getContent`, `getCreators`, `getCreator`, `getDistrictContent`, `getPlaceContent`.
+  - `SocialStoriesSection` (`src/components/social/home/SocialStoriesSection.tsx`): Integrated on the homepage (`/`) showcasing top regional creator stories with CTA to `/social`.
+  - `DistrictSocialStories` (`src/components/social/district/DistrictSocialStories.tsx`): Integrated on district territory guides (`/districts/[slug]`) displaying district-specific social stories.
+  - `TourismMap` (`src/components/map/TourismMap.tsx`): Two-way integration allowing map visitors to jump directly into place social stories (`/social/places/[slug]`).
+  - Content Detail Page (`src/app/social/content/[id]/page.tsx`): Two-way exploration to destination guides (`/destinations/[slug]`), interactive maps (`/map?place=[slug]`), and itinerary planning (`/itineraries?destination=[slug]`).
+- **Automated Verification**:
+  - **Backend Integration Suite**: 22-step golden path test and failure matrix invariants passed (3/3).
+  - **Full Backend Social Engine Suite**: 254 / 254 passed (100%).
+  - **Frontend Jest Suite**: 13 / 13 suites, 78 / 78 passed (100%).
+
+---
+
 ## 🔍 Comprehensive System Audit & Release Logs
 
 1. **Master Development Task Log & Commit Analysis**:

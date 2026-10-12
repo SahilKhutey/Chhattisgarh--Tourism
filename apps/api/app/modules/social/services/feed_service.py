@@ -115,7 +115,10 @@ class FeedService:
         feed_type: FeedType = FeedType.HOME,
         district_id: str | None = None,
         content_type: ContentType | None = None,
+        cultural_tag: str | None = None,
         place_slug: str | None = None,
+        place_id: UUID | None = None,
+        creator_id: UUID | None = None,
         limit: int = 30,
         offset: int = 0,
         enable_diversity: bool = True,
@@ -125,7 +128,10 @@ class FeedService:
             feed_type=feed_type,
             district_id=district_id,
             content_type=content_type,
+            cultural_tag=cultural_tag,
             place_slug=place_slug,
+            place_id=place_id,
+            creator_id=creator_id,
             limit=limit * 2 if enable_diversity else limit,  # overfetch for diversity window
             offset=offset,
         )

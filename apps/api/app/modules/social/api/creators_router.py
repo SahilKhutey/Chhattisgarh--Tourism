@@ -55,16 +55,7 @@ def update_my_creator_profile(
     return CreatorResponse.model_validate(creator)
 
 
-@router.get("/{handle}", response_model=CreatorResponse)
-def get_creator_by_handle(
-    handle: str,
-    db: Session = Depends(get_db),
-) -> CreatorResponse:
-    service = CreatorService(db)
-    creator = service.get_by_handle(handle)
-    return CreatorResponse.model_validate(creator)
-
-
+@router.get("", response_model=list[CreatorResponse])
 @router.get("/", response_model=list[CreatorResponse])
 def list_creators(
     district_id: str | None = Query(None, description="Filter by district (e.g., bastar, surguja)"),
@@ -76,6 +67,23 @@ def list_creators(
     service = CreatorService(db)
     creators = service.list_creators(district_id=district_id, verified_only=verified_only, limit=limit, offset=offset)
     return [CreatorResponse.model_validate(c) for c in creators]
+
+
+@router.get("/{handle_or_id}", response_model=CreatorResponse)
+def get_creator_by_handle_or_id(
+    handle_or_id: str,
+    db: Session = Depends(get_db),
+) -> CreatorResponse:
+    service = CreatorService(db)
+    try:
+        cid = UUID(handle_or_id)
+        creator = service.creator_repo.get_by_id(cid)
+        if creator:
+            return CreatorResponse.model_validate(creator)
+    except ValueError:
+        pass
+    creator = service.get_by_handle(handle_or_id)
+    return CreatorResponse.model_validate(creator)
 
 
 @router.post("/{creator_id}/verify", response_model=CreatorResponse)

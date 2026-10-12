@@ -8,13 +8,14 @@ from sqlalchemy.orm import Session
 from app.core.errors import AppError
 from app.modules.social.accounts.repository import SocialAccountRepository
 from app.modules.social.audit.service import SocialAuditService
-from app.modules.social.domain.enums import SocialAccountStatus
+from app.modules.social.domain.enums import CreatorStatus, SocialAccountStatus
 from app.modules.social.domain.state_machines import SocialAccountStateMachine
 from app.modules.social.events.definitions import (
     SocialWorkflowEvent,
     SocialWorkflowEventType,
 )
 from app.modules.social.events.publisher import SocialEventPublisher
+from app.modules.social.models.creator import Creator
 from app.modules.social.models.social_account import SocialAccount
 from app.modules.social.providers.registry import ProviderRegistry
 from app.modules.social.workflows.guards import assert_account_verifiable
@@ -59,6 +60,14 @@ class AccountVerificationWorkflow:
         account = self.repository.get_by_id(account_id)
         if not account:
             raise AppError(code="ACCOUNT_NOT_FOUND", message=f"Account '{account_id}' not found", status_code=404)
+
+        creator = self.session.get(Creator, account.creator_id)
+        if creator and creator.status == CreatorStatus.SUSPENDED:
+            raise AppError(
+                code="CREATOR_INACTIVE",
+                message=f"Creator '{creator.id}' is inactive or suspended; cannot verify account",
+                status_code=422,
+            )
 
         assert_account_verifiable(account)
 
