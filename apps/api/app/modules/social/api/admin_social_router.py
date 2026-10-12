@@ -216,3 +216,14 @@ def toggle_content_visibility(
     content.publication_status = "PUBLISHED" if is_visible else "HIDDEN"
     db.commit()
     return {"id": str(content.id), "publication_status": content.publication_status}
+
+
+@admin_social_router.get(
+    "/dashboard",
+)
+def get_operational_dashboard(
+    db: Session = Depends(get_db),
+    admin: AdminUser = Depends(require_admin),
+) -> Any:
+    from app.modules.social.observability import get_operational_dashboard_data
+    return get_operational_dashboard_data(db)
