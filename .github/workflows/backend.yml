@@ -65,13 +65,6 @@ jobs:
           echo "REDIS_URL=redis://localhost:6379/0" >> $GITHUB_ENV
           echo "JWT_SECRET=test-only-secret" >> $GITHUB_ENV
 
-      - name: Install pgvector in PostgreSQL container
-        run: |
-          CONTAINER=$(docker ps -q --filter ancestor=postgis/postgis:16-3.4 | head -n 1)
-          if [ -n "$CONTAINER" ]; then
-            docker exec $CONTAINER sh -c "apt-get update && apt-get install -y postgresql-16-pgvector" || true
-          fi
-
       - name: Run migrations
         working-directory: apps/api
         run: |
