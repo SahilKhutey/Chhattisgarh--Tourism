@@ -100,11 +100,22 @@ def upgrade() -> None:
         if "last_error_code" not in sync_state_cols:
             op.add_column("social_account_sync_states", sa.Column("last_error_code", sa.String(64), nullable=True))
 
+    # 4. Update social_contents table
+    if "social_contents" in existing_tables:
+        content_cols = [col["name"] for col in inspector.get_columns("social_contents")]
+        if "place_name" not in content_cols:
+            op.add_column("social_contents", sa.Column("place_name", sa.String(200), nullable=True))
+
 
 def downgrade() -> None:
     bind = op.get_bind()
     inspector = sa.inspect(bind)
     existing_tables = inspector.get_table_names()
+
+    if "social_contents" in existing_tables:
+        content_cols = [col["name"] for col in inspector.get_columns("social_contents")]
+        if "place_name" in content_cols:
+            op.drop_column("social_contents", "place_name")
 
     if "social_accounts" in existing_tables:
         indexes = [idx["name"] for idx in inspector.get_indexes("social_accounts")]
