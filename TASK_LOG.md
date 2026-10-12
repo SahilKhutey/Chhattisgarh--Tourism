@@ -425,10 +425,19 @@ CG Tourism OS Development History
      - Patched `DefaultImpl.version_table_impl` in `apps/api/alembic/env.py` to create `version_num` column as `VARCHAR(128)` instead of hardcoded 32 chars.
      - Added automated column widening `ALTER TABLE alembic_version ALTER COLUMN version_num TYPE character varying(128)` in `run_migrations_online` and `p3_enable_postgis_and_places.py`.
      - Dynamically loaded all 100 domain and module models into `Base.metadata` so `alembic check` passes without diffs.
+  5. **Next.js 16 Node Runtime Compatibility (`ci.yml`, `test.yml`, `mobile.yml`)**:
+     - Upgraded Node runtime to Node 22 LTS across CI workflows, resolving `webidl.util.markAsUncloneable` requirement during static page collection.
+     - Updated `package.json` engines to `"node": ">=20"`.
+  6. **PostgreSQL pgvector Extension Support & Fallback (`backend.yml`, `ci.yml`, `p12_semantic_discovery_kg.py`)**:
+     - Added container install step for `postgresql-16-pgvector` in PostgreSQL service container across backend test jobs.
+     - Added resilient try/except fallback in migration `p12_semantic_discovery_kg.py` to gracefully fallback to `ARRAY(Float)` if pgvector is unavailable.
+  7. **Prisma Schema Validation Environment Variable (`test.yml`)**:
+     - Provided `DATABASE_URL` in `test.yml` during `prisma validate` step to satisfy Prisma 5 schema requirement in headless CI runners.
 - **Verification**:
   - `pnpm --filter web run typecheck`: 0 errors.
   - `pnpm lint`: 0 errors.
   - `pnpm --filter web run build`: 92 / 92 static routes cleanly compiled.
+  - `pnpm --filter backend exec prisma validate`: Valid 🚀.
   - `pytest -q`: 799 passed, 4 skipped, 0 failed.
   - `pytest -q app/modules/social/tests`: 273 / 273 passed.
 
