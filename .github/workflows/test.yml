@@ -36,7 +36,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: pnpm
 
       - name: Install dependencies
@@ -46,6 +46,8 @@ jobs:
         run: pnpm lint
 
       - name: Prisma Schema Validation
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/cg_tourism_test
         run: pnpm --filter backend exec prisma validate
 
       - name: Typecheck
@@ -85,7 +87,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: pnpm
 
       - name: Install dependencies
@@ -112,7 +114,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: pnpm
 
       - name: Install dependencies
