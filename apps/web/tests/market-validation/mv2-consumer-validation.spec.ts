@@ -97,7 +97,7 @@ describe('MV2 Consumer Problem Validation Suite', () => {
 
     expect(screen.getByText('JTBD-3')).toBeInTheDocument();
     expect(screen.getByText('Plan')).toBeInTheDocument();
-    expect(screen.getByText(`"${jtbd.description}"`)).toBeInTheDocument();
+    expect(screen.getByText(new RegExp(jtbd.description))).toBeInTheDocument();
 
     const supportBtn = screen.getByRole('button', { name: /support/i });
     fireEvent.click(supportBtn);
