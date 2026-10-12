@@ -69,16 +69,21 @@ jobs:
 
       - name: Check Database Migrations
         env:
-          DATABASE_URL: postgresql://cg_tourism:cg_tourism_dev@localhost:5432/cg_tourism_test
+          APP_ENV: test
+          DATABASE_URL: postgresql+psycopg://cg_tourism:cg_tourism_dev@localhost:5432/cg_tourism_test
+          REDIS_URL: redis://localhost:6379/0
+          JWT_SECRET: test-only-secret
         run: |
           cd apps/api
-          python -m alembic heads
+          python -m alembic upgrade head
 
       - name: Run Backend Integration & Security Tests
         env:
-          DATABASE_URL: postgresql://cg_tourism:cg_tourism_dev@localhost:5432/cg_tourism_test
+          APP_ENV: test
+          DATABASE_URL: postgresql+psycopg://cg_tourism:cg_tourism_dev@localhost:5432/cg_tourism_test
           REDIS_URL: redis://localhost:6379/0
           SECRET_KEY: test-secret-key-12345
+          JWT_SECRET: test-only-secret
         run: |
           cd apps/api
           python -m pytest -q
