@@ -13,6 +13,8 @@ class SocialSettings(BaseSettings):
 
     social_engine_enabled: bool = False
     social_sync_enabled: bool = False
+    social_feed_enabled: bool = True
+    social_auto_publish_enabled: bool = False
 
     # YouTube Specific Settings
     social_youtube_enabled: bool = False
