@@ -433,6 +433,17 @@ CG Tourism OS Development History
      - Added resilient try/except fallback in migration `p12_semantic_discovery_kg.py` to gracefully fallback to `ARRAY(Float)` if pgvector is unavailable.
   7. **Prisma Schema Validation Environment Variable (`test.yml`)**:
      - Provided `DATABASE_URL` in `test.yml` during `prisma validate` step to satisfy Prisma 5 schema requirement in headless CI runners.
+   8. **PostGIS Schema Table Exclusions for `alembic check` (`env.py`)**:
+      - Defined `include_object` in `apps/api/alembic/env.py` filtering out PostGIS and tiger system tables (`spatial_ref_sys`, `state_lookup`, `zcta5`, etc.) reflected from PostgreSQL.
+      - Disabled `compare_type` and `compare_server_default` to prevent dialect-specific type differences (such as `JSONB` vs `JSON`) from triggering false schema drift.
+   9. **Asynchronous Pytest Framework Installation (`requirements.txt`, CI workflows)**:
+      - Added `pytest-asyncio` to `apps/api/requirements.txt`, `backend.yml`, and `ci.yml` allowing async provider adapters to execute seamlessly on CI runners.
+   10. **Monorepo Internal Package Type Declarations (`test.yml`)**:
+       - Added `pnpm --filter "./packages/**" build` step prior to `pnpm typecheck` in `test.yml` ensuring workspace package `.d.ts` declaration files are generated and discoverable.
+   11. **Public Content Redis Cache Invalidation in Boundary Tests**:
+       - Explicitly invalidated `PublicContentCache` on status mutations in `test_published_boundary.py` to prevent stale cached 200 responses when running against active Redis service containers.
+   12. **Consumer Problem Validation Test Quotation Matcher**:
+       - Standardized `mv2-consumer-validation.spec.ts` using regex pattern matching for JTBD card descriptions containing unicode curly quotes.
 - **Verification**:
   - `pnpm --filter web run typecheck`: 0 errors.
   - `pnpm lint`: 0 errors.
