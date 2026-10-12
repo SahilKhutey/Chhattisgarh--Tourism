@@ -106,11 +106,18 @@ def upgrade() -> None:
         if "place_name" not in content_cols:
             op.add_column("social_contents", sa.Column("place_name", sa.String(200), nullable=True))
 
+    # 5. Make creators.user_id nullable to match model definition
+    if "creators" in existing_tables:
+        op.alter_column("creators", "user_id", nullable=True)
+
 
 def downgrade() -> None:
     bind = op.get_bind()
     inspector = sa.inspect(bind)
     existing_tables = inspector.get_table_names()
+
+    if "creators" in existing_tables:
+        op.alter_column("creators", "user_id", nullable=False)
 
     if "social_contents" in existing_tables:
         content_cols = [col["name"] for col in inspector.get_columns("social_contents")]
