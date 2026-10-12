@@ -881,6 +881,84 @@ Phase 7 delivers the consumer-facing presentation layer of the Social Engine for
 * **TypeScript Compilation**: Zero type errors across all social files (`src/lib/social`, `src/components/social`, `src/app/social`).
 * **Backend Social Engine Suite**: `pytest -q app/modules/social/tests` (**200 / 200 passed in 6.69s**, 100%).
 
+---
+
+## 19. Phase 8: Screen & Page Structure · Components · Buttons · Navigation · Transitions · Motion · Blur · Micro-Animations
+
+### 19.1 Strategic Philosophy & Interaction Hierarchy
+Phase 8 builds the complete UX layer connecting social discovery directly into the regional tourism operating system:
+* **Core Principle**: "See Chhattisgarh through the people who experience it." CG Tourism is not another social network competing for ad views or infinite scrolling.
+* **Interaction Funnel**:
+  $$\text{Content} \longrightarrow \text{Creator} \longrightarrow \text{Place} \longrightarrow \text{Region} \longrightarrow \text{Experience} \longrightarrow \text{Original Source}$$
+* **Tone**: Cinematic, geographic, calm, editorial, lightweight, and responsive.
+
+### 19.2 Motion, Depth & Z-Index Tokens (`apps/web/src/lib/social/motion.ts`)
+* **Duration Tokens**:
+  - `instant`: 100ms (toggles, micro-interactions)
+  - `fast`: 160ms (badges, button state changes)
+  - `normal`: 220ms (card hover lift, dropdowns)
+  - `medium`: 300ms (drawer open, filter expansions)
+  - `slow`: 400ms (page entry, modal reveal)
+* **Easings**:
+  - `standard`: `cubic-bezier(0.2, 0, 0, 1)`
+  - `decelerate`: `cubic-bezier(0, 0, 0.2, 1)`
+  - `accelerate`: `cubic-bezier(0.4, 0, 1, 1)`
+  - `spring`: `cubic-bezier(0.175, 0.885, 0.32, 1.275)`
+* **3-Level Blur & Depth Architecture**:
+  - `Level 0`: No blur (`backdrop-blur-none`, opaque cards)
+  - `Level 1`: 8px blur (`backdrop-blur-md bg-white/80 dark:bg-zinc-950/80 border-b border-zinc-200/60 dark:border-zinc-800/60`) for sticky headers and section navigation
+  - `Level 2`: 16px blur (`backdrop-blur-xl bg-black/80 text-white`) for media lightboxes and modals
+* **Strict Z-Index Hierarchy**:
+  - `base: 0 < cardOverlay: 10 < sticky: 100 < dropdown: 200 < drawer: 300 < modal: 400 < toast: 500`
+* **Accessibility**: SSR-safe `usePrefersReducedMotion()` hook and CSS `@media (prefers-reduced-motion: reduce)`.
+
+### 19.3 Navigation & Telemetry Helpers (`apps/web/src/lib/social/`)
+* **`navigation.ts`**:
+  - `getSocialHomePath()`: `/social`
+  - `getSocialFeedPath(filters)`: `/social/feed?tab=...&district=...`
+  - `getSocialContentPath(id)`: `/social/content/[id]`
+  - `getSocialCreatorsIndexPath()`: `/social/creators`
+  - `getSocialCreatorPath(slug)`: `/social/creators/[slug]`
+  - `getSocialDistrictPath(slug)`: `/social/districts/[slug]`
+  - `getSocialPlacePath(slug)`: `/social/places/[slug]`
+  - `getTourismDestinationPath(slug)`: `/destinations/[slug]`
+  - `getTourismItineraryPath(slug)`: `/itineraries?destination=[slug]`
+  - `buildSocialFeedUrl(filters)`: Normalizes and strips empty/default query params
+* **`analytics.ts`**:
+  - `trackSocialEvent(eventName, payload)`: Dispatches DOM `CustomEvent('cg_social_analytics')` with automatic `window.gtag` and `window.dataLayer` forwarding.
+  - Events: `social_page_view`, `social_feed_filter`, `social_content_open`, `social_creator_open`, `social_place_open`, `social_source_click`, `social_destination_click`, `social_load_more`, `social_share`.
+
+### 19.4 Button Primitives Family (`apps/web/src/components/social/buttons/`)
+* Wraps the existing canonical `@/components/ui/Button/Button.tsx`:
+  - `SocialPrimaryButton.tsx`: Primary call to action with `min-h-[44px]`, forest-emerald background, and micro-scale feedback.
+  - `SocialSecondaryButton.tsx`: Balanced action with `min-h-[44px]` and subtle borders.
+  - `SocialGhostButton.tsx`: Subtle transparent button.
+  - `SocialIconButton.tsx`: 44x44px touch area with accessible `aria-label` and optional count badge.
+  - `SocialFilterButton.tsx`: Toggle pill button with `aria-pressed`, active state indicator, and count badge.
+  - `SocialSourceButton.tsx`: Outbound external platform button with inline SVG branding, `target="_blank"`, `rel="noopener noreferrer"`, and telemetry tracking.
+  - `SocialBackButton.tsx`: Back navigation with fallback href and history detection.
+
+### 19.5 Layout Hierarchy & Overlays (`apps/web/src/components/social/layout/`, `overlays/`)
+* **Layout**:
+  - `SocialShell.tsx`: Standardized responsive page container with max-width (5xl, 6xl, 7xl) and gutters.
+  - `SocialNavigation.tsx`: Sticky top header with brand badge, living discovery links, and active route detection.
+  - `SocialSectionNav.tsx`: Horizontal category selector (All, Reels, Shorts, Videos, Posts, Creators) with scrollable pills.
+  - `SocialBreadcrumbs.tsx`: Schema-ready breadcrumb trail linking content back to district and feed.
+  - `apps/web/src/app/social/layout.tsx`: Global layout wrapper mounted on `/social/*`.
+* **Overlays**:
+  - `SocialMediaLightbox.tsx`: Fullscreen media preview with Level 2 blur, ESC key listener, body scroll lock, creator profile, dual CTAs ("Plan Visit" and "Open Original Source"), and share sheet trigger.
+  - `SocialShareSheet.tsx`: Native `navigator.share` fallback to clipboard copy with visual feedback, WhatsApp, and X sharing.
+  - `SocialFilterDrawer.tsx`: Mobile filter drawer with min 44x44px touch targets.
+
+### 19.6 Verification Matrix
+* **Frontend Web Test Suite**: `npm test -- --testPathPattern="social"`:
+  - **12 / 12 test suites passed, 73 / 73 tests passed** (100%).
+  - Tests covering: `motion.test.ts`, `navigation.test.ts`, `analytics.test.ts`, `SocialButtons.test.tsx`, `SocialLayout.test.tsx`, `SocialOverlays.test.tsx`, `SocialBadges.test.tsx`, `SocialContentCard.test.tsx`, `SocialFeedGrid.test.tsx`, `api.test.ts`, `templates.test.ts`, `social-living-feed.test.tsx`.
+* **Backend Social Engine Test Suite**: `pytest -q app/modules/social`:
+  - **200 / 200 passed in 6.25s** (100%).
+* **TypeScript Compilation**: Zero type errors across all social components and routes.
+
+
 
 
 
