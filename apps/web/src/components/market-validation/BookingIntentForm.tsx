@@ -36,7 +36,7 @@ export function BookingIntentForm({
   onCancel,
   isLoading = false,
 }: BookingIntentFormProps) {
-  const [formData, setFormData] = useState<BookingIntentData>({
+  const [formData, setFormData] = useState<BookingIntentData>(() => ({
     provider_id: providerId,
     lead_id: leadId,
     destination_id: destinationId,
@@ -49,7 +49,7 @@ export function BookingIntentForm({
     payment_preference: "PAY_ON_ARRIVAL",
     special_requests: "",
     idempotency_key: `intent-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
-  });
+  }));
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

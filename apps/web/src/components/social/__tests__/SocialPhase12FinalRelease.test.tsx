@@ -42,8 +42,8 @@ describe('Phase 12 Final Release Verification & Golden Path UX (Sections 12.25 -
       expect(getSocialPlacePath(sampleReel.place_slug!)).toBe(`/social/places/${sampleReel.place_slug}`);
       expect(getSocialDistrictPath(sampleReel.district_id)).toBe(`/social/districts/${sampleReel.district_id}`);
       expect(getTourismDestinationPath(sampleReel.place_slug!)).toBe(`/destinations/${sampleReel.place_slug}`);
-      expect(getTourismMapPath(sampleReel.place_slug)).toBe(`/map?place=${sampleReel.place_slug}`);
-      expect(getTourismPlannerPath(sampleReel.place_slug)).toBe(`/plan?place=${sampleReel.place_slug}`);
+      expect(getTourismMapPath(sampleReel.place_slug || undefined)).toBe(`/map?place=${sampleReel.place_slug}`);
+      expect(getTourismPlannerPath(sampleReel.place_slug || undefined)).toBe(`/plan?place=${sampleReel.place_slug}`);
 
       // 4. Source Attribution directly preserved
       const sourceBtn = screen.getByRole('link', {

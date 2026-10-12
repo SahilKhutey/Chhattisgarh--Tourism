@@ -402,6 +402,36 @@ CG Tourism OS Development History
 - **Complete Release Documentation Package (`docs/social/`)**:
   - Created `ARCHITECTURE.md`, `PROVIDERS.md`, `CREATOR_WORKFLOW.md`, `SYNC.md`, `FEED.md`, `MODERATION.md`, `TOURISM_INTEGRATION.md`, `ANALYTICS.md`, `OPERATIONS.md`, `PHASE_12_INTEGRATION.md`, `PHASE_12_EXECUTION_CHECKLIST.md`, and `RELEASE_NOTES.md`.
 
+---
+
+### CI Pipeline & GitHub Actions Build Repair
+- **Objective**: Diagnose and resolve all CI workflow failures on GitHub Actions across `main` and `develop` branches.
+- **Root Cause Analysis & Fixes**:
+  1. **Frontend Typecheck Errors (`apps/web`)**:
+     - Added backwards-compatible fields `profile_image_url` on `SocialCreator`, and `platform` & `creator_name` on `SocialContent`.
+     - Added `type` prop alias to `SocialContentTypeBadge`.
+     - Added index signature to `SocialFeedUrlParams` in `navigation.ts`.
+     - Cast fallback platform in `SocialMediaLightbox`.
+  2. **Frontend ESLint Errors (`apps/web`)**:
+     - Fixed `react-hooks/purity` in `BookingIntentForm.tsx` by lazily evaluating initial state with `useState(() => ...)`.
+     - Fixed `react-hooks/immutability` in `SosTriggerModal.tsx` by defining `handleActivate` with `useCallback` prior to `useEffect`.
+     - Escaped unescaped entities (`&apos;`, `&quot;`, `&ldquo;`, `&rdquo;`) in `SocialErrorState`, `SocialFeedPagination`, `ContentInsights`, `JTBDCard`, `CreateContentModal`, `explore/page.tsx`, and `EntryPreview.tsx`.
+     - Replaced internal HTML `<a>` tags with Next.js `<Link>` tags in `layout.tsx` and `admin/templates/new/page.tsx`.
+  3. **Backend PostgreSQL Driver Mismatch (`ci.yml`)**:
+     - Harmonized `DATABASE_URL` to `postgresql+psycopg://` for SQLAlchemy with psycopg3.
+     - Added missing `REDIS_URL` and `JWT_SECRET` in migration check step.
+     - Changed `alembic heads` to `alembic upgrade head` so database tables are applied before pytest runs.
+  4. **Alembic Version Table VARCHAR(32) Truncation & Target Metadata**:
+     - Patched `DefaultImpl.version_table_impl` in `apps/api/alembic/env.py` to create `version_num` column as `VARCHAR(128)` instead of hardcoded 32 chars.
+     - Added automated column widening `ALTER TABLE alembic_version ALTER COLUMN version_num TYPE character varying(128)` in `run_migrations_online` and `p3_enable_postgis_and_places.py`.
+     - Dynamically loaded all 100 domain and module models into `Base.metadata` so `alembic check` passes without diffs.
+- **Verification**:
+  - `pnpm --filter web run typecheck`: 0 errors.
+  - `pnpm lint`: 0 errors.
+  - `pnpm --filter web run build`: 92 / 92 static routes cleanly compiled.
+  - `pytest -q`: 799 passed, 4 skipped, 0 failed.
+  - `pytest -q app/modules/social/tests`: 273 / 273 passed.
+
 ## 🔍 Comprehensive System Audit & Release Logs
 
 1. **Master Development Task Log & Commit Analysis**:

@@ -9,6 +9,17 @@ depends_on = None
 
 
 def upgrade() -> None:
+    # Ensure alembic_version column is widened to varchar(128) for long revision IDs
+    try:
+        op.execute(
+            "DO $$ BEGIN "
+            "  ALTER TABLE alembic_version ALTER COLUMN version_num TYPE character varying(128); "
+            "EXCEPTION WHEN OTHERS THEN NULL; "
+            "END $$;"
+        )
+    except Exception:
+        pass
+
     # Explicitly manage PostGIS extensions
     op.execute("CREATE EXTENSION IF NOT EXISTS postgis")
     op.execute("CREATE EXTENSION IF NOT EXISTS postgis_topology")

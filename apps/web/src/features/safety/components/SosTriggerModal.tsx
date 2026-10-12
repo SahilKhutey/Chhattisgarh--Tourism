@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   AlertOctagon,
   X,
@@ -63,25 +63,7 @@ export const SosTriggerModal: React.FC<SosTriggerModalProps> = ({
     }
   }, [isOpen]);
 
-  useEffect(() => {
-    if (isHolding) {
-      const interval = setInterval(() => {
-        setHoldProgress((prev) => {
-          if (prev >= 100) {
-            clearInterval(interval);
-            handleActivate();
-            return 100;
-          }
-          return prev + 5;
-        });
-      }, 50); // 1000ms total to fill 100%
-      return () => clearInterval(interval);
-    } else {
-      setHoldProgress(0);
-    }
-  }, [isHolding]);
-
-  const handleActivate = async () => {
+  const handleActivate = useCallback(async () => {
     setIsHolding(false);
     setIsTriggering(true);
 
@@ -102,7 +84,25 @@ export const SosTriggerModal: React.FC<SosTriggerModalProps> = ({
     } finally {
       setIsTriggering(false);
     }
-  };
+  }, [coords, onTriggerSos]);
+
+  useEffect(() => {
+    if (isHolding) {
+      const interval = setInterval(() => {
+        setHoldProgress((prev) => {
+          if (prev >= 100) {
+            clearInterval(interval);
+            handleActivate();
+            return 100;
+          }
+          return prev + 5;
+        });
+      }, 50); // 1000ms total to fill 100%
+      return () => clearInterval(interval);
+    } else {
+      setHoldProgress(0);
+    }
+  }, [isHolding, handleActivate]);
 
   if (!isOpen) return null;
 

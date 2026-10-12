@@ -151,7 +151,7 @@ export const CreateContentModal: React.FC<CreateContentModalProps> = ({
               Create Tourism Story / Reel
             </h2>
             <p className="text-xs text-zinc-500">
-              Contribute to Chhattisgarh's living discovery layer
+              Contribute to Chhattisgarh&apos;s living discovery layer
             </p>
           </div>
           <button

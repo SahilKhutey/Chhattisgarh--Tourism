@@ -1166,6 +1166,45 @@ $$\text{CG TOURISM OS} \longrightarrow \text{SOCIAL ENGINE} \longrightarrow \tex
   - `npm test -- --testPathPattern="social"`: **15 / 15 suites, 95 / 95 PASSED (100%)**.
 - **Combined Social Engine Verification**: **368 / 368 PASSED (100%)**. Zero regressions. System certified for production.
 
+---
+
+## 24. CI Pipeline & GitHub Actions Build Repair (Green Build Guarantee)
+
+### 24.1 Problem Identification & Triage Across Failed Jobs
+Following commit `3f23780`, GitHub Actions workflows failed across 4 jobs:
+1. `CG Tourism Integration CI`: Failed at `Frontend Typecheck` (missing backwards compatibility fields and typing mismatches) and `Run Backend Integration & Security Tests` (`postgresql://` driver trying to use `psycopg2`).
+2. `Backend`: Failed at `Run migrations` due to Alembic `alembic_version` table defaulting to `VARCHAR(32)`, whereas migration `p4_create_content_template_tables` has 33 characters, resulting in `psycopg.errors.StringDataRightTruncation`.
+3. `CI`: Failed at `pnpm lint` due to React 19 purity rules, unescaped JSX entities, and direct `<a>` navigation.
+4. `CG Tourism Mobile CI`: Failed at `Web Lint` (`pnpm --filter web lint`).
+
+### 24.2 Root Causes & Resolutions
+1. **Frontend Typecheck Fixes**:
+   - `apps/web/src/lib/social/types.ts`: Added backward-compatible aliases `profile_image_url` on `SocialCreator`, and `platform` & `creator_name` on `SocialContent`.
+   - `apps/web/src/components/social/SocialContentTypeBadge.tsx`: Added `type` prop alias alongside `contentType`.
+   - `apps/web/src/lib/social/navigation.ts`: Added index signature `[key: string]: string | number | boolean | null | undefined` to `SocialFeedUrlParams`.
+   - `apps/web/src/components/social/__tests__/SocialPhase12FinalRelease.test.tsx`: Handled `place_slug || undefined` typing.
+   - `apps/web/src/components/social/overlays/SocialMediaLightbox.tsx`: Cast fallback `platform: (content.platform || content.provider || 'unknown') as string`.
+2. **ESLint & React 19 Rules**:
+   - `BookingIntentForm.tsx`: Avoided non-pure `Date.now()` / `Math.random()` during render by lazily initializing state with `useState(() => ...)`.
+   - `SosTriggerModal.tsx`: Defined `handleActivate` with `useCallback` prior to `useEffect` and added to dependency array.
+   - Escaped unescaped entities (`&apos;`, `&quot;`, `&ldquo;`, `&rdquo;`) in `SocialErrorState`, `SocialFeedPagination`, `ContentInsights`, `JTBDCard`, `CreateContentModal`, `explore/page.tsx`, and `EntryPreview.tsx`.
+   - Replaced internal `<a>` navigation tags with Next.js `<Link>` in `layout.tsx` and `admin/templates/new/page.tsx`.
+3. **Backend PostgreSQL Driver Harmonization**:
+   - Updated `.github/workflows/ci.yml` `DATABASE_URL` to `postgresql+psycopg://` to match installed `psycopg 3` package.
+   - Configured `APP_ENV`, `REDIS_URL`, and `JWT_SECRET` in migration check step.
+   - Executed `python -m alembic upgrade head` prior to pytest integration tests.
+4. **Alembic Version Table VARCHAR(32) Truncation & Target Metadata**:
+   - Monkey-patched `DefaultImpl.version_table_impl` in `apps/api/alembic/env.py` to emit `Column("version_num", String(128))`.
+   - Added automated widening `ALTER TABLE alembic_version ALTER COLUMN version_num TYPE character varying(128)` in `run_migrations_online` and in migration `p3_enable_postgis_and_places.py`.
+   - Auto-imported all 100 domain and module models in `apps/api/alembic/env.py` to ensure `target_metadata = Base.metadata` completely reflects all tables for `alembic check`.
+
+### 24.3 Complete Verification Status
+- `pnpm --filter web run typecheck`: **0 errors (100% pass)**.
+- `pnpm lint`: **0 errors, 3 packages passed (100% pass)**.
+- `pnpm --filter web run build`: **92 / 92 static routes cleanly compiled**.
+- Backend Pytest Suite: **799 passed, 4 skipped, 0 failed (100% pass)**.
+- Backend Social Module Suite: **273 / 273 passed (100% pass)**.
+
 
 
 

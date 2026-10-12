@@ -10,6 +10,7 @@ export interface SocialFeedUrlParams {
   district?: string | null;
   tag?: string | null;
   sort?: string | null;
+  [key: string]: string | number | boolean | null | undefined;
 }
 
 /**

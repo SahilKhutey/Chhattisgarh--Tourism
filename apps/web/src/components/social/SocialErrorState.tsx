@@ -23,7 +23,7 @@ export function SocialErrorState({
       </div>
 
       <h3 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-100 mb-2">
-        We couldn't load these stories
+        We couldn&apos;t load these stories
       </h3>
 
       <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed mb-6">

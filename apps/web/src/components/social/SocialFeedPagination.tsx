@@ -21,7 +21,7 @@ export function SocialFeedPagination({
       <div className={`flex flex-col items-center justify-center py-8 text-center ${className}`}>
         <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mb-2" />
         <p className="text-xs text-zinc-500 dark:text-zinc-400 font-medium">
-          You've explored all current verified regional stories.
+          You&apos;ve explored all current verified regional stories.
         </p>
       </div>
     );

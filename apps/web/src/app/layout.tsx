@@ -6,6 +6,7 @@ import { ServiceWorkerRegistration } from "../components/offline/ServiceWorkerRe
 import { OfflineIndicator } from "../components/offline/OfflineIndicator";
 import { OfflineSync } from "../components/offline/OfflineSync";
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Inter, Space_Grotesk, JetBrains_Mono, Noto_Sans_Devanagari, Mukta, Playfair_Display } from "next/font/google";
 import { Navbar } from "../components/Navbar";
 import { ToastProvider } from "../components/ToastProvider";
@@ -119,24 +120,24 @@ export default function RootLayout({
                 </h4>
                 <ul className="space-y-2.5 text-xs text-sand-beige/70">
                   <li>
-                    <a href="/explore" className="hover:text-white transition-colors">
+                    <Link href="/explore" className="hover:text-white transition-colors">
                       Interactive Travel Map
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a href="/explore?cat=waterfalls" className="hover:text-white transition-colors">
+                    <Link href="/explore?cat=waterfalls" className="hover:text-white transition-colors">
                       Scenic Waterfalls
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a href="/explore?cat=forests" className="hover:text-white transition-colors">
+                    <Link href="/explore?cat=forests" className="hover:text-white transition-colors">
                       Eco-Forest Reserves
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a href="/explore?cat=temples" className="hover:text-white transition-colors">
+                    <Link href="/explore?cat=temples" className="hover:text-white transition-colors">
                       Spiritual Temples
-                    </a>
+                    </Link>
                   </li>
                 </ul>
               </div>
@@ -148,24 +149,24 @@ export default function RootLayout({
                 </h4>
                 <ul className="space-y-2.5 text-xs text-sand-beige/70">
                   <li>
-                    <a href="/planner" className="hover:text-white transition-colors">
+                    <Link href="/planner" className="hover:text-white transition-colors">
                       Heuristic AI Itinerary Builder
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a href="/stories" className="hover:text-white transition-colors">
+                    <Link href="/stories" className="hover:text-white transition-colors">
                       Tribal Folklore Ingestion
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a href="/sos" className="hover:text-white transition-colors">
+                    <Link href="/sos" className="hover:text-white transition-colors">
                       Offline Disaster Protocols
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a href="/admin" className="hover:text-white transition-colors">
+                    <Link href="/admin" className="hover:text-white transition-colors">
                       Smart Governance Analytics
-                    </a>
+                    </Link>
                   </li>
                 </ul>
               </div>
@@ -185,12 +186,12 @@ export default function RootLayout({
                   >
                     Call Emergency: 112
                   </a>
-                  <a
+                  <Link
                     href="/sos"
                     className="text-xs text-tribal-terracotta hover:underline font-semibold"
                   >
                     Open Offline Emergency Deck →
-                  </a>
+                  </Link>
                 </div>
               </div>
             </div>

@@ -70,6 +70,7 @@ export interface SocialCreator {
   handle: string;
   display_name: string;
   avatar_url?: string | null;
+  profile_image_url?: string | null;
   bio?: string | null;
   district_id?: string | null;
   is_verified: boolean;
@@ -81,6 +82,7 @@ export interface SocialContent {
   id: string;
   creator_id: string;
   creator?: SocialCreator;
+  creator_name?: string | null;
   content_type: SocialContentType;
   title: string;
   caption: string;
@@ -110,6 +112,7 @@ export interface SocialContent {
 
   // Curated Provider Invariants
   provider?: SocialPlatform | string | null;
+  platform?: SocialPlatform | string | null;
   provider_content_id?: string | null;
   source_url: string;
   thumbnail_url?: string | null;

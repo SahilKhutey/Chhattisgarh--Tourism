@@ -42,7 +42,7 @@ export function SocialMediaLightbox({
     // Track content open in analytics
     trackSocialEvent('social_content_open', {
       contentId: content.id,
-      platform: content.platform,
+      platform: (content.platform || content.provider || 'unknown') as string,
       contentType: content.content_type,
       creatorHandle: content.creator?.handle || 'unknown',
       districtId: content.district_id,
