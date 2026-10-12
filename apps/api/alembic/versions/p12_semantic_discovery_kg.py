@@ -25,8 +25,10 @@ def upgrade() -> None:
     has_vector = False
     if is_postgres:
         try:
-            op.execute("CREATE EXTENSION IF NOT EXISTS vector")
-            has_vector = True
+            res = bind.execute(sa.text("SELECT 1 FROM pg_available_extensions WHERE name = 'vector'")).fetchone()
+            if res is not None:
+                op.execute("CREATE EXTENSION IF NOT EXISTS vector")
+                has_vector = True
         except Exception:
             has_vector = False
 

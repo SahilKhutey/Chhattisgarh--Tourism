@@ -67,13 +67,6 @@ jobs:
           cd apps/api
           python -m compileall app
 
-      - name: Install pgvector in PostgreSQL container
-        run: |
-          CONTAINER=$(docker ps -q --filter ancestor=postgis/postgis:16-3.4 | head -n 1)
-          if [ -n "$CONTAINER" ]; then
-            docker exec $CONTAINER sh -c "apt-get update && apt-get install -y postgresql-16-pgvector" || true
-          fi
-
       - name: Check Database Migrations
         env:
           APP_ENV: test
