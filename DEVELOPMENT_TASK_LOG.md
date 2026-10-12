@@ -820,6 +820,68 @@ $$\text{Creator} \longrightarrow \text{Social Handle Registry} \longrightarrow \
   - **Total Social Module Tests**: **200 / 200 PASSED (100%) in 5.17s**.
   - **Full Backend API Tests**: **721 PASSED, 4 SKIPPED, 0 FAILURES in 3m 16s**.
 
+---
+
+## 18. Phase 7: Social Feed — Template, Grid Arrangement & Screens
+
+### 18.1 Architectural Principle & Core Invariants
+Phase 7 delivers the consumer-facing presentation layer of the Social Engine for Chhattisgarh Tourism:
+* **Canonical Content Consumption**: The UI consumes `SocialContent` strictly through `/api/social/...` contracts, never communicating with Meta/Instagram or Google/YouTube APIs from the browser.
+* **Regional Tourism Discovery Interaction**: Implements `Discover -> Understand -> Explore -> Open Original` rather than shallow vanity metrics (likes/comments/followers). Every card is an entrypoint into the regional tourism graph.
+* **Original Platform Source Preservation**: Preserves verified attribution and direct outbound links (`View on Instagram →`, `Watch on YouTube →`) with secure attributes (`target="_blank"`, `rel="noopener noreferrer"`, accessible labels).
+* **Visual Normalization**: Adapts mixed source aspect ratios (9:16 reels/shorts, 1:1 posts, 16:9 videos) into clean `4:5` and `16:9` card containers using `object-fit: cover` and badging without distortion or aggressive auto-play.
+* **Anti-Monopoly Diversity**: Feed presentation guarantees diversity policies (`max_items_per_creator`, `max_items_per_district`) so dominant accounts cannot flood regional exploration streams.
+
+### 18.2 Data Contracts & Templates Layer (`apps/web/src/lib/social/`)
+* **`types.ts`**: TypeScript contracts for `SocialPlatform`, `SocialContentType`, `SocialCreator`, `SocialContent`, `SocialFeedTemplate`, `SocialFeedQuery`, `SocialFeedResponse`, and `FeedPolicy`.
+* **`templates.ts`**: Standardized presentation presets:
+  - `STANDARD_SOCIAL_FEED`: Responsive 2/3/4 column grid with compact tourism badges.
+  - `MASONRY_SOCIAL_FEED`: Staggered Pinterest-style cards with expanded storytelling captions.
+  - `FEATURED_GRID_FEED`: High-impact hero card spotlight followed by supporting grid.
+  - `REGIONAL_SHOWCASE_FEED`: Specialized asymmetric regional showcase (Hero + stacked side stories + grid).
+  - `COMPACT_GRID_FEED`: Minimal 2/2/3 column layout designed for embedded widgets inside destination/district pages.
+  - `getSocialTemplate(idOrLayout)`: Safe runtime resolver with fallback to `STANDARD_SOCIAL_FEED`.
+* **`api.ts`**: Resilient data client providing `getSocialFeed`, `getSocialContentById`, `getCreatorFeed`, `getDistrictSocialFeed`, `getPlaceSocialFeed`, and `getPublicCreators`, backed by verified regional fallback datasets (`mock-data.ts`).
+
+### 18.3 Atomic & Presentation Components (`apps/web/src/components/social/`)
+* **Badges & Outbound Actions**:
+  - `SocialPlatformBadge.tsx`: Platform indicators (Instagram, YouTube, Verified Official Source).
+  - `SocialContentTypeBadge.tsx`: Format indicators (Reel, Short, Video, Post, Folklore).
+  - `SocialContextBadge.tsx`: Tourism location pills (📍 District, 📍 Destination Place, Festival).
+  - `SocialOpenSourceButton.tsx`: Accessible outbound button with safe `target="_blank"` and `rel="noopener noreferrer"`.
+* **Media & Cards**:
+  - `SocialContentMedia.tsx`: 4:5 normalized ratio, thumbnail loading, play button overlay for video formats, duration pill, and graceful fallback placeholder.
+  - `SocialContentMeta.tsx`: Creator identity (avatar, display name, handle, verified badge), tourism location pins, story title, and date.
+  - `SocialContentCard.tsx`: Master card component (`default`, `featured`, `compact`) supporting keyboard navigation and discrete internal/external links.
+* **Strips, Grids & States**:
+  - `SocialCreatorCard.tsx` & `SocialCreatorStrip.tsx`: Horizontal creator discovery strip.
+  - `SocialFeaturedContent.tsx`: Asymmetric hero section highlighting featured regional stories.
+  - `SocialFeedGrid.tsx`: Layout engine rendering Standard, Masonry, Featured, Regional, and Compact grids.
+  - `SocialFeedHeader.tsx`, `SocialFeedTabs.tsx`, `SocialFeedFilters.tsx`: Desktop toolbar and accessible mobile bottom drawer sheet with platform, format, and district filters.
+  - `SocialFeedPagination.tsx`: Cursor-aware "Load More Stories" pagination button.
+  - `SocialFeedSkeleton.tsx`, `SocialEmptyState.tsx`, `SocialErrorState.tsx`: Accessible loading placeholders, tourism fallback empty states, and polite error boundaries hiding technical provider failures.
+  - `SocialFeed.tsx`: Top-level orchestrator unifying headers, tabs, grids, states, and pagination.
+  - `EmbeddedSocialModule.tsx`: Reusable modular component embeddable across destination, district, and festival pages.
+
+### 18.4 App Router Screens (`apps/web/src/app/social/`)
+1. **Screen 1 — Social Home (`/social`)**: Regional discovery landing page featuring living hero banner, creator strip, featured stories spotlight, latest stories grid, and quick district explorer.
+2. **Screen 2 — Social Feed (`/social/feed`)**: Full searchable stream supporting URL query state (`?platform=...&type=...&district=...&tab=...`), format tabs, mobile filter drawer, creator directory mode, and cursor pagination.
+3. **Screen 3 — Creator Feed (`/social/creators/[slug]`)**: Creator profile header, verified badges, bio, district context, featured tourism locations, and published stories grid.
+4. **Screen 4 — Content Detail (`/social/content/[id]`)**: Focused media view, creator attribution, prominent original source button, deep tourism destination context card with "Explore Destination Guide →", and related regional stories.
+5. **Screen 5 — District Social Feed (`/social/districts/[slug]`)**: Regional showcase header (Bastar, Surguja, Dantewada, Mahasamund), resident creator strip, and regional showcase grid.
+6. **Screen 6 — Place Social Feed (`/social/places/[slug]`)**: Destination-tagged feed (Chitrakote Falls, Mainpat, Sirpur, Barnawapara, Tirathgarh) with direct links to destination itinerary planning.
+7. **Screen 7 — Embedded Social Module (`EmbeddedSocialModule`)**: Reusable embeddable component ready for destination, district, culture, and festival pages.
+
+### 18.5 BFF API Route Handlers (`apps/web/src/app/api/social/`)
+* `GET /api/social/feed`: Proxies upstream to backend `/public/feed` and formats as `SocialFeedResponse` with graceful regional fallback when backend is offline.
+* `GET /api/social/content/[id]`: Resolves single content by UUID or slug with fallback.
+
+### 18.6 Verification Matrix
+* **Frontend Social Test Suite**: `npx jest src/lib/social/__tests__ src/components/social/__tests__` (**5 / 5 test suites passed, 32 / 32 tests passed**, 100%).
+* **TypeScript Compilation**: Zero type errors across all social files (`src/lib/social`, `src/components/social`, `src/app/social`).
+* **Backend Social Engine Suite**: `pytest -q app/modules/social/tests` (**200 / 200 passed in 6.69s**, 100%).
+
+
 
 
 
