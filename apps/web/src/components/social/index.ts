@@ -18,3 +18,6 @@ export * from './SocialEmptyState';
 export * from './SocialErrorState';
 export * from './SocialFeed';
 export * from './EmbeddedSocialModule';
+export * from './buttons';
+export * from './layout';
+export * from './overlays';

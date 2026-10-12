@@ -17,6 +17,7 @@ export interface SocialFeedProps {
   onLoadMore?: () => void;
   onRetry?: () => void;
   onResetFilters?: () => void;
+  onMediaClick?: (content: SocialContent) => void;
   className?: string;
 }
 
@@ -29,6 +30,7 @@ export function SocialFeed({
   onLoadMore,
   onRetry,
   onResetFilters,
+  onMediaClick,
   className = '',
 }: SocialFeedProps) {
   if (loading && (!items || items.length === 0)) {
@@ -45,7 +47,11 @@ export function SocialFeed({
 
   return (
     <div className={`flex flex-col gap-6 ${className}`}>
-      <SocialFeedGrid template={template} items={items} />
+      <SocialFeedGrid
+        template={template}
+        items={items}
+        onMediaClick={onMediaClick}
+      />
 
       <SocialFeedPagination
         onLoadMore={onLoadMore}

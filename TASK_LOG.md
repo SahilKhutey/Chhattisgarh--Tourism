@@ -252,6 +252,49 @@ CG Tourism OS Development History
     - 200 / 200 backend social tests passing (100%).
 
 
+- **2026-10-12**: Production Build — Social Engine — Phase 8: Screen & Page Structure · Components · Buttons · Navigation · Transitions · Motion · Blur · Micro-Animations
+  - **Experience Architecture & Strategic Philosophy**:
+    - Built the complete UX layer connecting social discovery directly into the Chhattisgarh Tourism Operating System (`Content -> Creator -> Place -> Region -> Experience -> Original Source`).
+    - Cinematic, geographic, and editorial aesthetic; zero dark patterns, no infinite doom-scroll traps, no competing social networks.
+  - **Motion & Depth Tokens (`apps/web/src/lib/social/motion.ts`)**:
+    - Centralized duration tokens (`instant: 100ms`, `fast: 160ms`, `normal: 220ms`, `medium: 300ms`, `slow: 400ms`).
+    - Standard cubic-bezier easings (`standard`, `decelerate`, `accelerate`, `spring`).
+    - 3-level blur depth system (`level0: none`, `level1: 8px backdrop-blur-md`, `level2: 16px backdrop-blur-xl`).
+    - Centralized Z-index architecture (`base: 0`, `cardOverlay: 10`, `sticky: 100`, `dropdown: 200`, `drawer: 300`, `modal: 400`, `toast: 500`).
+    - SSR-safe `usePrefersReducedMotion` hook respecting system accessibility preferences.
+  - **Navigation & Telemetry Helpers (`apps/web/src/lib/social/`)**:
+    - `navigation.ts`: Canonical path builders connecting social routes with tourism destinations and itinerary planners (`getSocialHomePath`, `getSocialFeedPath`, `getSocialContentPath`, `getSocialCreatorsIndexPath`, `getSocialCreatorPath`, `getSocialDistrictPath`, `getSocialPlacePath`, `getTourismDestinationPath`, `getTourismItineraryPath`, `buildSocialFeedUrl`).
+    - `analytics.ts`: Typed telemetry dispatcher (`trackSocialEvent`) tracking 9 core discovery funnel events (`social_page_view`, `social_feed_filter`, `social_content_open`, `social_creator_open`, `social_place_open`, `social_source_click`, `social_destination_click`, `social_load_more`, `social_share`).
+  - **Button Primitives (`apps/web/src/components/social/buttons/`)**:
+    - `SocialPrimaryButton`: High-intent action wrapper (`min-h-[44px]`, forest-emerald, tactile scale on tap).
+    - `SocialSecondaryButton`: Neutral balanced action wrapper (`min-h-[44px]`, subtle border).
+    - `SocialGhostButton`: Subtle action button for dismiss and secondary actions.
+    - `SocialIconButton`: Circular icon action with $\ge 44 \times 44$px touch area, accessible `aria-label`, and optional badge.
+    - `SocialFilterButton`: Toggle chip button with `aria-pressed`, active state styling, and count indicator.
+    - `SocialSourceButton`: Outbound provider link button with inline SVG branding, external icon, and telemetry tracking.
+    - `SocialBackButton`: Resilient back navigation with router back or fallback URL.
+  - **Layout & Navigation Hierarchy (`apps/web/src/components/social/layout/`)**:
+    - `SocialShell`: Master container with responsive gutters and standardized max-widths.
+    - `SocialNavigation`: Sticky primary navigation bar with brand badge, living discovery links, and active page detection.
+    - `SocialSectionNav`: Horizontal category navigation (All, Reels, Shorts, Videos, Posts, Creators) with scrollable pills and sticky positioning.
+    - `SocialBreadcrumbs`: Semantic `<nav aria-label="Breadcrumb">` linking content back to feed, creator, or district.
+    - `apps/web/src/app/social/layout.tsx`: Global layout wrapper providing unified shell and sticky navigation for all `/social/*` sub-routes.
+  - **Interactive Overlays (`apps/web/src/components/social/overlays/`)**:
+    - `SocialMediaLightbox`: Fullscreen media preview with Level 2 blur, ESC key dismiss, body scroll lock, dual CTAs ("Plan Visit to Destination" and "Open Original Source"), and share launcher.
+    - `SocialShareSheet`: Native `navigator.share` fallback to clipboard copy with visual feedback, WhatsApp, and X sharing.
+    - `SocialFilterDrawer`: Responsive bottom sheet filter drawer for mobile devices with $\ge 44$px touch targets.
+  - **Screens Enhanced & Created (`apps/web/src/app/social/`)**:
+    - `/social`: Integrated `SocialSectionNav`, button primitives, and `SocialShell`.
+    - `/social/feed`: Added `SocialSectionNav`, `SocialMediaLightbox` preview, mobile filter drawer, and telemetry tracking.
+    - `/social/creators`: New verified creator registry index screen with search/district overview.
+    - `/social/creators/[slug]`: Added `SocialBreadcrumbs`, `SocialBackButton`, and shell.
+    - `/social/content/[id]`: Added `SocialBreadcrumbs`, `SocialBackButton`, and `SocialSourceButton`.
+    - `/social/districts/[slug]` & `/social/places/[slug]`: Added breadcrumbs, back navigation, and itinerary CTAs.
+  - **Verification**:
+    - 12 web test suites, 73 / 73 tests passing (100%).
+    - 200 / 200 backend social tests passing (100%).
+    - 0 TypeScript errors.
+
 ---
 
 ## 🔍 Comprehensive System Audit & Release Logs
