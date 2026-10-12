@@ -1225,14 +1225,20 @@ Following commit `3f23780`, GitHub Actions workflows failed across 4 jobs:
    16. **Prisma Client Generation & CI Service Containers (`test.yml`, `mobile.yml`)**:
        - Added `pnpm --filter backend exec prisma generate` step across CI workflows to materialize `@prisma/client` types before typechecking.
        - Configured PostgreSQL and Redis service containers for `test.yml` and `mobile.yml` ensuring seamless database access during backend testing.
+   17. **`creators.user_id` Nullability Schema Alignment (`p27_social_sync_orchestration.py`)**:
+       - Aligned `creators.user_id` column nullability to `nullable=True` in migration `p27` to match `Creator` SQLAlchemy model definition, preventing `alembic check` drift detection.
+   18. **Deterministic Sync Lock Contention (`test_concurrency.py`)**:
+       - Replaced fixed timer sleep with atomic counter and event synchronization (`all_attempted.wait`) in `test_concurrent_sync_locking`, preventing thread scheduling jitter in CI runners.
+   19. **Prisma Generation & Package Build in CI Build Job (`test.yml`)**:
+       - Added `pnpm --filter backend exec prisma generate` and `pnpm --filter "./packages/**" build` before `pnpm build` in the isolated `build` job of `test.yml`.
 
 ### 24.3 Complete Verification Status
 - `pnpm --filter web run typecheck`: **0 errors (100% pass)**.
 - `pnpm lint`: **0 errors, 3 packages passed (100% pass)**.
 - `pnpm --filter web run build`: **92 / 92 static routes cleanly compiled**.
 - `pnpm --filter backend exec prisma validate`: **Valid 🚀 (100% pass)**.
-- Backend Pytest Suite: **799 passed, 4 skipped, 0 failed (100% pass)**.
-- Backend Social Module Suite: **273 / 273 passed (100% pass)**.
+- Backend Pytest Suite: **803 passed, 4 skipped, 0 failed (100% pass)**.
+- Backend Social Module Suite: **274 / 274 passed (100% pass)**.
 
 
 
