@@ -24,7 +24,7 @@ export default defineConfig({
   ],
   webServer: {
     command: process.env.CI
-      ? "pnpm exec next start -H 0.0.0.0 -p 3000"
+      ? "node .next/standalone/apps/web/server.js"
       : "pnpm run dev",
     url: "http://127.0.0.1:3000",
     reuseExistingServer: !process.env.CI,
