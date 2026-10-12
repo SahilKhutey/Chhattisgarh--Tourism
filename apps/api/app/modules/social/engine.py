@@ -29,6 +29,7 @@ from app.modules.social.verification.service import (
     CreatorVerificationService,
     SocialVerificationService,
 )
+from app.modules.social.workflows.service import SocialWorkflowService
 
 
 class SocialEngine:
@@ -71,6 +72,13 @@ class SocialEngine:
         self.instagram_sync = InstagramSyncService(session, audit_service=self.audit)
         self.feed = SocialFeedService(session)
         self.moderation = SocialModerationService(session)
+
+        # Master Phase 9 Workflows Orchestrator
+        self.workflows = SocialWorkflowService(
+            session=session,
+            provider_registry=self.providers,
+            lock=self.lock,
+        )
 
 
 __all__ = ["SocialEngine"]

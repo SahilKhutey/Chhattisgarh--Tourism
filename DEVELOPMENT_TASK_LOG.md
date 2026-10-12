@@ -958,6 +958,72 @@ Phase 8 builds the complete UX layer connecting social discovery directly into t
   - **200 / 200 passed in 6.25s** (100%).
 * **TypeScript Compilation**: Zero type errors across all social components and routes.
 
+---
+
+## 20. Production Build — Social Engine — Phase 9: Workflow Development & Implementation
+
+### 20.1 Architecture & Objectives
+Phase 9 establishes the end-to-end workflow orchestration system connecting creator onboarding, social handle verification, editorial acceptance, sync orchestration, content validation, moderation, publication, tourism graph contextualization, and consumer discovery:
+$$\text{Admin} \longrightarrow \text{Creator Onboarding} \longrightarrow \text{Handle Registry} \longrightarrow \text{Provider Verification} \longrightarrow \text{Editorial Acceptance} \longrightarrow \text{Operational Activation} \longrightarrow \text{Sync Execution} \longrightarrow \text{Content Validation} \longrightarrow \text{Moderation} \longrightarrow \text{Publication} \longrightarrow \text{Tourism Graph} \longrightarrow \text{Discovery Feed}$$
+
+1. **State Invariants & Separation of Concerns**:
+   - `ACCEPTED != ACTIVE`: Editorial acceptance evaluates creator brand and local authenticity; operational activation enables scheduled background sync.
+   - UI visibility never bypasses backend state guards.
+   - Fail-closed validation against 33 official Chhattisgarh districts.
+   - Sacred ritual protection gate preventing approval without explicit clan elder consent.
+   - Anti-SSRF allowlist enforcement on provider source URLs.
+
+### 20.2 Components & Subsystems
+- **Master Orchestrator (`app/modules/social/workflows/service.py`)**:
+  - `SocialWorkflowService`: Instantiates workflows with transactional DB session, provider registry, and sync locking.
+- **Workflow State Machines (`app/modules/social/workflows/`)**:
+  - `CreatorOnboardingWorkflow` (`creator_workflow.py`): Enforces geography, duplicate prevention, and activate/suspend lifecycle.
+  - `SocialAccountWorkflow` (`account_workflow.py`): Platform-level uniqueness, URL resolution, pause/reactivate/disconnect.
+  - `AccountVerificationWorkflow` (`verification_workflow.py`): Non-blocking provider querying with friendly error mapping.
+  - `AccountAcceptanceWorkflow` (`acceptance_workflow.py`): Editorial acceptance gate and operational activation gate.
+  - `SocialSyncWorkflow` (`sync_workflow.py`): Non-blocking `202 Accepted` queueing, distributed locking (`ttl_seconds=300`), exponential backoff, and quota window tracking.
+  - `ContentValidationWorkflow` (`content_workflow.py`): Anti-SSRF URL allowlisting and source deletion lifecycle (`SOURCE_DELETED`).
+  - `ContentModerationWorkflow` (`moderation_workflow.py`): Cultural protection consent gate, approve, reject, hide, and restore actions.
+  - `PublicationWorkflow` (`publication_workflow.py`): Public feed publishing with automatic feed cache invalidation.
+  - `TourismContextWorkflow` (`tourism_context_workflow.py`): Resolves canonical district, place UUID, and slug mappings with cross-district mismatch rejection.
+- **Transactional Events Subsystem (`app/modules/social/events/`)**:
+  - `SocialWorkflowEventType` and `SocialWorkflowEvent` with JSON-safe dictionary serialization `_make_json_safe`.
+  - `SocialEventPublisher`: Inserts `OutboxEvent` records within the active database transaction and dispatches to memory subscribers.
+  - Event handlers: Feed cache invalidation, workflow telemetry metrics, and structured audit logs.
+- **Policy Engine & Guards (`app/modules/social/policies/`, `guards.py`)**:
+  - `SocialAccountPolicy`, `SocialSyncPolicy`, `SocialContentPolicy`, `SocialPublicationPolicy`.
+  - `assert_creator_active`, `assert_account_verifiable`, `assert_account_acceptable`, `assert_account_activatable`, `assert_account_sync_allowed`, `assert_content_validatable`, `assert_content_moderatable`, `assert_content_publishable`, `assert_cultural_protection`, `assert_geography_valid`.
+- **Admin REST API (`app/modules/social/api/admin.py`)**:
+  - `POST /api/admin/creators/{id}/activate`, `POST /api/admin/creators/{id}/suspend`
+  - `POST /api/admin/accounts/{id}/disconnect`
+  - `POST /api/admin/moderation/{id}/hide`, `POST /api/admin/moderation/{id}/restore`
+  - `POST /api/admin/moderation/{id}/tourism-context`
+  - `GET /api/admin/content`, `GET /api/admin/content/{id}`
+
+### 20.3 Verification Matrix
+- **Workflow Unit & Integration Suite (`tests/workflows/`)**:
+  - `test_creator_workflow.py` (4 tests): Onboarding, duplicate check, activate, suspend.
+  - `test_account_workflow.py` (4 tests): Register, duplicate platform rejection, pause, disconnect.
+  - `test_sync_workflow.py` (5 tests): Async queueing (202), sync lock prevention, force sync, execution, quota handling.
+  - `test_content_moderation_workflow.py` (5 tests): Validation, sacred consent gate, approve, hide, restore.
+  - `test_tourism_context_workflow.py` (3 tests): Context assignment, cross-district mismatch rejection, festival tagging.
+  - `test_end_to_end_workflow.py` (1 test): Complete 12-step orchestrated lifecycle from onboarding to public feed query.
+  - `test_failure_injection.py` (4 tests): Quota backoff calculation, verification timeout friendly error, SSRF blocking, transaction rollback outbox consistency.
+  - **Result: 26 / 26 PASSED (100%)**.
+- **Admin API Integration Suite (`tests/social/test_admin_workflow_api.py`)**:
+  - `test_admin_creator_activate_and_suspend_api`
+  - `test_admin_account_disconnect_api`
+  - `test_admin_moderation_hide_and_restore_api`
+  - `test_admin_moderation_tourism_context_api`
+  - `test_admin_content_list_and_get_api`
+  - **Result: 5 / 5 PASSED (100%)**.
+- **Total Backend Social Engine Tests**:
+  - `pytest -q app/modules/social`: **226 / 226 PASSED (100%) in 7.24s**.
+  - `pytest -q tests/social`: **25 / 25 PASSED (100%) in 2.38s**.
+  - **Combined: 251 / 251 PASSED (100%)**.
+- **Frontend Jest Suite**:
+  - `npm test -- --testPathPattern="social"`: **12 / 12 suites, 73 / 73 PASSED (100%) in 8.87s**.
+
 
 
 
