@@ -5,6 +5,7 @@ import { Compass, MapPin, ArrowLeft } from "lucide-react";
 import { getDistrictPlaces, getDistrict } from "@/data/api/districts";
 import { PlaceCard } from "@/components/tourism/PlaceCard";
 import { EmptyState } from "@/components/states/EmptyState";
+import { DistrictSocialStories } from "@/components/social/district/DistrictSocialStories";
 import type { Metadata as NextMetadata } from "next";
 
 interface DistrictPageProps {
@@ -109,6 +110,9 @@ export default async function DistrictPage({ params }: DistrictPageProps) {
             </div>
           </section>
         )}
+
+        {/* Local Creator Social Stories */}
+        <DistrictSocialStories districtSlug={slug} districtName={district.name} />
       </div>
     </main>
   );

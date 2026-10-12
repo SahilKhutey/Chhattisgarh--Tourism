@@ -43,6 +43,28 @@ export interface SocialMediaItem {
   transcript?: string | null;
 }
 
+export interface SocialTourismContext {
+  district_id?: string | null;
+  tourism_zone_id?: string | null;
+  place_id?: string | null;
+  place_slug?: string | null;
+  place_name?: string | null;
+  experience_id?: string | null;
+  festival_id?: string | null;
+  festival_name?: string | null;
+  culture_id?: string | null;
+  confidence?: number;
+  source?: string;
+}
+
+export interface TourismReference {
+  type: 'place' | 'district' | 'festival' | 'experience' | 'route';
+  id?: string | null;
+  slug?: string | null;
+  name: string;
+  url: string;
+}
+
 export interface SocialCreator {
   id: string;
   handle: string;
@@ -76,6 +98,8 @@ export interface SocialContent {
   festival_name?: string | null;
   latitude?: number | null;
   longitude?: number | null;
+  tourism_context?: SocialTourismContext | null;
+  tourism_references?: TourismReference[];
 
   // Cultural & Taxonomy
   cultural_tags?: string[];

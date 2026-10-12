@@ -82,6 +82,26 @@ export function getTourismItineraryPath(destinationSlug?: string): string {
 }
 
 /**
+ * Link into official Tourism interactive map.
+ */
+export function getTourismMapPath(placeSlug?: string): string {
+  if (placeSlug) {
+    return `/map?place=${encodeURIComponent(placeSlug.toLowerCase())}`;
+  }
+  return '/map';
+}
+
+/**
+ * Link into official Tourism planner for trip integration.
+ */
+export function getTourismPlannerPath(placeSlug?: string): string {
+  if (placeSlug) {
+    return `/plan?place=${encodeURIComponent(placeSlug.toLowerCase())}`;
+  }
+  return '/plan';
+}
+
+/**
  * Build a canonical query string URL for the social feed.
  */
 export function buildSocialFeedUrl(params: Record<string, string | number | boolean | undefined | null>): string {

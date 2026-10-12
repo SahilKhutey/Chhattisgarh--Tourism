@@ -265,3 +265,52 @@ export async function getPublicCreators(
   }
   return creators.slice(0, limit);
 }
+
+/**
+ * Fetch a single creator profile by handle or ID.
+ */
+export async function getCreatorByHandle(
+  handleOrId: string
+): Promise<SocialCreator> {
+  const cleanHandle = handleOrId.replace(/^@/, '');
+  const url = `${BASE_API_URL}/api/social/creators/${encodeURIComponent(cleanHandle)}`;
+
+  try {
+    const res = await fetch(url, {
+      next: { revalidate: 300 },
+      headers: { Accept: 'application/json' },
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      if (data && (data.id || data.handle)) {
+        return data as SocialCreator;
+      }
+    }
+  } catch {
+    // Fallback
+  }
+
+  const match = MOCK_CREATORS.find(
+    (c) =>
+      c.handle.toLowerCase() === cleanHandle.toLowerCase() ||
+      c.id.toLowerCase() === cleanHandle.toLowerCase()
+  );
+
+  if (match) return match;
+
+  throw new Error(`SocialCreator not found for handle: ${handleOrId}`);
+}
+
+/**
+ * Section 10.25 Unified Social Client API surface
+ */
+export const socialApi = {
+  getFeed: getSocialFeed,
+  getContent: getSocialContentById,
+  getCreators: getPublicCreators,
+  getCreator: getCreatorByHandle,
+  getDistrictContent: getDistrictSocialFeed,
+  getPlaceContent: getPlaceSocialFeed,
+};
+

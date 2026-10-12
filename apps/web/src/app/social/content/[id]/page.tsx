@@ -220,14 +220,32 @@ export default async function ContentDetailPage({
                 </div>
 
                 {content.place_slug && (
-                  <Link href={`/destinations/${content.place_slug}`}>
-                    <SocialPrimaryButton
-                      className="w-full justify-center"
-                      icon={<ArrowRight className="w-4 h-4 order-last" />}
-                    >
-                      Explore Destination Guide
-                    </SocialPrimaryButton>
-                  </Link>
+                  <div className="flex flex-col gap-2">
+                    <Link href={`/destinations/${content.place_slug}`}>
+                      <SocialPrimaryButton
+                        className="w-full justify-center"
+                        icon={<ArrowRight className="w-4 h-4 order-last" />}
+                      >
+                        Explore Destination Guide
+                      </SocialPrimaryButton>
+                    </Link>
+                    <div className="grid grid-cols-2 gap-2">
+                      <Link
+                        href={`/map?place=${content.place_slug}`}
+                        className="inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-xs font-semibold text-zinc-800 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-700/50 transition-colors"
+                      >
+                        <Compass className="w-3.5 h-3.5 text-forest-emerald" />
+                        <span>View on Map</span>
+                      </Link>
+                      <Link
+                        href={`/itineraries?destination=${content.place_slug}`}
+                        className="inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-xs font-semibold text-zinc-800 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-700/50 transition-colors"
+                      >
+                        <Calendar className="w-3.5 h-3.5 text-warm-orange" />
+                        <span>Plan Itinerary</span>
+                      </Link>
+                    </div>
+                  </div>
                 )}
               </div>
             </div>

@@ -16,7 +16,7 @@ INVALIDATED_CACHE_KEYS: list[str] = []
 
 
 def cache_invalidation_handler(event: SocialWorkflowEvent) -> None:
-    """Invalidates feed and entity caches on content lifecycle mutations."""
+    """Invalidates feed and entity caches on content lifecycle mutations (Section 10.33)."""
     invalidate_types = {
         SocialWorkflowEventType.CONTENT_PUBLISHED,
         SocialWorkflowEventType.CONTENT_HIDDEN,
@@ -27,7 +27,19 @@ def cache_invalidation_handler(event: SocialWorkflowEvent) -> None:
     }
 
     if event.event_type in invalidate_types:
-        keys = ["social:feed:global"]
+        keys = ["social:feed:all", "social:feed:global"]
+
+        district = event.metadata.get("district_id")
+        if district:
+            keys.append(f"social:feed:district:{district.lower()}")
+
+        place_id = event.metadata.get("place_id")
+        place_slug = event.metadata.get("place_slug")
+        if place_id:
+            keys.append(f"social:feed:place:{place_id}")
+        if place_slug:
+            keys.append(f"social:feed:place:{place_slug.lower()}")
+
         if "content_id" in event.metadata:
             keys.append(f"social:content:{event.metadata['content_id']}")
         elif event.aggregate_type == "SocialContent":
@@ -39,6 +51,14 @@ def cache_invalidation_handler(event: SocialWorkflowEvent) -> None:
             keys.append(f"social:creator:{event.aggregate_id}")
 
         INVALIDATED_CACHE_KEYS.extend(keys)
+
+        # Best-effort Redis invalidation
+        try:
+            from app.core.redis import redis_client
+            redis_client.delete(*keys)
+        except Exception:
+            pass
+
         logger.debug("Cache invalidated keys: %s for event %s", keys, event.event_type)
 
 

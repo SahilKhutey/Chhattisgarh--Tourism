@@ -12,7 +12,7 @@ import {
   useMapEvents,
 } from "react-leaflet";
 import L from "leaflet";
-import { Star, MapPin, Eye, Navigation, Layers } from "lucide-react";
+import { Star, MapPin, Eye, Navigation, Layers, Sparkles } from "lucide-react";
 import type { MapPlace, RouteResult } from "@/lib/geo/geo-types";
 import { formatDistance, formatDuration } from "@/lib/geo/geo-utils";
 import "leaflet/dist/leaflet.css";
@@ -232,12 +232,20 @@ export default function TourismMap({
                       {formatDistance(place.distanceMeters)} away
                     </p>
                   )}
-                  <Link
-                    href={`/destinations/${place.slug}`}
-                    className="inline-flex items-center justify-center w-full gap-1 py-1.5 bg-forest-emerald text-white rounded-lg text-xs font-bold hover:bg-tribal-terracotta transition-colors"
-                  >
-                    <Eye className="h-3.5 w-3.5" /> View Details
-                  </Link>
+                  <div className="flex flex-col gap-1.5 mt-2">
+                    <Link
+                      href={`/destinations/${place.slug}`}
+                      className="inline-flex items-center justify-center w-full gap-1 py-1.5 bg-forest-emerald text-white rounded-lg text-xs font-bold hover:bg-tribal-terracotta transition-colors"
+                    >
+                      <Eye className="h-3.5 w-3.5" /> View Details
+                    </Link>
+                    <Link
+                      href={`/social/places/${place.slug}`}
+                      className="inline-flex items-center justify-center w-full gap-1 py-1 bg-forest-emerald/10 text-forest-emerald rounded-lg text-xs font-bold hover:bg-forest-emerald/20 transition-colors"
+                    >
+                      <Sparkles className="h-3.5 w-3.5" /> View Stories
+                    </Link>
+                  </div>
                 </div>
               </Popup>
             </Marker>

@@ -28,6 +28,7 @@ import {
 } from "lucide-react";
 import { useLanguage } from "../context/LanguageContext";
 import { fetchPlaces, Destination } from "./data/api";
+import { SocialStoriesSection } from "@/components/social/home/SocialStoriesSection";
 
 export default function Home() {
   const [activeSlide, setActiveSlide] = useState(0);
@@ -505,6 +506,9 @@ export default function Home() {
           })}
         </div>
       </section>
+
+      {/* Social Engine: Curated Regional Stories */}
+      <SocialStoriesSection />
 
       {/* 6. Responsible Tourism Accordion Section */}
       <section className="w-full max-w-4xl mx-auto px-4 sm:px-6 mb-24 animate-fade-in">

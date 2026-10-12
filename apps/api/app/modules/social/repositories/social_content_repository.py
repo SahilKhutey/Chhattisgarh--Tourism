@@ -57,6 +57,8 @@ class SocialContentRepository:
         content_type: ContentType | None = None,
         cultural_tag: str | None = None,
         place_slug: str | None = None,
+        place_id: UUID | None = None,
+        creator_id: UUID | None = None,
         limit: int = 30,
         offset: int = 0,
     ) -> list[SocialContent]:
@@ -86,6 +88,12 @@ class SocialContentRepository:
 
         if place_slug:
             stmt = stmt.where(SocialContent.place_slug == place_slug)
+
+        if place_id:
+            stmt = stmt.where(SocialContent.place_id == place_id)
+
+        if creator_id:
+            stmt = stmt.where(SocialContent.creator_id == creator_id)
 
         # Order by popularity / engagement / recency
         stmt = stmt.order_by(

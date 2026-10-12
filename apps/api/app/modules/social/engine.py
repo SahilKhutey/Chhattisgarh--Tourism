@@ -6,6 +6,7 @@ from app.modules.social.acceptance.service import SocialAcceptanceService
 from app.modules.social.accounts.service import SocialAccountService
 from app.modules.social.audit.service import SocialAuditService
 from app.modules.social.content.service import SocialContentService
+from app.modules.social.context import SocialTourismContextService
 from app.modules.social.creators.duplicate import CreatorDuplicateService
 from app.modules.social.creators.service import CreatorService
 from app.modules.social.eligibility.service import SocialEligibilityService
@@ -72,6 +73,7 @@ class SocialEngine:
         self.instagram_sync = InstagramSyncService(session, audit_service=self.audit)
         self.feed = SocialFeedService(session)
         self.moderation = SocialModerationService(session)
+        self.context = SocialTourismContextService(session)
 
         # Master Phase 9 Workflows Orchestrator
         self.workflows = SocialWorkflowService(

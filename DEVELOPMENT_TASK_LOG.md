@@ -1024,6 +1024,59 @@ $$\text{Admin} \longrightarrow \text{Creator Onboarding} \longrightarrow \text{H
 - **Frontend Jest Suite**:
   - `npm test -- --testPathPattern="social"`: **12 / 12 suites, 73 / 73 PASSED (100%) in 8.87s**.
 
+---
+
+## 21. Production Build — Social Engine — Phase 10: System Integration & End-to-End User Experience
+
+### 21.1 Architectural Objectives
+- Transform Social into a native discovery-to-tourism subsystem of the CG Tourism OS.
+- Bridge creator stories directly to destination exploration, interactive maps, and trip planning without duplicating domain graphs.
+- Establish strict ownership boundaries: providers own third-party media and post identifiers; CG Tourism owns geographical, cultural, and planning metadata.
+- Implement decoupled `SocialTourismContextService` integration boundary so the Social module does not depend on internal graph implementation details.
+- Provide full two-way navigation between Map, Homepage, Districts, Places, and Creator portfolios.
+
+### 21.2 Implemented Subsystems & Modules
+- **Context Resolution Service (`apps/api/app/modules/social/context/`)**:
+  - `SocialTourismContext`: Frozen dataclass capturing canonical district, place UUID, place slug, place name, zone, experience, festival, and confidence scores.
+  - `SocialTourismContextService`: Bridges direct `SocialContent` fields with secondary `SocialContentContext` entity links (`resolve_sync` and `resolve`).
+  - Added `self.context = SocialTourismContextService(session)` to `SocialEngine`.
+- **Feed & Entity Repositories (`apps/api/app/modules/social/`)**:
+  - `SocialContentRepository.list_feed`: Added `place_id: UUID | None` and `creator_id: UUID | None` filtering.
+  - `FeedService.get_feed`: Exposed `place_id`, `creator_id`, and `cultural_tag` filters.
+  - `SocialContent.place_name`: Added mapped column for persisted place name resolution.
+  - `AccountVerificationWorkflow`: Added guard preventing account verification for inactive/suspended creators.
+- **REST API Endpoints (`apps/api/app/modules/social/api/`)**:
+  - `GET /api/social/districts/{district_id}`: Serves district social stories.
+  - `GET /api/social/places/{place_id_or_slug}`: Supports UUID lookup and slug resolution.
+  - `GET /api/social/feed`: Parameterized with place, creator, cultural tag, and content type.
+  - `GET /api/social/creators` & `GET /api/social/creators/{handle_or_id}`: Creator directory and profile lookups.
+- **Cache Eviction Pipeline (`apps/api/app/modules/social/events/handlers.py`)**:
+  - Event-driven invalidation for Section 10.33 cache keys: `social:feed:all`, `social:feed:district:{id}`, `social:feed:place:{id}`, `social:content:{id}`, `social:creator:{id}` with safe Redis eviction.
+- **Frontend Contract & Client API (`apps/web/src/lib/social/`)**:
+  - `types.ts`: Added `SocialTourismContext` and `TourismReference` contracts; enriched `SocialContent` model.
+  - `api.ts`: Exported unified `socialApi` surface (`getFeed`, `getContent`, `getCreators`, `getCreator`, `getDistrictContent`, `getPlaceContent`).
+  - `navigation.ts`: Added `getTourismMapPath` and `getTourismPlannerPath`.
+- **Frontend UI Subsystem Integrations (`apps/web/`)**:
+  - `SocialStoriesSection` (`src/components/social/home/SocialStoriesSection.tsx`): Curated regional stories on homepage (`/`).
+  - `DistrictSocialStories` (`src/components/social/district/DistrictSocialStories.tsx`): Local perspectives embedded on district guides (`/districts/[slug]`).
+  - `TourismMap` (`src/components/map/TourismMap.tsx`): "View Stories" popup action linking directly into place feeds (`/social/places/[slug]`).
+  - Content Detail Page (`src/app/social/content/[id]/page.tsx`): Destination guide, interactive map, and itinerary planning CTAs.
+
+### 21.3 Verification Matrix
+- **Backend System Integration Suite (`apps/api/app/modules/social/tests/test_phase10_system_integration.py`)**:
+  - `test_golden_path_end_to_end_22_steps`: Verified all 22 steps of the golden path lifecycle from creator onboarding through moderation, publication, feed discovery, context resolution, and original source navigation.
+  - `test_integration_tourism_context_service_secondary_entities`: Verified context synthesis across direct and auxiliary tags.
+  - `test_integration_failure_and_security_invariants`: Verified security invariants (inactive creator verification block, paused account sync block).
+  - **Result: 3 / 3 PASSED (100%)**.
+- **Full Backend Social Engine Suite**:
+  - `pytest -q app/modules/social`: **229 / 229 PASSED (100%)**.
+  - `pytest -q tests/social`: **25 / 25 PASSED (100%)**.
+  - **Combined Backend: 254 / 254 PASSED (100%)**.
+- **Frontend Jest Suite (`apps/web`)**:
+  - `SocialPhase10Integration.test.tsx` (5 tests): Navigation helpers, unified `socialApi`, `SocialStoriesSection`, `DistrictSocialStories`.
+  - **Full Frontend Social Suites**: **13 / 13 suites, 78 / 78 PASSED (100%)**.
+
+
 
 
 
