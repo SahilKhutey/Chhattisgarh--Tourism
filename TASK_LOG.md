@@ -444,6 +444,15 @@ CG Tourism OS Development History
        - Explicitly invalidated `PublicContentCache` on status mutations in `test_published_boundary.py` to prevent stale cached 200 responses when running against active Redis service containers.
    12. **Consumer Problem Validation Test Quotation Matcher**:
        - Standardized `mv2-consumer-validation.spec.ts` using regex pattern matching for JTBD card descriptions containing unicode curly quotes.
+   13. **Alembic Constraint & Index Filter in `include_object` (`env.py`)**:
+       - Filtered index and unique constraint types in `include_object` so custom naming differences in PostgreSQL indexes do not trigger false-positive drop/add index operations.
+   14. **`social_contents.place_name` Schema Column Migration (`p27_social_sync_orchestration.py`)**:
+       - Added `place_name` column (`sa.String(200)`) to `social_contents` in migration `p27` ensuring schema parity between models and database migrations.
+   15. **Thread-Safe Session Allocation in Concurrency Test (`test_concurrency.py`)**:
+       - Allocated isolated `thread_session` per worker using `sessionmaker` in `test_concurrent_sync_locking` so session collision does not interfere with distributed lock conflict assertions.
+   16. **Prisma Client Generation & CI Service Containers (`test.yml`, `mobile.yml`)**:
+       - Added `pnpm --filter backend exec prisma generate` step across CI workflows to materialize `@prisma/client` types before typechecking.
+       - Configured PostgreSQL and Redis service containers for `test.yml` and `mobile.yml` ensuring seamless database access during backend testing.
 - **Verification**:
   - `pnpm --filter web run typecheck`: 0 errors.
   - `pnpm lint`: 0 errors.
