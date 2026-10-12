@@ -17,6 +17,11 @@ class CreatorRepository:
         self.db.flush()
         return creator
 
+    def save(self, creator: Creator) -> Creator:
+        self.db.add(creator)
+        self.db.flush()
+        return creator
+
     def get_by_id(self, creator_id: UUID) -> Creator | None:
         stmt = select(Creator).where(Creator.id == creator_id)
         return self.db.scalar(stmt)

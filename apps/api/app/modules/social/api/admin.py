@@ -31,7 +31,28 @@ from app.modules.social.api.dependencies import require_admin
 from app.modules.social.creators.schemas import CreatorCreate, CreatorResponse, CreatorUpdate
 from app.modules.social.domain.enums import CreatorStatus, SocialAccountStatus, SocialPlatform
 from app.modules.social.engine import SocialEngine
+from app.modules.social.models.social_content import SocialContent
 from app.modules.social.schemas.content_schemas import SocialContentResponse
+from pydantic import BaseModel
+
+
+class TourismContextAssignPayload(BaseModel):
+    district_id: str
+    place_id: uuid.UUID | None = None
+    place_slug: str | None = None
+    place_name: str | None = None
+    tourism_zone_id: str | None = None
+    experience_id: str | None = None
+    festival_name: str | None = None
+
+
+class DisconnectAccountPayload(BaseModel):
+    reason: str = "Disconnected by admin"
+
+
+class CreatorSuspendPayload(BaseModel):
+    reason: str = "Suspended by admin"
+
 
 admin_router = APIRouter(prefix="/admin", tags=["Social Admin & Moderation"])
 
@@ -134,6 +155,32 @@ def verify_creator(
 ) -> Any:
     engine = SocialEngine(db)
     return engine.creators.verify_creator(creator_id, is_verified=is_verified, actor=admin)
+
+
+@admin_router.post("/creators/{creator_id}/activate", response_model=CreatorResponse)
+def activate_creator_workflow(
+    creator_id: uuid.UUID,
+    db: Session = Depends(get_db),
+    admin: AdminUser = Depends(require_admin),
+) -> Any:
+    engine = SocialEngine(db)
+    creator = engine.workflows.creators.activate_creator(creator_id=creator_id, actor_id=admin.id)
+    db.commit()
+    return creator
+
+
+@admin_router.post("/creators/{creator_id}/suspend", response_model=CreatorResponse)
+def suspend_creator_workflow(
+    creator_id: uuid.UUID,
+    payload: CreatorSuspendPayload | None = None,
+    db: Session = Depends(get_db),
+    admin: AdminUser = Depends(require_admin),
+) -> Any:
+    engine = SocialEngine(db)
+    reason = payload.reason if payload else "Suspended by admin"
+    creator = engine.workflows.creators.suspend_creator(creator_id=creator_id, actor_id=admin.id, reason=reason)
+    db.commit()
+    return creator
 
 
 @admin_router.post("/accounts", response_model=SocialAccountResponse, status_code=status.HTTP_201_CREATED)
@@ -480,6 +527,20 @@ def reactivate_social_account(
     return engine.acceptance.reactivate(account_id, actor_id=admin.id)
 
 
+@admin_router.post("/accounts/{account_id}/disconnect", response_model=SocialAccountResponse)
+def disconnect_social_account(
+    account_id: uuid.UUID,
+    payload: DisconnectAccountPayload | None = None,
+    db: Session = Depends(get_db),
+    admin: AdminUser = Depends(require_admin),
+) -> Any:
+    engine = SocialEngine(db)
+    reason = payload.reason if payload else "Disconnected by admin"
+    account = engine.workflows.accounts.disconnect_account(account_id=account_id, actor_id=admin.id, reason=reason)
+    db.commit()
+    return account
+
+
 @admin_router.post("/sync/{account_id}")
 def sync_account(
     account_id: uuid.UUID,
@@ -545,6 +606,89 @@ def reject_content(
 ) -> Any:
     engine = SocialEngine(db)
     return engine.moderation.reject(content_id, moderator_id=admin.id, reason=reason)
+
+
+@admin_router.post("/moderation/{content_id}/hide", response_model=SocialContentResponse)
+def hide_content(
+    content_id: uuid.UUID,
+    reason: str = Query("Hidden by admin"),
+    db: Session = Depends(get_db),
+    admin: AdminUser = Depends(require_admin),
+) -> Any:
+    engine = SocialEngine(db)
+    content = engine.workflows.moderation.hide_content(content_id=content_id, reason=reason, actor_id=admin.id)
+    db.commit()
+    return content
+
+
+@admin_router.post("/moderation/{content_id}/restore", response_model=SocialContentResponse)
+def restore_content(
+    content_id: uuid.UUID,
+    db: Session = Depends(get_db),
+    admin: AdminUser = Depends(require_admin),
+) -> Any:
+    engine = SocialEngine(db)
+    content = engine.workflows.moderation.restore_content(content_id=content_id, actor_id=admin.id)
+    db.commit()
+    return content
+
+
+@admin_router.post("/moderation/{content_id}/tourism-context", response_model=SocialContentResponse)
+def assign_tourism_context(
+    content_id: uuid.UUID,
+    payload: TourismContextAssignPayload,
+    db: Session = Depends(get_db),
+    admin: AdminUser = Depends(require_admin),
+) -> Any:
+    engine = SocialEngine(db)
+    content = engine.workflows.tourism.assign_tourism_context(
+        content_id=content_id,
+        district_id=payload.district_id,
+        place_id=payload.place_id,
+        place_slug=payload.place_slug,
+        place_name=payload.place_name,
+        tourism_zone_id=payload.tourism_zone_id,
+        experience_id=payload.experience_id,
+        festival_name=payload.festival_name,
+        actor_id=admin.id,
+    )
+    db.commit()
+    return content
+
+
+@admin_router.get("/content", response_model=list[SocialContentResponse])
+def list_content(
+    moderation_status: str | None = Query(None),
+    publication_status: str | None = Query(None),
+    district_id: str | None = Query(None),
+    platform: str | None = Query(None),
+    limit: int = Query(50, ge=1, le=100),
+    offset: int = Query(0, ge=0),
+    db: Session = Depends(get_db),
+    admin: AdminUser = Depends(require_admin),
+) -> Any:
+    query = db.query(SocialContent)
+    if moderation_status:
+        query = query.filter(SocialContent.moderation_status == moderation_status)
+    if publication_status:
+        query = query.filter(SocialContent.publication_status == publication_status)
+    if district_id:
+        query = query.filter(SocialContent.district_id == district_id)
+    if platform:
+        query = query.filter(SocialContent.provider == platform)
+    return query.order_by(SocialContent.created_at.desc()).offset(offset).limit(limit).all()
+
+
+@admin_router.get("/content/{content_id}", response_model=SocialContentResponse)
+def get_content(
+    content_id: uuid.UUID,
+    db: Session = Depends(get_db),
+    admin: AdminUser = Depends(require_admin),
+) -> Any:
+    content = db.get(SocialContent, content_id)
+    if not content:
+        raise AppError(code="CONTENT_NOT_FOUND", message=f"Content '{content_id}' not found", status_code=404)
+    return content
 
 
 admin_social_sync_router = APIRouter(prefix="/admin/social", tags=["Social Handle & Sync Orchestration"])

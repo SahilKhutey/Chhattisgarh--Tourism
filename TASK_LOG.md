@@ -297,6 +297,36 @@ CG Tourism OS Development History
 
 ---
 
+### Production Build — Social Engine — Phase 9: Workflow Development & Implementation
+- **Goal**: Implement end-to-end orchestration linking screens, admin controls, background sync, and moderation into a cohesive tourism operating system.
+- **Workflow State Machines & Orchestration**:
+  - `SocialWorkflowService`: Central orchestrator uniting creators, accounts, verification, acceptance, sync, content, moderation, publication, and tourism graph assignment.
+  - `CreatorOnboardingWorkflow`: Onboards creators, validates against 33 official Chhattisgarh districts, prevents handle duplicates, manages activation/suspension.
+  - `SocialAccountWorkflow`: Normalizes handles/URLs across YouTube and Instagram, enforces platform-level handle uniqueness, controls pause/reactivate/disconnect.
+  - `AccountVerificationWorkflow`: Validates provider channels/profiles asynchronously with friendly error mapping for non-technical admins.
+  - `AccountAcceptanceWorkflow`: Enforces strict separation between editorial acceptance (`ACCEPTED`) and operational sync permissions (`ACTIVE`).
+  - `SocialSyncWorkflow`: Implements non-blocking `202 Accepted` queueing, distributed locking (`ttl_seconds=300`), exponential backoff calculation, and provider quota window tracking.
+  - `ContentValidationWorkflow`: Performs anti-SSRF domain validation and deduplication, lifecycle tracking on external source deletion (`SOURCE_DELETED`).
+  - `ContentModerationWorkflow`: Sacred ritual cultural protection gate requiring explicit clan consent before approval; supports approve, reject, hide, and restore actions.
+  - `PublicationWorkflow`: Publishes approved items to the public consumer feed with automatic feed cache invalidation.
+  - `TourismContextWorkflow`: Resolves canonical district, place UUID, and slug mappings while strictly rejecting cross-district mismatches.
+- **Events & Outbox Subsystem**:
+  - `SocialWorkflowEvent` & `SocialEventPublisher`: Atomically writes JSON-safe outbox records to `outbox_events` in the active database transaction.
+  - Default handlers: Event-driven cache invalidation, workflow metrics tracking, and audit logging.
+- **Admin REST API Endpoints**:
+  - Added `POST /api/admin/creators/{id}/activate`, `POST /api/admin/creators/{id}/suspend`.
+  - Added `POST /api/admin/accounts/{id}/disconnect`.
+  - Added `POST /api/admin/moderation/{id}/hide`, `POST /api/admin/moderation/{id}/restore`.
+  - Added `POST /api/admin/moderation/{id}/tourism-context`.
+  - Added `GET /api/admin/content`, `GET /api/admin/content/{id}`.
+- **Automated Verification**:
+  - **Workflow Suite**: 26 / 26 passed (including complete 12-step end-to-end test and failure injection test suite).
+  - **Admin Workflow API Suite**: 5 / 5 passed.
+  - **Backend Social Engine Suite**: 251 / 251 passed (100%).
+  - **Frontend Jest Suite**: 12 / 12 suites, 73 / 73 passed (100%).
+
+---
+
 ## 🔍 Comprehensive System Audit & Release Logs
 
 1. **Master Development Task Log & Commit Analysis**:

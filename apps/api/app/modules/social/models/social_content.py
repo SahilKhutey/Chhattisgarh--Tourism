@@ -18,6 +18,7 @@ from sqlalchemy import (
     text,
 )
 from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
@@ -409,13 +410,13 @@ class SocialContent(Base):
     def platform(self, val: Any) -> None:
         self.provider = val.value if hasattr(val, "value") else str(val) if val else None
 
-    @property
+    @hybrid_property
     def status(self) -> str:
         return self.publication_status
 
     @status.setter
-    def status(self, val: str) -> None:
-        self.publication_status = val
+    def status(self, val: Any) -> None:
+        self.publication_status = val.value if hasattr(val, "value") else str(val) if val is not None else None
 
     @property
     def source_status(self) -> str:

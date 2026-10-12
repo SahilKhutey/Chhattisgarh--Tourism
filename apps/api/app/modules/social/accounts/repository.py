@@ -18,6 +18,15 @@ from app.modules.social.repositories.social_account_repository import (
 class SocialAccountRepository(LegacySocialAccountRepository):
     """Repository for SocialAccount persistence operations."""
 
+    def save(self, account: SocialAccount) -> SocialAccount:
+        self.session.add(account)
+        self.session.flush()
+        return account
+
+    def get_by_platform_handle(self, platform: Any, handle: str) -> SocialAccount | None:
+        p_val = platform.value if hasattr(platform, "value") else str(platform)
+        return self.get_by_platform_and_handle(p_val, handle)
+
     def set_verified(
         self,
         account_id: uuid.UUID,
