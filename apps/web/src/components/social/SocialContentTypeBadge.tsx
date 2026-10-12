@@ -6,18 +6,21 @@ import { SocialContentType } from '@/lib/social/types';
 
 interface SocialContentTypeBadgeProps {
   contentType?: SocialContentType | string | null;
+  type?: SocialContentType | string | null;
   className?: string;
   size?: 'sm' | 'md';
 }
 
 export function SocialContentTypeBadge({
   contentType,
+  type,
   className = '',
   size = 'sm',
 }: SocialContentTypeBadgeProps) {
-  if (!contentType) return null;
+  const resolved = contentType || type;
+  if (!resolved) return null;
 
-  const normalized = contentType.toUpperCase();
+  const normalized = resolved.toUpperCase();
 
   const sizeClasses =
     size === 'sm'
