@@ -160,7 +160,10 @@ jobs:
         run: pnpm --filter "./packages/**" build
 
       - name: Build Web
-        run: pnpm --filter web run build
+        run: |
+          pnpm --filter web run build
+          cp -r apps/web/.next/static apps/web/.next/standalone/apps/web/.next/
+          cp -r apps/web/public apps/web/.next/standalone/apps/web/
 
       - name: Install Playwright
         run: pnpm --filter web exec playwright install --with-deps chromium
