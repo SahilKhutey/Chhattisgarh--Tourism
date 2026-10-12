@@ -1231,6 +1231,10 @@ Following commit `3f23780`, GitHub Actions workflows failed across 4 jobs:
        - Replaced fixed timer sleep with atomic counter and event synchronization (`all_attempted.wait`) in `test_concurrent_sync_locking`, preventing thread scheduling jitter in CI runners.
    19. **Prisma Generation & Package Build in CI Build Job (`test.yml`)**:
        - Added `pnpm --filter backend exec prisma generate` and `pnpm --filter "./packages/**" build` before `pnpm build` in the isolated `build` job of `test.yml`.
+   20. **`market_leads` Column Nullability Schema Alignment (`p27_social_sync_orchestration.py`)**:
+       - Aligned `traveler_segment`, `destination`, `experience`, `traveler_count`, `qualification_status`, `provider_response_status`, and `updated_at` column nullabilities in migration `p27` with `MarketLead` model definition to eliminate schema drift in `alembic check`.
+   21. **Pre-Built Next.js Server & Host Binding in Playwright E2E (`playwright.config.ts`, `test.yml`)**:
+       - Added `pnpm --filter web run build` to `e2e` job and configured `playwright.config.ts` to launch `next start -H 0.0.0.0 -p 3000` in CI, eliminating webServer timeout and startup latency.
 
 ### 24.3 Complete Verification Status
 - `pnpm --filter web run typecheck`: **0 errors (100% pass)**.

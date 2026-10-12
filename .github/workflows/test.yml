@@ -159,6 +159,9 @@ jobs:
       - name: Build packages
         run: pnpm --filter "./packages/**" build
 
+      - name: Build Web
+        run: pnpm --filter web run build
+
       - name: Install Playwright
         run: pnpm --filter web exec playwright install --with-deps chromium
 
