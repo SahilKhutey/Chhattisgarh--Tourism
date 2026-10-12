@@ -110,11 +110,35 @@ def upgrade() -> None:
     if "creators" in existing_tables:
         op.alter_column("creators", "user_id", nullable=True)
 
+    # 6. Align market_leads columns nullability with MarketLead model
+    if "market_leads" in existing_tables:
+        op.execute("UPDATE market_leads SET traveler_count = 1 WHERE traveler_count IS NULL")
+        op.execute("UPDATE market_leads SET qualification_status = 'PENDING' WHERE qualification_status IS NULL")
+        op.execute("UPDATE market_leads SET provider_response_status = 'NEW' WHERE provider_response_status IS NULL")
+        op.execute("UPDATE market_leads SET updated_at = NOW() WHERE updated_at IS NULL")
+
+        op.alter_column("market_leads", "traveler_segment", nullable=True)
+        op.alter_column("market_leads", "destination", nullable=True)
+        op.alter_column("market_leads", "experience", nullable=True)
+        op.alter_column("market_leads", "traveler_count", nullable=False)
+        op.alter_column("market_leads", "qualification_status", nullable=False)
+        op.alter_column("market_leads", "provider_response_status", nullable=False)
+        op.alter_column("market_leads", "updated_at", nullable=False)
+
 
 def downgrade() -> None:
     bind = op.get_bind()
     inspector = sa.inspect(bind)
     existing_tables = inspector.get_table_names()
+
+    if "market_leads" in existing_tables:
+        op.alter_column("market_leads", "traveler_segment", nullable=False)
+        op.alter_column("market_leads", "destination", nullable=False)
+        op.alter_column("market_leads", "experience", nullable=False)
+        op.alter_column("market_leads", "traveler_count", nullable=True)
+        op.alter_column("market_leads", "qualification_status", nullable=True)
+        op.alter_column("market_leads", "provider_response_status", nullable=True)
+        op.alter_column("market_leads", "updated_at", nullable=True)
 
     if "creators" in existing_tables:
         op.alter_column("creators", "user_id", nullable=False)
