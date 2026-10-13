@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 
 test.describe("Template Builder", () => {
   test.beforeEach(async ({ page }) => {
-    await page.route("**/admin/templates/**", async (route) => {
+    await page.route("**/api/admin/templates/**", async (route) => {
       await route.fulfill({
         status: 200,
         contentType: "application/json",
