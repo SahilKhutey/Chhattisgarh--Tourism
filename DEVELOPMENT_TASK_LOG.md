@@ -1250,6 +1250,11 @@ Following commit `3f23780`, GitHub Actions workflows failed across 4 jobs:
        - Added `http://localhost:8000` and `ws://localhost:8000` to the Content Security Policy `connect-src` directive in `apps/web/next.config.ts`, preventing browser CSP blocks on FastAPI backend fetches.
        - Updated `admin-template-builder.spec.ts` with CORS preflight `OPTIONS` handling, dynamic origin reflection, and `credentials: "include"` compliance.
        - Added `{ exact: true }` matching for `+ Text` buttons to eliminate Playwright multi-element ambiguity against `+ Textarea`, achieving 70 / 70 passing E2E tests (100% green).
+   27. **PR #21 Merge, Main-Develop Branch Synchronization & 100% Green CI on Main**:
+       - Fast-forward merged `develop` into `main` and pushed to `origin/main` (`f746746`), formally closing and merging PR #21.
+       - Verified `main` and `develop` are 100% identical (`ahead_by: 0`, `behind_by: 0`).
+       - Verified all 4 CI workflows on `main` passed 100% green: `CI` (38403340262: Lint, Typecheck, Unit Tests, Production Build, Playwright E2E - 70/70 passed), `Backend` (38403339824: 803 tests), `CG Tourism Integration CI` (38403339716), and `Security & Audit` (38403339602).
+       - Verified all remote feature branches have `Ahead: 0` commits, confirming complete incorporation into `main`.
 
 ### 24.3 Complete Verification Status
 - `pnpm --filter web run typecheck`: **0 errors (100% pass)**.
