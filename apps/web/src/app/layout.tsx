@@ -7,7 +7,7 @@ import { OfflineIndicator } from "../components/offline/OfflineIndicator";
 import { OfflineSync } from "../components/offline/OfflineSync";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Inter, Space_Grotesk, JetBrains_Mono, Noto_Sans_Devanagari, Mukta, Playfair_Display } from "next/font/google";
+import { Inter, Space_Grotesk, JetBrains_Mono, Mukta } from "next/font/google";
 import { Navbar } from "../components/Navbar";
 import { ToastProvider } from "../components/ToastProvider";
 import { LanguageProvider } from "../context/LanguageContext";
@@ -18,20 +18,10 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 const space = Space_Grotesk({ subsets: ["latin"], variable: "--font-display" });
 const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono" });
-const notoDevanagari = Noto_Sans_Devanagari({
-  subsets: ["devanagari", "latin"],
-  variable: "--font-devanagari",
-  weight: ["400", "700"],
-});
 const mukta = Mukta({
   subsets: ["devanagari", "latin"],
   variable: "--font-mukta",
   weight: ["300", "400", "500", "600", "700"],
-});
-const playfair = Playfair_Display({
-  subsets: ["latin"],
-  variable: "--font-serif",
-  weight: ["400", "600", "700"],
 });
 
 export const metadata: Metadata = {
@@ -66,7 +56,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${space.variable} ${mono.variable} ${notoDevanagari.variable} ${mukta.variable} ${playfair.variable} h-full antialiased`}
+      className={`${inter.variable} ${space.variable} ${mono.variable} ${mukta.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-sand-beige text-charcoal-stone selection:bg-tribal-terracotta selection:text-white pb-20 md:pb-0">
         <ServiceWorkerRegistration />

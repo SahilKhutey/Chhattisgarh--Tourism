@@ -33,4 +33,7 @@
   --cg-space-8: 2rem;
   --cg-space-12: 3rem;
   --cg-space-16: 4rem;
+
+  --font-devanagari: var(--font-mukta);
+  --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
 }
