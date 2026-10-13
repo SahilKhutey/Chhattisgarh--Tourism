@@ -1237,6 +1237,9 @@ Following commit `3f23780`, GitHub Actions workflows failed across 4 jobs:
        - Configured Playwright CI to execute `node .next/standalone/apps/web/server.js` with staged `.next/static` and `public` assets, resolving `output: standalone` incompatibility with `next start`.
    22. **Deterministic Lock Contention & Isolation in Concurrency Test (`test_concurrency.py`)**:
        - Restructured `test_concurrent_sync_locking` to verify held-lock rejection across all 9 concurrent worker threads without race conditions, and assert `SyncStatus.SUCCEEDED.value` upon lock release.
+   23. **Root Locale Redirect Removal & Playwright WebServer Host Binding (`middleware.ts`, `playwright.config.ts`, `test.yml`)**:
+       - Removed invalid `/en` prefix normalization redirect in `apps/web/src/middleware.ts` that yielded 404 responses for root paths, resolving Playwright `config.webServer` probe timeout.
+       - Configured explicit `HOSTNAME: "0.0.0.0"` and `PORT: "3000"` environment variables along with `stdout: "pipe"` and `stderr: "pipe"` in `apps/web/playwright.config.ts` and `.github/workflows/test.yml` to prevent runner machine hostname collisions on Ubuntu CI runners.
 
 ### 24.3 Complete Verification Status
 - `pnpm --filter web run typecheck`: **0 errors (100% pass)**.

@@ -29,5 +29,11 @@ export default defineConfig({
     url: "http://127.0.0.1:3000",
     reuseExistingServer: !process.env.CI,
     timeout: 120000,
+    stdout: "pipe",
+    stderr: "pipe",
+    env: {
+      HOSTNAME: "0.0.0.0",
+      PORT: "3000",
+    },
   },
 });
