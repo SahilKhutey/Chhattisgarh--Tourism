@@ -8,8 +8,8 @@ test.describe('Admin Template Dashboard E2E Flow', () => {
     expect(res?.status()).toBeLessThan(500);
 
     // Verify main heading
-    const heading = page.locator('h1');
-    await expect(heading).toContainText('Content Templates');
+    const heading = page.locator('h1').filter({ hasText: 'Content Templates' });
+    await expect(heading).toBeVisible();
 
     // Verify statistics section
     const statsSection = page.getByRole('region', { name: 'Template statistics' });
