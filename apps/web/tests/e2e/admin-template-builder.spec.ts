@@ -1,6 +1,23 @@
 import { test, expect } from "@playwright/test";
 
 test.describe("Template Builder", () => {
+  test.beforeEach(async ({ page }) => {
+    await page.route("**/admin/templates/**", async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          id: "test-template",
+          name: "Test Template",
+          slug: "test-template",
+          version: 1,
+          status: "DRAFT",
+          fields: [],
+        }),
+      });
+    });
+  });
+
   test("opens builder and displays field palette and canvas", async ({
     page,
   }) => {
@@ -28,16 +45,15 @@ test.describe("Template Builder", () => {
     await page.goto("/admin/templates/test-template/builder");
 
     const addTextBtn = page.getByRole("button", { name: "+ Text" });
-    if (await addTextBtn.isVisible()) {
-      await addTextBtn.click();
+    await expect(addTextBtn).toBeVisible();
+    await addTextBtn.click();
 
-      await expect(
-        page.getByText("Unsaved changes"),
-      ).toBeVisible();
+    await expect(
+      page.getByText("Unsaved changes"),
+    ).toBeVisible();
 
-      await expect(
-        page.getByRole("button", { name: "Save" }),
-      ).toBeEnabled();
-    }
+    await expect(
+      page.getByRole("button", { name: "Save" }),
+    ).toBeEnabled();
   });
 });
