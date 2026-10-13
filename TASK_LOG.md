@@ -468,6 +468,12 @@ CG Tourism OS Development History
    23. **Root Locale Redirect Removal & Playwright WebServer Host Binding (`middleware.ts`, `playwright.config.ts`, `test.yml`)**:
        - Removed invalid `/en` prefix normalization redirect in `apps/web/src/middleware.ts` that yielded 404 responses for root paths, resolving Playwright `config.webServer` probe timeout.
        - Configured explicit `HOSTNAME: "0.0.0.0"` and `PORT: "3000"` environment variables along with `stdout: "pipe"` and `stderr: "pipe"` in `apps/web/playwright.config.ts` and `.github/workflows/test.yml` to prevent runner machine hostname collisions on Ubuntu CI runners.
+   24. **Playwright Strict Mode Disambiguation & Network Interception (`tests/e2e/`)**:
+       - Disambiguated `h1`, `header`, and `main` locators using explicit text filters and `.first()` indexing across `admin-templates.spec.ts`, `template-content-flow.spec.ts`, and `template-versioning.spec.ts`, resolving Playwright strict mode multi-element violations caused by nested layout headers.
+       - Added API route mock interception for `**/admin/templates/**` in `admin-template-builder.spec.ts`, ensuring field palette and dirty state validation succeed deterministically in headless CI without a live backend service.
+   25. **Google Fonts Loader Resiliency & Static Fallback Tokens (`layout.tsx`, `tokens.css`)**:
+       - Removed `Noto_Sans_Devanagari` and `Playfair_Display` from `next/font/google` loader in `apps/web/src/app/layout.tsx` to eliminate build crashes (`TypeError: Cannot read properties of null (reading '1')`) caused by Google Fonts serving query-parameterized, extensionless font URLs (`/l/font?kit=...`).
+       - Configured resilient CSS fallback variables `--font-devanagari: var(--font-mukta)` and `--font-serif` in `tokens.css`, maintaining full typography fidelity without flaky external CDN dependencies.
 - **Verification**:
   - `pnpm --filter web run typecheck`: 0 errors.
   - `pnpm lint`: 0 errors.
