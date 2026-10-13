@@ -169,6 +169,9 @@ jobs:
         run: pnpm --filter web exec playwright install --with-deps chromium
 
       - name: Run E2E
+        env:
+          HOSTNAME: "0.0.0.0"
+          PORT: "3000"
         run: pnpm --filter web exec playwright test
 
       - name: Upload Playwright report
