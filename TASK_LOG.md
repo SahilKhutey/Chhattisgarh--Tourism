@@ -483,6 +483,11 @@ CG Tourism OS Development History
        - Verified `main` and `develop` are 100% identical (`ahead_by: 0`, `behind_by: 0`).
        - Verified all 4 CI workflows on `main` passed 100% green: `CI` (38403340262: Lint, Typecheck, Unit Tests, Production Build, Playwright E2E - 70/70 passed), `Backend` (38403339824: 803 tests), `CG Tourism Integration CI` (38403339716), and `Security & Audit` (38403339602).
        - Verified all remote feature branches have `Ahead: 0` commits, confirming complete incorporation into `main`.
+   28. **Vercel Monorepo Deployment & Production Configuration (`apps/web/vercel.json`, `vercel.json`, `next.config.ts`)**:
+       - Standardized `apps/web/vercel.json` with official Turborepo monorepo configuration (`cd ../.. && pnpm install` and `cd ../.. && turbo run build --filter=web`).
+       - Added root `vercel.json` with `outputDirectory: "apps/web/.next"` for zero-friction deployments from monorepo root.
+       - Made `output: "standalone"` conditional on non-Vercel environments (`process.env.VERCEL ? undefined : "standalone"`), leveraging Vercel native serverless routing while retaining standalone builds for Docker/Playwright CI.
+       - Updated CSP `connect-src` to dynamically include `backendOrigin` and `https://*.supabase.co` preventing browser CSP blocks on production Vercel deployments.
 - **Verification**:
   - `pnpm --filter web run typecheck`: 0 errors.
   - `pnpm lint`: 0 errors.

@@ -6,7 +6,7 @@ const backendOrigin = process.env.NEXT_PUBLIC_API_URL
 
 const nextConfig: NextConfig = {
   serverExternalPackages: ["isomorphic-dompurify", "jsdom"],
-  output: "standalone",
+  output: process.env.VERCEL ? undefined : "standalone",
   allowedDevOrigins: ["127.0.0.1", "localhost"],
   images: {
     unoptimized: true,
@@ -86,7 +86,7 @@ const nextConfig: NextConfig = {
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "img-src 'self' data: https: http: blob:",
               "font-src 'self' https://fonts.gstatic.com",
-              "connect-src 'self' http://localhost:4000 ws://localhost:4000 http://localhost:3000 ws://localhost:3000 http://localhost:3001 ws://localhost:3001 http://localhost:8000 ws://localhost:8000 http://127.0.0.1:* ws://127.0.0.1:*",
+              `connect-src 'self' ${backendOrigin ? `${backendOrigin} ` : ""}https://*.supabase.co http://localhost:4000 ws://localhost:4000 http://localhost:3000 ws://localhost:3000 http://localhost:3001 ws://localhost:3001 http://localhost:8000 ws://localhost:8000 http://127.0.0.1:* ws://127.0.0.1:*`,
               "frame-src 'none'",
               "object-src 'none'",
               "base-uri 'self'",
