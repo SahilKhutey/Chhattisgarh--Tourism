@@ -474,6 +474,10 @@ CG Tourism OS Development History
    25. **Google Fonts Loader Resiliency & Static Fallback Tokens (`layout.tsx`, `tokens.css`)**:
        - Removed `Noto_Sans_Devanagari` and `Playfair_Display` from `next/font/google` loader in `apps/web/src/app/layout.tsx` to eliminate build crashes (`TypeError: Cannot read properties of null (reading '1')`) caused by Google Fonts serving query-parameterized, extensionless font URLs (`/l/font?kit=...`).
        - Configured resilient CSS fallback variables `--font-devanagari: var(--font-mukta)` and `--font-serif` in `tokens.css`, maintaining full typography fidelity without flaky external CDN dependencies.
+   26. **CSP Port 8000 Whitelist & Exact Button Scoping in Builder Tests (`next.config.ts`, `admin-template-builder.spec.ts`)**:
+       - Added `http://localhost:8000` and `ws://localhost:8000` to the Content Security Policy `connect-src` directive in `apps/web/next.config.ts`, preventing browser CSP blocks on FastAPI backend fetches.
+       - Updated `admin-template-builder.spec.ts` with CORS preflight `OPTIONS` handling, dynamic origin reflection, and `credentials: "include"` compliance.
+       - Added `{ exact: true }` matching for `+ Text` buttons to eliminate Playwright multi-element ambiguity against `+ Textarea`, achieving 70 / 70 passing E2E tests (100% green).
 - **Verification**:
   - `pnpm --filter web run typecheck`: 0 errors.
   - `pnpm lint`: 0 errors.
