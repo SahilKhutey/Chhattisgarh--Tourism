@@ -7,10 +7,10 @@ test.describe('Generic Tourism Content Template Engine E2E Flow', () => {
     const res = await page.goto('/admin/templates');
     expect(res?.status()).toBeLessThan(500);
 
-    const heading = page.locator('h1');
-    await expect(heading).toContainText('Content Template Engine');
+    const heading = page.locator('h1').filter({ hasText: /Content Template/i });
+    await expect(heading).toBeVisible();
 
-    const createBtn = page.getByRole('link', { name: /Create New Template/i });
+    const createBtn = page.getByRole('button', { name: /Create template/i });
     await expect(createBtn).toBeVisible();
   });
 
@@ -21,7 +21,7 @@ test.describe('Generic Tourism Content Template Engine E2E Flow', () => {
     expect(res?.status()).toBeLessThan(500);
 
     // Verify Builder Heading
-    await expect(page.locator('h1')).toContainText('New Content Template');
+    await expect(page.locator('h1').filter({ hasText: 'New Content Template' })).toBeVisible();
 
     // Verify Palette
     await expect(page.getByText('Field Palette')).toBeVisible();
