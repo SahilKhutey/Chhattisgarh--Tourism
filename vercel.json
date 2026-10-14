@@ -3,5 +3,8 @@
   "framework": "nextjs",
   "installCommand": "npm install -g pnpm@9.14.0 && pnpm install --frozen-lockfile",
   "buildCommand": "pnpm --filter web build",
-  "outputDirectory": "apps/web/.next"
+  "outputDirectory": "apps/web/.next",
+  "env": {
+    "ENABLE_EXPERIMENTAL_COREPACK": "1"
+  }
 }
