@@ -488,6 +488,19 @@ CG Tourism OS Development History
        - Added root `vercel.json` with `outputDirectory: "apps/web/.next"` for zero-friction deployments from monorepo root.
        - Made `output: "standalone"` conditional on non-Vercel environments (`process.env.VERCEL ? undefined : "standalone"`), leveraging Vercel native serverless routing while retaining standalone builds for Docker/Playwright CI.
        - Updated CSP `connect-src` to dynamically include `backendOrigin` and `https://*.supabase.co` preventing browser CSP blocks on production Vercel deployments.
+   29. **Standalone Next.js Output Restored for Contract Validation & Playwright Runner (`apps/web/next.config.ts`, `compose-validation.spec.ts`)**:
+       - Reverted conditional `output` expression in `apps/web/next.config.ts` back to literal `output: "standalone"` to satisfy backend Docker contract validation (`test/compose-validation.spec.ts`) and ensure Playwright CI standalone runner operates identically across local, CI, and production container environments.
+   30. **Vercel Corepack & pnpm v9 Engine Alignment (`package.json`, `apps/web/vercel.json`, `vercel.json`, `apps/web/package.json`)**:
+       - Removed restrictive `engines.pnpm` constraint from root `package.json` to prevent Vercel's legacy bundled pnpm from throwing `ERR_PNPM_UNSUPPORTED_ENGINE` before package manager resolution.
+       - Configured `nodeVersion: "22.x"` and injected `ENABLE_EXPERIMENTAL_COREPACK=1` into Vercel Project Environment Variables via API, guaranteeing Corepack activates `pnpm@9.14.0` specified in root `package.json`.
+       - Added `packageManager: "pnpm@9.14.0"` to `apps/web/package.json` ensuring sub-workspace directory resolution.
+       - Standardized install command to `cd ../.. && corepack enable && pnpm install` and build command to `cd ../.. && npx turbo run build --filter=web`.
+   31. **Vercel Ignored Build Step Protection & Dependabot Cleanup (`commandForIgnoringBuildStep`, PR #20)**:
+       - Configured `commandForIgnoringBuildStep` on Vercel project via API (`[[ "$VERCEL_GIT_COMMIT_REF" =~ "dependabot" ]] || [ "$VERCEL_GIT_COMMIT_AUTHOR_LOGIN" == "dependabot[bot]" ] && exit 0 || exit 1`) preventing automated bot PRs from triggering failing preview builds.
+       - Closed broken Dependabot batch PR #20 and purged the orphaned remote branch.
+   32. **100% Green CI & Live Vercel Production Verification**:
+       - Verified all 5 workflows on both `main` and `develop` branches completed with 100% green success (`CI`, `Backend`, `CG Tourism Integration CI`, `CG Tourism Mobile CI`, `Security & Audit`).
+       - Verified Vercel production deployment reached `Status: READY` serving live HTTP 200 at `https://chhattisgarh-tourism-web.vercel.app`.
 - **Verification**:
   - `pnpm --filter web run typecheck`: 0 errors.
   - `pnpm lint`: 0 errors.
