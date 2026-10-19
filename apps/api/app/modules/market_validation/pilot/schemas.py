@@ -176,3 +176,66 @@ class PilotAuditEventResponse(BaseModel):
     actor_role: str
     details: dict | None = None
     timestamp: datetime
+
+
+class CertifiedProviderResponse(BaseModel):
+    id: str
+    name: str
+    provider_type: str
+    segment: str
+    sub_circuit: str
+    location: str
+    latitude: float
+    longitude: float
+    verification_status: str
+    certification_level: str
+    daily_capacity: int
+    current_open_leads: int
+    max_lead_limit: int
+    response_time_sla_hours: float
+    contact_phone: str
+    languages: list[str]
+    safety_trained: bool
+    amenities: list[str]
+
+
+class CircuitDestinationResponse(BaseModel):
+    id: str
+    name: str
+    district: str
+    latitude: float
+    longitude: float
+    role: str
+    type: str
+    emergency_station: str
+
+
+class EmergencyEscalationResponse(BaseModel):
+    id: str
+    station_name: str
+    type: str
+    district: str
+    phone: str
+    channel: str
+    avg_response_minutes: int
+    status: str
+
+
+class BastarCircuitReadinessResponse(BaseModel):
+    pilot_id: str
+    circuit_name: str
+    status: str
+    version: int
+    destinations: list[CircuitDestinationResponse]
+    destinations_count: int
+    certified_providers_count: int
+    homestays_count: int
+    guides_count: int
+    certification_target: int
+    certification_completion_pct: float
+    emergency_roster: list[EmergencyEscalationResponse]
+    emergency_status: str
+    circuit_breakers_armed: bool
+    founder_intervention_rate: float
+    founder_intervention_target_pct: float
+    is_operational_ready: bool

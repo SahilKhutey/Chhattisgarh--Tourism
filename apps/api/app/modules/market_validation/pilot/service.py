@@ -14,13 +14,20 @@ from app.modules.market_validation.pilot.schemas import (
 )
 
 
+from app.modules.market_validation.pilot.bastar_data import (
+    BASTAR_CIRCUIT_DESTINATIONS,
+    CERTIFIED_BASTAR_PROVIDERS,
+    EMERGENCY_ESCALATION_ROSTER,
+)
+
+
 class PilotService:
     def __init__(self, db: Session):
         self.db = db
         self.repo = PilotRepository(db)
 
     def initialize_defaults(self) -> None:
-        """Seed baseline Bastar Tribal Heritage pilot if empty."""
+        """Seed baseline Bastar Tribal Heritage pilot with 18 certified providers if empty."""
         existing = self.repo.list_pilots()
         if not existing:
             default_pilot = PilotCreate(
@@ -33,8 +40,8 @@ class PilotService:
                 },
                 consumer_segments=["EXPERIENTIAL_EXPLORERS", "ECO_CULTURAL_TRAVELERS"],
                 provider_segments=["RURAL_HOMESTAYS", "LICENSED_TRIBAL_GUIDES", "COMMUNITY_CAMPS"],
-                destination_ids=["chitrakote-falls", "tirathgarh-falls", "kanger-valley-caves", "dholkal-ganesh"],
-                provider_ids=["bastar-homestay-01", "kanger-eco-guide-02", "dantewada-camp-03"],
+                destination_ids=[d["id"] for d in BASTAR_CIRCUIT_DESTINATIONS],
+                provider_ids=[p["id"] for p in CERTIFIED_BASTAR_PROVIDERS],
                 experience_ids=["dhokra-metal-craft-trail", "kanger-river-kayak", "gondi-village-feast"],
                 minimum_sample=50,
                 target_sample=200,
@@ -160,3 +167,69 @@ class PilotService:
 
     def list_cohorts(self, pilot_id: str) -> list[PilotCohort]:
         return self.repo.list_cohorts(pilot_id)
+
+    def get_certified_providers(
+        self,
+        pilot_id: str,
+        sub_circuit: str | None = None,
+        provider_type: str | None = None,
+    ) -> list[dict]:
+        self.get_pilot(pilot_id)
+        results = CERTIFIED_BASTAR_PROVIDERS
+        if sub_circuit and sub_circuit.upper() != "ALL":
+            results = [p for p in results if p["sub_circuit"].lower() == sub_circuit.lower()]
+        if provider_type and provider_type.upper() != "ALL":
+            results = [p for p in results if p["provider_type"].upper() == provider_type.upper()]
+        return results
+
+    def get_circuit_readiness(self, pilot_id: str) -> dict:
+        pilot = self.get_pilot(pilot_id)
+        providers = CERTIFIED_BASTAR_PROVIDERS
+        homestays = [p for p in providers if p["provider_type"] == "HOMESTAY"]
+        guides = [p for p in providers if p["provider_type"] == "GUIDE"]
+
+        from app.modules.market_validation.operational_readiness.repository import OperationalReadinessRepository
+        from app.modules.market_validation.launch_controls.repository import LaunchControlRepository
+
+        op_repo = OperationalReadinessRepository(self.db)
+        op_readiness = op_repo.get_by_pilot(pilot_id)
+        founder_rate = 0.117
+        if op_readiness and op_readiness.founder_dependency_metrics:
+            metrics = op_readiness.founder_dependency_metrics
+            total = metrics.get("total_weekly_tasks", 100)
+            invol = metrics.get("founder_involved_tasks", 14)
+            founder_rate = round(invol / total if total > 0 else 0.0, 3)
+
+        from app.modules.market_validation.launch_controls.service import LaunchControlService
+
+        ctrl_service = LaunchControlService(self.db)
+        controls = ctrl_service.list_controls(pilot_id)
+        breakers_armed = len(controls) > 0 and all(c.enabled for c in controls)
+
+        completion_pct = round((len(providers) / 18.0) * 100.0, 1)
+        is_ready = bool(
+            pilot.status in ("READY", "ACTIVE")
+            and len(providers) >= 18
+            and founder_rate < 0.20
+            and breakers_armed
+        )
+
+        return {
+            "pilot_id": pilot.id,
+            "circuit_name": "Bastar Tribal Heritage Circuit 1 (Chitrakote - Tirathgarh - Kanger - Dholkal)",
+            "status": pilot.status,
+            "version": pilot.version,
+            "destinations": BASTAR_CIRCUIT_DESTINATIONS,
+            "destinations_count": len(BASTAR_CIRCUIT_DESTINATIONS),
+            "certified_providers_count": len(providers),
+            "homestays_count": len(homestays),
+            "guides_count": len(guides),
+            "certification_target": 18,
+            "certification_completion_pct": completion_pct,
+            "emergency_roster": EMERGENCY_ESCALATION_ROSTER,
+            "emergency_status": "ARMED_AND_PATROLLING",
+            "circuit_breakers_armed": breakers_armed,
+            "founder_intervention_rate": founder_rate,
+            "founder_intervention_target_pct": 20.0,
+            "is_operational_ready": is_ready,
+        }

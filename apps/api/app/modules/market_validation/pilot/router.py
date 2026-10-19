@@ -13,6 +13,8 @@ from app.modules.market_validation.pilot.schemas import (
     PilotCohortCreate,
     PilotCohortResponse,
     PilotAuditEventResponse,
+    CertifiedProviderResponse,
+    BastarCircuitReadinessResponse,
 )
 from app.modules.market_validation.pilot.service import PilotService
 
@@ -166,3 +168,20 @@ def get_audit_trail(pilot_id: str, db: Session = Depends(get_db)):
         .order_by(PilotAuditEvent.timestamp.asc())
         .all()
     )
+
+
+@router.get("/{pilot_id}/certified-providers", response_model=list[CertifiedProviderResponse])
+def get_certified_providers(
+    pilot_id: str,
+    sub_circuit: str | None = Query(None),
+    provider_type: str | None = Query(None),
+    db: Session = Depends(get_db),
+):
+    service = PilotService(db)
+    return service.get_certified_providers(pilot_id, sub_circuit=sub_circuit, provider_type=provider_type)
+
+
+@router.get("/{pilot_id}/circuit-readiness", response_model=BastarCircuitReadinessResponse)
+def get_circuit_readiness(pilot_id: str, db: Session = Depends(get_db)):
+    service = PilotService(db)
+    return service.get_circuit_readiness(pilot_id)

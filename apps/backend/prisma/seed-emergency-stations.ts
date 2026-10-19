@@ -65,6 +65,23 @@ const stations = [
   },
 
   {
+    name: 'Bastar Certified Tribal Guide Rapid Response Network',
+    phone: '+91-7782-229100',
+    type: 'COMMUNITY_RESPONDER',
+    district: 'Bastar',
+    division: 'Bastar',
+    latitude: 19.100,
+    longitude: 81.850,
+    priority: 90,
+    capabilities: [
+      'FIRST_AID',
+      'WILDERNESS_ORIENTATION',
+      'TRIBAL_TERRAIN_NAVIGATION',
+      'OFFLINE_MESH_RADIO',
+    ],
+  },
+
+  {
     name: 'Kawardha Police PCR Station',
     phone: '+91-7754-224333',
     type: 'POLICE',

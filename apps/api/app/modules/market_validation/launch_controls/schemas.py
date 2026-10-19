@@ -37,3 +37,19 @@ class LaunchControlResponse(BaseModel):
     triggered: bool = False
     created_at: datetime
     updated_at: datetime
+
+
+class CircuitBreakerEvaluationRequest(BaseModel):
+    daily_active_travelers: float | None = None
+    max_open_leads_per_host: float | None = None
+    provider_response_failure_rate: float | None = None
+    critical_safety_incidents: float | None = None
+
+
+class CircuitBreakerEvaluationResponse(BaseModel):
+    pilot_id: str
+    status: str
+    pilot_status: str
+    actions_triggered: list[str]
+    controls: list[LaunchControlResponse]
+    evaluated_at: datetime
