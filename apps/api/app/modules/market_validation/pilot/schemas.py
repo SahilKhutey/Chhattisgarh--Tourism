@@ -239,3 +239,103 @@ class BastarCircuitReadinessResponse(BaseModel):
     founder_intervention_rate: float
     founder_intervention_target_pct: float
     is_operational_ready: bool
+
+
+class FeederCohortResponse(BaseModel):
+    id: str
+    name: str
+    origin_market: str
+    traveler_segment: str
+    qualified_leads: int
+    avg_party_size: float
+    conversion_to_booking_pct: float
+    avg_response_sla_hours: float
+    sla_compliance_pct: float
+    primary_destinations: list[str]
+    popular_experiences: list[str]
+    referral_intent_pct: float
+
+
+class MonetizationEconomicsResponse(BaseModel):
+    pricing_model: str
+    fee_per_lead_inr: float
+    total_qualified_leads: int
+    gross_revenue_inr: float
+    dispatch_cost_per_lead_inr: float
+    total_dispatch_cost_inr: float
+    net_gross_profit_inr: float
+    net_contribution_margin_pct: float
+    host_collection_rate_pct: float
+    provider_satisfaction_pct: float
+    blended_ltv_cac_ratio: float
+    payback_period_days: float
+
+
+class HostSlaMetricsResponse(BaseModel):
+    target_sla_hours: float
+    observed_avg_sla_hours: float
+    total_leads_dispatched: int
+    within_sla_count: int
+    sla_compliance_pct: float
+    breached_count: int
+    auto_reassigned_count: int
+    fastest_response_minutes: int
+    slowest_response_hours: float
+
+
+class RetentionReferralResponse(BaseModel):
+    total_travelers_surveyed: int
+    repeat_trip_planning_intent_pct: float
+    gate_8_threshold_pct: float
+    gate_8_passed: bool
+    net_promoter_score: int
+    word_of_mouth_referral_pct: float
+    secondary_circuit_interest_pct: float
+    preferred_secondary_circuit: str
+
+
+class CohortExpansionResponse(BaseModel):
+    pilot_id: str
+    phase: str
+    status: str
+    total_leads_target: int
+    total_leads_achieved: int
+    feeder_cohorts: list[FeederCohortResponse]
+    monetization: MonetizationEconomicsResponse
+    host_sla: HostSlaMetricsResponse
+    retention_referral: RetentionReferralResponse
+
+
+class ScaleGateItemResponse(BaseModel):
+    gate_number: int
+    name: str
+    metric: str
+    threshold: str
+    observed_value: str
+    status: str
+    is_blocker: bool
+
+
+class ScaleGovernanceResponse(BaseModel):
+    pilot_id: str
+    scale_decision: str
+    decision_rationale: str
+    total_gates: int
+    passed_gates_count: int
+    failed_gates_count: int
+    gates: list[ScaleGateItemResponse]
+    next_expansion_circuit: str
+    transferability_score: float
+    authorized_for_expansion: bool
+
+
+class ExpansionDossierResponse(BaseModel):
+    candidate_circuit_id: str
+    circuit_name: str
+    hub_district: str
+    transferability_score: float
+    recommendation: str
+    key_destinations: list[dict]
+    target_supply_certification: dict
+    scale_readiness_mandate: str
+

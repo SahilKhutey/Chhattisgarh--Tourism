@@ -8,6 +8,8 @@ import { LaunchControlPanel, LaunchControlItem } from "@/components/market-valid
 import { OperationalReadiness } from "@/components/market-validation/OperationalReadiness";
 import { BastarCircuitOverview, BastarDestination, EmergencyRosterItem } from "@/components/market-validation/BastarCircuitOverview";
 import { CertifiedProvidersTable, CertifiedProviderItem } from "@/components/market-validation/CertifiedProvidersTable";
+import { CohortExpansionPanel, CohortExpansionData } from "@/components/market-validation/CohortExpansionPanel";
+import { ScaleGovernancePanel, ScaleGovernanceData, ExpansionDossierData } from "@/components/market-validation/ScaleGovernancePanel";
 
 const DEFAULT_CIRCUIT_CONTROLS: LaunchControlItem[] = [
   {
@@ -429,6 +431,10 @@ export default function PilotAdminPage() {
   const [destinations, setDestinations] = useState<BastarDestination[]>([]);
   const [emergencyRoster, setEmergencyRoster] = useState<EmergencyRosterItem[]>([]);
   const [founderInterventionRate, setFounderInterventionRate] = useState<number>(0.117);
+  const [cohortData, setCohortData] = useState<CohortExpansionData | null>(null);
+  const [scaleGovernanceData, setScaleGovernanceData] = useState<ScaleGovernanceData | null>(null);
+  const [expansionDossierData, setExpansionDossierData] = useState<ExpansionDossierData | null>(null);
+  const [activePhase, setActivePhase] = useState<"ALL" | "PHASE_1" | "PHASE_2" | "PHASE_3">("ALL");
   const [loading, setLoading] = useState(true);
   const [isSimulating, setIsSimulating] = useState(false);
 
@@ -472,6 +478,28 @@ export default function PilotAdminPage() {
               if (Array.isArray(ctrls) && ctrls.length > 0) {
                 setControls(ctrls);
               }
+            })
+            .catch(() => {});
+
+          // Fetch Phase 2 & Phase 3 telemetry
+          fetch(`/api/v1/market-validation/pilots/${p.id}/cohort-expansion`)
+            .then((res) => (res.ok ? res.json() : null))
+            .then((expansion) => {
+              if (expansion) setCohortData(expansion);
+            })
+            .catch(() => {});
+
+          fetch(`/api/v1/market-validation/pilots/${p.id}/scale-governance`)
+            .then((res) => (res.ok ? res.json() : null))
+            .then((gov) => {
+              if (gov) setScaleGovernanceData(gov);
+            })
+            .catch(() => {});
+
+          fetch(`/api/v1/market-validation/pilots/${p.id}/expansion-dossier`)
+            .then((res) => (res.ok ? res.json() : null))
+            .then((dos) => {
+              if (dos) setExpansionDossierData(dos);
             })
             .catch(() => {});
         }
@@ -616,39 +644,108 @@ export default function PilotAdminPage() {
             isLoading={loading}
           />
 
-          {/* Bastar Circuit 1 Topology & Emergency Safety Escalation */}
-          <BastarCircuitOverview
-            pilotId={pilot.id}
-            destinations={destinations.length > 0 ? destinations : undefined}
-            emergencyRoster={emergencyRoster.length > 0 ? emergencyRoster : undefined}
-            onSimulateIncident={handleSimulateEmergencyIncident}
-            isSimulating={isSimulating}
-          />
+          {/* 90-Day Post-Validation Roadmap Phase Selector */}
+          <div className="flex flex-wrap items-center gap-2 border-b border-slate-800 pb-3">
+            <button
+              onClick={() => setActivePhase("ALL")}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                activePhase === "ALL"
+                  ? "bg-slate-100 text-slate-900 shadow-sm"
+                  : "bg-slate-800/70 text-slate-400 hover:text-slate-200 hover:bg-slate-800"
+              }`}
+            >
+              All 90-Day Phases
+            </button>
+            <button
+              onClick={() => setActivePhase("PHASE_1")}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 ${
+                activePhase === "PHASE_1"
+                  ? "bg-emerald-500 text-slate-950 shadow-sm"
+                  : "bg-slate-800/70 text-slate-400 hover:text-slate-200 hover:bg-slate-800"
+              }`}
+            >
+              <span className="w-2 h-2 rounded-full bg-emerald-400 inline-block" />
+              Phase 1: Pilot Lockdown &amp; Safety (Days 1–30)
+            </button>
+            <button
+              onClick={() => setActivePhase("PHASE_2")}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 ${
+                activePhase === "PHASE_2"
+                  ? "bg-indigo-500 text-white shadow-sm"
+                  : "bg-slate-800/70 text-slate-400 hover:text-slate-200 hover:bg-slate-800"
+              }`}
+            >
+              <span className="w-2 h-2 rounded-full bg-indigo-400 inline-block" />
+              Phase 2: Feeder Cohorts &amp; ₹25 Economics (Days 31–60)
+            </button>
+            <button
+              onClick={() => setActivePhase("PHASE_3")}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 ${
+                activePhase === "PHASE_3"
+                  ? "bg-emerald-600 text-white shadow-sm"
+                  : "bg-slate-800/70 text-slate-400 hover:text-slate-200 hover:bg-slate-800"
+              }`}
+            >
+              <span className="w-2 h-2 rounded-full bg-amber-400 inline-block" />
+              Phase 3: Scale Scorecard &amp; Surguja Expansion (Days 61–90)
+            </button>
+          </div>
 
-          {/* Automated Launch Controls & Circuit Breakers */}
-          <LaunchControlPanel
-            controls={controls}
-            onToggleControl={handleToggleControl}
-          />
+          {/* Phase 1: Days 1–30 Bastar Circuit 1 Lockdown & Providers */}
+          {(activePhase === "ALL" || activePhase === "PHASE_1") && (
+            <div className="space-y-6">
+              {/* Bastar Circuit 1 Topology & Emergency Safety Escalation */}
+              <BastarCircuitOverview
+                pilotId={pilot.id}
+                destinations={destinations.length > 0 ? destinations : undefined}
+                emergencyRoster={emergencyRoster.length > 0 ? emergencyRoster : undefined}
+                onSimulateIncident={handleSimulateEmergencyIncident}
+                isSimulating={isSimulating}
+              />
 
-          {/* 18 Certified Tribal Homestays & Licensed Guides Network */}
-          <CertifiedProvidersTable
-            providers={providers}
-            loading={loading}
-          />
+              {/* Automated Launch Controls & Circuit Breakers */}
+              <LaunchControlPanel
+                controls={controls}
+                onToggleControl={handleToggleControl}
+              />
 
-          {/* Operational Readiness & Founder Decoupling Telemetry */}
-          <OperationalReadiness
-            founderInterventionRate={founderInterventionRate}
-            readinessStatus={founderInterventionRate <= 0.2 ? "READY" : "ATTENTION_REQUIRED"}
-          />
+              {/* 18 Certified Tribal Homestays & Licensed Guides Network */}
+              <CertifiedProvidersTable
+                providers={providers}
+                loading={loading}
+              />
 
-          <PilotKpiDashboard />
+              {/* Operational Readiness & Founder Decoupling Telemetry */}
+              <OperationalReadiness
+                founderInterventionRate={founderInterventionRate}
+                readinessStatus={founderInterventionRate <= 0.2 ? "READY" : "ATTENTION_REQUIRED"}
+              />
 
-          <PilotScopeCard
-            inScope={pilot.product_scope?.in_scope}
-            outOfScope={pilot.product_scope?.out_of_scope}
-          />
+              <PilotKpiDashboard />
+
+              <PilotScopeCard
+                inScope={pilot.product_scope?.in_scope}
+                outOfScope={pilot.product_scope?.out_of_scope}
+              />
+            </div>
+          )}
+
+          {/* Phase 2: Days 31–60 Feeder Cohorts & ₹25 Monetization */}
+          {(activePhase === "ALL" || activePhase === "PHASE_2") && (
+            <CohortExpansionPanel
+              data={cohortData}
+              loading={loading}
+            />
+          )}
+
+          {/* Phase 3: Days 61–90 Scale Scorecard & Surguja Expansion */}
+          {(activePhase === "ALL" || activePhase === "PHASE_3") && (
+            <ScaleGovernancePanel
+              governanceData={scaleGovernanceData}
+              dossierData={expansionDossierData}
+              loading={loading}
+            />
+          )}
         </>
       ) : (
         <div className="p-8 text-center text-slate-400 bg-slate-900/50 rounded-xl border border-slate-800">

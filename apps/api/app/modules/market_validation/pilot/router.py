@@ -15,6 +15,9 @@ from app.modules.market_validation.pilot.schemas import (
     PilotAuditEventResponse,
     CertifiedProviderResponse,
     BastarCircuitReadinessResponse,
+    CohortExpansionResponse,
+    ScaleGovernanceResponse,
+    ExpansionDossierResponse,
 )
 from app.modules.market_validation.pilot.service import PilotService
 
@@ -185,3 +188,22 @@ def get_certified_providers(
 def get_circuit_readiness(pilot_id: str, db: Session = Depends(get_db)):
     service = PilotService(db)
     return service.get_circuit_readiness(pilot_id)
+
+
+@router.get("/{pilot_id}/cohort-expansion", response_model=CohortExpansionResponse)
+def get_cohort_expansion(pilot_id: str, db: Session = Depends(get_db)):
+    service = PilotService(db)
+    return service.get_cohort_expansion_telemetry(pilot_id)
+
+
+@router.get("/{pilot_id}/scale-governance", response_model=ScaleGovernanceResponse)
+def get_scale_governance(pilot_id: str, db: Session = Depends(get_db)):
+    service = PilotService(db)
+    return service.get_scale_governance_scorecard(pilot_id)
+
+
+@router.get("/{pilot_id}/expansion-dossier", response_model=ExpansionDossierResponse)
+def get_expansion_dossier(pilot_id: str, db: Session = Depends(get_db)):
+    service = PilotService(db)
+    return service.get_surguja_expansion_dossier(pilot_id)
+

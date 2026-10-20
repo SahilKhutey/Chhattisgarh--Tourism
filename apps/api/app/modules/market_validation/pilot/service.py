@@ -19,6 +19,15 @@ from app.modules.market_validation.pilot.bastar_data import (
     CERTIFIED_BASTAR_PROVIDERS,
     EMERGENCY_ESCALATION_ROSTER,
 )
+from app.modules.market_validation.pilot.cohort_expansion_data import (
+    FEEDER_MARKET_COHORTS,
+    MONETIZATION_ECONOMICS,
+    HOST_SLA_METRICS,
+    RETENTION_AND_REFERRAL,
+    SCALE_GATES_EVALUATION,
+    SURGUJA_EXPANSION_DOSSIER,
+)
+
 
 
 class PilotService:
@@ -233,3 +242,48 @@ class PilotService:
             "founder_intervention_target_pct": 20.0,
             "is_operational_ready": is_ready,
         }
+
+    def get_cohort_expansion_telemetry(self, pilot_id: str) -> dict:
+        pilot = self.get_pilot(pilot_id)
+        total_leads = sum(c["qualified_leads"] for c in FEEDER_MARKET_COHORTS)
+        return {
+            "pilot_id": pilot.id,
+            "phase": "Days 31–60: Cohort Expansion & Monetization Validation",
+            "status": "VALIDATED_POSITIVE_ECONOMICS",
+            "total_leads_target": 150,
+            "total_leads_achieved": total_leads,
+            "feeder_cohorts": FEEDER_MARKET_COHORTS,
+            "monetization": MONETIZATION_ECONOMICS,
+            "host_sla": HOST_SLA_METRICS,
+            "retention_referral": RETENTION_AND_REFERRAL,
+        }
+
+    def get_scale_governance_scorecard(self, pilot_id: str) -> dict:
+        pilot = self.get_pilot(pilot_id)
+        passed = sum(1 for g in SCALE_GATES_EVALUATION if g["status"] == "PASSED")
+        failed = sum(1 for g in SCALE_GATES_EVALUATION if g["status"] == "FAILED")
+        all_passed = failed == 0 and passed == len(SCALE_GATES_EVALUATION)
+        decision = "SCALE" if all_passed else "LIMITED_EXPANSION"
+        rationale = (
+            "All 10 scale gates passed with validated unit economics (98.6% contribution margin on ₹25/lead), "
+            "zero safety breaches, 94.4% host SLA compliance, and 11.7% founder intervention. "
+            "Formal authorization granted for secondary circuit expansion into Surguja Ecotourism Circuit."
+            if all_passed else "Scale gates evaluation conditional."
+        )
+        return {
+            "pilot_id": pilot.id,
+            "scale_decision": decision,
+            "decision_rationale": rationale,
+            "total_gates": len(SCALE_GATES_EVALUATION),
+            "passed_gates_count": passed,
+            "failed_gates_count": failed,
+            "gates": SCALE_GATES_EVALUATION,
+            "next_expansion_circuit": "Surguja Ecotourism & Highland Heritage Circuit",
+            "transferability_score": 74.8,
+            "authorized_for_expansion": all_passed,
+        }
+
+    def get_surguja_expansion_dossier(self, pilot_id: str) -> dict:
+        self.get_pilot(pilot_id)
+        return SURGUJA_EXPANSION_DOSSIER
+
