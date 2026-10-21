@@ -41,13 +41,13 @@ CG Tourism OS Development History
 - **Decision Authority**: **`CONDITIONAL_GO`** (Bastar Circuit 1 approved for 90-day pilot)
 - **Scope**: Consumer problem taxonomy, supply-side provider onboarding, corridor routing, content & discovery trust weighting, conversion attribution, creator/provider retention cohorts, unit economics & willingness-to-pay elasticity, 12 hard scale gates, unit test hardening (225 passing tests), and 90-day execution roadmap.
 
-### 4. Active 90-Day Pilot Execution (Bastar Circuit 1)
-- **Status**: **100% VALIDATED & CERTIFIED FOR SCALE**
-- **Detailed Progress**: Item 34 in [DEVELOPMENT_TASK_LOG.md](DEVELOPMENT_TASK_LOG.md)
+### 4. Active Multi-Circuit Operations (Bastar Circuit 1 & Surguja Circuit 2)
+- **Status**: **CIRCUIT 1 PRODUCTION-HARDENED & CIRCUIT 2 EXPANSION ACTIVE**
+- **Detailed Progress**: Items 34 & 35 in [DEVELOPMENT_TASK_LOG.md](DEVELOPMENT_TASK_LOG.md)
 - **Scope & Results**:
-  - **Days 1–30 (Pilot Lockdown & Readiness)**: 4 landmark destinations, 18 certified tribal homestays/guides, rapid SOS responder network, automated circuit breakers (500 visitor cap, 10 open leads/host), and founder decoupling telemetry (< 20%). [COMPLETED]
-  - **Days 31–60 (Feeder Cohorts & ₹25 Monetization)**: Feeder cohorts (Raipur, Nagpur, Hyderabad) achieving 160 qualified leads, ₹25 pay-per-lead unit economics with 98.6% contribution margin, host response SLA (< 4.0h target, 1.9h observed, 94.4% compliance), and Gate 8 repeat intent (42.5%, +64 NPS). [VALIDATED]
-  - **Days 61–90 (Scale Governance & Surguja Expansion)**: 10-Gate Scale Scorecard evaluation (10/10 passed), formal executive determination of SCALE, and authorization of Surguja Ecotourism Circuit (Mainpat, Ramgarh Caves, Tatapani Springs) with 74.8 / 100 transferability score. [AUTHORIZED]
+  - **Bastar Tribal Heritage Circuit 1 (Scaled)**: 4 landmark destinations, 18 certified tribal homestays/guides, 500 daily visitor cap, 10 open leads cap, 160 feeder leads, 98.6% margin, and 100% scale gates passed.
+  - **Surguja Ecotourism Circuit 2 (Active Pilot)**: 4 anchor destinations (Mainpat Plateau 1150m, Ramgarh Ancient Caves & Amphitheatre, Tatapani Geothermal Springs, Kailash Gufa & Bageesha), 20 certified providers (12 homestays, 8 guides), 3 emergency SOS responder stations (Ambikapur DH, Sitapur CHC, Ramanujganj PHC), 400 daily visitor cap, and 8 open leads/host.
+  - **Multi-Circuit Command & Discovery**: Multi-circuit API /circuits/overview and frontend switcher console supporting simultaneous operations across southern and northern regional tourism corridors.
 
 ### 5. UI/UX Framework Track (UI/UX-0 — UI/UX-7 + FINAL)
 - **Status**: **100% COMPLETE / PRODUCTION HARDENED**

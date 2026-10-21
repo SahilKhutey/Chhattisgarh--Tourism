@@ -22,6 +22,13 @@ class LaunchControlService:
         ("SAFETY_DISABLE", "Critical Unaddressed Safety Incidents", 1.0, 0.0, "PAUSE_PILOT"),
     ]
 
+    SURGUJA_CONTROLS = [
+        ("TRAFFIC_LIMIT", "Max Daily Active Travelers (Surguja)", 400.0, 85.0, "THROTTLE"),
+        ("BOOKING_LIMIT", "Max Open Pending Leads per Surguja Host", 8.0, 2.0, "HALT_BOOKINGS"),
+        ("CIRCUIT_BREAKER", "Max Provider Response Failure Rate % (Surguja)", 25.0, 6.2, "ALERT"),
+        ("SAFETY_DISABLE", "Critical Unaddressed Safety Incidents (Surguja)", 1.0, 0.0, "PAUSE_PILOT"),
+    ]
+
     def __init__(self, db: Session):
         self.db = db
         self.repo = LaunchControlRepository(db)
@@ -32,8 +39,12 @@ class LaunchControlService:
         if existing:
             return existing
 
+        pilot = self.pilot_repo.get_pilot(pilot_id)
+        is_surguja = "surguja" in pilot_id.lower() or (pilot and "surguja" in pilot.name.lower())
+        controls_to_seed = self.SURGUJA_CONTROLS if is_surguja else self.DEFAULT_CONTROLS
+
         created = []
-        for c_type, name, threshold, cur_val, action in self.DEFAULT_CONTROLS:
+        for c_type, name, threshold, cur_val, action in controls_to_seed:
             ctrl = LaunchControlCreate(
                 pilot_id=pilot_id,
                 control_type=c_type,

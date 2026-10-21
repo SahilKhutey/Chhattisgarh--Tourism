@@ -1302,6 +1302,22 @@ Following commit `3f23780`, GitHub Actions workflows failed across 4 jobs:
           - Jest component suite pilot-expansion-components.test.tsx passed (2/2 tests in 2.46s).
           - Web TypeScript typecheck passed with 0 errors (	sc --noEmit).
 
+    35. **Multi-Circuit Operations & Surguja Ecotourism Expansion (Circuit 2 Launch)**:
+        - **Surguja Ecotourism Topology**: Seeded 4 anchor destinations (Mainpat Hill Plateau 1150m, Ramgarh Caves & Amphitheatre 2nd c. BC, Tatapani Geothermal Springs, and Kailash Gufa & Bageesha) in pps/api/app/modules/market_validation/pilot/surguja_data.py.
+        - **20 Certified Providers Network**: Vetted and certified 12 tribal homestays and 8 licensed nature & heritage guides with Level 3 verification, contact dispatch, and sub-circuit filtering (Mainpat, Ramgarh, Tatapani, Kailash Gufa, Ambikapur Hub).
+        - **Rapid Emergency SOS Responder Stations**: Linked Ambikapur GMC Trauma Center (18m SLA), Sitapur CHC & Forest Post (22m SLA), and Ramanujganj Primary Health & Thermal Range Unit (25m SLA).
+        - **Automated Circuit Breakers & Launch Controls**: Configured 400 daily visitor cap, 8 open leads/host cap, 25% failure alert, and emergency safety killswitch.
+        - **Multi-Circuit REST API Endpoints**:
+          - Added GET /api/v1/market-validation/pilots/circuits/overview returning both Bastar Circuit 1 (SCALE_VALIDATED) and Surguja Circuit 2 (EXPANSION_PILOT).
+          - Updated get_certified_providers and get_circuit_readiness to support dynamic multi-circuit resolution.
+        - **Frontend Multi-Circuit Console**:
+          - Created SurgujaCircuitOverview.tsx with topology visualizer, destination altitude pills, and safety SOS roster.
+          - Updated PilotAdminPage (pps/web/src/app/admin/market-validation/pilot/page.tsx) with an interactive Multi-Circuit Operational Switcher.
+        - **Automated Verification**:
+          - Pytest suite 	est_surguja_circuit_and_multi_circuit.py passed (4/4 tests in 1.29s; full market validation suite 234/234 passed).
+          - Jest component suite surguja-circuit-components.test.tsx passed (2/2 tests; all 3 market validation suites 8/8 passed).
+          - Web TypeScript typecheck passed with 0 errors (	sc --noEmit).
+
 ### 24.3 Complete Verification Status
 - `pnpm --filter web run typecheck`: **0 errors (100% pass)**.
 - `pnpm lint`: **0 errors, 3 packages passed (100% pass)**.

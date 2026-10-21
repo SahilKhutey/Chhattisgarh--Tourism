@@ -339,3 +339,27 @@ class ExpansionDossierResponse(BaseModel):
     target_supply_certification: dict
     scale_readiness_mandate: str
 
+
+class CircuitSummaryResponse(BaseModel):
+    id: str
+    name: str
+    pilot_id: str
+    division: str
+    districts: list[str]
+    status: str
+    scale_status: str
+    anchor_destinations_count: int
+    certified_providers_count: int
+    homestays_count: int
+    guides_count: int
+    daily_visitor_cap: int
+    readiness_score: float
+    destinations: list[dict]
+    emergency_stations_count: int
+
+
+class MultiCircuitResponse(BaseModel):
+    total_circuits: int
+    active_circuits: list[CircuitSummaryResponse]
+
+

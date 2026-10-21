@@ -19,6 +19,12 @@ from app.modules.market_validation.pilot.bastar_data import (
     CERTIFIED_BASTAR_PROVIDERS,
     EMERGENCY_ESCALATION_ROSTER,
 )
+from app.modules.market_validation.pilot.surguja_data import (
+    SURGUJA_CIRCUIT_DESTINATIONS,
+    CERTIFIED_SURGUJA_PROVIDERS,
+    SURGUJA_EMERGENCY_ROSTER,
+    SURGUJA_CIRCUIT_CONTROLS,
+)
 from app.modules.market_validation.pilot.cohort_expansion_data import (
     FEEDER_MARKET_COHORTS,
     MONETIZATION_ECONOMICS,
@@ -36,9 +42,10 @@ class PilotService:
         self.repo = PilotRepository(db)
 
     def initialize_defaults(self) -> None:
-        """Seed baseline Bastar Tribal Heritage pilot with 18 certified providers if empty."""
+        """Seed baseline Bastar Tribal Heritage and Surguja Ecotourism pilots with certified providers if empty."""
         existing = self.repo.list_pilots()
-        if not existing:
+        bastar_pilot = next((p for p in existing if "bastar" in p.name.lower()), None)
+        if not bastar_pilot:
             default_pilot = PilotCreate(
                 name="Bastar Tribal Heritage & Craft Circuit Pilot",
                 validation_decision_id="MV10-DECISION-GO-001",
@@ -64,6 +71,35 @@ class PilotService:
                 initial_status="ACTIVE",
             )
             created.start_date = datetime.now(timezone.utc)
+            self.db.commit()
+
+        surguja_pilot = next((p for p in existing if "surguja" in p.name.lower()), None)
+        if not surguja_pilot:
+            default_surguja = PilotCreate(
+                name="Surguja Ecotourism & Highland Heritage Circuit Pilot",
+                validation_decision_id="MV13-SCALE-SURGUJA-002",
+                geography_scope={
+                    "division": "Surguja",
+                    "districts": ["Surguja", "Balrampur-Ramanujganj", "Jashpur"],
+                    "tourism_zone": "Mainpat-Ramgarh-Tatapani",
+                },
+                consumer_segments=["ECO_CULTURAL_TRAVELERS", "WELLNESS_PILGRIMS", "ADVENTURE_SEEKERS"],
+                provider_segments=["RURAL_HOMESTAYS", "LICENSED_TRIBAL_GUIDES"],
+                destination_ids=[d["id"] for d in SURGUJA_CIRCUIT_DESTINATIONS],
+                provider_ids=[p["id"] for p in CERTIFIED_SURGUJA_PROVIDERS],
+                experience_ids=["tibetan-monastery-walk", "ramgarh-cave-theatre", "tatapani-thermal-bath", "kailash-acoustic-trail"],
+                minimum_sample=40,
+                target_sample=150,
+                budget_band="PILOT_TIER_2_INR_75K",
+                launch_owner="PRODUCT_LEADER",
+            )
+            created_surguja = self.create_pilot(
+                default_surguja,
+                actor_id="system-init",
+                actor_role="ADMIN",
+                initial_status="ACTIVE",
+            )
+            created_surguja.start_date = datetime.now(timezone.utc)
             self.db.commit()
 
     def create_pilot(
@@ -183,8 +219,9 @@ class PilotService:
         sub_circuit: str | None = None,
         provider_type: str | None = None,
     ) -> list[dict]:
-        self.get_pilot(pilot_id)
-        results = CERTIFIED_BASTAR_PROVIDERS
+        pilot = self.repo.get_pilot(pilot_id)
+        is_surguja = "surguja" in pilot_id.lower() or (pilot and "surguja" in pilot.name.lower())
+        results = CERTIFIED_SURGUJA_PROVIDERS if is_surguja else CERTIFIED_BASTAR_PROVIDERS
         if sub_circuit and sub_circuit.upper() != "ALL":
             results = [p for p in results if p["sub_circuit"].lower() == sub_circuit.lower()]
         if provider_type and provider_type.upper() != "ALL":
@@ -193,7 +230,17 @@ class PilotService:
 
     def get_circuit_readiness(self, pilot_id: str) -> dict:
         pilot = self.get_pilot(pilot_id)
-        providers = CERTIFIED_BASTAR_PROVIDERS
+        is_surguja = "surguja" in pilot_id.lower() or (pilot and "surguja" in pilot.name.lower())
+        providers = CERTIFIED_SURGUJA_PROVIDERS if is_surguja else CERTIFIED_BASTAR_PROVIDERS
+        destinations = SURGUJA_CIRCUIT_DESTINATIONS if is_surguja else BASTAR_CIRCUIT_DESTINATIONS
+        emergency_roster = SURGUJA_EMERGENCY_ROSTER if is_surguja else EMERGENCY_ESCALATION_ROSTER
+        target_count = 20 if is_surguja else 18
+        circuit_name = (
+            "Surguja Ecotourism & Highland Heritage Circuit 2 (Mainpat - Ramgarh - Tatapani - Kailash Gufa)"
+            if is_surguja
+            else "Bastar Tribal Heritage Circuit 1 (Chitrakote - Tirathgarh - Kanger - Dholkal)"
+        )
+
         homestays = [p for p in providers if p["provider_type"] == "HOMESTAY"]
         guides = [p for p in providers if p["provider_type"] == "GUIDE"]
 
@@ -202,7 +249,7 @@ class PilotService:
 
         op_repo = OperationalReadinessRepository(self.db)
         op_readiness = op_repo.get_by_pilot(pilot_id)
-        founder_rate = 0.117
+        founder_rate = 0.085 if is_surguja else 0.117
         if op_readiness and op_readiness.founder_dependency_metrics:
             metrics = op_readiness.founder_dependency_metrics
             total = metrics.get("total_weekly_tasks", 100)
@@ -215,32 +262,79 @@ class PilotService:
         controls = ctrl_service.list_controls(pilot_id)
         breakers_armed = len(controls) > 0 and all(c.enabled for c in controls)
 
-        completion_pct = round((len(providers) / 18.0) * 100.0, 1)
+        completion_pct = round((len(providers) / float(target_count)) * 100.0, 1)
         is_ready = bool(
             pilot.status in ("READY", "ACTIVE")
-            and len(providers) >= 18
+            and len(providers) >= target_count
             and founder_rate < 0.20
             and breakers_armed
         )
 
         return {
             "pilot_id": pilot.id,
-            "circuit_name": "Bastar Tribal Heritage Circuit 1 (Chitrakote - Tirathgarh - Kanger - Dholkal)",
+            "circuit_name": circuit_name,
             "status": pilot.status,
             "version": pilot.version,
-            "destinations": BASTAR_CIRCUIT_DESTINATIONS,
-            "destinations_count": len(BASTAR_CIRCUIT_DESTINATIONS),
+            "destinations": destinations,
+            "destinations_count": len(destinations),
             "certified_providers_count": len(providers),
             "homestays_count": len(homestays),
             "guides_count": len(guides),
-            "certification_target": 18,
+            "certification_target": target_count,
             "certification_completion_pct": completion_pct,
-            "emergency_roster": EMERGENCY_ESCALATION_ROSTER,
+            "emergency_roster": emergency_roster,
             "emergency_status": "ARMED_AND_PATROLLING",
             "circuit_breakers_armed": breakers_armed,
             "founder_intervention_rate": founder_rate,
             "founder_intervention_target_pct": 20.0,
             "is_operational_ready": is_ready,
+        }
+
+    def get_active_circuits(self) -> dict:
+        self.initialize_defaults()
+        pilots = self.repo.list_pilots()
+        bastar_pilot = next((p for p in pilots if "bastar" in p.name.lower()), None)
+        surguja_pilot = next((p for p in pilots if "surguja" in p.name.lower()), None)
+
+        circuits = [
+            {
+                "id": "bastar-circuit-1",
+                "name": "Bastar Tribal Heritage Circuit 1",
+                "pilot_id": bastar_pilot.id if bastar_pilot else "pilot-bastar-circuit-1",
+                "division": "Bastar",
+                "districts": ["Bastar", "Dantewada"],
+                "status": "ACTIVE",
+                "scale_status": "SCALE_VALIDATED",
+                "anchor_destinations_count": len(BASTAR_CIRCUIT_DESTINATIONS),
+                "certified_providers_count": len(CERTIFIED_BASTAR_PROVIDERS),
+                "homestays_count": len([p for p in CERTIFIED_BASTAR_PROVIDERS if p["provider_type"] == "HOMESTAY"]),
+                "guides_count": len([p for p in CERTIFIED_BASTAR_PROVIDERS if p["provider_type"] == "GUIDE"]),
+                "daily_visitor_cap": 500,
+                "readiness_score": 100.0,
+                "destinations": BASTAR_CIRCUIT_DESTINATIONS,
+                "emergency_stations_count": len(EMERGENCY_ESCALATION_ROSTER),
+            },
+            {
+                "id": "surguja-circuit-2",
+                "name": "Surguja Ecotourism Circuit 2",
+                "pilot_id": surguja_pilot.id if surguja_pilot else "pilot-surguja-circuit-2",
+                "division": "Surguja",
+                "districts": ["Surguja", "Balrampur-Ramanujganj", "Jashpur"],
+                "status": "ACTIVE",
+                "scale_status": "EXPANSION_PILOT",
+                "anchor_destinations_count": len(SURGUJA_CIRCUIT_DESTINATIONS),
+                "certified_providers_count": len(CERTIFIED_SURGUJA_PROVIDERS),
+                "homestays_count": len([p for p in CERTIFIED_SURGUJA_PROVIDERS if p["provider_type"] == "HOMESTAY"]),
+                "guides_count": len([p for p in CERTIFIED_SURGUJA_PROVIDERS if p["provider_type"] == "GUIDE"]),
+                "daily_visitor_cap": 400,
+                "readiness_score": 85.0,
+                "destinations": SURGUJA_CIRCUIT_DESTINATIONS,
+                "emergency_stations_count": len(SURGUJA_EMERGENCY_ROSTER),
+            },
+        ]
+        return {
+            "total_circuits": len(circuits),
+            "active_circuits": circuits,
         }
 
     def get_cohort_expansion_telemetry(self, pilot_id: str) -> dict:

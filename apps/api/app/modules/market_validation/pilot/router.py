@@ -18,6 +18,7 @@ from app.modules.market_validation.pilot.schemas import (
     CohortExpansionResponse,
     ScaleGovernanceResponse,
     ExpansionDossierResponse,
+    MultiCircuitResponse,
 )
 from app.modules.market_validation.pilot.service import PilotService
 
@@ -48,6 +49,12 @@ def list_pilots(
 ):
     service = PilotService(db)
     return service.list_pilots(status=status, limit=limit, offset=offset)
+
+
+@router.get("/circuits/overview", response_model=MultiCircuitResponse)
+def get_circuits_overview(db: Session = Depends(get_db)):
+    service = PilotService(db)
+    return service.get_active_circuits()
 
 
 @router.get("/{pilot_id}", response_model=PilotResponse)

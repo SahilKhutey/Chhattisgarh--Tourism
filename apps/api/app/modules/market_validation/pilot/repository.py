@@ -48,7 +48,7 @@ class PilotRepository:
         query = self.db.query(ValidationPilot)
         if status:
             query = query.filter(ValidationPilot.status == status)
-        return query.order_by(ValidationPilot.created_at.desc()).offset(offset).limit(limit).all()
+        return query.order_by(ValidationPilot.created_at.asc()).offset(offset).limit(limit).all()
 
     def update_pilot(
         self,

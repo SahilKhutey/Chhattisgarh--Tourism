@@ -7,6 +7,7 @@ import { PilotKpiDashboard } from "@/components/market-validation/PilotKpiDashbo
 import { LaunchControlPanel, LaunchControlItem } from "@/components/market-validation/LaunchControlPanel";
 import { OperationalReadiness } from "@/components/market-validation/OperationalReadiness";
 import { BastarCircuitOverview, BastarDestination, EmergencyRosterItem } from "@/components/market-validation/BastarCircuitOverview";
+import { SurgujaCircuitOverview, SurgujaDestinationItem, SurgujaEmergencyRosterItem } from "@/components/market-validation/SurgujaCircuitOverview";
 import { CertifiedProvidersTable, CertifiedProviderItem } from "@/components/market-validation/CertifiedProvidersTable";
 import { CohortExpansionPanel, CohortExpansionData } from "@/components/market-validation/CohortExpansionPanel";
 import { ScaleGovernancePanel, ScaleGovernanceData, ExpansionDossierData } from "@/components/market-validation/ScaleGovernancePanel";
@@ -424,8 +425,461 @@ const DEFAULT_PROVIDERS: CertifiedProviderItem[] = [
   },
 ];
 
+const DEFAULT_SURGUJA_CONTROLS: LaunchControlItem[] = [
+  {
+    id: "ctrl-surguja-traffic-limit",
+    control_type: "TRAFFIC_LIMIT",
+    name: "Max Daily Active Travelers (Surguja)",
+    enabled: true,
+    threshold: 400.0,
+    current_value: 85.0,
+    action: "THROTTLE",
+    owner: "SYSTEM",
+    triggered: false,
+  },
+  {
+    id: "ctrl-surguja-booking-limit",
+    control_type: "BOOKING_LIMIT",
+    name: "Max Open Pending Leads per Surguja Host",
+    enabled: true,
+    threshold: 8.0,
+    current_value: 2.0,
+    action: "HALT_BOOKINGS",
+    owner: "SYSTEM",
+    triggered: false,
+  },
+  {
+    id: "ctrl-surguja-failure-rate",
+    control_type: "CIRCUIT_BREAKER",
+    name: "Max Provider Response Failure Rate % (Surguja)",
+    enabled: true,
+    threshold: 25.0,
+    current_value: 6.2,
+    action: "ALERT",
+    owner: "SYSTEM",
+    triggered: false,
+  },
+  {
+    id: "ctrl-surguja-safety-killswitch",
+    control_type: "SAFETY_DISABLE",
+    name: "Critical Unaddressed Safety Incidents (Surguja)",
+    enabled: true,
+    threshold: 1.0,
+    current_value: 0.0,
+    action: "PAUSE_PILOT",
+    owner: "SYSTEM",
+    triggered: false,
+  },
+];
+
+const DEFAULT_SURGUJA_PROVIDERS: CertifiedProviderItem[] = [
+  {
+    id: "surguja-mainpat-tibetan-homestay",
+    name: "Dhakpo Heritage Tibetan Homestay",
+    provider_type: "HOMESTAY",
+    segment: "RURAL_HOMESTAYS",
+    sub_circuit: "Mainpat Plateau",
+    location: "Camp No. 1, Mainpat",
+    latitude: 22.815,
+    longitude: 83.287,
+    verification_status: "VERIFIED",
+    certification_level: "LEVEL_3_CERTIFIED",
+    daily_capacity: 12,
+    current_open_leads: 2,
+    max_lead_limit: 8,
+    response_time_sla_hours: 1.6,
+    contact_phone: "+91-7774-275201",
+    languages: ["Tibetan", "Hindi", "English"],
+    safety_trained: true,
+    amenities: ["Tibetan Butter Tea & Momos", "Monastery Meditation Walk", "Solar Water Heating"],
+  },
+  {
+    id: "surguja-mainpat-jaljali-retreat",
+    name: "Jaljali Bouncing Peatland Eco-Stay",
+    provider_type: "HOMESTAY",
+    segment: "RURAL_HOMESTAYS",
+    sub_circuit: "Mainpat Plateau",
+    location: "Jaljali Meadow Waypoint",
+    latitude: 22.809,
+    longitude: 83.275,
+    verification_status: "VERIFIED",
+    certification_level: "LEVEL_3_CERTIFIED",
+    daily_capacity: 10,
+    current_open_leads: 3,
+    max_lead_limit: 8,
+    response_time_sla_hours: 1.8,
+    contact_phone: "+91-7774-275202",
+    languages: ["Chhattisgarhi", "Hindi"],
+    safety_trained: true,
+    amenities: ["Peatland Nature Walks", "Organic Millets Dining", "Stargazing Deck"],
+  },
+  {
+    id: "surguja-mainpat-tigerpoint-stay",
+    name: "Tiger Point Falls Valley Cottage",
+    provider_type: "HOMESTAY",
+    segment: "RURAL_HOMESTAYS",
+    sub_circuit: "Mainpat Plateau",
+    location: "Near Tiger Point Waterfall, Mainpat",
+    latitude: 22.821,
+    longitude: 83.301,
+    verification_status: "VERIFIED",
+    certification_level: "LEVEL_3_CERTIFIED",
+    daily_capacity: 8,
+    current_open_leads: 1,
+    max_lead_limit: 8,
+    response_time_sla_hours: 1.5,
+    contact_phone: "+91-7774-275203",
+    languages: ["Hindi", "Chhattisgarhi"],
+    safety_trained: true,
+    amenities: ["Gorge View Balcony", "Waterfall Trek Guide", "Fireplace Lounge"],
+  },
+  {
+    id: "surguja-mainpat-fishpoint-farmstay",
+    name: "Machhli Point Stream Farmstay",
+    provider_type: "HOMESTAY",
+    segment: "RURAL_HOMESTAYS",
+    sub_circuit: "Mainpat Plateau",
+    location: "Fish Point Gorge Trail",
+    latitude: 22.828,
+    longitude: 83.292,
+    verification_status: "VERIFIED",
+    certification_level: "LEVEL_3_CERTIFIED",
+    daily_capacity: 6,
+    current_open_leads: 2,
+    max_lead_limit: 8,
+    response_time_sla_hours: 1.9,
+    contact_phone: "+91-7774-275204",
+    languages: ["Kudukh", "Hindi"],
+    safety_trained: true,
+    amenities: ["Stream Angling", "Fresh Local Trout Meals", "Emergency Satellite Beacon"],
+  },
+  {
+    id: "surguja-ramgarh-heritage-lodge",
+    name: "Ramgarh Ancient Theatre Heritage Home",
+    provider_type: "HOMESTAY",
+    segment: "RURAL_HOMESTAYS",
+    sub_circuit: "Ramgarh Caves",
+    location: "Base of Ramgarh Hill, Udaypur",
+    latitude: 22.879,
+    longitude: 82.912,
+    verification_status: "VERIFIED",
+    certification_level: "LEVEL_3_CERTIFIED",
+    daily_capacity: 10,
+    current_open_leads: 1,
+    max_lead_limit: 8,
+    response_time_sla_hours: 1.7,
+    contact_phone: "+91-7774-232201",
+    languages: ["Chhattisgarhi", "Hindi"],
+    safety_trained: true,
+    amenities: ["Kalidasa Inscription Tour", "Traditional Chhattisgarhi Thali", "Certified Cave Guide"],
+  },
+  {
+    id: "surguja-ramgarh-sita-bengra-stay",
+    name: "Sita Bengra Cliff View Stay",
+    provider_type: "HOMESTAY",
+    segment: "RURAL_HOMESTAYS",
+    sub_circuit: "Ramgarh Caves",
+    location: "Udaypur Ridge Road",
+    latitude: 22.881,
+    longitude: 82.918,
+    verification_status: "VERIFIED",
+    certification_level: "LEVEL_3_CERTIFIED",
+    daily_capacity: 8,
+    current_open_leads: 2,
+    max_lead_limit: 8,
+    response_time_sla_hours: 2.1,
+    contact_phone: "+91-7774-232202",
+    languages: ["Hindi", "English"],
+    safety_trained: true,
+    amenities: ["Ancient Inscription Rubbing Guide", "Hill Trekking Equipment"],
+  },
+  {
+    id: "surguja-tatapani-sulfur-spring-stay",
+    name: "Tatapani Thermal Springs Wellness Lodge",
+    provider_type: "HOMESTAY",
+    segment: "RURAL_HOMESTAYS",
+    sub_circuit: "Tatapani Springs",
+    location: "Tatapani Geothermal Park Road",
+    latitude: 23.689,
+    longitude: 83.653,
+    verification_status: "VERIFIED",
+    certification_level: "LEVEL_3_CERTIFIED",
+    daily_capacity: 14,
+    current_open_leads: 2,
+    max_lead_limit: 8,
+    response_time_sla_hours: 1.4,
+    contact_phone: "+91-7774-261301",
+    languages: ["Chhattisgarhi", "Bhojpuri", "Hindi"],
+    safety_trained: true,
+    amenities: ["Private Thermal Sulfur Bath Access", "Ayurvedic Herbal Massages"],
+  },
+  {
+    id: "surguja-tatapani-kund-homestay",
+    name: "Shiva Kund Thermal Eco-Stay",
+    provider_type: "HOMESTAY",
+    segment: "RURAL_HOMESTAYS",
+    sub_circuit: "Tatapani Springs",
+    location: "Near Tatapani Temple Complex",
+    latitude: 23.685,
+    longitude: 83.649,
+    verification_status: "VERIFIED",
+    certification_level: "LEVEL_3_CERTIFIED",
+    daily_capacity: 8,
+    current_open_leads: 1,
+    max_lead_limit: 8,
+    response_time_sla_hours: 1.6,
+    contact_phone: "+91-7774-261302",
+    languages: ["Hindi", "Chhattisgarhi"],
+    safety_trained: true,
+    amenities: ["Thermal Water Pool", "Pilgrimage Guide", "Organic Garden Dining"],
+  },
+  {
+    id: "surguja-kailash-gufa-sal-retreat",
+    name: "Kailash Gufa Sal Forest Camp",
+    provider_type: "HOMESTAY",
+    segment: "RURAL_HOMESTAYS",
+    sub_circuit: "Kailash Gufa",
+    location: "Bagicha Reserve Forest Buffer",
+    latitude: 22.953,
+    longitude: 83.624,
+    verification_status: "VERIFIED",
+    certification_level: "LEVEL_3_CERTIFIED",
+    daily_capacity: 10,
+    current_open_leads: 2,
+    max_lead_limit: 8,
+    response_time_sla_hours: 2.2,
+    contact_phone: "+91-7774-252201",
+    languages: ["Oraon", "Hindi"],
+    safety_trained: true,
+    amenities: ["Sal Forest Eco-Tents", "Cave Acoustic Meditation Tour"],
+  },
+  {
+    id: "surguja-kailash-bageesha-stay",
+    name: "Bageesha Waterfall & Cave Homestay",
+    provider_type: "HOMESTAY",
+    segment: "RURAL_HOMESTAYS",
+    sub_circuit: "Kailash Gufa",
+    location: "Upper Bagicha Stream",
+    latitude: 22.948,
+    longitude: 83.618,
+    verification_status: "VERIFIED",
+    certification_level: "LEVEL_3_CERTIFIED",
+    daily_capacity: 6,
+    current_open_leads: 1,
+    max_lead_limit: 8,
+    response_time_sla_hours: 1.8,
+    contact_phone: "+91-7774-252202",
+    languages: ["Chhattisgarhi", "Hindi"],
+    safety_trained: true,
+    amenities: ["Wild Honey Harvesting Demo", "Waterfall Natural Pool"],
+  },
+  {
+    id: "surguja-ambikapur-mahua-garden-stay",
+    name: "Mahua Heritage Villa & Gateway Hub",
+    provider_type: "HOMESTAY",
+    segment: "RURAL_HOMESTAYS",
+    sub_circuit: "Ambikapur Hub",
+    location: "Gandhi Nagar Ring Road, Ambikapur",
+    latitude: 23.118,
+    longitude: 83.195,
+    verification_status: "VERIFIED",
+    certification_level: "LEVEL_3_CERTIFIED",
+    daily_capacity: 16,
+    current_open_leads: 3,
+    max_lead_limit: 8,
+    response_time_sla_hours: 1.2,
+    contact_phone: "+91-7774-222501",
+    languages: ["Hindi", "English", "Chhattisgarhi"],
+    safety_trained: true,
+    amenities: ["Circuit Fleet Logistics", "Luggage Storage", "24/7 Power"],
+  },
+  {
+    id: "surguja-sitapur-hillside-farm",
+    name: "Sitapur Valley Hillside Farmstay",
+    provider_type: "HOMESTAY",
+    segment: "RURAL_HOMESTAYS",
+    sub_circuit: "Mainpat Plateau",
+    location: "Sitapur Foothills",
+    latitude: 22.781,
+    longitude: 83.31,
+    verification_status: "VERIFIED",
+    certification_level: "LEVEL_3_CERTIFIED",
+    daily_capacity: 8,
+    current_open_leads: 1,
+    max_lead_limit: 8,
+    response_time_sla_hours: 1.7,
+    contact_phone: "+91-7774-245201",
+    languages: ["Chhattisgarhi", "Hindi"],
+    safety_trained: true,
+    amenities: ["Tawad River Kayaking", "Organic Vegetable Picking"],
+  },
+  // 8 Licensed Guides
+  {
+    id: "guide-surguja-tenzin-norbu",
+    name: "Tenzin Norbu",
+    provider_type: "GUIDE",
+    segment: "LICENSED_TRIBAL_GUIDES",
+    sub_circuit: "Mainpat Plateau",
+    location: "Mainpat Monastery Hub",
+    latitude: 22.814,
+    longitude: 83.286,
+    verification_status: "VERIFIED",
+    certification_level: "LEVEL_3_CERTIFIED",
+    daily_capacity: 15,
+    current_open_leads: 2,
+    max_lead_limit: 8,
+    response_time_sla_hours: 1.3,
+    contact_phone: "+91-7774-275301",
+    languages: ["Tibetan", "English", "Hindi"],
+    safety_trained: true,
+    amenities: ["Certified Tibetan Buddhist Scholar", "Thangka Interpreter"],
+  },
+  {
+    id: "guide-surguja-rameshwar-gond",
+    name: "Rameshwar Gond",
+    provider_type: "GUIDE",
+    segment: "LICENSED_TRIBAL_GUIDES",
+    sub_circuit: "Ramgarh Caves",
+    location: "Udaypur Historical Center",
+    latitude: 22.88,
+    longitude: 82.915,
+    verification_status: "VERIFIED",
+    certification_level: "LEVEL_3_CERTIFIED",
+    daily_capacity: 20,
+    current_open_leads: 2,
+    max_lead_limit: 8,
+    response_time_sla_hours: 1.6,
+    contact_phone: "+91-7774-232301",
+    languages: ["Chhattisgarhi", "Hindi"],
+    safety_trained: true,
+    amenities: ["Archaeological Cave Navigation", "Kalidasa Poetry Recitation"],
+  },
+  {
+    id: "guide-surguja-sunil-tirkey",
+    name: "Sunil Tirkey",
+    provider_type: "GUIDE",
+    segment: "LICENSED_TRIBAL_GUIDES",
+    sub_circuit: "Tatapani Springs",
+    location: "Tatapani Tourist Facility",
+    latitude: 23.687,
+    longitude: 83.652,
+    verification_status: "VERIFIED",
+    certification_level: "LEVEL_3_CERTIFIED",
+    daily_capacity: 18,
+    current_open_leads: 1,
+    max_lead_limit: 8,
+    response_time_sla_hours: 1.5,
+    contact_phone: "+91-7774-261401",
+    languages: ["Chhattisgarhi", "Hindi"],
+    safety_trained: true,
+    amenities: ["Geothermal Safety Expert", "Hydrological First Aid"],
+  },
+  {
+    id: "guide-surguja-birsa-oraon",
+    name: "Birsa Oraon",
+    provider_type: "GUIDE",
+    segment: "LICENSED_TRIBAL_GUIDES",
+    sub_circuit: "Kailash Gufa",
+    location: "Bagicha Forest Post",
+    latitude: 22.952,
+    longitude: 83.623,
+    verification_status: "VERIFIED",
+    certification_level: "LEVEL_3_CERTIFIED",
+    daily_capacity: 12,
+    current_open_leads: 2,
+    max_lead_limit: 8,
+    response_time_sla_hours: 1.8,
+    contact_phone: "+91-7774-252301",
+    languages: ["Oraon", "Chhattisgarhi", "Hindi"],
+    safety_trained: true,
+    amenities: ["Traditional Herbalist & Botanist", "Wilderness Survival"],
+  },
+  {
+    id: "guide-surguja-deepti-ekka",
+    name: "Deepti Ekka",
+    provider_type: "GUIDE",
+    segment: "LICENSED_TRIBAL_GUIDES",
+    sub_circuit: "Mainpat Plateau",
+    location: "Mainpat Adventure Center",
+    latitude: 22.819,
+    longitude: 83.291,
+    verification_status: "VERIFIED",
+    certification_level: "LEVEL_3_CERTIFIED",
+    daily_capacity: 16,
+    current_open_leads: 1,
+    max_lead_limit: 8,
+    response_time_sla_hours: 1.4,
+    contact_phone: "+91-7774-275302",
+    languages: ["English", "Hindi", "Chhattisgarhi"],
+    safety_trained: true,
+    amenities: ["Women Travelers Lead Guide", "Mainpat Birding & Flora Expert"],
+  },
+  {
+    id: "guide-surguja-anand-kujur",
+    name: "Anand Kujur",
+    provider_type: "GUIDE",
+    segment: "LICENSED_TRIBAL_GUIDES",
+    sub_circuit: "Ramgarh Caves",
+    location: "Maheshpur Archaeological Spoke",
+    latitude: 22.895,
+    longitude: 82.934,
+    verification_status: "VERIFIED",
+    certification_level: "LEVEL_3_CERTIFIED",
+    daily_capacity: 15,
+    current_open_leads: 2,
+    max_lead_limit: 8,
+    response_time_sla_hours: 1.7,
+    contact_phone: "+91-7774-232302",
+    languages: ["Hindi", "Chhattisgarhi"],
+    safety_trained: true,
+    amenities: ["Maheshpur Temple Historian", "CPR Certified"],
+  },
+  {
+    id: "guide-surguja-pema-dorjee",
+    name: "Pema Dorjee",
+    provider_type: "GUIDE",
+    segment: "LICENSED_TRIBAL_GUIDES",
+    sub_circuit: "Mainpat Plateau",
+    location: "Camp No. 2, Mainpat",
+    latitude: 22.811,
+    longitude: 83.281,
+    verification_status: "VERIFIED",
+    certification_level: "LEVEL_3_CERTIFIED",
+    daily_capacity: 14,
+    current_open_leads: 1,
+    max_lead_limit: 8,
+    response_time_sla_hours: 1.5,
+    contact_phone: "+91-7774-275303",
+    languages: ["Tibetan", "Hindi", "English"],
+    safety_trained: true,
+    amenities: ["Highland Peatland Geology Guide", "First Aid Certified"],
+  },
+  {
+    id: "guide-surguja-karan-singh-netam",
+    name: "Karan Singh Netam",
+    provider_type: "GUIDE",
+    segment: "LICENSED_TRIBAL_GUIDES",
+    sub_circuit: "Kailash Gufa",
+    location: "Jashpur Border Outpost",
+    latitude: 22.955,
+    longitude: 83.626,
+    verification_status: "VERIFIED",
+    certification_level: "LEVEL_3_CERTIFIED",
+    daily_capacity: 16,
+    current_open_leads: 2,
+    max_lead_limit: 8,
+    response_time_sla_hours: 1.9,
+    contact_phone: "+91-7774-252302",
+    languages: ["Chhattisgarhi", "Hindi"],
+    safety_trained: true,
+    amenities: ["Dense Sal Canopy Trekker", "Wildlife Tracking"],
+  },
+];
+
 export default function PilotAdminPage() {
   const [pilot, setPilot] = useState<PilotData | null>(null);
+  const [allPilots, setAllPilots] = useState<PilotData[]>([]);
+  const [selectedCircuitId, setSelectedCircuitId] = useState<string>("bastar-circuit-1");
   const [controls, setControls] = useState<LaunchControlItem[]>(DEFAULT_CIRCUIT_CONTROLS);
   const [providers, setProviders] = useState<CertifiedProviderItem[]>(DEFAULT_PROVIDERS);
   const [destinations, setDestinations] = useState<BastarDestination[]>([]);
@@ -438,6 +892,82 @@ export default function PilotAdminPage() {
   const [loading, setLoading] = useState(true);
   const [isSimulating, setIsSimulating] = useState(false);
 
+  const loadCircuitDetails = useCallback((targetPilot: PilotData) => {
+    // Fetch circuit readiness, controls, and providers
+    fetch(`/api/v1/market-validation/pilots/${targetPilot.id}/circuit-readiness`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((readiness) => {
+        if (readiness) {
+          if (readiness.destinations) setDestinations(readiness.destinations);
+          if (readiness.emergency_roster) setEmergencyRoster(readiness.emergency_roster);
+          if (readiness.founder_intervention_rate !== undefined) {
+            setFounderInterventionRate(readiness.founder_intervention_rate);
+          }
+        }
+      })
+      .catch(() => {});
+
+    fetch(`/api/v1/market-validation/pilots/${targetPilot.id}/certified-providers`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((provs) => {
+        if (Array.isArray(provs) && provs.length > 0) {
+          setProviders(provs);
+        } else if (targetPilot.name.toLowerCase().includes("surguja")) {
+          setProviders(DEFAULT_SURGUJA_PROVIDERS);
+        } else {
+          setProviders(DEFAULT_PROVIDERS);
+        }
+      })
+      .catch(() => {
+        if (targetPilot.name.toLowerCase().includes("surguja")) {
+          setProviders(DEFAULT_SURGUJA_PROVIDERS);
+        } else {
+          setProviders(DEFAULT_PROVIDERS);
+        }
+      });
+
+    fetch(`/api/v1/market-validation/launch-controls/${targetPilot.id}`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((ctrls) => {
+        if (Array.isArray(ctrls) && ctrls.length > 0) {
+          setControls(ctrls);
+        } else if (targetPilot.name.toLowerCase().includes("surguja")) {
+          setControls(DEFAULT_SURGUJA_CONTROLS);
+        } else {
+          setControls(DEFAULT_CIRCUIT_CONTROLS);
+        }
+      })
+      .catch(() => {
+        if (targetPilot.name.toLowerCase().includes("surguja")) {
+          setControls(DEFAULT_SURGUJA_CONTROLS);
+        } else {
+          setControls(DEFAULT_CIRCUIT_CONTROLS);
+        }
+      });
+
+    // Fetch Phase 2 & Phase 3 telemetry
+    fetch(`/api/v1/market-validation/pilots/${targetPilot.id}/cohort-expansion`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((expansion) => {
+        if (expansion) setCohortData(expansion);
+      })
+      .catch(() => {});
+
+    fetch(`/api/v1/market-validation/pilots/${targetPilot.id}/scale-governance`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((gov) => {
+        if (gov) setScaleGovernanceData(gov);
+      })
+      .catch(() => {});
+
+    fetch(`/api/v1/market-validation/pilots/${targetPilot.id}/expansion-dossier`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((dos) => {
+        if (dos) setExpansionDossierData(dos);
+      })
+      .catch(() => {});
+  }, []);
+
   const fetchPilot = useCallback(() => {
     setLoading(true);
     fetch("/api/v1/market-validation/pilots", {
@@ -446,67 +976,44 @@ export default function PilotAdminPage() {
       .then((res) => res.json())
       .then((data) => {
         if (Array.isArray(data) && data.length > 0) {
-          const p = data[0];
-          setPilot(p);
-
-          // Fetch circuit readiness, controls, and providers
-          fetch(`/api/v1/market-validation/pilots/${p.id}/circuit-readiness`)
-            .then((res) => (res.ok ? res.json() : null))
-            .then((readiness) => {
-              if (readiness) {
-                if (readiness.destinations) setDestinations(readiness.destinations);
-                if (readiness.emergency_roster) setEmergencyRoster(readiness.emergency_roster);
-                if (readiness.founder_intervention_rate !== undefined) {
-                  setFounderInterventionRate(readiness.founder_intervention_rate);
-                }
-              }
-            })
-            .catch(() => {});
-
-          fetch(`/api/v1/market-validation/pilots/${p.id}/certified-providers`)
-            .then((res) => (res.ok ? res.json() : null))
-            .then((provs) => {
-              if (Array.isArray(provs) && provs.length > 0) {
-                setProviders(provs);
-              }
-            })
-            .catch(() => {});
-
-          fetch(`/api/v1/market-validation/launch-controls/${p.id}`)
-            .then((res) => (res.ok ? res.json() : null))
-            .then((ctrls) => {
-              if (Array.isArray(ctrls) && ctrls.length > 0) {
-                setControls(ctrls);
-              }
-            })
-            .catch(() => {});
-
-          // Fetch Phase 2 & Phase 3 telemetry
-          fetch(`/api/v1/market-validation/pilots/${p.id}/cohort-expansion`)
-            .then((res) => (res.ok ? res.json() : null))
-            .then((expansion) => {
-              if (expansion) setCohortData(expansion);
-            })
-            .catch(() => {});
-
-          fetch(`/api/v1/market-validation/pilots/${p.id}/scale-governance`)
-            .then((res) => (res.ok ? res.json() : null))
-            .then((gov) => {
-              if (gov) setScaleGovernanceData(gov);
-            })
-            .catch(() => {});
-
-          fetch(`/api/v1/market-validation/pilots/${p.id}/expansion-dossier`)
-            .then((res) => (res.ok ? res.json() : null))
-            .then((dos) => {
-              if (dos) setExpansionDossierData(dos);
-            })
-            .catch(() => {});
+          setAllPilots(data);
+          const chosen = selectedCircuitId === "surguja-circuit-2"
+            ? data.find((p) => p.name.toLowerCase().includes("surguja")) || data[1] || data[0]
+            : data.find((p) => p.name.toLowerCase().includes("bastar")) || data[0];
+          setPilot(chosen);
+          loadCircuitDetails(chosen);
         }
         setLoading(false);
       })
       .catch(() => setLoading(false));
-  }, []);
+  }, [loadCircuitDetails, selectedCircuitId]);
+
+  const handleSwitchCircuit = (circuitId: string) => {
+    setSelectedCircuitId(circuitId);
+    if (circuitId === "surguja-circuit-2") {
+      const surg = allPilots.find((p) => p.name.toLowerCase().includes("surguja"));
+      if (surg) {
+        setPilot(surg);
+        loadCircuitDetails(surg);
+      } else {
+        setControls(DEFAULT_SURGUJA_CONTROLS);
+        setProviders(DEFAULT_SURGUJA_PROVIDERS);
+        setDestinations([]);
+        setFounderInterventionRate(0.085);
+      }
+    } else {
+      const bast = allPilots.find((p) => p.name.toLowerCase().includes("bastar")) || allPilots[0];
+      if (bast) {
+        setPilot(bast);
+        loadCircuitDetails(bast);
+      } else {
+        setControls(DEFAULT_CIRCUIT_CONTROLS);
+        setProviders(DEFAULT_PROVIDERS);
+        setDestinations([]);
+        setFounderInterventionRate(0.117);
+      }
+    }
+  };
 
   useEffect(() => {
     fetchPilot();
@@ -633,6 +1140,73 @@ export default function PilotAdminPage() {
         </p>
       </div>
 
+      {/* Multi-Circuit Operational Switcher */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <button
+          onClick={() => handleSwitchCircuit("bastar-circuit-1")}
+          className={`p-4 rounded-xl border text-left transition-all relative ${
+            selectedCircuitId === "bastar-circuit-1"
+              ? "bg-slate-900 text-white border-emerald-500 shadow-md ring-2 ring-emerald-500/30"
+              : "bg-white text-slate-800 border-slate-200 hover:border-slate-300 shadow-sm"
+          }`}
+        >
+          <div className="flex items-center justify-between">
+            <span
+              className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
+                selectedCircuitId === "bastar-circuit-1"
+                  ? "bg-emerald-950 text-emerald-300 border border-emerald-800"
+                  : "bg-emerald-100 text-emerald-800"
+              }`}
+            >
+              Circuit 1 • Production Hardened
+            </span>
+            <span className="text-xs font-mono font-semibold text-emerald-400">100% Ready</span>
+          </div>
+          <h3 className="font-bold text-base mt-2 flex items-center gap-2">
+            Bastar Tribal Heritage Circuit
+          </h3>
+          <p
+            className={`text-xs mt-1 ${
+              selectedCircuitId === "bastar-circuit-1" ? "text-slate-300" : "text-slate-500"
+            }`}
+          >
+            Chitrakote Falls • Tirathgarh • Kotumsar Caves • Dholkal Ganesh (18 Certified Providers • 500 Daily Cap)
+          </p>
+        </button>
+
+        <button
+          onClick={() => handleSwitchCircuit("surguja-circuit-2")}
+          className={`p-4 rounded-xl border text-left transition-all relative ${
+            selectedCircuitId === "surguja-circuit-2"
+              ? "bg-slate-900 text-white border-indigo-500 shadow-md ring-2 ring-indigo-500/30"
+              : "bg-white text-slate-800 border-slate-200 hover:border-slate-300 shadow-sm"
+          }`}
+        >
+          <div className="flex items-center justify-between">
+            <span
+              className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
+                selectedCircuitId === "surguja-circuit-2"
+                  ? "bg-indigo-950 text-indigo-300 border border-indigo-800"
+                  : "bg-indigo-100 text-indigo-800"
+              }`}
+            >
+              Circuit 2 • Secondary Expansion Pilot
+            </span>
+            <span className="text-xs font-mono font-semibold text-indigo-400">Authorized Scale</span>
+          </div>
+          <h3 className="font-bold text-base mt-2 flex items-center gap-2">
+            Surguja Ecotourism Circuit
+          </h3>
+          <p
+            className={`text-xs mt-1 ${
+              selectedCircuitId === "surguja-circuit-2" ? "text-slate-300" : "text-slate-500"
+            }`}
+          >
+            Mainpat Plateau • Ramgarh Ancient Theatre • Tatapani Springs • Kailash Gufa (20 Certified Providers • 400 Daily Cap)
+          </p>
+        </button>
+      </div>
+
       {pilot ? (
         <>
           <PilotDefinition
@@ -691,17 +1265,27 @@ export default function PilotAdminPage() {
             </button>
           </div>
 
-          {/* Phase 1: Days 1–30 Bastar Circuit 1 Lockdown & Providers */}
+          {/* Phase 1: Days 1–30 Bastar / Surguja Circuit Topology & Providers */}
           {(activePhase === "ALL" || activePhase === "PHASE_1") && (
             <div className="space-y-6">
-              {/* Bastar Circuit 1 Topology & Emergency Safety Escalation */}
-              <BastarCircuitOverview
-                pilotId={pilot.id}
-                destinations={destinations.length > 0 ? destinations : undefined}
-                emergencyRoster={emergencyRoster.length > 0 ? emergencyRoster : undefined}
-                onSimulateIncident={handleSimulateEmergencyIncident}
-                isSimulating={isSimulating}
-              />
+              {/* Conditional Circuit Topology & Safety Escalation */}
+              {selectedCircuitId === "surguja-circuit-2" ? (
+                <SurgujaCircuitOverview
+                  pilotId={pilot.id}
+                  destinations={destinations.length > 0 ? (destinations as unknown as SurgujaDestinationItem[]) : undefined}
+                  emergencyRoster={emergencyRoster.length > 0 ? (emergencyRoster as unknown as SurgujaEmergencyRosterItem[]) : undefined}
+                  onSimulateIncident={handleSimulateEmergencyIncident}
+                  isSimulating={isSimulating}
+                />
+              ) : (
+                <BastarCircuitOverview
+                  pilotId={pilot.id}
+                  destinations={destinations.length > 0 ? destinations : undefined}
+                  emergencyRoster={emergencyRoster.length > 0 ? emergencyRoster : undefined}
+                  onSimulateIncident={handleSimulateEmergencyIncident}
+                  isSimulating={isSimulating}
+                />
+              )}
 
               {/* Automated Launch Controls & Circuit Breakers */}
               <LaunchControlPanel
@@ -709,7 +1293,7 @@ export default function PilotAdminPage() {
                 onToggleControl={handleToggleControl}
               />
 
-              {/* 18 Certified Tribal Homestays & Licensed Guides Network */}
+              {/* Certified Tribal Homestays & Licensed Guides Network */}
               <CertifiedProvidersTable
                 providers={providers}
                 loading={loading}
